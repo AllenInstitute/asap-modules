@@ -16,7 +16,7 @@ class PyTest(TestCommand):
         import shlex
         import pytest
         self.pytest_args += " --cov=renderapps --cov-report html "\
-                            "--junitxml=test-reports/test.xml"
+                            "--junitxml=/tmp/test-reports/test.xml"
 
         errno = pytest.main(shlex.split(self.pytest_args))
         sys.exit(errno)

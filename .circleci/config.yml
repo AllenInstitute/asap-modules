@@ -1,0 +1,55 @@
+version: 2
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - integration_test
+    
+jobs:
+  integration_test:
+    docker:
+      # using custom image, see .circleci/images/primary/Dockerfile
+      - image: circleci/python:2.7
+      - image: fcollman/render:latest
+      - image: mongo:3.4.2
+    environment:
+      TEST_RESULTS: /tmp/test-results
+
+    steps:
+      - checkout
+
+      - run:
+          name: wait for render to be ready
+          command: |
+            for i in `seq 1 10`;
+            do
+              nc -z localhost 8080 && echo Success && exit 0
+              echo -n .
+              sleep 1
+            done
+            echo Failed waiting for render && exit 1
+      - run:
+          name: wait for mongodb to be ready
+          command: |
+            for i in `seq 1 10`;
+            do
+              nc -z localhost 27017 && echo Success && exit 0
+              echo -n .
+              sleep 1
+            done
+            echo Failed waiting for mongodb && exit 1
+      
+      - run: mkdir -p $TEST_RESULTS
+
+      - run:
+          name: Run integration tests
+          command: |
+            python setup.py install
+            python setup.py test
+
+      - store_artifacts:
+          path: /tmp/test-results
+          destination: raw-test-output
+
+      - store_test_results:
+          path: /tmp/test-results
