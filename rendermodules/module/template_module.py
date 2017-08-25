@@ -19,9 +19,9 @@ example_json={
 
 class TemplateParameters(RenderParameters):
     example = argschema.fields.Str(required=True,
-        metadata={'description':'an example'})
+        description='an example')
     default_val = argschema.fields.Str(required=False,default="a default value",
-        metadata={'description':'an example with a default'})
+        description='an example with a default')
 
 
 class Template(RenderModule):

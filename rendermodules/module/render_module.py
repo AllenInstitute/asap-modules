@@ -4,21 +4,15 @@ import argschema
 import renderapi
 
 
-class RenderClientParameters(argschema.schemas.mm.Schema):
-    host = argschema.fields.Str(required=True, metadata={
-                         'description': 'render host'})
-    port = argschema.fields.Int(required=True, metadata={
-                         'description': 'render post integer'})
-    owner = argschema.fields.Str(required=True, metadata={
-                          'description': 'render default owner'})
-    project = argschema.fields.Str(required=True, metadata={
-                            'description': 'render default project'})
-    render_client_scripts = argschema.fields.Str(
-        required=True, metadata={
-            'description': 'path to render client scripts'})
+class RenderClientParameters(argschema.schemas.DefaultSchema):
+    host = argschema.fields.Str(required=True, description='render host')
+    port = argschema.fields.Int(required=True, description='render post integer')
+    owner = argschema.fields.Str(required=True, description='render default owner')
+    project = argschema.fields.Str(required=True, description='render default project')
+    client_scripts = argschema.fields.Str(
+        required=True, description='path to render client scripts')
     memGB = argschema.fields.Str(
-        required=False, default='5G', metadata={
-            'description': 'string describing java heap memory (default 5G)'})
+        required=False, default='5G', description='string describing java heap memory (default 5G)')
 
 
 class RenderParameters(argschema.ArgSchema):
@@ -27,68 +21,73 @@ class RenderParameters(argschema.ArgSchema):
 
 class RenderTrakEM2Parameters(RenderParameters):
     renderHome = argschema.fields.InputDir(
-        required=True, metadata={
-            'description': 'root path of standard render install'})
+        required=True, description='root path of standard render install')
 
 
 class TEM2ProjectTransfer(RenderTrakEM2Parameters):
     minX = argschema.fields.Int(required=True,
-                                metadata={'description': 'minimum x'})
+                                description='minimum x')
     minY = argschema.fields.Int(required=True,
-                                metadata={'description': 'minimum y'})
+                                description='minimum y')
     maxX = argschema.fields.Int(required=True,
-                                metadata={'description': 'maximum x'})
+                                description='maximum x')
     maxY = argschema.fields.Int(required=True,
-                                metadata={'description': 'maximum y'})
+                                description='maximum y')
     minZ = argschema.fields.Int(required=False,
-                                metadata={'description': 'minimum z'})
+                                description='minimum z')
     maxZ = argschema.fields.Int(required=False,
-                                metadata={'description': 'maximum z'})
+                                description='maximum z')
     inputStack = argschema.fields.Str(
-        required=True, metadata={
-            'description': 'stack to import from'})
+        required=True, description='stack to import from')
     outputStack = argschema.fields.Str(
-        required=True, metadata={
-            'description': 'stack to output to'})
+        required=True, description='stack to output to')
     outputXMLdir = argschema.fields.Str(
-        required=True, metadata={
-            'description': 'path to save xml files'})
+        required=True, description='path to save xml files')
     doChunk = argschema.fields.Boolean(
-        required=False, default=False, metadata={
-            'description': 'split the input into chunks'})
+        required=False, default=False, description='split the input into chunks')
     chunkSize = argschema.fields.Int(
-        required=False, default=50, metadata={
-            'description': 'size of chunks'})
+        required=False, default=50, description='size of chunks')
 
 
 class EMLMRegistrationParameters(TEM2ProjectTransfer):
     LMstack = argschema.fields.Str(
-        required=True, metadata={
-            'description': 'name of LM stack to use for registration'})
+        required=True, description='name of LM stack to use for registration')
     minX = argschema.fields.Int(
-        required=False, metadata={
-            'description': 'minimum x (default to EM stack bounds)'})
+        required=False, description='minimum x (default to EM stack bounds)')
     minY = argschema.fields.Int(
-        required=False, metadata={
-            'description': 'minimum y (default to EM stack bounds)'})
+        required=False, description='minimum y (default to EM stack bounds)')
     maxX = argschema.fields.Int(
-        required=False, metadata={
-            'description': 'maximum x (default to EM stack bounds)'})
+        required=False, description='maximum x (default to EM stack bounds)')
     maxY = argschema.fields.Int(
-        required=False, metadata={
-            'description': 'maximum y (default to EM stack bounds)'})
+        required=False, description='maximum y (default to EM stack bounds)')
     minZ = argschema.fields.Int(
-        required=False, metadata={
-            'description': 'minimum z (default to EM stack bounds)'})
+        required=False, description='minimum z (default to EM stack bounds)')
     maxZ = argschema.fields.Int(
-        required=False, metadata={
-            'description': 'maximum z (default to EM stack bounds)'})
+        required=False, description='maximum z (default to EM stack bounds)')
+
+class EMLMRegistrationMultiParameters(TEM2ProjectTransfer):
+    LMstacks = argschema.fields.List(argschema.fields.Str,
+        required=True, description='names of LM stack to use for registration')
+    minX = argschema.fields.Int(
+        required=False, description='minimum x (default to EM stack bounds)')
+    minY = argschema.fields.Int(
+        required=False, description='minimum y (default to EM stack bounds)')
+    maxX = argschema.fields.Int(
+        required=False, description='maximum x (default to EM stack bounds)')
+    maxY = argschema.fields.Int(
+        required=False, description='maximum y (default to EM stack bounds)')
+    minZ = argschema.fields.Int(
+        required=False, description='minimum z (default to EM stack bounds)')
+    maxZ = argschema.fields.Int(
+        required=False, description='maximum z (default to EM stack bounds)')
+
 
 
 class RenderModule(argschema.ArgSchemaParser):
     def __init__(self, schema_type=None, *args, **kwargs):
         if schema_type is None:
             schema_type = RenderParameters
+        assert issubclass(schema_type,RenderParameters)
         super(RenderModule, self).__init__(
             schema_type=schema_type, *args, **kwargs)
         self.render = renderapi.render.connect(**self.args['render'])
@@ -136,7 +135,6 @@ if __name__ == '__main__':
         }
     }
     module = RenderModule(input_data=example_input)
-    module.run()
 
     bad_input = {
         "render": {
@@ -148,4 +146,3 @@ if __name__ == '__main__':
         }
     }
     module = RenderModule(input_data=bad_input)
-    module.run()
