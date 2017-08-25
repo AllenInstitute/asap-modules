@@ -1,0 +1,217 @@
+/* Run lens correction headlessly and save the result into the project xml
+*
+* xvfb-run -a ./ImageJ-linux64 -Dfile=<manifest file> -Ddir=<project dir> -- --no-splash run_lens_correction.bsh
+*
+* @author Yang Li
+*/
+import lenscorrection;
+import ini.trakem2.ControlWindow;
+import ini.trakem2.Project;
+import ini.trakem2.display.Layer;
+import ini.trakem2.display.LayerSet;
+import ini.trakem2.display.Patch;
+import java.util.ArrayList;
+import java.util.HashSet;
+import lenscorrection.*;
+import mpicbg.trakem2.transform.*;
+import ij.process.*;
+import java.util.*;
+import ini.trakem2.display.*;
+import ij.*;
+import ij.gui.*;
+import ini.trakem2.utils.*;
+import ini.trakem2.imaging.filters.IFilter;
+import ij.ImagePlus;
+import java.lang.Runtime;
+import java.lang.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.regex;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.io.*;
+
+NonLinearTransform getLensCorrectionModel(refp) {
+
+	// if no reference patch, get out of here
+	if (refp == null) return null;
+
+	// get the reference patch CT
+	ct = refp.getCoordinateTransform();
+
+	// if no CT there, get out of here
+	if (ct == null) return null;
+
+	/* unwind CT lists to get the very first actual CT */
+	while (CoordinateTransformList.class.isInstance(ct)) {
+		ct = ct.get(0);
+	}
+	/* is it a NonLinearTransform? */
+	/*
+	* TODO: This is not really required, the desired operation is to take the
+	* first CT of a reference patch and make it the first CT of some other
+	* patches.  This does not require the CT to be anything particular.
+	*/
+	if (NonLinearTransform.class.isInstance(ct))
+		return ct;
+
+	return null;
+}
+
+try {
+	runtime = Runtime.getRuntime();
+	System.out.println( runtime.availableProcessors() + " cores available but not necessarily allocated for multi-threading" );
+	
+	// load from manifest file
+	// dir = System.getProperty("dir");
+	// file = System.getProperty("file");
+	File dirObj = new File(System.getProperty("dir"));
+	File[] dirFiles = dirObj.listFiles(new FilenameFilter() {
+		public boolean accept(File dirObj, String name) {
+			return name.startsWith("_trackem_");
+		}
+	});
+
+	String dir = dirObj.toString();
+	File manifest = dirFiles[0];
+	int gridSize = Integer.parseInt(System.getProperty("grid"));
+
+	String manifestWithPath = dir + "/manifest_temp.txt";
+	FileWriter fw = new FileWriter(manifestWithPath);
+
+	for (int i = 0; i < gridSize; i++) {
+		for (int j = 0; j < gridSize; j++) {
+			String lookfor = i + "_" + j + ".tif";
+			print("search for " + lookfor);
+
+			Scanner scanner = new Scanner(manifest);
+			while (scanner.hasNextLine()) {
+				String line = scanner.nextLine();
+
+				if (line.contains(lookfor)) {
+					print("found!");
+					newline = dir + "/" + line + "\n";
+					fw.write(newline);
+				}
+			}
+		}
+	}
+	fw.close();
+	
+	ControlWindow.setGUIEnabled(false);
+	project = Project.newFSProject("blank", null, dir, false);
+	loader = project.getLoader();
+	loader.setMipMapsRegeneration(false); // prevent mipmap generation
+	layerset = project.getRootLayerSet();
+	layerset.setSnapshotsMode(1);
+
+	// add a reference layer (pointless gymnastik)
+	layer = new Layer(project, 0, 1, layerset);
+	layerset.add(layer);
+	layer.recreateBuckets();
+    
+	// import images from text file
+	task = loader.importImages(
+			layerset.getLayer(0),	// the first layer
+			manifestWithPath,			// the absolute path to the text file with absolute image paths
+			"\t",			// the column separator  <path> <x> <y> <section index>
+			1.0,			// section thickness, defaults to 1
+			1.0,			// calibration, defaults to 1
+			false,			// whether to homogenize contrast, avoid
+			1.0f,			// scaling factor, default to 1
+			0);			// border width
+
+	// wait until all images have been imported
+	task.join();
+
+	// delete reference layer if it was not part of the import range
+	l0 = layerset.getLayer(0);
+	if (l0.getDisplayables(Patch.class).size() == 0)
+		layerset.remove(l0);
+	layerset = project.getRootLayerSet();
+
+	// define the parameters
+	DistortionCorrectionTask.CorrectDistortionFromSelectionParam param = new DistortionCorrectionTask.CorrectDistortionFromSelectionParam();
+	
+	param.sift.initialSigma = Float.parseFloat(System.getProperty("isig"));
+  	param.sift.steps = Integer.parseInt(System.getProperty("steps"));
+  	param.sift.minOctaveSize = Integer.parseInt(System.getProperty("minos"));
+  	param.sift.maxOctaveSize = Integer.parseInt(System.getProperty("maxos"));
+  	param.sift.fdSize = Integer.parseInt(System.getProperty("fdsize"));
+  	param.sift.fdBins = Integer.parseInt(System.getProperty("fdbins"));
+
+	param.rod = Float.parseFloat(System.getProperty("rod"));
+	//param.clearCache = true;
+  	param.maxNumThreadsSift = runtime.availableProcessors();
+	
+	param.maxEpsilon = Float.parseFloat(System.getProperty("maxe"));
+	param.minInlierRatio = Float.parseFloat(System.getProperty("mir"));
+	param.minNumInliers = Integer.parseInt(System.getProperty("mni"));
+	param.expectedModelIndex = Integer.parseInt(System.getProperty("emi"));  // "Translation", "Rigid", "Similarity", "Affine"
+	param.multipleHypotheses = Boolean.parseBoolean(System.getProperty("mh"));
+	param.rejectIdentity = Boolean.parseBoolean(System.getProperty("ri"));
+	param.identityTolerance = Float.parseFloat(System.getProperty("it"));
+	param.tilesAreInPlace = Boolean.parseBoolean(System.getProperty("taip"));
+	
+	param.desiredModelIndex = Integer.parseInt(System.getProperty("dmi"));
+	param.regularize = Boolean.parseBoolean(System.getProperty("reg"));
+	param.maxIterationsOptimize = Integer.parseInt(System.getProperty("mio"));
+	param.maxPlateauwidthOptimize = Integer.parseInt(System.getProperty("mpwo"));
+	
+	param.dimension = Integer.parseInt(System.getProperty("dim"));
+	param.lambda = Float.parseFloat(System.getProperty("lam"));
+	//Utils.addLayerRangeChoices( selection.getLayer(), gdLens );
+	param.clearTransform = Boolean.parseBoolean(System.getProperty("ctrans"));
+	param.visualize = Boolean.parseBoolean(System.getProperty("vis"));
+	
+	// prepare to cook
+	patches = new ArrayList(); 
+		
+	for (p : layerset.getDisplayables(Patch.class)) {
+  		patches.add(p);
+	} 
+		
+	print( "number of patches selected: " + patches.size());
+	
+	index = Math.floor(patches.size()/2);
+	count = 0;
+	Patch selected;
+	for (p : layerset.getDisplayables(Patch.class)) {
+  		count = count + 1;
+		if (count == index) {
+			selected = p;
+			print( "The " + index + "th patch is selected");
+		}
+	} 
+	
+	// run the correction
+	DistortionCorrectionTask.run( param, patches, selected, layerset.getLayer(0), null );
+	
+	// save the result as an XML file (for additional info lens correction)
+	// project.saveAs(dir + "/lensCorrection.xml", true);	
+	
+	p = layerset.getDisplayables(Patch.class).get(0);
+	type = "leaf";
+	className = getLensCorrectionModel(p).getClass().getCanonicalName();
+	dataString = getLensCorrectionModel(p).toDataString();
+
+	// manually write to JSON file
+	FileWriter outJsonFile = new FileWriter(dir + "/lens_correction.json");
+	outJsonFile.write("{\n");
+	outJsonFile.write("\t\"transform\":\n");
+	outJsonFile.write("\t{\n");
+	outJsonFile.write("\t\t\"className\":" + "\"" + className + "\",\n");
+	outJsonFile.write("\t\t\"type\":" + "\"" + type + "\",\n");
+	outJsonFile.write("\t\t\"dataString\":" + "\"" + dataString + "\"\n");
+	outJsonFile.write("\t}\n");
+	outJsonFile.write("}\n");
+
+	outJsonFile.flush();
+
+	print("SUCCESS!");
+}
+catch (e) {
+	e.printStackTrace();
+}
+System.exit(0);
+runtime.exit(0);
