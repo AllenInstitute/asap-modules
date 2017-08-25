@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import os
 import subprocess
 from argschema import ArgSchema, ArgSchemaParser
 from argschema.fields import Bool, Float, Int, Nested, Str
@@ -112,6 +113,12 @@ class LensCorrectionParameters(ArgSchema):
     align_params = Nested(AlignmentParameters)
 
 
+class LensCorrectionOutput(DefaultSchema):
+    # TODO probably easier to output the resulting file via python
+    output_json = Str(required=True,
+                      description='path to file ')
+
+
 class LensCorrectionModule(ArgSchemaParser):
     default_schema = LensCorrectionParameters
 
@@ -160,6 +167,9 @@ class LensCorrectionModule(ArgSchemaParser):
             "run_lens_correction.bsh"]
 
         subprocess.call(bsh_call)
+
+        outputfn = os.path.abspath(os.path.join(
+            self.args['project_path'], 'lens_correction.json'))
 
 
 if __name__ == '__main__':
