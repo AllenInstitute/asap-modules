@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import subprocess
 from argschema import ArgSchema, ArgSchemaParser
 from argschema.fields import Bool, Float, Int, Nested, Str
