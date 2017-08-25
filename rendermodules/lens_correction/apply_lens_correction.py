@@ -38,9 +38,13 @@ class ApplyLensCorrectionParameters(RenderParameters):
 
 
 class ApplyLensCorrection(RenderModule):
-    def __init__(self, *args, **kwargs):
-        super(ApplyLensCorrection, self).__init__(
-            schema_type=ApplyLensCorrectionParameters, *args, **kwargs)
+    default_schema = ApplyLensCorrectionParameters
+
+    def __init__(self, schema_type=None, *args, **kwargs):
+        schema_type = (self.default_schema if schema_type is None
+                       else schema_type)
+        super(self.__class__, self).__init__(
+            schema_type=schema_type, *args, **kwargs)
 
     def run(self):
         inputStack = self.args['inputStack']

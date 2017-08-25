@@ -113,9 +113,13 @@ class LensCorrectionParameters(ArgSchema):
 
 
 class LensCorrectionModule(ArgSchemaParser):
-    def __init__(self, *args, **kwargs):
-        super(LensCorrectionModule, self).__init__(
-            schema_type=LensCorrectionParameters, *args, **kwargs)
+    default_schema = LensCorrectionParameters
+
+    def __init__(self, schema_type=None, *args, **kwargs):
+        schema_type = (self.default_schema if schema_type is None
+                       else schema_type)
+        super(self.__class__, self).__init__(
+            schema_type=schema_type, *args, **kwargs)
 
     def run(self):
         # command line argument for beanshell script
