@@ -5,9 +5,8 @@ Lens Correction
 Script to call TrakEM2 lens correction estimator.
 
 input json:
-```
+```JSON
 {
-        "LensCorrectionParameters": {
             "required": [
                 "fiji_path",
                 "grid_size",
@@ -189,11 +188,11 @@ input json:
                         }
                     }
                 }
-            }
+            }}
 ```
 
 output json:
-```
+```JSON
 {
             "required": [
                 "output_json"
@@ -212,7 +211,7 @@ output json:
 Script to read tilespecs from a set of z values in a render stack, prepend the supplied local transformation, and upload to an output render stack.
 
 input json:
-```
+```JSON
 {
             "required": [
                 "inputStack",
@@ -318,7 +317,7 @@ input json:
 ```
 
 output json:
-```
+```JSON
 {
             "required": [
                 "refId",
