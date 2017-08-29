@@ -115,6 +115,10 @@ class LensCorrectionParameters(ArgSchema):
         required=False,
         default=20,
         description="memory in GB to allocate to Java heap")
+    outfile = Str(
+        required=False,
+        description=("File to which json output of lens correction "
+                     "(leaf TransformSpec) is written"))
     SIFT_params = Nested(SIFTParameters)
     align_params = Nested(AlignmentParameters)
 
@@ -149,6 +153,8 @@ class LensCorrectionModule(ArgSchemaModule):
 
     def run(self, run_lc_bsh=None):
         run_lc_bsh = self.default_bsh if run_lc_bsh is None else run_lc_bsh
+        outfn = self.args.get('outfile', os.path.abspath(os.path.join(
+            self.args['project_path'], 'lens_correction.json')))
         # command line argument for beanshell script
         bsh_call = [
             "xvfb-run",
@@ -182,6 +188,7 @@ class LensCorrectionModule(ArgSchemaModule):
                 self.args['align_params']['maxPlateauWidthOptimize']),
             "-Ddim=" + str(self.args['align_params']['dimension']),
             "-Dlam=" + str(self.args['align_params']['lambdaVal']),
+            "-Doutfn={}".format(outfn),
             "-Dctrans=" + str(self.args['align_params']['clearTransform']),
             "-Dvis=" + str(self.args['align_params']['visualize']),
             "--", "--no-splash",
@@ -189,11 +196,8 @@ class LensCorrectionModule(ArgSchemaModule):
 
         subprocess.call(bsh_call)
 
-        outputfn = os.path.abspath(os.path.join(
-            self.args['project_path'], 'lens_correction.json'))
-
         try:
-            self.output({'output_json': outputfn})
+            self.output({'output_json': outfn})
         except AttributeError as e:
             # output validation will need to wait for argschema PR
             self.logger.error(e)
@@ -203,8 +207,10 @@ if __name__ == '__main__':
     example_input = {
         "manifest_path": "/allen/programs/celltypes/workgroups/em-connectomics/samk/lc_test_data/Wij_Set_594451332/594089217_594451332/_trackem_20170502174048_295434_5LC_0064_01_20170502174047_reference_0_.txt",
         "project_path": "/allen/programs/celltypes/workgroups/em-connectomics/samk/lc_test_data/Wij_Set_594451332/594089217_594451332/",
-        "fiji_path": "/data/em-131fs/Fiji.app/Fiji.app/ImageJ-linux64",
+        "fiji_path": "/allen/programs/celltypes/workgroups/em-connectomics/samk/Fiji.app/ImageJ-linux64",
         "grid_size": 3,
+        "heap_size": 20,
+        "outfile": "test_LC.json",
         "SIFT_params": {
             "initialSigma": 1.6,
             "steps": 3,
