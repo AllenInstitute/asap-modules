@@ -3,7 +3,8 @@ from argschema.fields import Int, Nested, Str, List
 from argschema.schemas import DefaultSchema
 from marshmallow.validate import OneOf
 import renderapi
-from ..module.render_module import RenderModule, RenderParameters
+from rendermodules.module.render_module import (
+    RenderModule, RenderParameters)
 
 
 class TransformParameters(DefaultSchema):
@@ -37,50 +38,52 @@ class ApplyLensCorrectionParameters(RenderParameters):
                      'render database (Not Implemented)'))
 
 
+class ApplyLensCorrectionOutput(DefaultSchema):
+    stack = Str(required=True,
+                description='stack to which transformed tiles were written')
+    refId = Str(required=True,
+                description='unique identifier string used as reference ID')
+
+
 class ApplyLensCorrection(RenderModule):
     default_schema = ApplyLensCorrectionParameters
-
-    def __init__(self, schema_type=None, *args, **kwargs):
-        schema_type = (self.default_schema if schema_type is None
-                       else schema_type)
-        super(self.__class__, self).__init__(
-            schema_type=schema_type, *args, **kwargs)
+    default_output_schema = ApplyLensCorrectionOutput
 
     def run(self):
-        inputStack = self.args['inputStack']
         outputStack = self.args['outputStack']
-        zs = self.args['zs']
-        transform = self.args['transform']
-        refId = self.args['refId']
-
         r = self.render
+        refId = (r.run(renderapi.stack.likelyUniqueId)
+                 if self.args['refId'] is None else self.args['refId'])
 
+        lc_tform = renderapi.transform.load_transform_json(
+            self.args['transform'])
         # new tile specs for each z selected
         new_tspecs = []
-        for z in zs:
+        for z in self.args['zs']:
             tspecs = renderapi.tilespec.get_tile_specs_from_z(
-                inputStack, z, render=r)
+                self.args['inputStack'], z, render=r)
 
             for ts in tspecs:
-                lc_tform = renderapi.transform.Transform(json=transform)
                 ts.tforms = [lc_tform] + ts.tforms
                 new_tspecs.append(ts)
 
         # statement to delete stack if desired
         # renderapi.stack.delete_stack(outputStack, render=r)
 
-        # """
         renderapi.stack.create_stack(outputStack, render=r)
         renderapi.stack.set_stack_state(outputStack, 'LOADING', render=r)
         renderapi.client.import_tilespecs(outputStack, new_tspecs, render=r)
         renderapi.stack.set_stack_state(outputStack, 'COMPLETE', render=r)
-        # """
 
         # output dict
         output = {}
         output['stack'] = outputStack
-        # output['refId'] = refId
-        output['refId'] = "8ccxdfs394875asdv"
+        output['refId'] = refId
+
+        try:
+            self.output(output)
+        except AttributeError as e:
+            self.logger.error(e)
 
 
 if __name__ == '__main__':
@@ -90,7 +93,7 @@ if __name__ == '__main__':
             "port": 8080,
             "owner": "samk",
             "project": "RENDERAPI_TEST",
-            "render_client_scripts": (
+            "client_scripts": (
                 "/allen/programs/celltypes/workgroups/"
                 "em-connectomics/russelt/render_mc.old/render-ws-java-client/"
                 "src/main/scripts")
