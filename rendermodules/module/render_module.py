@@ -127,7 +127,7 @@ class RenderModule(ArgSchemaModule):
                 'schema {} is not of type RenderParameters')
 
         # TODO do we want output schema passed?
-        super(self.__class__, self).__init__(
+        super(RenderModule, self).__init__(
             schema_type=schema_type, *args, **kwargs)
         self.render = renderapi.render.connect(**self.args['render'])
 
