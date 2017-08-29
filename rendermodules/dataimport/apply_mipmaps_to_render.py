@@ -147,9 +147,9 @@ class AddMipMapsToStack(RenderModule):
             # stack does not exist
             self.render.run(renderapi.stack.create_stack, output_stack)
 
-        self.render.run(renderapi.stack.set_stack_state, output_stack, 'LOADING')
-        self.render.run(renderapi.client.import_jsonfiles_parallel, output_stack, tilespecPaths)
-        self.render.run(renderapi.stack.set_stack_state, output_stack, 'COMPLETE')
+        self.render.run(renderapi.stack.set_stack_state, self.args['output_stack'], 'LOADING')
+        self.render.run(renderapi.client.import_jsonfiles_parallel, self.args['output_stack'], tilespecPaths)
+        self.render.run(renderapi.stack.set_stack_state, self.args['output_stack'], 'COMPLETE')
 
 
 if __name__=="__main__":
