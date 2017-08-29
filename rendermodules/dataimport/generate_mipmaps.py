@@ -4,6 +4,8 @@ if __name__=="__main__" and __package__ is None:
 import os
 import sys
 import renderapi
+import urllib
+import urlparse
 from create_mipmaps import create_mipmaps
 from functools import partial
 from ..module.render_module import RenderModule, RenderParameters
@@ -48,9 +50,18 @@ def make_tilespecs_and_cmds(render, inputStack, output_dir, zvalues, levels, img
             mml = ts.ip.mipMapLevels[0]
 
             old_url = mml.imageUrl
-            filepath = str(old_url).lstrip('file:/')
-            filepath = filepath.replace("%20", " ")
-            filepath_in = os.path.join('/', filepath)
+            filepath_in = urllib.unquote(urlparse.urlparse(str(old_url).path))
+
+            # filepath should not have leading / so as to join it with output_dir
+            # os.path.join ignores first argument if second argument has leading /
+            if filepath_in[0] == '/':
+                filepath = filepath_in[1:]
+            else:
+                filepath = filepath_in
+            #filepath = str(old_url).lstrip('file:/')
+            #filepath = filepath.replace("%20", " ")
+            #filepath_in = os.path.join('/', filepath)
+
 
             if imgformat is "png":
                 imgf = ".png"
