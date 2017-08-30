@@ -78,7 +78,7 @@ class AddMipMapsToStackParameters(RenderParameters):
         required=True,
         description='stack for which the mipmaps are to be generated')
     output_stack = mm.fields.Str(
-        required=False, default=input_stack,
+        required=False, default=None, allow_none=True,
         description='the output stack name. Leave to overwrite input stack')
     mipmap_dir = InputDir(
         required=True,
@@ -157,18 +157,22 @@ class AddMipMapsToStack(RenderModule):
         except NameError:
             self.logger.error("Need an output stack name for adding mipmaps")
 
-        if self.args['output_stack'] not in self.render.run(
+        output_stack = (self.args['input_stack'] if
+                        self.args['output_stack'] is None
+                        else self.args['output_stack'])
+
+        if output_stack not in self.render.run(
                 renderapi.render.get_stacks_by_owner_project):
             # stack does not exist
             self.render.run(renderapi.stack.create_stack,
-                            self.args['output_stack'])
+                            output_stack)
 
         self.render.run(renderapi.stack.set_stack_state,
-                        self.args['output_stack'], 'LOADING')
+                        output_stack, 'LOADING')
         self.render.run(renderapi.client.import_jsonfiles_parallel,
-                        self.args['output_stack'], tilespecPaths)
+                        output_stack, tilespecPaths)
         self.render.run(renderapi.stack.set_stack_state,
-                        self.args['output_stack'], 'COMPLETE')
+                        output_stack, 'COMPLETE')
 
 
 if __name__ == "__main__":
