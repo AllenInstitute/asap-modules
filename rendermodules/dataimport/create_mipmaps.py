@@ -2,24 +2,31 @@ from PIL import Image
 import argparse
 import os
 
-def create_mipmaps(inputImage,outputDirectory='.',mipmaplevels=[1,2,3],outputformat='tif',convertTo8bit=True, force_redo=True):
+
+def create_mipmaps(inputImage, outputDirectory='.', mipmaplevels=[1, 2, 3],
+                   outputformat='tif', convertTo8bit=True, force_redo=True):
     # Need to check if the level 0 image exists
     im = Image.open(inputImage)
     origsize = im.size
     if convertTo8bit:
-        table=[ i/256 for i in range(65536) ]
+        table = [i/256 for i in range(65536)]
         im = im.convert('I')
-        im = im.point(table,'L')
+        im = im.point(table, 'L')
 
     for level in mipmaplevels:
         newsize = tuple(map(lambda x: x/(2**level), origsize))
         dwnImage = im.resize(newsize)
 
-        outdir = os.path.join(outputDirectory, str(level), os.path.dirname(inputImage[1:]))
+        outdir = os.path.join(outputDirectory, str(level),
+                              os.path.dirname(inputImage[1:]))
+
         if not os.path.isdir(outdir):
             os.makedirs(outdir, 0775)
 
-        outpath = os.path.join(outputDirectory, str(level), inputImage[1:]) + '.' + outputformat
+        outpath = os.path.join(outputDirectory, str(level),
+                               '{basename}.{fmt}'.format(
+                                   basename=inputImage[1:], fmt=outputformat))
+
         print outpath
         try:
             dwnImage.save(outpath)
@@ -32,23 +39,32 @@ def create_mipmaps(inputImage,outputDirectory='.',mipmaplevels=[1,2,3],outputfor
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Create downsampled images of the input image at different midmap levels")
+    parser = argparse.ArgumentParser(
+        description=("Create downsampled images of the input "
+                     "image at different mipmap levels"))
 
-    parser.add_argument('--inputImage', help="Path to the input image.")
-    parser.add_argument('--outputDirectory',help="Path to save midmap images",default = None)
-    parser.add_argument('--mipmaplevels',nargs='*',help="mipmaplevels to generate",default = [1,2,3],type=int)
-    parser.add_argument('--outputformat',help="format to save images",default = 'tiff')
-    parser.add_argument('--verbose',help="verbose output",default=False,action="store_true")
+    parser.add_argument(
+        '--inputImage', help="Path to the input image.")
+    parser.add_argument(
+        '--outputDirectory', help="Path to save midmap images", default=None)
+    parser.add_argument(
+        '--mipmaplevels', nargs='*', help="mipmaplevels to generate",
+        default=[1, 2, 3], type=int)
+    parser.add_argument(
+        '--outputformat', help="format to save images", default='tiff')
+    parser.add_argument(
+        '--verbose', help="verbose output", default=False, action="store_true")
 
     args = parser.parse_args()
 
-    print 'outdir',args.outputDirectory
+    print 'outdir', args.outputDirectory
     if args.outputDirectory is None:
         args.outputDirectory = os.path.split(args.inputImage)[0]
-        if len(args.outputDirectory)==0:
-            args.outputDirectory='.'
+        if len(args.outputDirectory) == 0:
+            args.outputDirectory = '.'
 
-    create_mipmaps(args.inputImage,args.outputDirectory,args.mipmaplevels,args.outputformat)
+    create_mipmaps(args.inputImage, args.outputDirectory,
+                   args.mipmaplevels, args.outputformat)
 
 #     if not os.path.isdirf(args.outputDirectory):
 #         os.makedirs(args.outputDirectory)
