@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 import os
 import subprocess
-from argschema import ArgSchema, ArgSchemaParser
-from argschema.fields import Bool, Float, Int, Nested, Str
+import tempfile
+import shutil
+from argschema import ArgSchema
+from argschema.fields import Bool, Float, Int, Nested, Str, InputFile
 from argschema.schemas import DefaultSchema
+from rendermodules.module.render_module import (
+    RenderModuleException, ArgSchemaModule)
 
 
 class SIFTParameters(DefaultSchema):
@@ -95,13 +99,13 @@ class AlignmentParameters(DefaultSchema):
 
 
 class LensCorrectionParameters(ArgSchema):
-    manifest_path = Str(
+    manifest_path = InputFile(
         required=True,
         description='path to manifest file')
     project_path = Str(
         required=True,
         description='path to project directory')
-    fiji_path = Str(
+    fiji_path = InputFile(
         required=True,
         description='path to FIJI')
     grid_size = Int(
@@ -109,6 +113,21 @@ class LensCorrectionParameters(ArgSchema):
         description=('maximum row and column to form square '
                      'subset of tiles starting from zero (based on filenames '
                      'which end in "\{row\}_\{column\}.tif")'))
+    heap_size = Int(
+        required=False,
+        default=20,
+        description="memory in GB to allocate to Java heap")
+    outfile = Str(
+        required=False,
+        description=("File to which json output of lens correction "
+                     "(leaf TransformSpec) is written"))
+    processing_directory = Str(
+        required=False,
+        allow_none=True,
+        description=("directory to which trakem2 processing "
+                     "directory will be written "
+                     "(will place in project_path directory if "
+                     "unspecified or create temporary directory if None)"))
     SIFT_params = Nested(SIFTParameters)
     align_params = Nested(AlignmentParameters)
 
@@ -119,22 +138,47 @@ class LensCorrectionOutput(DefaultSchema):
                       description='path to file ')
 
 
-class LensCorrectionModule(ArgSchemaParser):
+class LensCorrectionException(RenderModuleException):
+    pass
+
+
+class LensCorrectionModule(ArgSchemaModule):
     default_schema = LensCorrectionParameters
+    default_output_schema = LensCorrectionOutput
 
-    def __init__(self, schema_type=None, *args, **kwargs):
-        schema_type = (self.default_schema if schema_type is None
-                       else schema_type)
-        super(self.__class__, self).__init__(
-            schema_type=schema_type, *args, **kwargs)
+    bsh_basename = 'run_lens_correction.bsh'
 
-    def run(self):
+    @property
+    def default_bsh(self):
+        bsh = os.path.join(
+            os.path.dirname(__file__), self.bsh_basename)
+        if not os.path.isfile(bsh):
+            raise LensCorrectionException(
+                'beanshell file {} does not exist'.format(bsh))
+        elif not os.access(bsh, os.R_OK):
+            raise LensCorrectionException(
+                "beanshell file {} is not readable".format(bsh))
+        return bsh
+
+    def run(self, run_lc_bsh=None):
+        run_lc_bsh = self.default_bsh if run_lc_bsh is None else run_lc_bsh
+        outfn = self.args.get('outfile', os.path.abspath(os.path.join(
+            self.args['project_path'], 'lens_correction.json')))
+
+        delete_procdir = False
+        procdir = self.args.get('processing_directory',
+                                self.args['project_path'])
+        if procdir is None:
+            delete_procdir = True
+            procdir = tempfile.mkdtemp()
+
         # command line argument for beanshell script
         bsh_call = [
             "xvfb-run",
             "-a",
             self.args['fiji_path'],
-            "-Xms20g", "-Xmx20g", "-Xincgc",
+            "-Xms{}g".format(self.args['heap_size']),
+            "-Xmx{}g".format(self.args['heap_size']), "-Xincgc",
             "-Dman=" + self.args['manifest_path'],
             "-Ddir=" + self.args['project_path'],
             "-Dgrid=" + str(self.args['grid_size']),
@@ -161,23 +205,34 @@ class LensCorrectionModule(ArgSchemaParser):
                 self.args['align_params']['maxPlateauWidthOptimize']),
             "-Ddim=" + str(self.args['align_params']['dimension']),
             "-Dlam=" + str(self.args['align_params']['lambdaVal']),
+            "-Dprocdir={}".format(procdir),
+            "-Doutfn={}".format(outfn),
             "-Dctrans=" + str(self.args['align_params']['clearTransform']),
             "-Dvis=" + str(self.args['align_params']['visualize']),
             "--", "--no-splash",
-            "run_lens_correction.bsh"]
+            run_lc_bsh]
 
         subprocess.call(bsh_call)
 
-        outputfn = os.path.abspath(os.path.join(
-            self.args['project_path'], 'lens_correction.json'))
+        if delete_procdir:
+            shutil.rmtree(procdir)
+
+        try:
+            self.output({'output_json': outfn})
+        except AttributeError as e:
+            # output validation will need to wait for argschema PR
+            self.logger.error(e)
 
 
 if __name__ == '__main__':
     example_input = {
-        "manifest_path": "/home/samk/projects/lens_correction/Wij_Set_594451332/594089217_594451332/_trackem_20170502174048_295434_5LC_0064_01_20170502174047_reference_0_.txt",
-        "project_path": "/home/samk/projects/lens_correction/Wij_Set_594451332/594089217_594451332/",
-        "fiji_path": "/home/samk/projects/lens_correction/Fiji.app/ImageJ-linux64",
+        "manifest_path": "/allen/programs/celltypes/workgroups/em-connectomics/samk/lc_test_data/Wij_Set_594451332/594089217_594451332/_trackem_20170502174048_295434_5LC_0064_01_20170502174047_reference_0_.txt",
+        "project_path": "/allen/programs/celltypes/workgroups/em-connectomics/samk/lc_test_data/Wij_Set_594451332/594089217_594451332/",
+        "fiji_path": "/allen/programs/celltypes/workgroups/em-connectomics/samk/Fiji.app/ImageJ-linux64",
         "grid_size": 3,
+        "heap_size": 20,
+        "outfile": "test_LC.json",
+        "processing_directory": None,
         "SIFT_params": {
             "initialSigma": 1.6,
             "steps": 3,

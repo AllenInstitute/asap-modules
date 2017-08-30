@@ -61,7 +61,7 @@ NonLinearTransform getLensCorrectionModel(refp) {
 try {
 	runtime = Runtime.getRuntime();
 	System.out.println( runtime.availableProcessors() + " cores available but not necessarily allocated for multi-threading" );
-	
+
 	// load from manifest file
 	// dir = System.getProperty("dir");
 	// file = System.getProperty("file");
@@ -76,7 +76,9 @@ try {
 	File manifest = dirFiles[0];
 	int gridSize = Integer.parseInt(System.getProperty("grid"));
 
-	String manifestWithPath = dir + "/manifest_temp.txt";
+  procdir = System.getProperty("procdir", dir);
+
+	String manifestWithPath = procdir + "/manifest_temp.txt";
 	FileWriter fw = new FileWriter(manifestWithPath);
 
 	for (int i = 0; i < gridSize; i++) {
@@ -97,9 +99,9 @@ try {
 		}
 	}
 	fw.close();
-	
+
 	ControlWindow.setGUIEnabled(false);
-	project = Project.newFSProject("blank", null, dir, false);
+	project = Project.newFSProject("blank", null, procdir, false);
 	loader = project.getLoader();
 	loader.setMipMapsRegeneration(false); // prevent mipmap generation
 	layerset = project.getRootLayerSet();
@@ -109,7 +111,7 @@ try {
 	layer = new Layer(project, 0, 1, layerset);
 	layerset.add(layer);
 	layer.recreateBuckets();
-    
+
 	// import images from text file
 	task = loader.importImages(
 			layerset.getLayer(0),	// the first layer
@@ -132,7 +134,7 @@ try {
 
 	// define the parameters
 	DistortionCorrectionTask.CorrectDistortionFromSelectionParam param = new DistortionCorrectionTask.CorrectDistortionFromSelectionParam();
-	
+
 	param.sift.initialSigma = Float.parseFloat(System.getProperty("isig"));
   	param.sift.steps = Integer.parseInt(System.getProperty("steps"));
   	param.sift.minOctaveSize = Integer.parseInt(System.getProperty("minos"));
@@ -143,7 +145,7 @@ try {
 	param.rod = Float.parseFloat(System.getProperty("rod"));
 	//param.clearCache = true;
   	param.maxNumThreadsSift = runtime.availableProcessors();
-	
+
 	param.maxEpsilon = Float.parseFloat(System.getProperty("maxe"));
 	param.minInlierRatio = Float.parseFloat(System.getProperty("mir"));
 	param.minNumInliers = Integer.parseInt(System.getProperty("mni"));
@@ -152,27 +154,27 @@ try {
 	param.rejectIdentity = Boolean.parseBoolean(System.getProperty("ri"));
 	param.identityTolerance = Float.parseFloat(System.getProperty("it"));
 	param.tilesAreInPlace = Boolean.parseBoolean(System.getProperty("taip"));
-	
+
 	param.desiredModelIndex = Integer.parseInt(System.getProperty("dmi"));
 	param.regularize = Boolean.parseBoolean(System.getProperty("reg"));
 	param.maxIterationsOptimize = Integer.parseInt(System.getProperty("mio"));
 	param.maxPlateauwidthOptimize = Integer.parseInt(System.getProperty("mpwo"));
-	
+
 	param.dimension = Integer.parseInt(System.getProperty("dim"));
 	param.lambda = Float.parseFloat(System.getProperty("lam"));
 	//Utils.addLayerRangeChoices( selection.getLayer(), gdLens );
 	param.clearTransform = Boolean.parseBoolean(System.getProperty("ctrans"));
 	param.visualize = Boolean.parseBoolean(System.getProperty("vis"));
-	
+
 	// prepare to cook
-	patches = new ArrayList(); 
-		
+	patches = new ArrayList();
+
 	for (p : layerset.getDisplayables(Patch.class)) {
   		patches.add(p);
-	} 
-		
+	}
+
 	print( "number of patches selected: " + patches.size());
-	
+
 	index = Math.floor(patches.size()/2);
 	count = 0;
 	Patch selected;
@@ -182,21 +184,22 @@ try {
 			selected = p;
 			print( "The " + index + "th patch is selected");
 		}
-	} 
-	
+	}
+
 	// run the correction
 	DistortionCorrectionTask.run( param, patches, selected, layerset.getLayer(0), null );
-	
+
 	// save the result as an XML file (for additional info lens correction)
-	// project.saveAs(dir + "/lensCorrection.xml", true);	
-	
+	// project.saveAs(dir + "/lensCorrection.xml", true);
+
 	p = layerset.getDisplayables(Patch.class).get(0);
 	type = "leaf";
 	className = getLensCorrectionModel(p).getClass().getCanonicalName();
 	dataString = getLensCorrectionModel(p).toDataString();
 
+  outfn = System.getProperty("outfn", dir + "/lens_correction.json");
 	// manually write to JSON file
-	FileWriter outJsonFile = new FileWriter(dir + "/lens_correction.json");
+	FileWriter outJsonFile = new FileWriter(outfn);
 	outJsonFile.write("{\n");
 	outJsonFile.write("\t\"transform\":\n");
 	outJsonFile.write("\t{\n");
