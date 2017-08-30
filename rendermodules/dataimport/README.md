@@ -1,6 +1,136 @@
 Data Import
 =================
 
+## [generate_EM_tilespecs_from_metafile.py](generate_EM_tilespecs_from_metafile.py)
+
+Use metadata file (json starting with `_metadata_`) produced by pyTEMCA to upload stage-coordinate tilespecs to a new or existing stack.
+
+input json:
+```JSON
+{
+    "required": [
+        "metafile",
+        "stack",
+        "z_index"
+    ],
+    "type": "object",
+    "properties": {
+        "image_directory": {
+            "type": "string",
+            "description": "directory used in determining absolute paths to images. Defaults to parent directory containing metafile if omitted."
+        },
+        "close_stack": {
+            "default": false,
+            "type": "boolean",
+            "description": "whether to set stack to 'COMPLETE' after performing operation"
+        },
+        "minimum_intensity": {
+            "default": 0,
+            "type": "integer",
+            "description": "intensity value to interpret as black",
+            "format": "int32"
+        },
+        "z_index": {
+            "type": "integer",
+            "description": "z value to which tilespecs from ROI will be added",
+            "format": "int32"
+        },
+        "render": {
+            "required": [
+                "client_scripts",
+                "host",
+                "owner",
+                "port",
+                "project"
+            ],
+            "type": "object",
+            "properties": {
+                "project": {
+                    "type": "string",
+                    "description": "render default project"
+                },
+                "host": {
+                    "type": "string",
+                    "description": "render host"
+                },
+                "memGB": {
+                    "default": "5G",
+                    "type": "string",
+                    "description": "string describing java heap memory (default 5G)"
+                },
+                "owner": {
+                    "type": "string",
+                    "description": "render default owner"
+                },
+                "port": {
+                    "type": "integer",
+                    "description": "render post integer",
+                    "format": "int32"
+                },
+                "client_scripts": {
+                    "type": "string",
+                    "description": "path to render client scripts"
+                }
+            }
+        },
+        "sectionId": {
+            "type": "string",
+            "description": "sectionId to apply to tiles during ingest.  If unspecified will default to a string representation of the float value of z_index."
+        },
+        "metafile": {
+            "type": "string",
+            "description": "metadata file containing TEMCA acquisition data"
+        },
+        "pool_size": {
+            "default": 1,
+            "type": "integer",
+            "description": "processes to spawn for parallelization",
+            "format": "int32"
+        },
+        "maximum_intensity": {
+            "default": 255,
+            "type": "integer",
+            "description": "intensity value to interpret as white",
+            "format": "int32"
+        },
+        "overwrite_zlayer": {
+            "default": false,
+            "type": "boolean",
+            "description": "whether to remove the existing layer from the target stack before uploading."
+        },
+        "log_level": {
+            "default": "ERROR",
+            "type": "string"
+        },
+        "output_json": {
+            "type": "string"
+        },
+        "input_json": {
+            "type": "string"
+        },
+        "stack": {
+            "type": "string",
+            "description": "stack to which tiles should be added"
+        }
+    }
+}
+```
+
+output json:
+```JSON
+{
+    "required": [
+        "stack"
+    ],
+    "type": "object",
+    "properties": {
+        "stack": {
+            "type": "string",
+            "description": "stack to which generated tiles were added"
+        }
+    }
+}
+```
 ##  [generate_mipmaps.py](generate_mipmaps.py)
 Create multiple mipmap levels based on an existing render stack.
 
