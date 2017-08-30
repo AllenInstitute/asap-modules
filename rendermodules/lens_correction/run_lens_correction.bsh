@@ -76,7 +76,9 @@ try {
 	File manifest = dirFiles[0];
 	int gridSize = Integer.parseInt(System.getProperty("grid"));
 
-	String manifestWithPath = dir + "/manifest_temp.txt";
+  procdir = System.getProperty("procdir", dir);
+
+	String manifestWithPath = procdir + "/manifest_temp.txt";
 	FileWriter fw = new FileWriter(manifestWithPath);
 
 	for (int i = 0; i < gridSize; i++) {
@@ -99,7 +101,7 @@ try {
 	fw.close();
 
 	ControlWindow.setGUIEnabled(false);
-	project = Project.newFSProject("blank", null, dir, false);
+	project = Project.newFSProject("blank", null, procdir, false);
 	loader = project.getLoader();
 	loader.setMipMapsRegeneration(false); // prevent mipmap generation
 	layerset = project.getRootLayerSet();

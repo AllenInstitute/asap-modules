@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import os
 import subprocess
+import tempfile
+import shutil
 from argschema import ArgSchema
 from argschema.fields import Bool, Float, Int, Nested, Str, InputFile
 from argschema.schemas import DefaultSchema
@@ -119,6 +121,13 @@ class LensCorrectionParameters(ArgSchema):
         required=False,
         description=("File to which json output of lens correction "
                      "(leaf TransformSpec) is written"))
+    processing_directory = Str(
+        required=False,
+        allow_none=True,
+        description=("directory to which trakem2 processing "
+                     "directory will be written "
+                     "(will place in project_path directory if "
+                     "unspecified or create temporary directory if None)"))
     SIFT_params = Nested(SIFTParameters)
     align_params = Nested(AlignmentParameters)
 
@@ -155,6 +164,14 @@ class LensCorrectionModule(ArgSchemaModule):
         run_lc_bsh = self.default_bsh if run_lc_bsh is None else run_lc_bsh
         outfn = self.args.get('outfile', os.path.abspath(os.path.join(
             self.args['project_path'], 'lens_correction.json')))
+
+        delete_procdir = False
+        procdir = self.args.get('processing_directory',
+                                self.args['project_path'])
+        if procdir is None:
+            delete_procdir = True
+            procdir = tempfile.mkdtemp()
+
         # command line argument for beanshell script
         bsh_call = [
             "xvfb-run",
@@ -188,6 +205,7 @@ class LensCorrectionModule(ArgSchemaModule):
                 self.args['align_params']['maxPlateauWidthOptimize']),
             "-Ddim=" + str(self.args['align_params']['dimension']),
             "-Dlam=" + str(self.args['align_params']['lambdaVal']),
+            "-Dprocdir={}".format(procdir),
             "-Doutfn={}".format(outfn),
             "-Dctrans=" + str(self.args['align_params']['clearTransform']),
             "-Dvis=" + str(self.args['align_params']['visualize']),
@@ -195,6 +213,9 @@ class LensCorrectionModule(ArgSchemaModule):
             run_lc_bsh]
 
         subprocess.call(bsh_call)
+
+        if delete_procdir:
+            shutil.rmtree(procdir)
 
         try:
             self.output({'output_json': outfn})
@@ -211,6 +232,7 @@ if __name__ == '__main__':
         "grid_size": 3,
         "heap_size": 20,
         "outfile": "test_LC.json",
+        "processing_directory": None,
         "SIFT_params": {
             "initialSigma": 1.6,
             "steps": 3,
