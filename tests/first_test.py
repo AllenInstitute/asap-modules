@@ -1,5 +1,5 @@
 import pytest
 
-def first_test():
+def test_first():
     assert True
     
