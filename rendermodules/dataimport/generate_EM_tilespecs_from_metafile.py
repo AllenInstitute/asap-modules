@@ -87,9 +87,10 @@ class GenerateEMTileSpecsModule(RenderModule):
         return (int(x * cr + y * sr),
                 int(-x * sr + y * cr))
 
-    @staticmethod
-    def tileId_from_basename(fname):
-        return os.path.splitext(os.path.basename(fname))[0]
+    def tileId_from_basename(self, fname):
+        return '{bname}.{z}'.format(
+            bname=os.path.splitext(os.path.basename(fname))[0],
+            z=str(float(self.args['z_index'])))
 
     @staticmethod
     def sectionId_from_z(z):
