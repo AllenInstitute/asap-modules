@@ -4,15 +4,25 @@ import argschema
 import renderapi
 
 
+class RenderModuleException(Exception):
+    """Base Exception class for render module"""
+    pass
+
+
 class RenderClientParameters(argschema.schemas.DefaultSchema):
-    host = argschema.fields.Str(required=True, description='render host')
-    port = argschema.fields.Int(required=True, description='render post integer')
-    owner = argschema.fields.Str(required=True, description='render default owner')
-    project = argschema.fields.Str(required=True, description='render default project')
+    host = argschema.fields.Str(
+        required=True, description='render host')
+    port = argschema.fields.Int(
+        required=True, description='render post integer')
+    owner = argschema.fields.Str(
+        required=True, description='render default owner')
+    project = argschema.fields.Str(
+        required=True, description='render default project')
     client_scripts = argschema.fields.Str(
         required=True, description='path to render client scripts')
     memGB = argschema.fields.Str(
-        required=False, default='5G', description='string describing java heap memory (default 5G)')
+        required=False, default='5G',
+        description='string describing java heap memory (default 5G)')
 
 
 class RenderParameters(argschema.ArgSchema):
@@ -44,7 +54,8 @@ class TEM2ProjectTransfer(RenderTrakEM2Parameters):
     outputXMLdir = argschema.fields.Str(
         required=True, description='path to save xml files')
     doChunk = argschema.fields.Boolean(
-        required=False, default=False, description='split the input into chunks')
+        required=False, default=False,
+        description='split the input into chunks')
     chunkSize = argschema.fields.Int(
         required=False, default=50, description='size of chunks')
 
@@ -65,8 +76,10 @@ class EMLMRegistrationParameters(TEM2ProjectTransfer):
     maxZ = argschema.fields.Int(
         required=False, description='maximum z (default to EM stack bounds)')
 
+
 class EMLMRegistrationMultiParameters(TEM2ProjectTransfer):
-    LMstacks = argschema.fields.List(argschema.fields.Str,
+    LMstacks = argschema.fields.List(
+        argschema.fields.Str,
         required=True, description='names of LM stack to use for registration')
     minX = argschema.fields.Int(
         required=False, description='minimum x (default to EM stack bounds)')
@@ -82,12 +95,38 @@ class EMLMRegistrationMultiParameters(TEM2ProjectTransfer):
         required=False, description='maximum z (default to EM stack bounds)')
 
 
+class ArgSchemaModule(argschema.ArgSchemaParser):
+    default_schema = None
+    default_output_schema = None
 
-class RenderModule(argschema.ArgSchemaParser):
+    def __init__(self, schema_type=None, output_schema_type=None,
+                 *args, **kwargs):
+        schema_type = (self.default_schema if schema_type is None
+                       else schema_type)
+        output_schema_type = (self.default_output_schema
+                              if output_schema_type is None
+                              else output_schema_type)
+        try:
+            super(ArgSchemaModule, self).__init__(
+                schema_type=schema_type, output_schema_type=output_schema_type,
+                *args, **kwargs)
+        except TypeError as e:
+            # waiting for argschema PR for output validation
+            super(ArgSchemaModule, self).__init__(
+                schema_type=schema_type,
+                *args, **kwargs)
+
+
+class RenderModule(ArgSchemaModule):
+    default_schema = RenderParameters
+
     def __init__(self, schema_type=None, *args, **kwargs):
-        if schema_type is None:
-            schema_type = RenderParameters
-        assert issubclass(schema_type,RenderParameters)
+        if (schema_type is not None and not
+            issubclass(schema_type, RenderParameters)):
+            raise RenderModuleException(
+                'schema {} is not of type RenderParameters')
+
+        # TODO do we want output schema passed?
         super(RenderModule, self).__init__(
             schema_type=schema_type, *args, **kwargs)
         self.render = renderapi.render.connect(**self.args['render'])
