@@ -41,4 +41,6 @@ def test_lens_correction():
     }
     mod=LensCorrectionModule(input_data = example_input,args=[])
     assert(True)
-    
+
+def test_me(test_lens_correction):
+    assert True
