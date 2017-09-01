@@ -6,7 +6,7 @@ def test_lens_correction():
     example_input = {
         "manifest_path": "/allen/aibs/shared/image_processing/volume_assembly/lc_test_data/Wij_Set_594451332/594089217_594451332/_trackem_20170502174048_295434_5LC_0064_01_20170502174047_reference_0_.txt",
         "project_path": "/allen/aibs/shared/image_processing/volume_assembly/lc_test_data/Wij_Set_594451332/594089217_594451332/",
-        "fiji_path": "/allen/aibs/shared/image_processing/volume_assembly/Fiji.app",
+        "fiji_path": "/allen/aibs/shared/image_processing/volume_assembly/Fiji.app/ImageJ-linux64",
         "grid_size": 3,
         "heap_size": 20,
         "outfile": "test_LC.json",
