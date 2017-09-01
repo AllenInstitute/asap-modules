@@ -39,7 +39,7 @@ def test_lens_correction():
             "visualize": False
         }
     }
-    mod=LensCorrectionModule(input_data = example_input,args=[])
+    mod=LensCorrectionModule(input_data = example_input,args=["--output_json","calc_lens_test_output.json"])
     mod.run()
     return mod
 
