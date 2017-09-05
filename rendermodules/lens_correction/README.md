@@ -301,6 +301,11 @@ input json:
                 }
             }
         },
+        "close_stack": {
+            "default": false,
+            "type": "boolean",
+            "description": "whether to set output stack state to 'COMPLETE' upon completion"
+        },
         "inputStack": {
             "type": "string",
             "description": "Render Stack with tiles that should be transformed"
