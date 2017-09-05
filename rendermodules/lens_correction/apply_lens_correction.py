@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from argschema.fields import Int, Nested, Str, List
+from argschema.fields import Int, Nested, Str, List, Boolean
 from argschema.schemas import DefaultSchema
 from marshmallow.validate import OneOf
 import renderapi
@@ -36,6 +36,10 @@ class ApplyLensCorrectionParameters(RenderParameters):
         allow_none=True, required=True,
         description=('Reference ID to use when uploading transform to '
                      'render database (Not Implemented)'))
+    close_stack = Boolean(
+        required=False, default=False,
+        description=("whether to set output stack to 'COMPLETE' "
+                     "upon completion"))
 
 
 class ApplyLensCorrectionOutput(DefaultSchema):
@@ -73,7 +77,8 @@ class ApplyLensCorrection(RenderModule):
         renderapi.stack.create_stack(outputStack, render=r)
         renderapi.stack.set_stack_state(outputStack, 'LOADING', render=r)
         renderapi.client.import_tilespecs(outputStack, new_tspecs, render=r)
-        renderapi.stack.set_stack_state(outputStack, 'COMPLETE', render=r)
+        if self.args['close_stack']:
+            renderapi.stack.set_stack_state(outputStack, 'COMPLETE', render=r)
 
         # output dict
         output = {}
