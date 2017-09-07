@@ -1,3 +1,4 @@
+from argschema.autodoc import process_schemas
 # -*- coding: utf-8 -*-
 #
 # render-modules documentation build configuration file, created by
@@ -175,4 +176,8 @@ texinfo_documents = [
 
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/': None}
+#intersphinx_mapping = {'https://docs.python.org/': None}
+
+
+def setup(app):
+    app.connect('autodoc-process-docstring',process_schemas)
