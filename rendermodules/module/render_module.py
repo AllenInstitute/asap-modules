@@ -96,7 +96,7 @@ class EMLMRegistrationMultiParameters(TEM2ProjectTransfer):
 
 
 class ArgSchemaModule(argschema.ArgSchemaParser):
-    default_schema = None
+    default_schema = argschema.ArgSchema
     default_output_schema = None
 
     def __init__(self, schema_type=None, output_schema_type=None,
