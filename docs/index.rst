@@ -27,7 +27,7 @@ ArgSchemaParser with a schema_type, and you can find the schema_type documented 
 modules documentation.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 5
 
    rendermodules/modules
 
