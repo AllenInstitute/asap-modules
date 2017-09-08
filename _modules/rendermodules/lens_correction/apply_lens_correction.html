@@ -1,0 +1,254 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>rendermodules.lens_correction.apply_lens_correction &#8212; render-modules 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for rendermodules.lens_correction.apply_lens_correction</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="kn">from</span> <span class="nn">argschema.fields</span> <span class="k">import</span> <span class="n">Int</span><span class="p">,</span> <span class="n">Nested</span><span class="p">,</span> <span class="n">Str</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Boolean</span>
+<span class="kn">from</span> <span class="nn">argschema.schemas</span> <span class="k">import</span> <span class="n">DefaultSchema</span>
+<span class="kn">from</span> <span class="nn">marshmallow.validate</span> <span class="k">import</span> <span class="n">OneOf</span>
+<span class="kn">import</span> <span class="nn">renderapi</span>
+<span class="kn">from</span> <span class="nn">rendermodules.module.render_module</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">RenderModule</span><span class="p">,</span> <span class="n">RenderParameters</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="TransformParameters"><a class="viewcode-back" href="../../../rendermodules/rendermodules.lens_correction.html#rendermodules.lens_correction.apply_lens_correction.TransformParameters">[docs]</a><span class="k">class</span> <span class="nc">TransformParameters</span><span class="p">(</span><span class="n">DefaultSchema</span><span class="p">):</span>
+    <span class="nb">type</span> <span class="o">=</span> <span class="n">Str</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">validator</span><span class="o">=</span><span class="n">OneOf</span><span class="p">([</span><span class="s2">&quot;leaf&quot;</span><span class="p">,</span> <span class="s2">&quot;interpolated&quot;</span><span class="p">,</span> <span class="s2">&quot;list&quot;</span><span class="p">,</span> <span class="s2">&quot;ref&quot;</span><span class="p">]),</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Transform type as defined in Render Transform Spec.  &#39;</span>
+                     <span class="s1">&#39;This module currently expects a &quot;leaf&quot;&#39;</span><span class="p">))</span>
+    <span class="n">className</span> <span class="o">=</span> <span class="n">Str</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;mpicbg-compatible className&#39;</span><span class="p">)</span>
+    <span class="n">dataString</span> <span class="o">=</span> <span class="n">Str</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;mpicbg-compatible dataString&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ApplyLensCorrectionParameters"><a class="viewcode-back" href="../../../rendermodules/rendermodules.lens_correction.html#rendermodules.lens_correction.apply_lens_correction.ApplyLensCorrectionParameters">[docs]</a><span class="k">class</span> <span class="nc">ApplyLensCorrectionParameters</span><span class="p">(</span><span class="n">RenderParameters</span><span class="p">):</span>
+    <span class="n">inputStack</span> <span class="o">=</span> <span class="n">Str</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Render Stack with tiles that should be transformed&#39;</span><span class="p">)</span>
+    <span class="n">outputStack</span> <span class="o">=</span> <span class="n">Str</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Render Stack to which transformed tiles will be added&#39;</span><span class="p">))</span>
+    <span class="n">zs</span> <span class="o">=</span> <span class="n">List</span><span class="p">(</span>
+        <span class="n">Int</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;z indices to which transform should be prepended&#39;</span><span class="p">)</span>
+    <span class="n">transform</span> <span class="o">=</span> <span class="n">Nested</span><span class="p">(</span><span class="n">TransformParameters</span><span class="p">)</span>
+    <span class="n">refId</span> <span class="o">=</span> <span class="n">Str</span><span class="p">(</span>
+        <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Reference ID to use when uploading transform to &#39;</span>
+                     <span class="s1">&#39;render database (Not Implemented)&#39;</span><span class="p">))</span>
+    <span class="n">close_stack</span> <span class="o">=</span> <span class="n">Boolean</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;whether to set output stack to &#39;COMPLETE&#39; &quot;</span>
+                     <span class="s2">&quot;upon completion&quot;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="ApplyLensCorrectionOutput"><a class="viewcode-back" href="../../../rendermodules/rendermodules.lens_correction.html#rendermodules.lens_correction.apply_lens_correction.ApplyLensCorrectionOutput">[docs]</a><span class="k">class</span> <span class="nc">ApplyLensCorrectionOutput</span><span class="p">(</span><span class="n">DefaultSchema</span><span class="p">):</span>
+    <span class="n">stack</span> <span class="o">=</span> <span class="n">Str</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="s1">&#39;stack to which transformed tiles were written&#39;</span><span class="p">)</span>
+    <span class="n">refId</span> <span class="o">=</span> <span class="n">Str</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="s1">&#39;unique identifier string used as reference ID&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ApplyLensCorrection"><a class="viewcode-back" href="../../../rendermodules/rendermodules.lens_correction.html#rendermodules.lens_correction.apply_lens_correction.ApplyLensCorrection">[docs]</a><span class="k">class</span> <span class="nc">ApplyLensCorrection</span><span class="p">(</span><span class="n">RenderModule</span><span class="p">):</span>
+    <span class="n">default_schema</span> <span class="o">=</span> <span class="n">ApplyLensCorrectionParameters</span>
+    <span class="n">default_output_schema</span> <span class="o">=</span> <span class="n">ApplyLensCorrectionOutput</span>
+
+<div class="viewcode-block" id="ApplyLensCorrection.run"><a class="viewcode-back" href="../../../rendermodules/rendermodules.lens_correction.html#rendermodules.lens_correction.apply_lens_correction.ApplyLensCorrection.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">outputStack</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;outputStack&#39;</span><span class="p">]</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">render</span>
+        <span class="n">refId</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">renderapi</span><span class="o">.</span><span class="n">stack</span><span class="o">.</span><span class="n">likelyUniqueId</span><span class="p">)</span>
+                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;refId&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;refId&#39;</span><span class="p">])</span>
+
+        <span class="n">lc_tform</span> <span class="o">=</span> <span class="n">renderapi</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">load_transform_json</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;transform&#39;</span><span class="p">])</span>
+        <span class="c1"># new tile specs for each z selected</span>
+        <span class="n">new_tspecs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;zs&#39;</span><span class="p">]:</span>
+            <span class="n">tspecs</span> <span class="o">=</span> <span class="n">renderapi</span><span class="o">.</span><span class="n">tilespec</span><span class="o">.</span><span class="n">get_tile_specs_from_z</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;inputStack&#39;</span><span class="p">],</span> <span class="n">z</span><span class="p">,</span> <span class="n">render</span><span class="o">=</span><span class="n">r</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="n">tspecs</span><span class="p">:</span>
+                <span class="n">ts</span><span class="o">.</span><span class="n">tforms</span> <span class="o">=</span> <span class="p">[</span><span class="n">lc_tform</span><span class="p">]</span> <span class="o">+</span> <span class="n">ts</span><span class="o">.</span><span class="n">tforms</span>
+                <span class="n">new_tspecs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
+
+        <span class="c1"># statement to delete stack if desired</span>
+        <span class="c1"># renderapi.stack.delete_stack(outputStack, render=r)</span>
+
+        <span class="n">renderapi</span><span class="o">.</span><span class="n">stack</span><span class="o">.</span><span class="n">create_stack</span><span class="p">(</span><span class="n">outputStack</span><span class="p">,</span> <span class="n">render</span><span class="o">=</span><span class="n">r</span><span class="p">)</span>
+        <span class="n">renderapi</span><span class="o">.</span><span class="n">stack</span><span class="o">.</span><span class="n">set_stack_state</span><span class="p">(</span><span class="n">outputStack</span><span class="p">,</span> <span class="s1">&#39;LOADING&#39;</span><span class="p">,</span> <span class="n">render</span><span class="o">=</span><span class="n">r</span><span class="p">)</span>
+        <span class="n">renderapi</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">import_tilespecs</span><span class="p">(</span><span class="n">outputStack</span><span class="p">,</span> <span class="n">new_tspecs</span><span class="p">,</span> <span class="n">render</span><span class="o">=</span><span class="n">r</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;close_stack&#39;</span><span class="p">]:</span>
+            <span class="n">renderapi</span><span class="o">.</span><span class="n">stack</span><span class="o">.</span><span class="n">set_stack_state</span><span class="p">(</span><span class="n">outputStack</span><span class="p">,</span> <span class="s1">&#39;COMPLETE&#39;</span><span class="p">,</span> <span class="n">render</span><span class="o">=</span><span class="n">r</span><span class="p">)</span>
+
+        <span class="c1"># output dict</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">output</span><span class="p">[</span><span class="s1">&#39;stack&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">outputStack</span>
+        <span class="n">output</span><span class="p">[</span><span class="s1">&#39;refId&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">refId</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">example_input</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;render&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;host&quot;</span><span class="p">:</span> <span class="s2">&quot;em-131fs&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="mi">8080</span><span class="p">,</span>
+            <span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="s2">&quot;samk&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;project&quot;</span><span class="p">:</span> <span class="s2">&quot;RENDERAPI_TEST&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;client_scripts&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">&quot;/allen/programs/celltypes/workgroups/&quot;</span>
+                <span class="s2">&quot;em-connectomics/russelt/render_mc.old/render-ws-java-client/&quot;</span>
+                <span class="s2">&quot;src/main/scripts&quot;</span><span class="p">)</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;inputStack&quot;</span><span class="p">:</span> <span class="s2">&quot;test_noLC&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;outputStack&quot;</span><span class="p">:</span> <span class="s2">&quot;test_LC&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;zs&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2266</span><span class="p">],</span>
+        <span class="s2">&quot;transform&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;leaf&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;className&quot;</span><span class="p">:</span> <span class="s2">&quot;lenscorrection.NonLinearTransform&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;dataString&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">&quot;5 21 1078.539787490504 5.9536401731869155 &quot;</span>
+                <span class="s2">&quot;18.082459176969103 1078.355487979244 3.5307003058070348 &quot;</span>
+                <span class="s2">&quot;11.64046339965791 -2.0439286697147363 -24.64074017045258 &quot;</span>
+                <span class="s2">&quot;-41.26811513301735 -9.491349156078 -1.6954196055547417 &quot;</span>
+                <span class="s2">&quot;-9.185363883704582 3.2959653136929163 16.063471152021727 &quot;</span>
+                <span class="s2">&quot;16.294847510892705 11.433417367508135 31.814503296730077 &quot;</span>
+                <span class="s2">&quot;8.568546283786144 1.1875763257283882 1.8390027135003706 &quot;</span>
+                <span class="s2">&quot;4.811216491589896 -6.951845669522106 -12.267142955347461 &quot;</span>
+                <span class="s2">&quot;-15.925381113080153 -14.870929614388771 -1.4936338107986824 &quot;</span>
+                <span class="s2">&quot;-14.329785142195151 -10.312907851336057 -0.42262010802849903 &quot;</span>
+                <span class="s2">&quot;-1.009175398784258 -3.2394612925182904 1.1172748871012366 &quot;</span>
+                <span class="s2">&quot;3.675506795700918 4.147928095339033 4.180779006453825 &quot;</span>
+                <span class="s2">&quot;2.3467092081149583 3.126555229782104 -0.7606672639855052 &quot;</span>
+                <span class="s2">&quot;4.694244302355039 4.905604855794568 19.42462457061161 &quot;</span>
+                <span class="s2">&quot;17.804784158940837 1942.4644352489915 1780.4747249033032 &quot;</span>
+                <span class="s2">&quot;4947240.512601199 3472086.434895099 4297903.568850483 &quot;</span>
+                <span class="s2">&quot;1.4156910200690086E10 8.869224932399399E9 8.401913335029685E9 &quot;</span>
+                <span class="s2">&quot;1.184452643883111E10 4.326915271956289E13 &quot;</span>
+                <span class="s2">&quot;2.5462360962795074E13 2.1493026326968934E13 &quot;</span>
+                <span class="s2">&quot;2.3188186000529023E13 3.519602640946822E13 &quot;</span>
+                <span class="s2">&quot;1.3795333182608984E17 7.805152532090952E16 &quot;</span>
+                <span class="s2">&quot;6.180627842946396E16 5.937108087578708E16 &quot;</span>
+                <span class="s2">&quot;6.8994694539978896E16 1.09803035347323568E17 100.0 &quot;</span>
+                <span class="s2">&quot;1083.561059814147 1062.000092490804 4335259.912658479 &quot;</span>
+                <span class="s2">&quot;3072116.6105437097 4089560.9959054096 1.588497037768282E10 &quot;</span>
+                <span class="s2">&quot;1.054070313855633E10 1.0306317022320707E10 &quot;</span>
+                <span class="s2">&quot;1.463025351609144E10 5.735536632714905E13 &quot;</span>
+                <span class="s2">&quot;3.677632888097447E13 3.3248028854072227E13 &quot;</span>
+                <span class="s2">&quot;3.53752851004701E13 5.205228949477172E13 &quot;</span>
+                <span class="s2">&quot;2.06753448194955584E17 1.29851821487233248E17 &quot;</span>
+                <span class="s2">&quot;1.12997804746083296E17 1.1130902498005392E17 &quot;</span>
+                <span class="s2">&quot;1.23651446458254E17 1.85995206005396736E17 0.0 3840 3840 &quot;</span><span class="p">)</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;refId&quot;</span><span class="p">:</span> <span class="kc">None</span>
+    <span class="p">}</span>
+
+    <span class="c1"># remove tabs, endlines from dataString formatting above</span>
+    <span class="c1"># example_input[&#39;transform&#39;][&#39;dataString&#39;] = example_input[&#39;transform&#39;][&#39;dataString&#39;].replace(&#39;\n\t\t\t\t&#39;, &#39;&#39;)</span>
+
+    <span class="n">module</span> <span class="o">=</span> <span class="n">ApplyLensCorrection</span><span class="p">(</span><span class="n">input_data</span><span class="o">=</span><span class="n">example_input</span><span class="p">)</span>
+    <span class="n">module</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">render-modules</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../includeme.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rendermodules/modules.html">rendermodules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Russel Torres, Sharmi Seshamani, Gayathri Mahalingam, Sam Kiln, Forrest Collman.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

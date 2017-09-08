@@ -1,0 +1,314 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>rendermodules.dataimport.generate_mipmaps &#8212; render-modules 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for rendermodules.dataimport.generate_mipmaps</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">renderapi</span>
+<span class="kn">import</span> <span class="nn">urllib</span>
+<span class="kn">import</span> <span class="nn">urlparse</span>
+<span class="kn">from</span> <span class="nn">create_mipmaps</span> <span class="k">import</span> <span class="n">create_mipmaps</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">..module.render_module</span> <span class="k">import</span> <span class="n">RenderModule</span><span class="p">,</span> <span class="n">RenderParameters</span>
+<span class="kn">import</span> <span class="nn">marshmallow</span> <span class="k">as</span> <span class="nn">mm</span>
+<span class="kn">from</span> <span class="nn">marshmallow</span> <span class="k">import</span> <span class="n">ValidationError</span><span class="p">,</span> <span class="n">validates_schema</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span> <span class="ow">and</span> <span class="n">__package__</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">__package__</span> <span class="o">=</span> <span class="s2">&quot;rendermodules.dataimport.generate_mipmaps&quot;</span>
+
+<span class="n">example</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;render&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;host&quot;</span><span class="p">:</span> <span class="s2">&quot;10.128.124.14&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="mi">8998</span><span class="p">,</span>
+        <span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="s2">&quot;gayathri&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;project&quot;</span><span class="p">:</span> <span class="s2">&quot;MM2&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;client_scripts&quot;</span><span class="p">:</span> <span class="s2">&quot;/data/nc-em2/gayathrim/Janelia_Pipeline/render_20170613/render-ws-java-client/src/main/scripts&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;PIL&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;input_stack&quot;</span><span class="p">:</span> <span class="s2">&quot;mm2_acquire_8bit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;output_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;/net/aidc-isi1-prd/scratch/aibs/scratch&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;convert_to_8bit&quot;</span><span class="p">:</span> <span class="s2">&quot;False&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;PIL&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;imgformat&quot;</span><span class="p">:</span> <span class="s2">&quot;tiff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;levels&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+    <span class="s2">&quot;force_redo&quot;</span><span class="p">:</span> <span class="s2">&quot;True&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;zstart&quot;</span><span class="p">:</span> <span class="mi">1015</span><span class="p">,</span>
+    <span class="s2">&quot;zend&quot;</span><span class="p">:</span> <span class="mi">1015</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="create_mipmap_from_tuple"><a class="viewcode-back" href="../../../rendermodules/rendermodules.dataimport.html#rendermodules.dataimport.generate_mipmaps.create_mipmap_from_tuple">[docs]</a><span class="k">def</span> <span class="nf">create_mipmap_from_tuple</span><span class="p">(</span><span class="n">mipmap_tuple</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+                             <span class="n">convertTo8bit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">force_redo</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">downdir</span><span class="p">)</span> <span class="o">=</span> <span class="n">mipmap_tuple</span>
+    <span class="nb">print</span> <span class="n">mipmap_tuple</span>
+    <span class="k">return</span> <span class="n">create_mipmaps</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">outputDirectory</span><span class="o">=</span><span class="n">downdir</span><span class="p">,</span>
+                          <span class="n">mipmaplevels</span><span class="o">=</span><span class="n">levels</span><span class="p">,</span> <span class="n">convertTo8bit</span><span class="o">=</span><span class="n">convertTo8bit</span><span class="p">,</span>
+                          <span class="n">force_redo</span><span class="o">=</span><span class="n">force_redo</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="make_tilespecs_and_cmds"><a class="viewcode-back" href="../../../rendermodules/rendermodules.dataimport.html#rendermodules.dataimport.generate_mipmaps.make_tilespecs_and_cmds">[docs]</a><span class="k">def</span> <span class="nf">make_tilespecs_and_cmds</span><span class="p">(</span><span class="n">render</span><span class="p">,</span> <span class="n">inputStack</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">zvalues</span><span class="p">,</span> <span class="n">levels</span><span class="p">,</span>
+                            <span class="n">imgformat</span><span class="p">,</span> <span class="n">convert_to_8bit</span><span class="p">,</span> <span class="n">force_redo</span><span class="p">,</span> <span class="n">pool_size</span><span class="p">):</span>
+    <span class="n">mipmap_args</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">zvalues</span><span class="p">:</span>
+        <span class="n">tilespecs</span> <span class="o">=</span> <span class="n">render</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">renderapi</span><span class="o">.</span><span class="n">tilespec</span><span class="o">.</span><span class="n">get_tile_specs_from_z</span><span class="p">,</span>
+                               <span class="n">inputStack</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="n">tilespecs</span><span class="p">:</span>
+            <span class="n">mml</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">ip</span><span class="o">.</span><span class="n">mipMapLevels</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="n">old_url</span> <span class="o">=</span> <span class="n">mml</span><span class="o">.</span><span class="n">imageUrl</span>
+            <span class="n">filepath_in</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">unquote</span><span class="p">(</span><span class="n">urlparse</span><span class="o">.</span><span class="n">urlparse</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">old_url</span><span class="p">)</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
+
+            <span class="c1"># filepath should not have leading / so as to join it with output_dir</span>
+            <span class="c1"># os.path.join ignores first argument if second argument has leading /</span>
+            <span class="k">if</span> <span class="n">filepath_in</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;/&#39;</span><span class="p">:</span>
+                <span class="n">filepath</span> <span class="o">=</span> <span class="n">filepath_in</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">filepath</span> <span class="o">=</span> <span class="n">filepath_in</span>
+            <span class="c1"># filepath = str(old_url).lstrip(&#39;file:/&#39;)</span>
+            <span class="c1"># filepath = filepath.replace(&quot;%20&quot;, &quot; &quot;)</span>
+            <span class="c1"># filepath_in = os.path.join(&#39;/&#39;, filepath)</span>
+
+            <span class="k">if</span> <span class="n">imgformat</span> <span class="ow">is</span> <span class="s2">&quot;png&quot;</span><span class="p">:</span>
+                <span class="n">imgf</span> <span class="o">=</span> <span class="s2">&quot;.png&quot;</span>
+            <span class="k">elif</span> <span class="n">imgformat</span> <span class="ow">is</span> <span class="s2">&quot;jpg&quot;</span><span class="p">:</span>
+                <span class="n">imgf</span> <span class="o">=</span> <span class="s2">&quot;.jpg&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">imgf</span> <span class="o">=</span> <span class="s2">&quot;.tif&quot;</span>
+
+            <span class="nb">print</span> <span class="p">(</span><span class="n">filepath_in</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">)</span>
+            <span class="n">mipmap_args</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">filepath_in</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">))</span>
+
+    <span class="n">mypartial</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span>
+        <span class="n">create_mipmap_from_tuple</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">levels</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">convertTo8bit</span><span class="o">=</span><span class="n">convert_to_8bit</span><span class="p">,</span> <span class="n">force_redo</span><span class="o">=</span><span class="n">force_redo</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">renderapi</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">WithPool</span><span class="p">(</span><span class="n">pool_size</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">mypartial</span><span class="p">,</span> <span class="n">mipmap_args</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">mipmap_args</span></div>
+
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">def verify_mipmap_generation(mipmap_args):</span>
+<span class="sd">    missing_files = []</span>
+<span class="sd">    for (m1,m2) in mipmap_args:</span>
+<span class="sd">        if not os.path.exists(m2):</span>
+<span class="sd">            missing_files.append((m1,m2))</span>
+
+<span class="sd">    return missing_files</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+
+<div class="viewcode-block" id="GenerateMipMapsParameters"><a class="viewcode-back" href="../../../rendermodules/rendermodules.dataimport.html#rendermodules.dataimport.generate_mipmaps.GenerateMipMapsParameters">[docs]</a><span class="k">class</span> <span class="nc">GenerateMipMapsParameters</span><span class="p">(</span><span class="n">RenderParameters</span><span class="p">):</span>
+    <span class="n">input_stack</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Str</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;stack for which the mipmaps are to be generated&#39;</span><span class="p">)</span>
+    <span class="n">output_dir</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Str</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;directory to which the mipmaps will be stored&#39;</span><span class="p">)</span>
+    <span class="n">method</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Str</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;block_reduce&quot;</span><span class="p">,</span>
+        <span class="n">validator</span><span class="o">=</span><span class="n">mm</span><span class="o">.</span><span class="n">validate</span><span class="o">.</span><span class="n">OneOf</span><span class="p">([</span><span class="s2">&quot;PIL&quot;</span><span class="p">,</span> <span class="s2">&quot;block_reduce&quot;</span><span class="p">,</span> <span class="s2">&quot;render&quot;</span><span class="p">]),</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;method to downsample mipmapLevels, &quot;</span>
+            <span class="s2">&quot;can be &#39;block_reduce&#39; for skimage based area downsampling, &quot;</span>
+            <span class="s2">&quot;&#39;PIL&#39; for PIL Image (currently NEAREST) filtered resize, &quot;</span>
+            <span class="s2">&quot;&#39;render&#39; for render-ws based rendering.  &quot;</span>
+            <span class="s2">&quot;Currently only PIL is implemented, while others may fall &quot;</span>
+            <span class="s2">&quot;back to this.&quot;</span><span class="p">))</span>
+    <span class="n">convert_to_8bit</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Boolean</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;convert the data from 16 to 8 bit (default True)&#39;</span><span class="p">)</span>
+    <span class="n">pool_size</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;number of cores to be used&#39;</span><span class="p">)</span>
+    <span class="n">imgformat</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Str</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;tiff&#39;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;image format for mipmaps (default tiff)&#39;</span><span class="p">)</span>
+    <span class="n">levels</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;number of levels of mipmaps, default is 6&#39;</span><span class="p">)</span>
+    <span class="n">force_redo</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Boolean</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;force re-generation of existing mipmaps&#39;</span><span class="p">)</span>
+    <span class="n">zstart</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;start z-index in the stack&#39;</span><span class="p">)</span>
+    <span class="n">zend</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;end z-index in the stack&#39;</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;z-index in the stack&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GenerateMipMapsParameters.validate_zvalues"><a class="viewcode-back" href="../../../rendermodules/rendermodules.dataimport.html#rendermodules.dataimport.generate_mipmaps.GenerateMipMapsParameters.validate_zvalues">[docs]</a>    <span class="nd">@validates_schema</span>
+    <span class="k">def</span> <span class="nf">validate_zvalues</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s1">&#39;zstart&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">or</span> <span class="s1">&#39;zend&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s1">&#39;zvalue&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s1">&#39;Need a z value&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;zvalue&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s1">&#39;zstart&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">or</span> <span class="s1">&#39;zend&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s1">&#39;Need a z range&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GenerateMipMapsParameters.validationOptions"><a class="viewcode-back" href="../../../rendermodules/rendermodules.dataimport.html#rendermodules.dataimport.generate_mipmaps.GenerateMipMapsParameters.validationOptions">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">validationOptions</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+        <span class="n">excluded_fields</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;PIL&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;block_reduce&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;render&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]</span>
+        <span class="p">}</span>
+        <span class="n">exc_fields</span> <span class="o">=</span> <span class="n">excluded_fields</span><span class="p">[</span><span class="n">options</span><span class="p">[</span><span class="s1">&#39;method&#39;</span><span class="p">]]</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="n">exc_fields</span><span class="p">)</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">options</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="GenerateMipMaps"><a class="viewcode-back" href="../../../rendermodules/rendermodules.dataimport.html#rendermodules.dataimport.generate_mipmaps.GenerateMipMaps">[docs]</a><span class="k">class</span> <span class="nc">GenerateMipMaps</span><span class="p">(</span><span class="n">RenderModule</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">schema_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">schema_type</span> <span class="o">=</span> <span class="n">GenerateMipMapsParameters</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GenerateMipMaps</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">schema_type</span><span class="o">=</span><span class="n">schema_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GenerateMipMaps.run"><a class="viewcode-back" href="../../../rendermodules/rendermodules.dataimport.html#rendermodules.dataimport.generate_mipmaps.GenerateMipMaps.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Mipmap generation module&#39;</span><span class="p">)</span>
+
+        <span class="c1"># get the list of z indices</span>
+        <span class="n">zvalues</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">render</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">renderapi</span><span class="o">.</span><span class="n">stack</span><span class="o">.</span><span class="n">get_z_values_for_stack</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;input_stack&#39;</span><span class="p">])</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;zstart&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;zend&#39;</span><span class="p">]</span>
+            <span class="n">zvalues1</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;zstart&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;zend&#39;</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">zvalues</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">zvalues1</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">zvalues</span><span class="p">)))</span> <span class="c1"># extract only those z&#39;s that exist in the input stack</span>
+        <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">zvalues</span><span class="p">:</span>
+                    <span class="n">zvalues</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">]]</span>
+            <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;No z value given for mipmap generation&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">zvalues</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;No sections found for stack </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;input_stack&#39;</span><span class="p">]))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating mipmaps...&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;method&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;PIL&#39;</span><span class="p">,</span> <span class="s1">&#39;block_reduce&#39;</span><span class="p">]:</span>
+            <span class="n">mipmap_args</span> <span class="o">=</span> <span class="n">make_tilespecs_and_cmds</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">render</span><span class="p">,</span>
+                                                  <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;input_stack&#39;</span><span class="p">],</span>
+                                                  <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;output_dir&#39;</span><span class="p">],</span>
+                                                  <span class="n">zvalues</span><span class="p">,</span>
+                                                  <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;levels&#39;</span><span class="p">],</span>
+                                                  <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;imgformat&#39;</span><span class="p">],</span>
+                                                  <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;convert_to_8bit&#39;</span><span class="p">],</span>
+                                                  <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;force_redo&#39;</span><span class="p">],</span>
+                                                  <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;pool_size&#39;</span><span class="p">])</span></div></div>
+
+            <span class="c1"># self.logger.debug(&quot;mipmaps generation checks...&quot;)</span>
+            <span class="c1"># missing_files = verify_mipmap_generation(mipmap_args)</span>
+            <span class="c1"># if not missing_files:</span>
+            <span class="c1">#     self.logger.error(&quot;not all mipmaps have been generated&quot;)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># mod = GenerateMipMaps(input_data=example)</span>
+    <span class="n">mod</span> <span class="o">=</span> <span class="n">GenerateMipMaps</span><span class="p">(</span><span class="n">schema_type</span><span class="o">=</span><span class="n">GenerateMipMapsParameters</span><span class="p">)</span>
+    <span class="n">mod</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">render-modules</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../includeme.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rendermodules/modules.html">rendermodules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Russel Torres, Sharmi Seshamani, Gayathri Mahalingam, Sam Kiln, Forrest Collman.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

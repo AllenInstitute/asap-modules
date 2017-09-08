@@ -1,0 +1,187 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>rendermodules.dataimport.create_mipmaps &#8212; render-modules 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for rendermodules.dataimport.create_mipmaps</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">PIL</span> <span class="k">import</span> <span class="n">Image</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+
+<div class="viewcode-block" id="create_mipmaps"><a class="viewcode-back" href="../../../rendermodules/rendermodules.dataimport.html#rendermodules.dataimport.create_mipmaps.create_mipmaps">[docs]</a><span class="k">def</span> <span class="nf">create_mipmaps</span><span class="p">(</span><span class="n">inputImage</span><span class="p">,</span> <span class="n">outputDirectory</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">mipmaplevels</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+                   <span class="n">outputformat</span><span class="o">=</span><span class="s1">&#39;tif&#39;</span><span class="p">,</span> <span class="n">convertTo8bit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">force_redo</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="c1"># Need to check if the level 0 image exists</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">inputImage</span><span class="p">)</span>
+    <span class="n">origsize</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span>
+    <span class="k">if</span> <span class="n">convertTo8bit</span><span class="p">:</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">/</span><span class="mi">256</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">65536</span><span class="p">)]</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;I&#39;</span><span class="p">)</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">level</span> <span class="ow">in</span> <span class="n">mipmaplevels</span><span class="p">:</span>
+        <span class="n">newsize</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">level</span><span class="p">),</span> <span class="n">origsize</span><span class="p">))</span>
+        <span class="n">dwnImage</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">newsize</span><span class="p">)</span>
+
+        <span class="n">outdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outputDirectory</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">level</span><span class="p">),</span>
+                              <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">inputImage</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">outdir</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="mi">0775</span><span class="p">)</span>
+
+        <span class="n">outpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outputDirectory</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">level</span><span class="p">),</span>
+                               <span class="s1">&#39;</span><span class="si">{basename}</span><span class="s1">.</span><span class="si">{fmt}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                   <span class="n">basename</span><span class="o">=</span><span class="n">inputImage</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">fmt</span><span class="o">=</span><span class="n">outputformat</span><span class="p">))</span>
+
+        <span class="nb">print</span> <span class="n">outpath</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">dwnImage</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">outpath</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># unknown output format</span>
+            <span class="nb">print</span> <span class="s1">&#39;KeyError - &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># file cannot be written to disk</span>
+            <span class="nb">print</span> <span class="s1">&#39;IndexError - &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Create downsampled images of the input &quot;</span>
+                     <span class="s2">&quot;image at different mipmap levels&quot;</span><span class="p">))</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--inputImage&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to the input image.&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--outputDirectory&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to save midmap images&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--mipmaplevels&#39;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;mipmaplevels to generate&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--outputformat&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;format to save images&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;tiff&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--verbose&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;verbose output&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="nb">print</span> <span class="s1">&#39;outdir&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">outputDirectory</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">outputDirectory</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">outputDirectory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">inputImage</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">outputDirectory</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">outputDirectory</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span>
+
+    <span class="n">create_mipmaps</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">inputImage</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">outputDirectory</span><span class="p">,</span>
+                   <span class="n">args</span><span class="o">.</span><span class="n">mipmaplevels</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">outputformat</span><span class="p">)</span>
+
+<span class="c1">#     if not os.path.isdirf(args.outputDirectory):</span>
+<span class="c1">#         os.makedirs(args.outputDirectory)</span>
+
+<span class="c1">#     im = Image.open(args.inputImage)</span>
+<span class="c1">#     print &#39;origmode&#39;,im.mode</span>
+<span class="c1">#     origsize = im.size</span>
+<span class="c1">#     table=[ i/256 for i in range(65536) ]</span>
+<span class="c1">#     im = im.convert(&#39;I&#39;)</span>
+<span class="c1">#     im = im.point(table,&#39;L&#39;)</span>
+<span class="c1">#     print &#39;new mode&#39;,im.mode</span>
+<span class="c1">#     inputFileName = os.path.split(args.inputImage)[1]</span>
+
+<span class="c1">#     for level in args.mipmaplevels:</span>
+<span class="c1">#         newsize = tuple(map(lambda x: x/(2**level), origsize))</span>
+<span class="c1">#         dwnImage = im.resize(newsize)</span>
+<span class="c1">#         outpath = os.path.join(args.outputDirectory,inputFileName[0:-4]+&#39;_mip%02d.&#39;%level+args.outputformat)</span>
+<span class="c1">#         dwnImage.save(outpath)</span>
+<span class="c1">#         print outpath,level,newsize</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">render-modules</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../includeme.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rendermodules/modules.html">rendermodules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Russel Torres, Sharmi Seshamani, Gayathri Mahalingam, Sam Kiln, Forrest Collman.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,288 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>rendermodules.module.render_module &#8212; render-modules 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for rendermodules.module.render_module</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">argschema</span>
+<span class="kn">import</span> <span class="nn">renderapi</span>
+
+
+<div class="viewcode-block" id="RenderModuleException"><a class="viewcode-back" href="../../../rendermodules/rendermodules.module.html#rendermodules.module.render_module.RenderModuleException">[docs]</a><span class="k">class</span> <span class="nc">RenderModuleException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base Exception class for render module&quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="RenderClientParameters"><a class="viewcode-back" href="../../../rendermodules/rendermodules.module.html#rendermodules.module.render_module.RenderClientParameters">[docs]</a><span class="k">class</span> <span class="nc">RenderClientParameters</span><span class="p">(</span><span class="n">argschema</span><span class="o">.</span><span class="n">schemas</span><span class="o">.</span><span class="n">DefaultSchema</span><span class="p">):</span>
+    <span class="n">host</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Str</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;render host&#39;</span><span class="p">)</span>
+    <span class="n">port</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;render post integer&#39;</span><span class="p">)</span>
+    <span class="n">owner</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Str</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;render default owner&#39;</span><span class="p">)</span>
+    <span class="n">project</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Str</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;render default project&#39;</span><span class="p">)</span>
+    <span class="n">client_scripts</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Str</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;path to render client scripts&#39;</span><span class="p">)</span>
+    <span class="n">memGB</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Str</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;5G&#39;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;string describing java heap memory (default 5G)&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RenderParameters"><a class="viewcode-back" href="../../../rendermodules/rendermodules.module.html#rendermodules.module.render_module.RenderParameters">[docs]</a><span class="k">class</span> <span class="nc">RenderParameters</span><span class="p">(</span><span class="n">argschema</span><span class="o">.</span><span class="n">ArgSchema</span><span class="p">):</span>
+    <span class="n">render</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Nested</span><span class="p">(</span><span class="n">RenderClientParameters</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RenderTrakEM2Parameters"><a class="viewcode-back" href="../../../rendermodules/rendermodules.module.html#rendermodules.module.render_module.RenderTrakEM2Parameters">[docs]</a><span class="k">class</span> <span class="nc">RenderTrakEM2Parameters</span><span class="p">(</span><span class="n">RenderParameters</span><span class="p">):</span>
+    <span class="n">renderHome</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">InputDir</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;root path of standard render install&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TEM2ProjectTransfer"><a class="viewcode-back" href="../../../rendermodules/rendermodules.module.html#rendermodules.module.render_module.TEM2ProjectTransfer">[docs]</a><span class="k">class</span> <span class="nc">TEM2ProjectTransfer</span><span class="p">(</span><span class="n">RenderTrakEM2Parameters</span><span class="p">):</span>
+    <span class="n">minX</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                <span class="n">description</span><span class="o">=</span><span class="s1">&#39;minimum x&#39;</span><span class="p">)</span>
+    <span class="n">minY</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                <span class="n">description</span><span class="o">=</span><span class="s1">&#39;minimum y&#39;</span><span class="p">)</span>
+    <span class="n">maxX</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                <span class="n">description</span><span class="o">=</span><span class="s1">&#39;maximum x&#39;</span><span class="p">)</span>
+    <span class="n">maxY</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                <span class="n">description</span><span class="o">=</span><span class="s1">&#39;maximum y&#39;</span><span class="p">)</span>
+    <span class="n">minZ</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                <span class="n">description</span><span class="o">=</span><span class="s1">&#39;minimum z&#39;</span><span class="p">)</span>
+    <span class="n">maxZ</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                <span class="n">description</span><span class="o">=</span><span class="s1">&#39;maximum z&#39;</span><span class="p">)</span>
+    <span class="n">inputStack</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Str</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;stack to import from&#39;</span><span class="p">)</span>
+    <span class="n">outputStack</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Str</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;stack to output to&#39;</span><span class="p">)</span>
+    <span class="n">outputXMLdir</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Str</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;path to save xml files&#39;</span><span class="p">)</span>
+    <span class="n">doChunk</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Boolean</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;split the input into chunks&#39;</span><span class="p">)</span>
+    <span class="n">chunkSize</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;size of chunks&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="EMLMRegistrationParameters"><a class="viewcode-back" href="../../../rendermodules/rendermodules.module.html#rendermodules.module.render_module.EMLMRegistrationParameters">[docs]</a><span class="k">class</span> <span class="nc">EMLMRegistrationParameters</span><span class="p">(</span><span class="n">TEM2ProjectTransfer</span><span class="p">):</span>
+    <span class="n">LMstack</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Str</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;name of LM stack to use for registration&#39;</span><span class="p">)</span>
+    <span class="n">minX</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;minimum x (default to EM stack bounds)&#39;</span><span class="p">)</span>
+    <span class="n">minY</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;minimum y (default to EM stack bounds)&#39;</span><span class="p">)</span>
+    <span class="n">maxX</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;maximum x (default to EM stack bounds)&#39;</span><span class="p">)</span>
+    <span class="n">maxY</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;maximum y (default to EM stack bounds)&#39;</span><span class="p">)</span>
+    <span class="n">minZ</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;minimum z (default to EM stack bounds)&#39;</span><span class="p">)</span>
+    <span class="n">maxZ</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;maximum z (default to EM stack bounds)&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="EMLMRegistrationMultiParameters"><a class="viewcode-back" href="../../../rendermodules/rendermodules.module.html#rendermodules.module.render_module.EMLMRegistrationMultiParameters">[docs]</a><span class="k">class</span> <span class="nc">EMLMRegistrationMultiParameters</span><span class="p">(</span><span class="n">TEM2ProjectTransfer</span><span class="p">):</span>
+    <span class="n">LMstacks</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">List</span><span class="p">(</span>
+        <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Str</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;names of LM stack to use for registration&#39;</span><span class="p">)</span>
+    <span class="n">minX</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;minimum x (default to EM stack bounds)&#39;</span><span class="p">)</span>
+    <span class="n">minY</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;minimum y (default to EM stack bounds)&#39;</span><span class="p">)</span>
+    <span class="n">maxX</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;maximum x (default to EM stack bounds)&#39;</span><span class="p">)</span>
+    <span class="n">maxY</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;maximum y (default to EM stack bounds)&#39;</span><span class="p">)</span>
+    <span class="n">minZ</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;minimum z (default to EM stack bounds)&#39;</span><span class="p">)</span>
+    <span class="n">maxZ</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;maximum z (default to EM stack bounds)&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArgSchemaModule"><a class="viewcode-back" href="../../../rendermodules/rendermodules.module.html#rendermodules.module.render_module.ArgSchemaModule">[docs]</a><span class="k">class</span> <span class="nc">ArgSchemaModule</span><span class="p">(</span><span class="n">argschema</span><span class="o">.</span><span class="n">ArgSchemaParser</span><span class="p">):</span>
+    <span class="n">default_schema</span> <span class="o">=</span> <span class="n">argschema</span><span class="o">.</span><span class="n">ArgSchema</span>
+    <span class="n">default_output_schema</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_schema_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">schema_type</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_schema</span> <span class="k">if</span> <span class="n">schema_type</span> <span class="ow">is</span> <span class="kc">None</span>
+                       <span class="k">else</span> <span class="n">schema_type</span><span class="p">)</span>
+        <span class="n">output_schema_type</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_output_schema</span>
+                              <span class="k">if</span> <span class="n">output_schema_type</span> <span class="ow">is</span> <span class="kc">None</span>
+                              <span class="k">else</span> <span class="n">output_schema_type</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">ArgSchemaModule</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+                <span class="n">schema_type</span><span class="o">=</span><span class="n">schema_type</span><span class="p">,</span> <span class="n">output_schema_type</span><span class="o">=</span><span class="n">output_schema_type</span><span class="p">,</span>
+                <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># waiting for argschema PR for output validation</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">ArgSchemaModule</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+                <span class="n">schema_type</span><span class="o">=</span><span class="n">schema_type</span><span class="p">,</span>
+                <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RenderModule"><a class="viewcode-back" href="../../../rendermodules/rendermodules.module.html#rendermodules.module.render_module.RenderModule">[docs]</a><span class="k">class</span> <span class="nc">RenderModule</span><span class="p">(</span><span class="n">ArgSchemaModule</span><span class="p">):</span>
+    <span class="n">default_schema</span> <span class="o">=</span> <span class="n">RenderParameters</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">schema_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span>
+            <span class="nb">issubclass</span><span class="p">(</span><span class="n">schema_type</span><span class="p">,</span> <span class="n">RenderParameters</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">RenderModuleException</span><span class="p">(</span>
+                <span class="s1">&#39;schema </span><span class="si">{}</span><span class="s1"> is not of type RenderParameters&#39;</span><span class="p">)</span>
+
+        <span class="c1"># TODO do we want output schema passed?</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RenderModule</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">schema_type</span><span class="o">=</span><span class="n">schema_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">render</span> <span class="o">=</span> <span class="n">renderapi</span><span class="o">.</span><span class="n">render</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;render&#39;</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="TrakEM2RenderModule"><a class="viewcode-back" href="../../../rendermodules/rendermodules.module.html#rendermodules.module.render_module.TrakEM2RenderModule">[docs]</a><span class="k">class</span> <span class="nc">TrakEM2RenderModule</span><span class="p">(</span><span class="n">RenderModule</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">schema_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">schema_type</span> <span class="o">=</span> <span class="n">RenderTrakEM2Parameters</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TrakEM2RenderModule</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">schema_type</span><span class="o">=</span><span class="n">schema_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">jarDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;renderHome&#39;</span><span class="p">],</span> <span class="s1">&#39;render-app&#39;</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">renderjarFile</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">jarDir</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span>
+            <span class="n">jarDir</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;jar-with-dependencies.jar&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trakem2cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;java&#39;</span><span class="p">,</span> <span class="s1">&#39;-cp&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">renderjarFile</span><span class="p">,</span>
+                           <span class="s1">&#39;org.janelia.alignment.trakem2.Converter&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="TrakEM2RenderModule.convert_trakem2_project"><a class="viewcode-back" href="../../../rendermodules/rendermodules.module.html#rendermodules.module.render_module.TrakEM2RenderModule.convert_trakem2_project">[docs]</a>    <span class="k">def</span> <span class="nf">convert_trakem2_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xmlFile</span><span class="p">,</span> <span class="n">projectPath</span><span class="p">,</span> <span class="n">json_path</span><span class="p">):</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trakem2cmd</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">xmlFile</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span>
+                                 <span class="n">projectPath</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">json_path</span><span class="p">]</span>
+        <span class="n">proc</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">proc</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+            <span class="k">if</span> <span class="s1">&#39;ERROR&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">proc</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+            <span class="k">if</span> <span class="s1">&#39;ERROR&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">example_input</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;render&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;host&quot;</span><span class="p">:</span> <span class="s2">&quot;ibs-forrestc-ux1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="mi">8080</span><span class="p">,</span>
+            <span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="s2">&quot;NewOwner&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;project&quot;</span><span class="p">:</span> <span class="s2">&quot;H1706003_z150&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;client_scripts&quot;</span><span class="p">:</span> <span class="s2">&quot;/pipeline/render/render-ws-java-client/src/main/scripts&quot;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="n">module</span> <span class="o">=</span> <span class="n">RenderModule</span><span class="p">(</span><span class="n">input_data</span><span class="o">=</span><span class="n">example_input</span><span class="p">)</span>
+
+    <span class="n">bad_input</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;render&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;host&quot;</span><span class="p">:</span> <span class="s2">&quot;ibs-forrestc-ux1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="s1">&#39;8080&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="s2">&quot;Forrest&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;project&quot;</span><span class="p">:</span> <span class="s2">&quot;H1706003_z150&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;client_scripts&quot;</span><span class="p">:</span> <span class="s2">&quot;/pipeline/render/render-ws-java-client/src/main/scripts&quot;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="n">module</span> <span class="o">=</span> <span class="n">RenderModule</span><span class="p">(</span><span class="n">input_data</span><span class="o">=</span><span class="n">bad_input</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">render-modules</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../includeme.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rendermodules/modules.html">rendermodules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Russel Torres, Sharmi Seshamani, Gayathri Mahalingam, Sam Kiln, Forrest Collman.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

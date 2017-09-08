@@ -1,0 +1,496 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>rendermodules.lens_correction package &#8212; render-modules 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="rendermodules.module package" href="rendermodules.module.html" />
+    <link rel="prev" title="rendermodules.dataimport package" href="rendermodules.dataimport.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="rendermodules-lens-correction-package">
+<h1>rendermodules.lens_correction package<a class="headerlink" href="#rendermodules-lens-correction-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-rendermodules.lens_correction.apply_lens_correction">
+<span id="rendermodules-lens-correction-apply-lens-correction-module"></span><h2>rendermodules.lens_correction.apply_lens_correction module<a class="headerlink" href="#module-rendermodules.lens_correction.apply_lens_correction" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="rendermodules.lens_correction.apply_lens_correction.ApplyLensCorrection">
+<em class="property">class </em><code class="descclassname">rendermodules.lens_correction.apply_lens_correction.</code><code class="descname">ApplyLensCorrection</code><span class="sig-paren">(</span><em>schema_type=None</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/lens_correction/apply_lens_correction.html#ApplyLensCorrection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.lens_correction.apply_lens_correction.ApplyLensCorrection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="rendermodules.module.html#rendermodules.module.render_module.RenderModule" title="rendermodules.module.render_module.RenderModule"><code class="xref py py-class docutils literal"><span class="pre">rendermodules.module.render_module.RenderModule</span></code></a></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This class takes a ArgSchema as an input to parse inputs
+, with a default schema of type <a class="reference internal" href="#rendermodules.lens_correction.apply_lens_correction.ApplyLensCorrectionParameters" title="rendermodules.lens_correction.apply_lens_correction.ApplyLensCorrectionParameters"><code class="xref py py-class docutils literal"><span class="pre">ApplyLensCorrectionParameters</span></code></a></p>
+</div>
+<dl class="attribute">
+<dt id="rendermodules.lens_correction.apply_lens_correction.ApplyLensCorrection.default_output_schema">
+<code class="descname">default_output_schema</code><a class="headerlink" href="#rendermodules.lens_correction.apply_lens_correction.ApplyLensCorrection.default_output_schema" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#rendermodules.lens_correction.apply_lens_correction.ApplyLensCorrectionOutput" title="rendermodules.lens_correction.apply_lens_correction.ApplyLensCorrectionOutput"><code class="xref py py-class docutils literal"><span class="pre">ApplyLensCorrectionOutput</span></code></a></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="rendermodules.lens_correction.apply_lens_correction.ApplyLensCorrection.default_schema">
+<code class="descname">default_schema</code><a class="headerlink" href="#rendermodules.lens_correction.apply_lens_correction.ApplyLensCorrection.default_schema" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#rendermodules.lens_correction.apply_lens_correction.ApplyLensCorrectionParameters" title="rendermodules.lens_correction.apply_lens_correction.ApplyLensCorrectionParameters"><code class="xref py py-class docutils literal"><span class="pre">ApplyLensCorrectionParameters</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rendermodules.lens_correction.apply_lens_correction.ApplyLensCorrection.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/lens_correction/apply_lens_correction.html#ApplyLensCorrection.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.lens_correction.apply_lens_correction.ApplyLensCorrection.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rendermodules.lens_correction.apply_lens_correction.ApplyLensCorrectionOutput">
+<em class="property">class </em><code class="descclassname">rendermodules.lens_correction.apply_lens_correction.</code><code class="descname">ApplyLensCorrectionOutput</code><span class="sig-paren">(</span><em>only=()</em>, <em>exclude=()</em>, <em>prefix=u''</em>, <em>strict=None</em>, <em>many=False</em>, <em>context=None</em>, <em>load_only=()</em>, <em>dump_only=()</em>, <em>partial=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/lens_correction/apply_lens_correction.html#ApplyLensCorrectionOutput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.lens_correction.apply_lens_correction.ApplyLensCorrectionOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.html#argschema.schemas.DefaultSchema" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.schemas.DefaultSchema</span></code></a></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<dl class="last docutils">
+<dt>keys: (field_type : raw_type) description</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">stack:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) stack to which transformed tiles were written REQUIRED</td>
+</tr>
+<tr class="field-even field"><th class="field-name">refId:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) unique identifier string used as reference ID REQUIRED</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl class="attribute">
+<dt id="rendermodules.lens_correction.apply_lens_correction.ApplyLensCorrectionOutput.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#rendermodules.lens_correction.apply_lens_correction.ApplyLensCorrectionOutput.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rendermodules.lens_correction.apply_lens_correction.ApplyLensCorrectionParameters">
+<em class="property">class </em><code class="descclassname">rendermodules.lens_correction.apply_lens_correction.</code><code class="descname">ApplyLensCorrectionParameters</code><span class="sig-paren">(</span><em>only=()</em>, <em>exclude=()</em>, <em>prefix=u''</em>, <em>strict=None</em>, <em>many=False</em>, <em>context=None</em>, <em>load_only=()</em>, <em>dump_only=()</em>, <em>partial=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/lens_correction/apply_lens_correction.html#ApplyLensCorrectionParameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.lens_correction.apply_lens_correction.ApplyLensCorrectionParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="rendermodules.module.html#rendermodules.module.render_module.RenderParameters" title="rendermodules.module.render_module.RenderParameters"><code class="xref py py-class docutils literal"><span class="pre">rendermodules.module.render_module.RenderParameters</span></code></a></p>
+<blockquote>
+<div>This schema is designed to be a schema_type for an ArgSchemaParser object</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<dl class="last docutils">
+<dt>keys: (field_type : raw_type) description</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">close_stack:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Boolean" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Boolean</span></code></a> : bool) whether to set output stack to ‘COMPLETE’ upon completion (default = False)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">log_level:</th><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.loglevel.LogLevel" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.loglevel.LogLevel</span></code></a> : unicode) set the logging level of the module (default = ERROR)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">render:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Nested" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Nested</span></code></a> : dict(<a class="reference internal" href="rendermodules.module.html#rendermodules.module.render_module.RenderClientParameters" title="rendermodules.module.render_module.RenderClientParameters"><code class="xref py py-class docutils literal"><span class="pre">RenderClientParameters</span></code></a>)) no description</td>
+</tr>
+<tr class="field-even field"><th class="field-name">transform:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Nested" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Nested</span></code></a> : dict(<a class="reference internal" href="#rendermodules.lens_correction.apply_lens_correction.TransformParameters" title="rendermodules.lens_correction.apply_lens_correction.TransformParameters"><code class="xref py py-class docutils literal"><span class="pre">TransformParameters</span></code></a>)) no description</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">inputStack:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) Render Stack with tiles that should be transformed REQUIRED</td>
+</tr>
+<tr class="field-even field"><th class="field-name">input_json:</th><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.InputFile" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.files.InputFile</span></code></a> : unicode) file path of input json file</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">outputStack:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) Render Stack to which transformed tiles will be added REQUIRED</td>
+</tr>
+<tr class="field-even field"><th class="field-name">output_json:</th><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.OutputFile" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.files.OutputFile</span></code></a> : unicode) file path to output json file</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">refId:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) Reference ID to use when uploading transform to render database (Not Implemented) REQUIRED</td>
+</tr>
+<tr class="field-even field"><th class="field-name">zs:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.List" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.List</span></code></a> : int) z indices to which transform should be prepended REQUIRED</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl class="attribute">
+<dt id="rendermodules.lens_correction.apply_lens_correction.ApplyLensCorrectionParameters.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#rendermodules.lens_correction.apply_lens_correction.ApplyLensCorrectionParameters.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rendermodules.lens_correction.apply_lens_correction.TransformParameters">
+<em class="property">class </em><code class="descclassname">rendermodules.lens_correction.apply_lens_correction.</code><code class="descname">TransformParameters</code><span class="sig-paren">(</span><em>only=()</em>, <em>exclude=()</em>, <em>prefix=u''</em>, <em>strict=None</em>, <em>many=False</em>, <em>context=None</em>, <em>load_only=()</em>, <em>dump_only=()</em>, <em>partial=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/lens_correction/apply_lens_correction.html#TransformParameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.lens_correction.apply_lens_correction.TransformParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.html#argschema.schemas.DefaultSchema" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.schemas.DefaultSchema</span></code></a></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<dl class="last docutils">
+<dt>keys: (field_type : raw_type) description</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">className:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) mpicbg-compatible className REQUIRED</td>
+</tr>
+<tr class="field-even field"><th class="field-name">dataString:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) mpicbg-compatible dataString REQUIRED</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">type:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) Transform type as defined in Render Transform Spec.  This module currently expects a “leaf” REQUIRED</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl class="attribute">
+<dt id="rendermodules.lens_correction.apply_lens_correction.TransformParameters.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#rendermodules.lens_correction.apply_lens_correction.TransformParameters.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-rendermodules.lens_correction.lens_correction">
+<span id="rendermodules-lens-correction-lens-correction-module"></span><h2>rendermodules.lens_correction.lens_correction module<a class="headerlink" href="#module-rendermodules.lens_correction.lens_correction" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="rendermodules.lens_correction.lens_correction.AlignmentParameters">
+<em class="property">class </em><code class="descclassname">rendermodules.lens_correction.lens_correction.</code><code class="descname">AlignmentParameters</code><span class="sig-paren">(</span><em>only=()</em>, <em>exclude=()</em>, <em>prefix=u''</em>, <em>strict=None</em>, <em>many=False</em>, <em>context=None</em>, <em>load_only=()</em>, <em>dump_only=()</em>, <em>partial=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/lens_correction/lens_correction.html#AlignmentParameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.lens_correction.lens_correction.AlignmentParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.html#argschema.schemas.DefaultSchema" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.schemas.DefaultSchema</span></code></a></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<dl class="last docutils">
+<dt>keys: (field_type : raw_type) description</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">regularize:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Boolean" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Boolean</span></code></a> : bool) Whether to regularize the desired model with the regularizer model by lambda REQUIRED</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">expectedModelIndex:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) expected model for RANSAC filtering, 0=Translation, 1=”Rigid”, 2=”Similarity”, 3=”Affine” REQUIRED</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">maxIterationsOptimize:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) Max number of iterations for optimizer REQUIRED</td>
+</tr>
+<tr class="field-even field"><th class="field-name">lambdaVal:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Float" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Float</span></code></a> : float) Lambda parameter by which the regularizer model affects fitting of the desired model REQUIRED</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">tilesAreInPlace:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Boolean" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Boolean</span></code></a> : bool) Whether tile inputs to TrakEM2 are in place to be compared only to neighboring tiles. REQUIRED</td>
+</tr>
+<tr class="field-even field"><th class="field-name">maxEpsilon:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Float" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Float</span></code></a> : float) maximum acceptable epsilon for RANSAC filtering REQUIRED</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">rod:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Float" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Float</span></code></a> : float) ratio of distances for matching SIFT features REQUIRED</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">identityTolerance:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Float" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Float</span></code></a> : float) Tolerance to which Identity should rejected, in pixels REQUIRED</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">rejectIdentity:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Boolean" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Boolean</span></code></a> : bool) Reject Identity model (constant background) up to a tolerance defined by identityTolerance REQUIRED</td>
+</tr>
+<tr class="field-even field"><th class="field-name">visualize:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Boolean" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Boolean</span></code></a> : bool) Whether to have TrakEM2 visualize the lens correction transform.  Not recommended when running through xvfb REQUIRED</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">minInlierRatio:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Float" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Float</span></code></a> : float) minimum inlier ratio for RANSAC filtering REQUIRED</td>
+</tr>
+<tr class="field-even field"><th class="field-name">minNumInliers:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) minimum number of inliers for RANSAC filtering REQUIRED</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">desiredModelIndex:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) Affine homography model which optimization will try to fit, 0=”Translation”, 1=”Rigid”, 2=”Similarity”, 3=”Affine” REQUIRED</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">multipleHypotheses:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Boolean" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Boolean</span></code></a> : bool) Utilize RANSAC filtering which allows fitting multiple hypothesis models REQUIRED</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">dimension:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) Dimension of polynomial kernel to fit for distortion model REQUIRED</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">maxPlateauWidthOptimize:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) Maximum plateau width for optimizer REQUIRED</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">clearTransform:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Boolean" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Boolean</span></code></a> : bool) Whether to remove transforms from tiles before SIFT matching.  Not recommended REQUIRED</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl class="attribute">
+<dt id="rendermodules.lens_correction.lens_correction.AlignmentParameters.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#rendermodules.lens_correction.lens_correction.AlignmentParameters.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="rendermodules.lens_correction.lens_correction.LensCorrectionException">
+<em class="property">exception </em><code class="descclassname">rendermodules.lens_correction.lens_correction.</code><code class="descname">LensCorrectionException</code><a class="reference internal" href="../_modules/rendermodules/lens_correction/lens_correction.html#LensCorrectionException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.lens_correction.lens_correction.LensCorrectionException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="rendermodules.module.html#rendermodules.module.render_module.RenderModuleException" title="rendermodules.module.render_module.RenderModuleException"><code class="xref py py-class docutils literal"><span class="pre">rendermodules.module.render_module.RenderModuleException</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="rendermodules.lens_correction.lens_correction.LensCorrectionModule">
+<em class="property">class </em><code class="descclassname">rendermodules.lens_correction.lens_correction.</code><code class="descname">LensCorrectionModule</code><span class="sig-paren">(</span><em>schema_type=None</em>, <em>output_schema_type=None</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/lens_correction/lens_correction.html#LensCorrectionModule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.lens_correction.lens_correction.LensCorrectionModule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="rendermodules.module.html#rendermodules.module.render_module.ArgSchemaModule" title="rendermodules.module.render_module.ArgSchemaModule"><code class="xref py py-class docutils literal"><span class="pre">rendermodules.module.render_module.ArgSchemaModule</span></code></a></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This class takes a ArgSchema as an input to parse inputs
+, with a default schema of type <a class="reference internal" href="#rendermodules.lens_correction.lens_correction.LensCorrectionParameters" title="rendermodules.lens_correction.lens_correction.LensCorrectionParameters"><code class="xref py py-class docutils literal"><span class="pre">LensCorrectionParameters</span></code></a></p>
+</div>
+<dl class="attribute">
+<dt id="rendermodules.lens_correction.lens_correction.LensCorrectionModule.bsh_basename">
+<code class="descname">bsh_basename</code><em class="property"> = 'run_lens_correction.bsh'</em><a class="headerlink" href="#rendermodules.lens_correction.lens_correction.LensCorrectionModule.bsh_basename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rendermodules.lens_correction.lens_correction.LensCorrectionModule.default_bsh">
+<code class="descname">default_bsh</code><a class="headerlink" href="#rendermodules.lens_correction.lens_correction.LensCorrectionModule.default_bsh" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rendermodules.lens_correction.lens_correction.LensCorrectionModule.default_output_schema">
+<code class="descname">default_output_schema</code><a class="headerlink" href="#rendermodules.lens_correction.lens_correction.LensCorrectionModule.default_output_schema" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#rendermodules.lens_correction.lens_correction.LensCorrectionOutput" title="rendermodules.lens_correction.lens_correction.LensCorrectionOutput"><code class="xref py py-class docutils literal"><span class="pre">LensCorrectionOutput</span></code></a></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="rendermodules.lens_correction.lens_correction.LensCorrectionModule.default_schema">
+<code class="descname">default_schema</code><a class="headerlink" href="#rendermodules.lens_correction.lens_correction.LensCorrectionModule.default_schema" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#rendermodules.lens_correction.lens_correction.LensCorrectionParameters" title="rendermodules.lens_correction.lens_correction.LensCorrectionParameters"><code class="xref py py-class docutils literal"><span class="pre">LensCorrectionParameters</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rendermodules.lens_correction.lens_correction.LensCorrectionModule.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>run_lc_bsh=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/lens_correction/lens_correction.html#LensCorrectionModule.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.lens_correction.lens_correction.LensCorrectionModule.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rendermodules.lens_correction.lens_correction.LensCorrectionOutput">
+<em class="property">class </em><code class="descclassname">rendermodules.lens_correction.lens_correction.</code><code class="descname">LensCorrectionOutput</code><span class="sig-paren">(</span><em>only=()</em>, <em>exclude=()</em>, <em>prefix=u''</em>, <em>strict=None</em>, <em>many=False</em>, <em>context=None</em>, <em>load_only=()</em>, <em>dump_only=()</em>, <em>partial=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/lens_correction/lens_correction.html#LensCorrectionOutput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.lens_correction.lens_correction.LensCorrectionOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.html#argschema.schemas.DefaultSchema" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.schemas.DefaultSchema</span></code></a></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<dl class="last docutils">
+<dt>keys: (field_type : raw_type) description</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">output_json:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) path to file  REQUIRED</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl class="attribute">
+<dt id="rendermodules.lens_correction.lens_correction.LensCorrectionOutput.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#rendermodules.lens_correction.lens_correction.LensCorrectionOutput.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rendermodules.lens_correction.lens_correction.LensCorrectionParameters">
+<em class="property">class </em><code class="descclassname">rendermodules.lens_correction.lens_correction.</code><code class="descname">LensCorrectionParameters</code><span class="sig-paren">(</span><em>only=()</em>, <em>exclude=()</em>, <em>prefix=u''</em>, <em>strict=None</em>, <em>many=False</em>, <em>context=None</em>, <em>load_only=()</em>, <em>dump_only=()</em>, <em>partial=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/lens_correction/lens_correction.html#LensCorrectionParameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.lens_correction.lens_correction.LensCorrectionParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.html#argschema.schemas.ArgSchema" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.schemas.ArgSchema</span></code></a></p>
+<blockquote>
+<div>This schema is designed to be a schema_type for an ArgSchemaParser object</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<dl class="last docutils">
+<dt>keys: (field_type : raw_type) description</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">fiji_path:</th><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.InputFile" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.files.InputFile</span></code></a> : unicode) path to FIJI REQUIRED</td>
+</tr>
+<tr class="field-even field"><th class="field-name">log_level:</th><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.loglevel.LogLevel" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.loglevel.LogLevel</span></code></a> : unicode) set the logging level of the module (default = ERROR)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">grid_size:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) maximum row and column to form square subset of tiles starting from zero (based on filenames which end in “{row}_{column}.tif”) REQUIRED</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">processing_directory:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) directory to which trakem2 processing directory will be written (will place in project_path directory if unspecified or create temporary directory if None)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">project_path:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) path to project directory REQUIRED</td>
+</tr>
+<tr class="field-even field"><th class="field-name">input_json:</th><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.InputFile" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.files.InputFile</span></code></a> : unicode) file path of input json file</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">outfile:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) File to which json output of lens correction (leaf TransformSpec) is written</td>
+</tr>
+<tr class="field-even field"><th class="field-name">heap_size:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) memory in GB to allocate to Java heap (default = 20)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">align_params:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Nested" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Nested</span></code></a> : dict(<a class="reference internal" href="#rendermodules.lens_correction.lens_correction.AlignmentParameters" title="rendermodules.lens_correction.lens_correction.AlignmentParameters"><code class="xref py py-class docutils literal"><span class="pre">AlignmentParameters</span></code></a>)) no description</td>
+</tr>
+<tr class="field-even field"><th class="field-name">manifest_path:</th><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.InputFile" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.files.InputFile</span></code></a> : unicode) path to manifest file REQUIRED</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">output_json:</th><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.OutputFile" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.files.OutputFile</span></code></a> : unicode) file path to output json file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">SIFT_params:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Nested" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Nested</span></code></a> : dict(<a class="reference internal" href="#rendermodules.lens_correction.lens_correction.SIFTParameters" title="rendermodules.lens_correction.lens_correction.SIFTParameters"><code class="xref py py-class docutils literal"><span class="pre">SIFTParameters</span></code></a>)) no description</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl class="attribute">
+<dt id="rendermodules.lens_correction.lens_correction.LensCorrectionParameters.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#rendermodules.lens_correction.lens_correction.LensCorrectionParameters.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rendermodules.lens_correction.lens_correction.SIFTParameters">
+<em class="property">class </em><code class="descclassname">rendermodules.lens_correction.lens_correction.</code><code class="descname">SIFTParameters</code><span class="sig-paren">(</span><em>only=()</em>, <em>exclude=()</em>, <em>prefix=u''</em>, <em>strict=None</em>, <em>many=False</em>, <em>context=None</em>, <em>load_only=()</em>, <em>dump_only=()</em>, <em>partial=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/lens_correction/lens_correction.html#SIFTParameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.lens_correction.lens_correction.SIFTParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.html#argschema.schemas.DefaultSchema" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.schemas.DefaultSchema</span></code></a></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<dl class="last docutils">
+<dt>keys: (field_type : raw_type) description</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">initialSigma:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Float" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Float</span></code></a> : float) initial sigma value for SIFT’s gaussian blur, in pixels REQUIRED</td>
+</tr>
+<tr class="field-even field"><th class="field-name">fdBins:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) SIFT feature descriptor orientation bins REQUIRED</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">maxOctaveSize:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) maximum image size used for SIFT octave, in pixels REQUIRED</td>
+</tr>
+<tr class="field-even field"><th class="field-name">steps:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) steps per SIFT scale octave REQUIRED</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">minOctaveSize:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) minimum image size used for SIFT octave, in pixels REQUIRED</td>
+</tr>
+<tr class="field-even field"><th class="field-name">fdSize:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) SIFT feature descriptor size REQUIRED</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl class="attribute">
+<dt id="rendermodules.lens_correction.lens_correction.SIFTParameters.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#rendermodules.lens_correction.lens_correction.SIFTParameters.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-rendermodules.lens_correction">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-rendermodules.lens_correction" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">render-modules</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../includeme.html">README</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">rendermodules</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="rendermodules.html">rendermodules package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="rendermodules.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="rendermodules.dataimport.html">rendermodules.dataimport package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">rendermodules.lens_correction package</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#module-rendermodules.lens_correction.apply_lens_correction">rendermodules.lens_correction.apply_lens_correction module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#module-rendermodules.lens_correction.lens_correction">rendermodules.lens_correction.lens_correction module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#module-rendermodules.lens_correction">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="rendermodules.module.html">rendermodules.module package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="rendermodules.html#module-rendermodules">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">rendermodules</a><ul>
+  <li><a href="rendermodules.html">rendermodules package</a><ul>
+      <li>Previous: <a href="rendermodules.dataimport.html" title="previous chapter">rendermodules.dataimport package</a></li>
+      <li>Next: <a href="rendermodules.module.html" title="next chapter">rendermodules.module package</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Russel Torres, Sharmi Seshamani, Gayathri Mahalingam, Sam Kiln, Forrest Collman.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/rendermodules/rendermodules.lens_correction.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

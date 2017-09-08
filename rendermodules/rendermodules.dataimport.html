@@ -1,0 +1,461 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>rendermodules.dataimport package &#8212; render-modules 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="rendermodules.lens_correction package" href="rendermodules.lens_correction.html" />
+    <link rel="prev" title="rendermodules package" href="rendermodules.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="rendermodules-dataimport-package">
+<h1>rendermodules.dataimport package<a class="headerlink" href="#rendermodules-dataimport-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-rendermodules.dataimport.apply_mipmaps_to_render">
+<span id="rendermodules-dataimport-apply-mipmaps-to-render-module"></span><h2>rendermodules.dataimport.apply_mipmaps_to_render module<a class="headerlink" href="#module-rendermodules.dataimport.apply_mipmaps_to_render" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="rendermodules.dataimport.apply_mipmaps_to_render.AddMipMapsToStack">
+<em class="property">class </em><code class="descclassname">rendermodules.dataimport.apply_mipmaps_to_render.</code><code class="descname">AddMipMapsToStack</code><span class="sig-paren">(</span><em>schema_type=None</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/dataimport/apply_mipmaps_to_render.html#AddMipMapsToStack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.dataimport.apply_mipmaps_to_render.AddMipMapsToStack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="rendermodules.module.html#rendermodules.module.render_module.RenderModule" title="rendermodules.module.render_module.RenderModule"><code class="xref py py-class docutils literal"><span class="pre">rendermodules.module.render_module.RenderModule</span></code></a></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This class takes a ArgSchema as an input to parse inputs
+, with a default schema of type <a class="reference internal" href="rendermodules.module.html#rendermodules.module.render_module.RenderParameters" title="rendermodules.module.render_module.RenderParameters"><code class="xref py py-class docutils literal"><span class="pre">RenderParameters</span></code></a></p>
+</div>
+<dl class="method">
+<dt id="rendermodules.dataimport.apply_mipmaps_to_render.AddMipMapsToStack.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/dataimport/apply_mipmaps_to_render.html#AddMipMapsToStack.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.dataimport.apply_mipmaps_to_render.AddMipMapsToStack.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rendermodules.dataimport.apply_mipmaps_to_render.AddMipMapsToStackParameters">
+<em class="property">class </em><code class="descclassname">rendermodules.dataimport.apply_mipmaps_to_render.</code><code class="descname">AddMipMapsToStackParameters</code><span class="sig-paren">(</span><em>only=()</em>, <em>exclude=()</em>, <em>prefix=u''</em>, <em>strict=None</em>, <em>many=False</em>, <em>context=None</em>, <em>load_only=()</em>, <em>dump_only=()</em>, <em>partial=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/dataimport/apply_mipmaps_to_render.html#AddMipMapsToStackParameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.dataimport.apply_mipmaps_to_render.AddMipMapsToStackParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="rendermodules.module.html#rendermodules.module.render_module.RenderParameters" title="rendermodules.module.render_module.RenderParameters"><code class="xref py py-class docutils literal"><span class="pre">rendermodules.module.render_module.RenderParameters</span></code></a></p>
+<blockquote>
+<div>This schema is designed to be a schema_type for an ArgSchemaParser object</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<dl class="last docutils">
+<dt>keys: (field_type : raw_type) description</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">imgformat:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) mipmap image format, default is tiff (default = tiff)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">input_stack:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) stack for which the mipmaps are to be generated REQUIRED</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">output_json:</th><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.OutputFile" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.files.OutputFile</span></code></a> : unicode) file path to output json file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">log_level:</th><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.loglevel.LogLevel" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.loglevel.LogLevel</span></code></a> : unicode) set the logging level of the module (default = ERROR)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">render:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Nested" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Nested</span></code></a> : dict(<a class="reference internal" href="rendermodules.module.html#rendermodules.module.render_module.RenderClientParameters" title="rendermodules.module.render_module.RenderClientParameters"><code class="xref py py-class docutils literal"><span class="pre">RenderClientParameters</span></code></a>)) no description</td>
+</tr>
+<tr class="field-even field"><th class="field-name">zstart:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) start z-index in the stack</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">zend:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) end z-index in the stack</td>
+</tr>
+<tr class="field-even field"><th class="field-name">output_stack:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) the output stack name. Leave to overwrite input stack (default = None)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">pool_size:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) number of cores to be used (default = 20)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">levels:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) number of levels of mipmaps, default is 6 (default = 6)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">mipmap_dir:</th><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.InputDir" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.files.InputDir</span></code></a> : unicode) directory to which the mipmaps will be stored REQUIRED</td>
+</tr>
+<tr class="field-even field"><th class="field-name">z:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) z-index of section in the stack</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">input_json:</th><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.InputFile" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.files.InputFile</span></code></a> : unicode) file path of input json file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">close_stack:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Boolean" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Boolean</span></code></a> : bool) whether to set output stack state to ‘COMPLETE’ upon completion (default = False)</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl class="attribute">
+<dt id="rendermodules.dataimport.apply_mipmaps_to_render.AddMipMapsToStackParameters.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#rendermodules.dataimport.apply_mipmaps_to_render.AddMipMapsToStackParameters.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rendermodules.dataimport.apply_mipmaps_to_render.AddMipMapsToStackParameters.validate_zvalues">
+<code class="descname">validate_zvalues</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/dataimport/apply_mipmaps_to_render.html#AddMipMapsToStackParameters.validate_zvalues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.dataimport.apply_mipmaps_to_render.AddMipMapsToStackParameters.validate_zvalues" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="rendermodules.dataimport.apply_mipmaps_to_render.addMipMapsToRender">
+<code class="descclassname">rendermodules.dataimport.apply_mipmaps_to_render.</code><code class="descname">addMipMapsToRender</code><span class="sig-paren">(</span><em>render</em>, <em>input_stack</em>, <em>mipmap_dir</em>, <em>imgformat</em>, <em>levels</em>, <em>z</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/dataimport/apply_mipmaps_to_render.html#addMipMapsToRender"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.dataimport.apply_mipmaps_to_render.addMipMapsToRender" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-rendermodules.dataimport.create_mipmaps">
+<span id="rendermodules-dataimport-create-mipmaps-module"></span><h2>rendermodules.dataimport.create_mipmaps module<a class="headerlink" href="#module-rendermodules.dataimport.create_mipmaps" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="rendermodules.dataimport.create_mipmaps.create_mipmaps">
+<code class="descclassname">rendermodules.dataimport.create_mipmaps.</code><code class="descname">create_mipmaps</code><span class="sig-paren">(</span><em>inputImage, outputDirectory='.', mipmaplevels=[1, 2, 3], outputformat='tif', convertTo8bit=True, force_redo=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/dataimport/create_mipmaps.html#create_mipmaps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.dataimport.create_mipmaps.create_mipmaps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-rendermodules.dataimport.generate_EM_tilespecs_from_metafile">
+<span id="rendermodules-dataimport-generate-em-tilespecs-from-metafile-module"></span><h2>rendermodules.dataimport.generate_EM_tilespecs_from_metafile module<a class="headerlink" href="#module-rendermodules.dataimport.generate_EM_tilespecs_from_metafile" title="Permalink to this headline">¶</a></h2>
+<p>create tilespecs from TEMCA metadata file</p>
+<dl class="class">
+<dt id="rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsModule">
+<em class="property">class </em><code class="descclassname">rendermodules.dataimport.generate_EM_tilespecs_from_metafile.</code><code class="descname">GenerateEMTileSpecsModule</code><span class="sig-paren">(</span><em>schema_type=None</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/dataimport/generate_EM_tilespecs_from_metafile.html#GenerateEMTileSpecsModule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsModule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="rendermodules.module.html#rendermodules.module.render_module.RenderModule" title="rendermodules.module.render_module.RenderModule"><code class="xref py py-class docutils literal"><span class="pre">rendermodules.module.render_module.RenderModule</span></code></a></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This class takes a ArgSchema as an input to parse inputs
+, with a default schema of type <a class="reference internal" href="#rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsParameters" title="rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsParameters"><code class="xref py py-class docutils literal"><span class="pre">GenerateEMTileSpecsParameters</span></code></a></p>
+</div>
+<dl class="attribute">
+<dt id="rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsModule.default_output_schema">
+<code class="descname">default_output_schema</code><a class="headerlink" href="#rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsModule.default_output_schema" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsOutput" title="rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsOutput"><code class="xref py py-class docutils literal"><span class="pre">GenerateEMTileSpecsOutput</span></code></a></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsModule.default_schema">
+<code class="descname">default_schema</code><a class="headerlink" href="#rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsModule.default_schema" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsParameters" title="rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsParameters"><code class="xref py py-class docutils literal"><span class="pre">GenerateEMTileSpecsParameters</span></code></a></p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsModule.image_coords_from_stage">
+<em class="property">static </em><code class="descname">image_coords_from_stage</code><span class="sig-paren">(</span><em>stage_coords</em>, <em>resX</em>, <em>resY</em>, <em>rotation</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/dataimport/generate_EM_tilespecs_from_metafile.html#GenerateEMTileSpecsModule.image_coords_from_stage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsModule.image_coords_from_stage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsModule.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/dataimport/generate_EM_tilespecs_from_metafile.html#GenerateEMTileSpecsModule.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsModule.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsModule.sectionId_from_z">
+<em class="property">static </em><code class="descname">sectionId_from_z</code><span class="sig-paren">(</span><em>z</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/dataimport/generate_EM_tilespecs_from_metafile.html#GenerateEMTileSpecsModule.sectionId_from_z"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsModule.sectionId_from_z" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsModule.tileId_from_basename">
+<code class="descname">tileId_from_basename</code><span class="sig-paren">(</span><em>fname</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/dataimport/generate_EM_tilespecs_from_metafile.html#GenerateEMTileSpecsModule.tileId_from_basename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsModule.tileId_from_basename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsModule.ts_from_imgdata">
+<code class="descname">ts_from_imgdata</code><span class="sig-paren">(</span><em>imgdata</em>, <em>imgdir</em>, <em>x</em>, <em>y</em>, <em>minint=0</em>, <em>maxint=255</em>, <em>maskUrl=None</em>, <em>width=3840</em>, <em>height=3840</em>, <em>z=None</em>, <em>sectionId=None</em>, <em>scopeId=None</em>, <em>cameraId=None</em>, <em>pixelsize=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/dataimport/generate_EM_tilespecs_from_metafile.html#GenerateEMTileSpecsModule.ts_from_imgdata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsModule.ts_from_imgdata" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsOutput">
+<em class="property">class </em><code class="descclassname">rendermodules.dataimport.generate_EM_tilespecs_from_metafile.</code><code class="descname">GenerateEMTileSpecsOutput</code><span class="sig-paren">(</span><em>only=()</em>, <em>exclude=()</em>, <em>prefix=u''</em>, <em>strict=None</em>, <em>many=False</em>, <em>context=None</em>, <em>load_only=()</em>, <em>dump_only=()</em>, <em>partial=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/dataimport/generate_EM_tilespecs_from_metafile.html#GenerateEMTileSpecsOutput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">marshmallow.schema.Schema</span></code></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<dl class="last docutils">
+<dt>keys: (field_type : raw_type) description</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">stack:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) stack to which generated tiles were added REQUIRED</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl class="attribute">
+<dt id="rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsOutput.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsOutput.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsParameters">
+<em class="property">class </em><code class="descclassname">rendermodules.dataimport.generate_EM_tilespecs_from_metafile.</code><code class="descname">GenerateEMTileSpecsParameters</code><span class="sig-paren">(</span><em>only=()</em>, <em>exclude=()</em>, <em>prefix=u''</em>, <em>strict=None</em>, <em>many=False</em>, <em>context=None</em>, <em>load_only=()</em>, <em>dump_only=()</em>, <em>partial=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/dataimport/generate_EM_tilespecs_from_metafile.html#GenerateEMTileSpecsParameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="rendermodules.module.html#rendermodules.module.render_module.RenderParameters" title="rendermodules.module.render_module.RenderParameters"><code class="xref py py-class docutils literal"><span class="pre">rendermodules.module.render_module.RenderParameters</span></code></a></p>
+<blockquote>
+<div>This schema is designed to be a schema_type for an ArgSchemaParser object</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<dl class="last docutils">
+<dt>keys: (field_type : raw_type) description</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">image_directory:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.InputDir" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.files.InputDir</span></code></a> : unicode) directory used in determining absolute paths to images. Defaults to parent directory containing metafile if omitted.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">close_stack:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Boolean" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Boolean</span></code></a> : bool) whether to set stack to ‘COMPLETE’ after performing operation (default = False)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">output_json:</th><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.OutputFile" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.files.OutputFile</span></code></a> : unicode) file path to output json file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">z_index:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) z value to which tilespecs from ROI will be added REQUIRED</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">render:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Nested" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Nested</span></code></a> : dict(<a class="reference internal" href="rendermodules.module.html#rendermodules.module.render_module.RenderClientParameters" title="rendermodules.module.render_module.RenderClientParameters"><code class="xref py py-class docutils literal"><span class="pre">RenderClientParameters</span></code></a>)) no description</td>
+</tr>
+<tr class="field-even field"><th class="field-name">sectionId:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) sectionId to apply to tiles during ingest.  If unspecified will default to a string representation of the float value of z_index.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">metafile:</th><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.InputFile" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.files.InputFile</span></code></a> : unicode) metadata file containing TEMCA acquisition data REQUIRED</td>
+</tr>
+<tr class="field-even field"><th class="field-name">pool_size:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) processes to spawn for parallelization (default = 1)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">maximum_intensity:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) intensity value to interpret as white (default = 255)</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">overwrite_zlayer:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Boolean" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Boolean</span></code></a> : bool) whether to remove the existing layer from the target stack before uploading. (default = False)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">log_level:</th><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.loglevel.LogLevel" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.loglevel.LogLevel</span></code></a> : unicode) set the logging level of the module (default = ERROR)</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">minimum_intensity:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) intensity value to interpret as black (default = 0)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">input_json:</th><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.InputFile" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.files.InputFile</span></code></a> : unicode) file path of input json file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">stack:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) stack to which tiles should be added REQUIRED</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl class="attribute">
+<dt id="rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsParameters.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsParameters.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-rendermodules.dataimport.generate_mipmaps">
+<span id="rendermodules-dataimport-generate-mipmaps-module"></span><h2>rendermodules.dataimport.generate_mipmaps module<a class="headerlink" href="#module-rendermodules.dataimport.generate_mipmaps" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="rendermodules.dataimport.generate_mipmaps.GenerateMipMaps">
+<em class="property">class </em><code class="descclassname">rendermodules.dataimport.generate_mipmaps.</code><code class="descname">GenerateMipMaps</code><span class="sig-paren">(</span><em>schema_type=None</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/dataimport/generate_mipmaps.html#GenerateMipMaps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.dataimport.generate_mipmaps.GenerateMipMaps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="rendermodules.module.html#rendermodules.module.render_module.RenderModule" title="rendermodules.module.render_module.RenderModule"><code class="xref py py-class docutils literal"><span class="pre">rendermodules.module.render_module.RenderModule</span></code></a></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This class takes a ArgSchema as an input to parse inputs
+, with a default schema of type <a class="reference internal" href="rendermodules.module.html#rendermodules.module.render_module.RenderParameters" title="rendermodules.module.render_module.RenderParameters"><code class="xref py py-class docutils literal"><span class="pre">RenderParameters</span></code></a></p>
+</div>
+<dl class="method">
+<dt id="rendermodules.dataimport.generate_mipmaps.GenerateMipMaps.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/dataimport/generate_mipmaps.html#GenerateMipMaps.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.dataimport.generate_mipmaps.GenerateMipMaps.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rendermodules.dataimport.generate_mipmaps.GenerateMipMapsParameters">
+<em class="property">class </em><code class="descclassname">rendermodules.dataimport.generate_mipmaps.</code><code class="descname">GenerateMipMapsParameters</code><span class="sig-paren">(</span><em>only=()</em>, <em>exclude=()</em>, <em>prefix=u''</em>, <em>strict=None</em>, <em>many=False</em>, <em>context=None</em>, <em>load_only=()</em>, <em>dump_only=()</em>, <em>partial=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/dataimport/generate_mipmaps.html#GenerateMipMapsParameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.dataimport.generate_mipmaps.GenerateMipMapsParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="rendermodules.module.html#rendermodules.module.render_module.RenderParameters" title="rendermodules.module.render_module.RenderParameters"><code class="xref py py-class docutils literal"><span class="pre">rendermodules.module.render_module.RenderParameters</span></code></a></p>
+<blockquote>
+<div>This schema is designed to be a schema_type for an ArgSchemaParser object</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<dl class="last docutils">
+<dt>keys: (field_type : raw_type) description</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">imgformat:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) image format for mipmaps (default tiff) (default = tiff)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">input_stack:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) stack for which the mipmaps are to be generated REQUIRED</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">output_json:</th><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.OutputFile" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.files.OutputFile</span></code></a> : unicode) file path to output json file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">log_level:</th><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.loglevel.LogLevel" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.loglevel.LogLevel</span></code></a> : unicode) set the logging level of the module (default = ERROR)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">render:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Nested" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Nested</span></code></a> : dict(<a class="reference internal" href="rendermodules.module.html#rendermodules.module.render_module.RenderClientParameters" title="rendermodules.module.render_module.RenderClientParameters"><code class="xref py py-class docutils literal"><span class="pre">RenderClientParameters</span></code></a>)) no description</td>
+</tr>
+<tr class="field-even field"><th class="field-name">force_redo:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Boolean" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Boolean</span></code></a> : bool) force re-generation of existing mipmaps (default = True)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">convert_to_8bit:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Boolean" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Boolean</span></code></a> : bool) convert the data from 16 to 8 bit (default True) (default = True)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">zstart:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) start z-index in the stack</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">zend:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) end z-index in the stack</td>
+</tr>
+<tr class="field-even field"><th class="field-name">pool_size:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) number of cores to be used (default = 20)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">levels:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) number of levels of mipmaps, default is 6 (default = 6)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">output_dir:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) directory to which the mipmaps will be stored REQUIRED</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">z:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) z-index in the stack</td>
+</tr>
+<tr class="field-even field"><th class="field-name">input_json:</th><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.InputFile" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.files.InputFile</span></code></a> : unicode) file path of input json file</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">method:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) method to downsample mipmapLevels, can be ‘block_reduce’ for skimage based area downsampling, ‘PIL’ for PIL Image (currently NEAREST) filtered resize, ‘render’ for render-ws based rendering.  Currently only PIL is implemented, while others may fall back to this. REQUIRED  (default = block_reduce)</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl class="attribute">
+<dt id="rendermodules.dataimport.generate_mipmaps.GenerateMipMapsParameters.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#rendermodules.dataimport.generate_mipmaps.GenerateMipMapsParameters.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rendermodules.dataimport.generate_mipmaps.GenerateMipMapsParameters.validate_zvalues">
+<code class="descname">validate_zvalues</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/dataimport/generate_mipmaps.html#GenerateMipMapsParameters.validate_zvalues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.dataimport.generate_mipmaps.GenerateMipMapsParameters.validate_zvalues" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="rendermodules.dataimport.generate_mipmaps.GenerateMipMapsParameters.validationOptions">
+<em class="property">classmethod </em><code class="descname">validationOptions</code><span class="sig-paren">(</span><em>options</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/dataimport/generate_mipmaps.html#GenerateMipMapsParameters.validationOptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.dataimport.generate_mipmaps.GenerateMipMapsParameters.validationOptions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="rendermodules.dataimport.generate_mipmaps.create_mipmap_from_tuple">
+<code class="descclassname">rendermodules.dataimport.generate_mipmaps.</code><code class="descname">create_mipmap_from_tuple</code><span class="sig-paren">(</span><em>mipmap_tuple, levels=[1, 2, 3], convertTo8bit=True, force_redo=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/dataimport/generate_mipmaps.html#create_mipmap_from_tuple"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.dataimport.generate_mipmaps.create_mipmap_from_tuple" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="rendermodules.dataimport.generate_mipmaps.make_tilespecs_and_cmds">
+<code class="descclassname">rendermodules.dataimport.generate_mipmaps.</code><code class="descname">make_tilespecs_and_cmds</code><span class="sig-paren">(</span><em>render</em>, <em>inputStack</em>, <em>output_dir</em>, <em>zvalues</em>, <em>levels</em>, <em>imgformat</em>, <em>convert_to_8bit</em>, <em>force_redo</em>, <em>pool_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/dataimport/generate_mipmaps.html#make_tilespecs_and_cmds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.dataimport.generate_mipmaps.make_tilespecs_and_cmds" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-rendermodules.dataimport">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-rendermodules.dataimport" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">render-modules</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../includeme.html">README</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">rendermodules</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="rendermodules.html">rendermodules package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="rendermodules.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">rendermodules.dataimport package</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#module-rendermodules.dataimport.apply_mipmaps_to_render">rendermodules.dataimport.apply_mipmaps_to_render module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#module-rendermodules.dataimport.create_mipmaps">rendermodules.dataimport.create_mipmaps module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#module-rendermodules.dataimport.generate_EM_tilespecs_from_metafile">rendermodules.dataimport.generate_EM_tilespecs_from_metafile module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#module-rendermodules.dataimport.generate_mipmaps">rendermodules.dataimport.generate_mipmaps module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#module-rendermodules.dataimport">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="rendermodules.lens_correction.html">rendermodules.lens_correction package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="rendermodules.module.html">rendermodules.module package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="rendermodules.html#module-rendermodules">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">rendermodules</a><ul>
+  <li><a href="rendermodules.html">rendermodules package</a><ul>
+      <li>Previous: <a href="rendermodules.html" title="previous chapter">rendermodules package</a></li>
+      <li>Next: <a href="rendermodules.lens_correction.html" title="next chapter">rendermodules.lens_correction package</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Russel Torres, Sharmi Seshamani, Gayathri Mahalingam, Sam Kiln, Forrest Collman.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/rendermodules/rendermodules.dataimport.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

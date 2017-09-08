@@ -1,0 +1,367 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>rendermodules.lens_correction.lens_correction &#8212; render-modules 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for rendermodules.lens_correction.lens_correction</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">from</span> <span class="nn">argschema</span> <span class="k">import</span> <span class="n">ArgSchema</span>
+<span class="kn">from</span> <span class="nn">argschema.fields</span> <span class="k">import</span> <span class="n">Bool</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">Int</span><span class="p">,</span> <span class="n">Nested</span><span class="p">,</span> <span class="n">Str</span><span class="p">,</span> <span class="n">InputFile</span>
+<span class="kn">from</span> <span class="nn">argschema.schemas</span> <span class="k">import</span> <span class="n">DefaultSchema</span>
+<span class="kn">from</span> <span class="nn">rendermodules.module.render_module</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">RenderModuleException</span><span class="p">,</span> <span class="n">ArgSchemaModule</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="SIFTParameters"><a class="viewcode-back" href="../../../rendermodules/rendermodules.lens_correction.html#rendermodules.lens_correction.lens_correction.SIFTParameters">[docs]</a><span class="k">class</span> <span class="nc">SIFTParameters</span><span class="p">(</span><span class="n">DefaultSchema</span><span class="p">):</span>
+    <span class="n">initialSigma</span> <span class="o">=</span> <span class="n">Float</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;initial sigma value for SIFT&#39;s gaussian blur, in pixels&quot;</span><span class="p">)</span>
+    <span class="n">steps</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;steps per SIFT scale octave&#39;</span><span class="p">)</span>
+    <span class="n">minOctaveSize</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;minimum image size used for SIFT octave, in pixels&#39;</span><span class="p">)</span>
+    <span class="n">maxOctaveSize</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;maximum image size used for SIFT octave, in pixels&#39;</span><span class="p">)</span>
+    <span class="n">fdSize</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;SIFT feature descriptor size&#39;</span><span class="p">)</span>
+    <span class="n">fdBins</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;SIFT feature descriptor orientation bins&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AlignmentParameters"><a class="viewcode-back" href="../../../rendermodules/rendermodules.lens_correction.html#rendermodules.lens_correction.lens_correction.AlignmentParameters">[docs]</a><span class="k">class</span> <span class="nc">AlignmentParameters</span><span class="p">(</span><span class="n">DefaultSchema</span><span class="p">):</span>
+    <span class="n">rod</span> <span class="o">=</span> <span class="n">Float</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;ratio of distances for matching SIFT features&#39;</span><span class="p">)</span>
+    <span class="n">maxEpsilon</span> <span class="o">=</span> <span class="n">Float</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;maximum acceptable epsilon for RANSAC filtering&#39;</span><span class="p">)</span>
+    <span class="n">minInlierRatio</span> <span class="o">=</span> <span class="n">Float</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;minimum inlier ratio for RANSAC filtering&#39;</span><span class="p">)</span>
+    <span class="n">minNumInliers</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;minimum number of inliers for RANSAC filtering&#39;</span><span class="p">)</span>
+    <span class="n">expectedModelIndex</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;expected model for RANSAC filtering, 0=Translation, &#39;</span>
+                     <span class="s1">&#39;1=&quot;Rigid&quot;, 2=&quot;Similarity&quot;, 3=&quot;Affine&quot;&#39;</span><span class="p">))</span>
+    <span class="n">multipleHypotheses</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Utilize RANSAC filtering which allows &#39;</span>
+                     <span class="s1">&#39;fitting multiple hypothesis models&#39;</span><span class="p">))</span>
+    <span class="n">rejectIdentity</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Reject Identity model (constant background) &#39;</span>
+                     <span class="s1">&#39;up to a tolerance defined by identityTolerance&#39;</span><span class="p">))</span>
+    <span class="n">identityTolerance</span> <span class="o">=</span> <span class="n">Float</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Tolerance to which Identity should rejected, in pixels&#39;</span><span class="p">)</span>
+    <span class="n">tilesAreInPlace</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Whether tile inputs to TrakEM2 are in place to be &#39;</span>
+                     <span class="s1">&#39;compared only to neighboring tiles.&#39;</span><span class="p">))</span>
+    <span class="n">desiredModelIndex</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Affine homography model which optimization will &#39;</span>
+                     <span class="s1">&#39;try to fit, 0=&quot;Translation&quot;, 1=&quot;Rigid&quot;, &#39;</span>
+                     <span class="s1">&#39;2=&quot;Similarity&quot;, 3=&quot;Affine&quot;&#39;</span><span class="p">))</span>
+    <span class="c1"># TODO no input for regularizer model, defaults to Rigid regularization</span>
+    <span class="n">regularize</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Whether to regularize the desired model with &#39;</span>
+                     <span class="s1">&#39;the regularizer model by lambda&#39;</span><span class="p">))</span>
+    <span class="n">maxIterationsOptimize</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Max number of iterations for optimizer&#39;</span><span class="p">)</span>
+    <span class="n">maxPlateauWidthOptimize</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Maximum plateau width for optimizer&#39;</span><span class="p">)</span>
+    <span class="n">dimension</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Dimension of polynomial kernel to fit &#39;</span>
+                     <span class="s1">&#39;for distortion model&#39;</span><span class="p">))</span>
+    <span class="n">lambdaVal</span> <span class="o">=</span> <span class="n">Float</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Lambda parameter by which the regularizer model &#39;</span>
+                     <span class="s1">&#39;affects fitting of the desired model&#39;</span><span class="p">))</span>
+    <span class="n">clearTransform</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Whether to remove transforms from tiles &#39;</span>
+                     <span class="s1">&#39;before SIFT matching.  Not recommended&#39;</span><span class="p">))</span>
+    <span class="n">visualize</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Whether to have TrakEM2 visualize the lens &#39;</span>
+                     <span class="s1">&#39;correction transform.  Not recommended when &#39;</span>
+                     <span class="s1">&#39;running through xvfb&#39;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="LensCorrectionParameters"><a class="viewcode-back" href="../../../rendermodules/rendermodules.lens_correction.html#rendermodules.lens_correction.lens_correction.LensCorrectionParameters">[docs]</a><span class="k">class</span> <span class="nc">LensCorrectionParameters</span><span class="p">(</span><span class="n">ArgSchema</span><span class="p">):</span>
+    <span class="n">manifest_path</span> <span class="o">=</span> <span class="n">InputFile</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;path to manifest file&#39;</span><span class="p">)</span>
+    <span class="n">project_path</span> <span class="o">=</span> <span class="n">Str</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;path to project directory&#39;</span><span class="p">)</span>
+    <span class="n">fiji_path</span> <span class="o">=</span> <span class="n">InputFile</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;path to FIJI&#39;</span><span class="p">)</span>
+    <span class="n">grid_size</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;maximum row and column to form square &#39;</span>
+                     <span class="s1">&#39;subset of tiles starting from zero (based on filenames &#39;</span>
+                     <span class="s1">&#39;which end in &quot;\{row\}_\{column\}.tif&quot;)&#39;</span><span class="p">))</span>
+    <span class="n">heap_size</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;memory in GB to allocate to Java heap&quot;</span><span class="p">)</span>
+    <span class="n">outfile</span> <span class="o">=</span> <span class="n">Str</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;File to which json output of lens correction &quot;</span>
+                     <span class="s2">&quot;(leaf TransformSpec) is written&quot;</span><span class="p">))</span>
+    <span class="n">processing_directory</span> <span class="o">=</span> <span class="n">Str</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;directory to which trakem2 processing &quot;</span>
+                     <span class="s2">&quot;directory will be written &quot;</span>
+                     <span class="s2">&quot;(will place in project_path directory if &quot;</span>
+                     <span class="s2">&quot;unspecified or create temporary directory if None)&quot;</span><span class="p">))</span>
+    <span class="n">SIFT_params</span> <span class="o">=</span> <span class="n">Nested</span><span class="p">(</span><span class="n">SIFTParameters</span><span class="p">)</span>
+    <span class="n">align_params</span> <span class="o">=</span> <span class="n">Nested</span><span class="p">(</span><span class="n">AlignmentParameters</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LensCorrectionOutput"><a class="viewcode-back" href="../../../rendermodules/rendermodules.lens_correction.html#rendermodules.lens_correction.lens_correction.LensCorrectionOutput">[docs]</a><span class="k">class</span> <span class="nc">LensCorrectionOutput</span><span class="p">(</span><span class="n">DefaultSchema</span><span class="p">):</span>
+    <span class="c1"># TODO probably easier to output the resulting file via python</span>
+    <span class="n">output_json</span> <span class="o">=</span> <span class="n">Str</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                      <span class="n">description</span><span class="o">=</span><span class="s1">&#39;path to file &#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LensCorrectionException"><a class="viewcode-back" href="../../../rendermodules/rendermodules.lens_correction.html#rendermodules.lens_correction.lens_correction.LensCorrectionException">[docs]</a><span class="k">class</span> <span class="nc">LensCorrectionException</span><span class="p">(</span><span class="n">RenderModuleException</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="LensCorrectionModule"><a class="viewcode-back" href="../../../rendermodules/rendermodules.lens_correction.html#rendermodules.lens_correction.lens_correction.LensCorrectionModule">[docs]</a><span class="k">class</span> <span class="nc">LensCorrectionModule</span><span class="p">(</span><span class="n">ArgSchemaModule</span><span class="p">):</span>
+    <span class="n">default_schema</span> <span class="o">=</span> <span class="n">LensCorrectionParameters</span>
+    <span class="n">default_output_schema</span> <span class="o">=</span> <span class="n">LensCorrectionOutput</span>
+
+    <span class="n">bsh_basename</span> <span class="o">=</span> <span class="s1">&#39;run_lens_correction.bsh&#39;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">default_bsh</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">bsh</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">bsh_basename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">bsh</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">LensCorrectionException</span><span class="p">(</span>
+                <span class="s1">&#39;beanshell file </span><span class="si">{}</span><span class="s1"> does not exist&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bsh</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">bsh</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">R_OK</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">LensCorrectionException</span><span class="p">(</span>
+                <span class="s2">&quot;beanshell file </span><span class="si">{}</span><span class="s2"> is not readable&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bsh</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">bsh</span>
+
+<div class="viewcode-block" id="LensCorrectionModule.run"><a class="viewcode-back" href="../../../rendermodules/rendermodules.lens_correction.html#rendermodules.lens_correction.lens_correction.LensCorrectionModule.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_lc_bsh</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">run_lc_bsh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_bsh</span> <span class="k">if</span> <span class="n">run_lc_bsh</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">run_lc_bsh</span>
+        <span class="n">outfn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;outfile&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;project_path&#39;</span><span class="p">],</span> <span class="s1">&#39;lens_correction.json&#39;</span><span class="p">)))</span>
+
+        <span class="n">delete_procdir</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">procdir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;processing_directory&#39;</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;project_path&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">procdir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">delete_procdir</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">procdir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
+
+        <span class="c1"># command line argument for beanshell script</span>
+        <span class="n">bsh_call</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;xvfb-run&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;-a&quot;</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;fiji_path&#39;</span><span class="p">],</span>
+            <span class="s2">&quot;-Xms</span><span class="si">{}</span><span class="s2">g&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;heap_size&#39;</span><span class="p">]),</span>
+            <span class="s2">&quot;-Xmx</span><span class="si">{}</span><span class="s2">g&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;heap_size&#39;</span><span class="p">]),</span> <span class="s2">&quot;-Xincgc&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;-Dman=&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;manifest_path&#39;</span><span class="p">],</span>
+            <span class="s2">&quot;-Ddir=&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;project_path&#39;</span><span class="p">],</span>
+            <span class="s2">&quot;-Dgrid=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;grid_size&#39;</span><span class="p">]),</span>
+            <span class="s2">&quot;-Disig=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;SIFT_params&#39;</span><span class="p">][</span><span class="s1">&#39;initialSigma&#39;</span><span class="p">]),</span>
+            <span class="s2">&quot;-Dsteps=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;SIFT_params&#39;</span><span class="p">][</span><span class="s1">&#39;steps&#39;</span><span class="p">]),</span>
+            <span class="s2">&quot;-Dminos=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;SIFT_params&#39;</span><span class="p">][</span><span class="s1">&#39;minOctaveSize&#39;</span><span class="p">]),</span>
+            <span class="s2">&quot;-Dmaxos=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;SIFT_params&#39;</span><span class="p">][</span><span class="s1">&#39;maxOctaveSize&#39;</span><span class="p">]),</span>
+            <span class="s2">&quot;-Dfdsize=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;SIFT_params&#39;</span><span class="p">][</span><span class="s1">&#39;fdSize&#39;</span><span class="p">]),</span>
+            <span class="s2">&quot;-Dfdbins=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;SIFT_params&#39;</span><span class="p">][</span><span class="s1">&#39;fdBins&#39;</span><span class="p">]),</span>
+            <span class="s2">&quot;-Drod=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;align_params&#39;</span><span class="p">][</span><span class="s1">&#39;rod&#39;</span><span class="p">]),</span>
+            <span class="s2">&quot;-Dmaxe=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;align_params&#39;</span><span class="p">][</span><span class="s1">&#39;maxEpsilon&#39;</span><span class="p">]),</span>
+            <span class="s2">&quot;-Dmir=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;align_params&#39;</span><span class="p">][</span><span class="s1">&#39;minInlierRatio&#39;</span><span class="p">]),</span>
+            <span class="s2">&quot;-Dmni=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;align_params&#39;</span><span class="p">][</span><span class="s1">&#39;minNumInliers&#39;</span><span class="p">]),</span>
+            <span class="s2">&quot;-Demi=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;align_params&#39;</span><span class="p">][</span><span class="s1">&#39;expectedModelIndex&#39;</span><span class="p">]),</span>
+            <span class="s2">&quot;-Dmh=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;align_params&#39;</span><span class="p">][</span><span class="s1">&#39;multipleHypotheses&#39;</span><span class="p">]),</span>
+            <span class="s2">&quot;-Dri=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;align_params&#39;</span><span class="p">][</span><span class="s1">&#39;rejectIdentity&#39;</span><span class="p">]),</span>
+            <span class="s2">&quot;-Dit=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;align_params&#39;</span><span class="p">][</span><span class="s1">&#39;identityTolerance&#39;</span><span class="p">]),</span>
+            <span class="s2">&quot;-Dtaip=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;align_params&#39;</span><span class="p">][</span><span class="s1">&#39;tilesAreInPlace&#39;</span><span class="p">]),</span>
+            <span class="s2">&quot;-Ddmi=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;align_params&#39;</span><span class="p">][</span><span class="s1">&#39;desiredModelIndex&#39;</span><span class="p">]),</span>
+            <span class="s2">&quot;-Dreg=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;align_params&#39;</span><span class="p">][</span><span class="s1">&#39;regularize&#39;</span><span class="p">]),</span>
+            <span class="s2">&quot;-Dmio=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;align_params&#39;</span><span class="p">][</span><span class="s1">&#39;maxIterationsOptimize&#39;</span><span class="p">]),</span>
+            <span class="s2">&quot;-Dmpwo=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;align_params&#39;</span><span class="p">][</span><span class="s1">&#39;maxPlateauWidthOptimize&#39;</span><span class="p">]),</span>
+            <span class="s2">&quot;-Ddim=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;align_params&#39;</span><span class="p">][</span><span class="s1">&#39;dimension&#39;</span><span class="p">]),</span>
+            <span class="s2">&quot;-Dlam=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;align_params&#39;</span><span class="p">][</span><span class="s1">&#39;lambdaVal&#39;</span><span class="p">]),</span>
+            <span class="s2">&quot;-Dprocdir=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">procdir</span><span class="p">),</span>
+            <span class="s2">&quot;-Doutfn=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outfn</span><span class="p">),</span>
+            <span class="s2">&quot;-Dctrans=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;align_params&#39;</span><span class="p">][</span><span class="s1">&#39;clearTransform&#39;</span><span class="p">]),</span>
+            <span class="s2">&quot;-Dvis=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;align_params&#39;</span><span class="p">][</span><span class="s1">&#39;visualize&#39;</span><span class="p">]),</span>
+            <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="s2">&quot;--no-splash&quot;</span><span class="p">,</span>
+            <span class="n">run_lc_bsh</span><span class="p">]</span>
+
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">bsh_call</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">delete_procdir</span><span class="p">:</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">procdir</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">({</span><span class="s1">&#39;output_json&#39;</span><span class="p">:</span> <span class="n">outfn</span><span class="p">})</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># output validation will need to wait for argschema PR</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">example_input</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;manifest_path&quot;</span><span class="p">:</span> <span class="s2">&quot;/allen/programs/celltypes/workgroups/em-connectomics/samk/lc_test_data/Wij_Set_594451332/594089217_594451332/_trackem_20170502174048_295434_5LC_0064_01_20170502174047_reference_0_.txt&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;project_path&quot;</span><span class="p">:</span> <span class="s2">&quot;/allen/programs/celltypes/workgroups/em-connectomics/samk/lc_test_data/Wij_Set_594451332/594089217_594451332/&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;fiji_path&quot;</span><span class="p">:</span> <span class="s2">&quot;/allen/programs/celltypes/workgroups/em-connectomics/samk/Fiji.app/ImageJ-linux64&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;grid_size&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s2">&quot;heap_size&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="s2">&quot;outfile&quot;</span><span class="p">:</span> <span class="s2">&quot;test_LC.json&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;processing_directory&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s2">&quot;SIFT_params&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;initialSigma&quot;</span><span class="p">:</span> <span class="mf">1.6</span><span class="p">,</span>
+            <span class="s2">&quot;steps&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="s2">&quot;minOctaveSize&quot;</span><span class="p">:</span> <span class="mi">800</span><span class="p">,</span>
+            <span class="s2">&quot;maxOctaveSize&quot;</span><span class="p">:</span> <span class="mi">1200</span><span class="p">,</span>
+            <span class="s2">&quot;fdSize&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+            <span class="s2">&quot;fdBins&quot;</span><span class="p">:</span> <span class="mi">8</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;align_params&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;rod&quot;</span><span class="p">:</span> <span class="mf">0.92</span><span class="p">,</span>
+            <span class="s2">&quot;maxEpsilon&quot;</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span>
+            <span class="s2">&quot;minInlierRatio&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;minNumInliers&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+            <span class="s2">&quot;expectedModelIndex&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;multipleHypotheses&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;rejectIdentity&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;identityTolerance&quot;</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span>
+            <span class="s2">&quot;tilesAreInPlace&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;desiredModelIndex&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;regularize&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;maxIterationsOptimize&quot;</span><span class="p">:</span> <span class="mi">2000</span><span class="p">,</span>
+            <span class="s2">&quot;maxPlateauWidthOptimize&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+            <span class="s2">&quot;dimension&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+            <span class="s2">&quot;lambdaVal&quot;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span>
+            <span class="s2">&quot;clearTransform&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;visualize&quot;</span><span class="p">:</span> <span class="kc">False</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">module</span> <span class="o">=</span> <span class="n">LensCorrectionModule</span><span class="p">(</span><span class="n">input_data</span><span class="o">=</span><span class="n">example_input</span><span class="p">)</span>
+    <span class="n">module</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">render-modules</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../includeme.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rendermodules/modules.html">rendermodules</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Russel Torres, Sharmi Seshamani, Gayathri Mahalingam, Sam Kiln, Forrest Collman.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
