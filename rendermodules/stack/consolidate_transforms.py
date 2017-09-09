@@ -3,8 +3,9 @@ from renderapi.transform import AffineModel, Polynomial2DTransform
 from functools import partial
 import os
 import renderapi
-from ..module.render_module import RenderModule, RenderParameters
-from argschema.fields import InputFile, InputDir, Str, Int, Slice
+from renderapps.module.render_module import RenderModule, RenderParameters
+from argschema.fields import InputFile, InputDir, Str, Int, Slice, Float
+import marshmallow as mm
 
 example_json = {
     "render": {
@@ -17,7 +18,7 @@ example_json = {
     "stack": "ROUGHALIGN_LENS_DAPI_1_deconvnew",
     "output_stack" : "ROUGHALIGN_LENS_DAPI_1_deconvnew_CONS",
     "transforms_slice" : ":",
-    "pool_size": 20,
+    "pool_size": 10,
 }
 
 class ConsolidateTransformsParameters(RenderParameters):
@@ -27,13 +28,22 @@ class ConsolidateTransformsParameters(RenderParameters):
                   description='postfix to add to stack name on saving if no output defined (default _CONS)')
     transforms_slice = Slice(required=True,
                              description="a string representing a slice describing \
-                             the set of transforms to be consolidated (i.e. :1)")
+                             the set of transforms to be consolidated (i.e. 1:)")
     output_stack = Str(required=False,
                        description='name of output stack (default to adding postfix to input)')
-    pool_size = Int(required=False, default=20,
+    pool_size = Int(required=False, default=10,
                     description='name of output stack (default to adding postfix to input)')
+    minZ = Float(required=False,
+                 description="""minimum z to consolidate in read in from stack and write to output_stack\
+                 default to minimum z in stack""")
+    maxZ = Float(required=False,
+                 description="""minimaximummum z to consolidate in read in from stack and write to output_stack\
+                 default to maximum z in stack""")
 
-
+class ConsolidateTransformsOutputParameters(mm.Schema):
+    output_stack = Str(required=True,description = "name of output stack")
+    numZ = Int(required=True,description="Number of z values processed")
+    
 def consolidate_transforms(tforms, logger, makePolyDegree=0):
     tform_total = AffineModel()
     start_index = 0
@@ -82,11 +92,7 @@ def process_z(render, logger, stack, outstack, transform_slice,z):
 
 
 class ConsolidateTransforms(RenderModule):
-    def __init__(self, schema_type=None, *args, **kwargs):
-        if schema_type is None:
-            schema_type = ConsolidateTransformsParameters
-        super(ConsolidateTransforms, self).__init__(
-            schema_type=schema_type, *args, **kwargs)
+    default_schema = ConsolidateTransformsParameters
 
     def run(self):
         stack = self.args['stack']
@@ -94,8 +100,15 @@ class ConsolidateTransforms(RenderModule):
         if outstack is None:
             outstack = stack + self.args['postfix']
 
-        zvalues = self.render.run(
-            renderapi.stack.get_z_values_for_stack, stack)
+        #get z values in z value range specified or dynamically
+        #choose
+        zvalues = np.array(self.render.run(
+            renderapi.stack.get_z_values_for_stack, stack))
+        minZ = self.args.get('minZ',np.min(zvalues))
+        maxZ = self.args.get('maxZ',np.max(zvalues))
+        zvalues = zvalues[zvalues>=minZ]
+        zvalues = zvalues[zvalues<=maxZ]
+
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
             json_files = pool.map(partial(
                                   process_z,
@@ -109,6 +122,12 @@ class ConsolidateTransforms(RenderModule):
         self.render.run(
             renderapi.client.import_jsonfiles_parallel, outstack, json_files)
 
+        output_d = {
+            "output_stack":outstack,
+            "numZ":len(zvalues)
+        }
+        self.output(output_d)
+        
 
 if __name__ == "__main__":
     mod = ConsolidateTransforms(input_data = example_json)
