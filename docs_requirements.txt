@@ -1,0 +1,4 @@
+sphinxcontrib-napoleon
+numpy
+marshmallow
+argschema>=1.15
