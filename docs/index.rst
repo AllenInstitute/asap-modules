@@ -28,7 +28,8 @@ modules documentation.
 
 .. toctree::
    :maxdepth: 5
-
+   
+   includeme
    rendermodules/modules
 
 Indices and tables
