@@ -93,7 +93,7 @@ def process_z(render, logger, stack, outstack, transform_slice,z):
 
 class ConsolidateTransforms(RenderModule):
     default_schema = ConsolidateTransformsParameters
-
+    default_output_schema = ConsolidateTransformsOutputParameters
     def run(self):
         stack = self.args['stack']
         outstack = self.args.get('output_stack', None)
@@ -127,7 +127,7 @@ class ConsolidateTransforms(RenderModule):
             "numZ":len(zvalues)
         }
         self.output(output_d)
-        
+
 
 if __name__ == "__main__":
     mod = ConsolidateTransforms(input_data = example_json)
