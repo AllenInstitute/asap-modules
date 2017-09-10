@@ -3,7 +3,7 @@ from renderapi.transform import AffineModel, Polynomial2DTransform
 from functools import partial
 import os
 import renderapi
-from rendemodules.module.render_module import RenderModule, RenderParameters
+from rendermodules.module.render_module import RenderModule, RenderParameters
 from argschema.fields import InputFile, InputDir, Str, Int, Slice, Float
 import marshmallow as mm
 
