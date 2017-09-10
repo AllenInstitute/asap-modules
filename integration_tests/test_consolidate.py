@@ -1,8 +1,9 @@
 import renderapi
 from rendermodules.stack.consolidate_transforms import ConsolidateTransforms
-from test_data import render_host,render_port,client_script_location
+from test_data import render_host,render_port,client_script_location, tilespec_file, tform_file
 import pytest
 import numpy as np
+import json
 
 EPSILON = .001
 render_params = {
@@ -67,7 +68,7 @@ def test_consolidate(render,test_stack):
     output_tilespecs = renderapi.tilespec.get_tile_specs_from_stack(output_stack, render=render)   
     assert all([len(ts.tforms)==2 for ts in output_tilespecs])
 
-    input_tilespec = renderapi.tilespec.get_tile_spec(output_tilespecs[0].tileId, render=render)
+    input_tilespec = renderapi.tilespec.get_tile_spec(output_stack,output_tilespecs[0].tileId, render=render)
     orig_tform = input_tilespec.tforms[1]
     cons_tform = output_tilespecs[0].tforms[1]
     for orig_elem,new_elem in zip(np.ravel(orig_tform),np.ravel(cons_tform)):
