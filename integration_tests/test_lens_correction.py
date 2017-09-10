@@ -2,7 +2,7 @@ import renderapi
 from rendermodules.lens_correction.apply_lens_correction import ApplyLensCorrection
 from test_data import render_host,render_port,client_script_location
 def test_apply_lens_correction():
-     example_input = {
+    example_input = {
         "render": {
             "host": render_host,
             "port": render_port,
