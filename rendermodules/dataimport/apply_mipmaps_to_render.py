@@ -9,7 +9,6 @@ import multiprocessing as mp
 from functools import partial
 import urllib
 import urlparse
-import tempfile
 
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.dataimport.apply_mipmaps_to_render"
@@ -63,12 +62,7 @@ def addMipMapsToRender(render, input_stack, mipmap_dir, imgformat, levels, z):
             mm1 = renderapi.tilespec.MipMapLevel(level=i, imageUrl=scUrl)
             ts.ip.update(mm1)
 
-    with tempfile.NamedTemporaryFile(
-            suffix=".json", mode='w', delete=False) as tempjson:
-        tsjson = tempjson.name
-        renderapi.utils.renderdump(tilespecs, tempjson)
-
-    tilespecPaths.append(tsjson)
+    tilespecPaths.append(renderapi.utils.renderdump_temp(tilespecs))
     return tilespecPaths
 
 
