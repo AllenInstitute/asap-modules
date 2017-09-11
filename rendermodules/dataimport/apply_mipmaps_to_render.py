@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import os
 import renderapi
 from ..module.render_module import RenderModule, RenderParameters
@@ -99,6 +100,10 @@ class AddMipMapsToStackParameters(RenderParameters):
     pool_size = mm.fields.Int(
         required=False, default=20,
         description='number of cores to be used')
+    close_stack = mm.fields.Boolean(
+        required=False, default=False,
+        description=("whether to set output stack state to "
+                     "'COMPLETE' upon completion"))
 
     @validates_schema
     def validate_zvalues(self, data):
@@ -169,9 +174,8 @@ class AddMipMapsToStack(RenderModule):
         self.render.run(renderapi.stack.set_stack_state,
                         output_stack, 'LOADING')
         self.render.run(renderapi.client.import_jsonfiles_parallel,
-                        output_stack, tilespecPaths)
-        self.render.run(renderapi.stack.set_stack_state,
-                        output_stack, 'COMPLETE')
+                        output_stack, tilespecPaths,
+                        close_stack=self.args['close_stack'])
 
 
 if __name__ == "__main__":
