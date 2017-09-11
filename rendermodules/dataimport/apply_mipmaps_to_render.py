@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import os
 import renderapi
 from ..module.render_module import RenderModule, RenderParameters
@@ -35,14 +34,15 @@ example = {
 def addMipMapsToRender(render, input_stack, mipmap_dir, imgformat, levels, z):
     tilespecPaths = []
 
-    tilespecs = render.run(renderapi.tilespec.get_tile_specs_from_z, input_stack, z)
+    tilespecs = render.run(renderapi.tilespec.get_tile_specs_from_z,
+                           input_stack, z)
 
     print z
     for ts in tilespecs:
         mm1 = ts.ip.mipMapLevels[0]
 
         oldUrl = mm1.imageUrl
-        filepath = urllib.unquote(urlparse.urlparse(str(oldUrl).path))
+        filepath = urllib.unquote(urlparse.urlparse(str(oldUrl)).path)
         # filepath = str(oldUrl).lstrip('file:/')
         # filepath = filepath.replace("%20", " ")
 
@@ -56,21 +56,18 @@ def addMipMapsToRender(render, input_stack, mipmap_dir, imgformat, levels, z):
             imgf = ".tif"
 
         for i in range(1, levels+1):
-            scUrl = 'file:' + os.path.join(mipmap_dir, str(i), filepath) + imgf
+            scUrl = 'file:' + os.path.join(
+                mipmap_dir, str(i), filepath.lstrip(os.sep)) + imgf
             print scUrl
             mm1 = renderapi.tilespec.MipMapLevel(level=i, imageUrl=scUrl)
             ts.ip.update(mm1)
 
-        tempjson = tempfile.NamedTemporaryFile(
-            suffix=".json", mode='r', delete=False)
-        tempjson.close()
+    with tempfile.NamedTemporaryFile(
+            suffix=".json", mode='w', delete=False) as tempjson:
         tsjson = tempjson.name
+        renderapi.utils.renderdump(tilespecs, tempjson)
 
-        with open(tsjson, 'w') as f:
-            renderapi.utils.renderdump(tilespecs, f)
-        f.close()
-        tilespecPaths.append(tsjson)
-
+    tilespecPaths.append(tsjson)
     return tilespecPaths
 
 
@@ -102,10 +99,6 @@ class AddMipMapsToStackParameters(RenderParameters):
     pool_size = mm.fields.Int(
         required=False, default=20,
         description='number of cores to be used')
-    close_stack = mm.fields.Boolean(
-        required=False, default=False,
-        description=("whether to set output stack state to "
-                     "'COMPLETE' upon completion"))
 
     @validates_schema
     def validate_zvalues(self, data):
@@ -154,7 +147,8 @@ class AddMipMapsToStack(RenderModule):
             self.args['levels'])
 
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
-            tilespecPaths = pool.map(mypartial, zvalues)
+            tilespecPaths = [i for l in pool.map(mypartial, zvalues)
+                             for i in l]
 
         # add the tile spec to render stack
         try:
@@ -175,8 +169,9 @@ class AddMipMapsToStack(RenderModule):
         self.render.run(renderapi.stack.set_stack_state,
                         output_stack, 'LOADING')
         self.render.run(renderapi.client.import_jsonfiles_parallel,
-                        output_stack, tilespecPaths,
-                        close_stack=self.args['close_stack'])
+                        output_stack, tilespecPaths)
+        self.render.run(renderapi.stack.set_stack_state,
+                        output_stack, 'COMPLETE')
 
 
 if __name__ == "__main__":
