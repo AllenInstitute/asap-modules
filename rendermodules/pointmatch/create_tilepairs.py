@@ -21,15 +21,15 @@ example = {
         "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_20170613/render-ws-java-client/src/main/scripts"
     },
     "minZ":1015,
-    "maxZ":1020,
-    "zNeighborDistance":5,
-    "baseStack":"mm2_acquire_8bit_Montage",
-    "stack":"mm2_acquire_8bit_Montage",
+    "maxZ":1030,
+    "zNeighborDistance":0,
+    "baseStack":"mm2_acquire_8bit_reimage",
+    "stack":"mm2_acquire_8bit_reimage",
     "xyNeighborFactor": 0.9,
     "excludeCornerNeighbors":"true",
     "excludeSameLayerNeighbors":"false",
     "excludeCompletelyObscuredTiles":"true",
-    "output_dir":"/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch/rough/tilePairs"
+    "output_dir":"/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch/montageTilepairs"
 }
 
 
