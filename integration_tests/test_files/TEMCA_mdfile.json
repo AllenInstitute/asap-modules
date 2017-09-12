@@ -1,0 +1,5050 @@
+[
+  {
+    "metadata": {
+      "roi_index": 0, 
+      "roi_creation_time": "20170829130146", 
+      "calibration": {
+        "lowmag": {
+          "y_nm_per_pix": 213.0, 
+          "nm_per_pix": 213.0, 
+          "angle": 102.0, 
+          "x_nm_per_pix": 213.0
+        }, 
+        "highmag": {
+          "y_nm_per_pix": 3.5, 
+          "nm_per_pix": 3.5, 
+          "angle": 180.0, 
+          "x_nm_per_pix": 3.5
+        }
+      }, 
+      "specimen_id": "295434_5LC", 
+      "notes": "", 
+      "placement_id": "", 
+      "session_id": "295434_5LC_0064_01_redo", 
+      "camera_info": {
+        "height": 3840, 
+        "width": 3840, 
+        "camera_model": "Ximea CB200MG", 
+        "pixel_depth": 2, 
+        "camera_id": "44500428", 
+        "camera_bpp": 12
+      }, 
+      "roi_center": [
+        -447952, 
+        260651
+      ], 
+      "grid": "001050", 
+      "aperture_centroid": {
+        "y": 296439, 
+        "x": -406212
+      }, 
+      "autofocus_value": 22.789662043253582, 
+      "temca_id": "temca2", 
+      "overlap": 0.07
+    }
+  }, 
+  {
+    "data": [
+      {
+        "img_path": "20170829130224998_295434_5LC_0064_01_redo_001050_0_88_0.tif", 
+        "min": 14192, 
+        "max": 65520, 
+        "focus_score": 20.628707885742188, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "0.00", 
+          "stage_pos": [
+            -957703, 
+            837897
+          ], 
+          "raster_index": 0, 
+          "raster_pos": [
+            88, 
+            0
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.4199959152463422, 
+        "astig_score": 0.0742971057002825, 
+        "mean": 33191
+      }, 
+      {
+        "img_path": "20170829130225342_295434_5LC_0064_01_redo_001050_0_89_0.tif", 
+        "min": 13792, 
+        "max": 65520, 
+        "focus_score": 20.929590225219727, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -970198, 
+            837936
+          ], 
+          "raster_index": 1, 
+          "raster_pos": [
+            89, 
+            0
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.4625796533054747, 
+        "astig_score": 0.07392001129620217, 
+        "mean": 33038
+      }, 
+      {
+        "img_path": "20170829130225821_295434_5LC_0064_01_redo_001050_0_69_1.tif", 
+        "min": 13872, 
+        "max": 65520, 
+        "focus_score": 20.475862503051758, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.42", 
+          "stage_pos": [
+            -720220, 
+            825372
+          ], 
+          "raster_index": 2, 
+          "raster_pos": [
+            69, 
+            1
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.3005536207475723, 
+        "astig_score": 0.06238259660325637, 
+        "mean": 33266
+      }, 
+      {
+        "img_path": "20170829130226145_295434_5LC_0064_01_redo_001050_0_70_1.tif", 
+        "min": 14112, 
+        "max": 65520, 
+        "focus_score": 22.272350311279297, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.61", 
+          "stage_pos": [
+            -732710, 
+            825393
+          ], 
+          "raster_index": 3, 
+          "raster_pos": [
+            70, 
+            1
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.2382849610026216, 
+        "astig_score": 0.04115466272825149, 
+        "mean": 33080
+      }, 
+      {
+        "img_path": "20170829130226498_295434_5LC_0064_01_redo_001050_0_71_1.tif", 
+        "min": 14160, 
+        "max": 65520, 
+        "focus_score": 22.889266967773438, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.66", 
+          "stage_pos": [
+            -745214, 
+            825374
+          ], 
+          "raster_index": 4, 
+          "raster_pos": [
+            71, 
+            1
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.0624323566441443, 
+        "astig_score": -0.014387492304393304, 
+        "mean": 32987
+      }, 
+      {
+        "img_path": "20170829130226840_295434_5LC_0064_01_redo_001050_0_72_1.tif", 
+        "min": 13248, 
+        "max": 65520, 
+        "focus_score": 22.180635452270508, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.71", 
+          "stage_pos": [
+            -757712, 
+            825414
+          ], 
+          "raster_index": 5, 
+          "raster_pos": [
+            72, 
+            1
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.340590452452466, 
+        "astig_score": 0.010833907241660877, 
+        "mean": 32999
+      }, 
+      {
+        "img_path": "20170829130227159_295434_5LC_0064_01_redo_001050_0_73_1.tif", 
+        "min": 13984, 
+        "max": 65520, 
+        "focus_score": 21.76830291748047, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.77", 
+          "stage_pos": [
+            -770216, 
+            825397
+          ], 
+          "raster_index": 6, 
+          "raster_pos": [
+            73, 
+            1
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.2954552711280627, 
+        "astig_score": 0.033287968663218336, 
+        "mean": 33053
+      }, 
+      {
+        "img_path": "20170829130227500_295434_5LC_0064_01_redo_001050_0_74_1.tif", 
+        "min": 14160, 
+        "max": 65520, 
+        "focus_score": 22.393035888671875, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.80", 
+          "stage_pos": [
+            -782711, 
+            825395
+          ], 
+          "raster_index": 7, 
+          "raster_pos": [
+            74, 
+            1
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.1065524643040205, 
+        "astig_score": 0.01744040090430148, 
+        "mean": 32892
+      }, 
+      {
+        "img_path": "20170829130227881_295434_5LC_0064_01_redo_001050_0_75_1.tif", 
+        "min": 13600, 
+        "max": 65520, 
+        "focus_score": 22.573278427124023, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.77", 
+          "stage_pos": [
+            -795209, 
+            825395
+          ], 
+          "raster_index": 8, 
+          "raster_pos": [
+            75, 
+            1
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.8946258195607713, 
+        "astig_score": -0.009160488452823964, 
+        "mean": 32935
+      }, 
+      {
+        "img_path": "20170829130228212_295434_5LC_0064_01_redo_001050_0_76_1.tif", 
+        "min": 13968, 
+        "max": 65520, 
+        "focus_score": 22.107097625732422, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.80", 
+          "stage_pos": [
+            -807709, 
+            825404
+          ], 
+          "raster_index": 9, 
+          "raster_pos": [
+            76, 
+            1
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.2389817279851394, 
+        "astig_score": 0.02249234697189702, 
+        "mean": 32853
+      }, 
+      {
+        "img_path": "20170829130228548_295434_5LC_0064_01_redo_001050_0_77_1.tif", 
+        "min": 14368, 
+        "max": 65520, 
+        "focus_score": 22.0999813079834, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.81", 
+          "stage_pos": [
+            -820210, 
+            825397
+          ], 
+          "raster_index": 10, 
+          "raster_pos": [
+            77, 
+            1
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.3499633635174293, 
+        "astig_score": 0.029809691544848988, 
+        "mean": 32899
+      }, 
+      {
+        "img_path": "20170829130228905_295434_5LC_0064_01_redo_001050_0_78_1.tif", 
+        "min": 13952, 
+        "max": 65520, 
+        "focus_score": 22.168928146362305, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.81", 
+          "stage_pos": [
+            -832709, 
+            825391
+          ], 
+          "raster_index": 11, 
+          "raster_pos": [
+            78, 
+            1
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.7326878810145688, 
+        "astig_score": 0.01269800885599501, 
+        "mean": 32838
+      }, 
+      {
+        "img_path": "20170829130229238_295434_5LC_0064_01_redo_001050_0_79_1.tif", 
+        "min": 13472, 
+        "max": 65520, 
+        "focus_score": 21.840593338012695, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.83", 
+          "stage_pos": [
+            -845209, 
+            825397
+          ], 
+          "raster_index": 12, 
+          "raster_pos": [
+            79, 
+            1
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.1563913288961682, 
+        "astig_score": 0.035278857280099093, 
+        "mean": 32848
+      }, 
+      {
+        "img_path": "20170829130229578_295434_5LC_0064_01_redo_001050_0_80_1.tif", 
+        "min": 14656, 
+        "max": 65520, 
+        "focus_score": 22.04766082763672, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.84", 
+          "stage_pos": [
+            -857704, 
+            825387
+          ], 
+          "raster_index": 13, 
+          "raster_pos": [
+            80, 
+            1
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.113283626477257, 
+        "astig_score": 0.029646474407953514, 
+        "mean": 32814
+      }, 
+      {
+        "img_path": "20170829130229924_295434_5LC_0064_01_redo_001050_0_81_1.tif", 
+        "min": 13360, 
+        "max": 65520, 
+        "focus_score": 22.567766189575195, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.84", 
+          "stage_pos": [
+            -870202, 
+            825409
+          ], 
+          "raster_index": 14, 
+          "raster_pos": [
+            81, 
+            1
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.8302330605177903, 
+        "astig_score": 0.0070018316243383345, 
+        "mean": 32882
+      }, 
+      {
+        "img_path": "20170829130230255_295434_5LC_0064_01_redo_001050_0_82_1.tif", 
+        "min": 14000, 
+        "max": 65520, 
+        "focus_score": 22.02568817138672, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.85", 
+          "stage_pos": [
+            -882703, 
+            825397
+          ], 
+          "raster_index": 15, 
+          "raster_pos": [
+            82, 
+            1
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.9206785836963006, 
+        "astig_score": 0.024696877974274698, 
+        "mean": 32887
+      }, 
+      {
+        "img_path": "20170829130230640_295434_5LC_0064_01_redo_001050_0_83_1.tif", 
+        "min": 13760, 
+        "max": 65520, 
+        "focus_score": 22.522315979003906, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.84", 
+          "stage_pos": [
+            -895202, 
+            825391
+          ], 
+          "raster_index": 16, 
+          "raster_pos": [
+            83, 
+            1
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.7228980360802605, 
+        "astig_score": -0.0036602985464898744, 
+        "mean": 32841
+      }, 
+      {
+        "img_path": "20170829130230977_295434_5LC_0064_01_redo_001050_0_84_1.tif", 
+        "min": 13952, 
+        "max": 65520, 
+        "focus_score": 21.88861846923828, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.84", 
+          "stage_pos": [
+            -907704, 
+            825403
+          ], 
+          "raster_index": 17, 
+          "raster_pos": [
+            84, 
+            1
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.4861114283463204, 
+        "astig_score": 0.012919199214138869, 
+        "mean": 32825
+      }, 
+      {
+        "img_path": "20170829130231317_295434_5LC_0064_01_redo_001050_0_85_1.tif", 
+        "min": 13760, 
+        "max": 65520, 
+        "focus_score": 22.44852638244629, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.85", 
+          "stage_pos": [
+            -920204, 
+            825390
+          ], 
+          "raster_index": 18, 
+          "raster_pos": [
+            85, 
+            1
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.9405760929661223, 
+        "astig_score": -0.009258176964300755, 
+        "mean": 32756
+      }, 
+      {
+        "img_path": "20170829130231648_295434_5LC_0064_01_redo_001050_0_86_1.tif", 
+        "min": 13088, 
+        "max": 65520, 
+        "focus_score": 22.184555053710938, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.86", 
+          "stage_pos": [
+            -932703, 
+            825407
+          ], 
+          "raster_index": 19, 
+          "raster_pos": [
+            86, 
+            1
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.2109540128433354, 
+        "astig_score": -0.02587935022367591, 
+        "mean": 32723
+      }, 
+      {
+        "img_path": "20170829130232017_295434_5LC_0064_01_redo_001050_0_87_1.tif", 
+        "min": 13600, 
+        "max": 65520, 
+        "focus_score": 22.64232063293457, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.85", 
+          "stage_pos": [
+            -945200, 
+            825404
+          ], 
+          "raster_index": 20, 
+          "raster_pos": [
+            87, 
+            1
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.2697273096072176, 
+        "astig_score": -0.019632728928146957, 
+        "mean": 32803
+      }, 
+      {
+        "img_path": "20170829130232355_295434_5LC_0064_01_redo_001050_0_88_1.tif", 
+        "min": 14800, 
+        "max": 65520, 
+        "focus_score": 22.065837860107422, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.86", 
+          "stage_pos": [
+            -957703, 
+            825439
+          ], 
+          "raster_index": 21, 
+          "raster_pos": [
+            88, 
+            1
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.4145884797978638, 
+        "astig_score": -0.01821798574304963, 
+        "mean": 32838
+      }, 
+      {
+        "img_path": "20170829130232716_295434_5LC_0064_01_redo_001050_0_89_1.tif", 
+        "min": 14176, 
+        "max": 65520, 
+        "focus_score": 22.443490982055664, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.85", 
+          "stage_pos": [
+            -970198, 
+            825389
+          ], 
+          "raster_index": 22, 
+          "raster_pos": [
+            89, 
+            1
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.13414134565004182, 
+        "astig_score": -0.023028549045449903, 
+        "mean": 32773
+      }, 
+      {
+        "img_path": "20170829130233226_295434_5LC_0064_01_redo_001050_0_50_2.tif", 
+        "min": 13792, 
+        "max": 65520, 
+        "focus_score": 20.268827438354492, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.79", 
+          "stage_pos": [
+            -482728, 
+            812840
+          ], 
+          "raster_index": 23, 
+          "raster_pos": [
+            50, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.1503610129410603, 
+        "astig_score": 0.07231774821964332, 
+        "mean": 33453
+      }, 
+      {
+        "img_path": "20170829130233595_295434_5LC_0064_01_redo_001050_0_51_2.tif", 
+        "min": 13616, 
+        "max": 65520, 
+        "focus_score": 21.03204345703125, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.79", 
+          "stage_pos": [
+            -495232, 
+            812901
+          ], 
+          "raster_index": 24, 
+          "raster_pos": [
+            51, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.443301978867622, 
+        "astig_score": 0.06346600454776169, 
+        "mean": 33283
+      }, 
+      {
+        "img_path": "20170829130233927_295434_5LC_0064_01_redo_001050_0_52_2.tif", 
+        "min": 14112, 
+        "max": 65520, 
+        "focus_score": 21.976024627685547, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.80", 
+          "stage_pos": [
+            -507729, 
+            812889
+          ], 
+          "raster_index": 25, 
+          "raster_pos": [
+            52, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.3274190304707514, 
+        "astig_score": 0.04378241008529889, 
+        "mean": 33164
+      }, 
+      {
+        "img_path": "20170829130234264_295434_5LC_0064_01_redo_001050_0_53_2.tif", 
+        "min": 13488, 
+        "max": 65520, 
+        "focus_score": 22.666770935058594, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.81", 
+          "stage_pos": [
+            -520225, 
+            812889
+          ], 
+          "raster_index": 26, 
+          "raster_pos": [
+            53, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.7689091845163045, 
+        "astig_score": -0.022255404744878242, 
+        "mean": 33127
+      }, 
+      {
+        "img_path": "20170829130234601_295434_5LC_0064_01_redo_001050_0_54_2.tif", 
+        "min": 14000, 
+        "max": 65520, 
+        "focus_score": 22.51050567626953, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.81", 
+          "stage_pos": [
+            -532726, 
+            812891
+          ], 
+          "raster_index": 27, 
+          "raster_pos": [
+            54, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.9986349075375127, 
+        "astig_score": -0.010036971785315076, 
+        "mean": 33165
+      }, 
+      {
+        "img_path": "20170829130234936_295434_5LC_0064_01_redo_001050_0_55_2.tif", 
+        "min": 13760, 
+        "max": 65520, 
+        "focus_score": 22.09400177001953, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.82", 
+          "stage_pos": [
+            -545224, 
+            812894
+          ], 
+          "raster_index": 28, 
+          "raster_pos": [
+            55, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.4195498645811546, 
+        "astig_score": 0.012982185050336052, 
+        "mean": 33151
+      }, 
+      {
+        "img_path": "20170829130235277_295434_5LC_0064_01_redo_001050_0_56_2.tif", 
+        "min": 13664, 
+        "max": 65520, 
+        "focus_score": 21.914642333984375, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.82", 
+          "stage_pos": [
+            -557723, 
+            812936
+          ], 
+          "raster_index": 29, 
+          "raster_pos": [
+            56, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.8126855869836945, 
+        "astig_score": 0.02754394330230357, 
+        "mean": 33200
+      }, 
+      {
+        "img_path": "20170829130235610_295434_5LC_0064_01_redo_001050_0_57_2.tif", 
+        "min": 14016, 
+        "max": 65520, 
+        "focus_score": 21.818340301513672, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.83", 
+          "stage_pos": [
+            -570222, 
+            812876
+          ], 
+          "raster_index": 30, 
+          "raster_pos": [
+            57, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.8770827234638233, 
+        "astig_score": 0.018635862479140442, 
+        "mean": 33200
+      }, 
+      {
+        "img_path": "20170829130235951_295434_5LC_0064_01_redo_001050_0_58_2.tif", 
+        "min": 14224, 
+        "max": 65520, 
+        "focus_score": 22.253387451171875, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.83", 
+          "stage_pos": [
+            -582722, 
+            812914
+          ], 
+          "raster_index": 31, 
+          "raster_pos": [
+            58, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.9779611175078502, 
+        "astig_score": 0.010641762348695865, 
+        "mean": 33270
+      }, 
+      {
+        "img_path": "20170829130236312_295434_5LC_0064_01_redo_001050_0_59_2.tif", 
+        "min": 14176, 
+        "max": 65520, 
+        "focus_score": 22.660232543945312, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.83", 
+          "stage_pos": [
+            -595221, 
+            812902
+          ], 
+          "raster_index": 32, 
+          "raster_pos": [
+            59, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.16993343393946586, 
+        "astig_score": -0.0117719896863073, 
+        "mean": 33176
+      }, 
+      {
+        "img_path": "20170829130236639_295434_5LC_0064_01_redo_001050_0_60_2.tif", 
+        "min": 13664, 
+        "max": 65520, 
+        "focus_score": 22.217613220214844, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.83", 
+          "stage_pos": [
+            -607723, 
+            812889
+          ], 
+          "raster_index": 33, 
+          "raster_pos": [
+            60, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.1502595090738335, 
+        "astig_score": 0.017448132567684304, 
+        "mean": 33208
+      }, 
+      {
+        "img_path": "20170829130236999_295434_5LC_0064_01_redo_001050_0_61_2.tif", 
+        "min": 13648, 
+        "max": 65520, 
+        "focus_score": 22.250579833984375, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.83", 
+          "stage_pos": [
+            -620215, 
+            812900
+          ], 
+          "raster_index": 34, 
+          "raster_pos": [
+            61, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.9918231579221071, 
+        "astig_score": -0.012232833901400678, 
+        "mean": 33131
+      }, 
+      {
+        "img_path": "20170829130237332_295434_5LC_0064_01_redo_001050_0_62_2.tif", 
+        "min": 14848, 
+        "max": 65520, 
+        "focus_score": 22.396974563598633, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.84", 
+          "stage_pos": [
+            -632721, 
+            812912
+          ], 
+          "raster_index": 35, 
+          "raster_pos": [
+            62, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.739395839537732, 
+        "astig_score": -0.016896418702959784, 
+        "mean": 33123
+      }, 
+      {
+        "img_path": "20170829130237678_295434_5LC_0064_01_redo_001050_0_63_2.tif", 
+        "min": 14192, 
+        "max": 65520, 
+        "focus_score": 22.064891815185547, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.84", 
+          "stage_pos": [
+            -645218, 
+            812907
+          ], 
+          "raster_index": 36, 
+          "raster_pos": [
+            63, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.1716445617187803, 
+        "astig_score": -0.016123603137040095, 
+        "mean": 33112
+      }, 
+      {
+        "img_path": "20170829130238019_295434_5LC_0064_01_redo_001050_0_64_2.tif", 
+        "min": 14208, 
+        "max": 65520, 
+        "focus_score": 21.976076126098633, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.84", 
+          "stage_pos": [
+            -657716, 
+            812902
+          ], 
+          "raster_index": 37, 
+          "raster_pos": [
+            64, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.5063958101953507, 
+        "astig_score": 0.028803566412374238, 
+        "mean": 33055
+      }, 
+      {
+        "img_path": "20170829130238354_295434_5LC_0064_01_redo_001050_0_65_2.tif", 
+        "min": 14304, 
+        "max": 65520, 
+        "focus_score": 21.901247024536133, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.84", 
+          "stage_pos": [
+            -670219, 
+            812918
+          ], 
+          "raster_index": 38, 
+          "raster_pos": [
+            65, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.5954433982192378, 
+        "astig_score": 0.02519110517616452, 
+        "mean": 33049
+      }, 
+      {
+        "img_path": "20170829130238688_295434_5LC_0064_01_redo_001050_0_66_2.tif", 
+        "min": 13744, 
+        "max": 65520, 
+        "focus_score": 22.069631576538086, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.85", 
+          "stage_pos": [
+            -682715, 
+            812906
+          ], 
+          "raster_index": 39, 
+          "raster_pos": [
+            66, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.1628044706956127, 
+        "astig_score": 0.018417757872042414, 
+        "mean": 33076
+      }, 
+      {
+        "img_path": "20170829130239038_295434_5LC_0064_01_redo_001050_0_67_2.tif", 
+        "min": 13968, 
+        "max": 65520, 
+        "focus_score": 22.295679092407227, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.85", 
+          "stage_pos": [
+            -695210, 
+            812878
+          ], 
+          "raster_index": 40, 
+          "raster_pos": [
+            67, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.0003352752201842, 
+        "astig_score": -0.015887768007963984, 
+        "mean": 33187
+      }, 
+      {
+        "img_path": "20170829130239364_295434_5LC_0064_01_redo_001050_0_68_2.tif", 
+        "min": 13392, 
+        "max": 65520, 
+        "focus_score": 22.375734329223633, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.85", 
+          "stage_pos": [
+            -707713, 
+            812913
+          ], 
+          "raster_index": 41, 
+          "raster_pos": [
+            68, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.4846190465142612, 
+        "astig_score": -0.01153239706870763, 
+        "mean": 33154
+      }, 
+      {
+        "img_path": "20170829130239736_295434_5LC_0064_01_redo_001050_0_69_2.tif", 
+        "min": 13520, 
+        "max": 65520, 
+        "focus_score": 22.606853485107422, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.85", 
+          "stage_pos": [
+            -720212, 
+            812907
+          ], 
+          "raster_index": 42, 
+          "raster_pos": [
+            69, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.5229775754078417, 
+        "astig_score": -0.02072045703072892, 
+        "mean": 33140
+      }, 
+      {
+        "img_path": "20170829130240082_295434_5LC_0064_01_redo_001050_0_70_2.tif", 
+        "min": 14576, 
+        "max": 65520, 
+        "focus_score": 22.065628051757812, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.85", 
+          "stage_pos": [
+            -732717, 
+            812895
+          ], 
+          "raster_index": 43, 
+          "raster_pos": [
+            70, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.9592568182999315, 
+        "astig_score": 0.012094020587244774, 
+        "mean": 33119
+      }, 
+      {
+        "img_path": "20170829130240415_295434_5LC_0064_01_redo_001050_0_71_2.tif", 
+        "min": 13824, 
+        "max": 65520, 
+        "focus_score": 21.77080726623535, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.85", 
+          "stage_pos": [
+            -745217, 
+            812902
+          ], 
+          "raster_index": 44, 
+          "raster_pos": [
+            71, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.4263442616593769, 
+        "astig_score": -0.027149869602203974, 
+        "mean": 33087
+      }, 
+      {
+        "img_path": "20170829130240747_295434_5LC_0064_01_redo_001050_0_72_2.tif", 
+        "min": 13616, 
+        "max": 65520, 
+        "focus_score": 22.128360748291016, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.86", 
+          "stage_pos": [
+            -757710, 
+            812907
+          ], 
+          "raster_index": 45, 
+          "raster_pos": [
+            72, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.4525649049847238, 
+        "astig_score": 0.012810036120332925, 
+        "mean": 33096
+      }, 
+      {
+        "img_path": "20170829130241091_295434_5LC_0064_01_redo_001050_0_73_2.tif", 
+        "min": 13792, 
+        "max": 65520, 
+        "focus_score": 22.406734466552734, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.86", 
+          "stage_pos": [
+            -770211, 
+            812896
+          ], 
+          "raster_index": 46, 
+          "raster_pos": [
+            73, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.4640753480256627, 
+        "astig_score": 0.021644531225175997, 
+        "mean": 33036
+      }, 
+      {
+        "img_path": "20170829130241447_295434_5LC_0064_01_redo_001050_0_74_2.tif", 
+        "min": 13760, 
+        "max": 65520, 
+        "focus_score": 22.385677337646484, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.86", 
+          "stage_pos": [
+            -782709, 
+            812920
+          ], 
+          "raster_index": 47, 
+          "raster_pos": [
+            74, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.5338276649896037, 
+        "astig_score": 0.03014095099637754, 
+        "mean": 33051
+      }, 
+      {
+        "img_path": "20170829130241782_295434_5LC_0064_01_redo_001050_0_75_2.tif", 
+        "min": 13632, 
+        "max": 65520, 
+        "focus_score": 21.917184829711914, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.86", 
+          "stage_pos": [
+            -795214, 
+            812902
+          ], 
+          "raster_index": 48, 
+          "raster_pos": [
+            75, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.3444958429221907, 
+        "astig_score": 0.03310696173647389, 
+        "mean": 33080
+      }, 
+      {
+        "img_path": "20170829130242103_295434_5LC_0064_01_redo_001050_0_76_2.tif", 
+        "min": 13520, 
+        "max": 65520, 
+        "focus_score": 21.893205642700195, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.86", 
+          "stage_pos": [
+            -807705, 
+            812935
+          ], 
+          "raster_index": 49, 
+          "raster_pos": [
+            76, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.6225414435662793, 
+        "astig_score": 0.03675436950726923, 
+        "mean": 33093
+      }, 
+      {
+        "img_path": "20170829130242435_295434_5LC_0064_01_redo_001050_0_77_2.tif", 
+        "min": 13968, 
+        "max": 65520, 
+        "focus_score": 22.07176971435547, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.87", 
+          "stage_pos": [
+            -820207, 
+            812895
+          ], 
+          "raster_index": 50, 
+          "raster_pos": [
+            77, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.5167142909701619, 
+        "astig_score": 0.02748254762782178, 
+        "mean": 32989
+      }, 
+      {
+        "img_path": "20170829130242767_295434_5LC_0064_01_redo_001050_0_78_2.tif", 
+        "min": 13520, 
+        "max": 65520, 
+        "focus_score": 22.6116943359375, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.87", 
+          "stage_pos": [
+            -832704, 
+            812902
+          ], 
+          "raster_index": 51, 
+          "raster_pos": [
+            78, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.48161321534764123, 
+        "astig_score": -0.0062156527301539125, 
+        "mean": 32983
+      }, 
+      {
+        "img_path": "20170829130243115_295434_5LC_0064_01_redo_001050_0_79_2.tif", 
+        "min": 13008, 
+        "max": 65520, 
+        "focus_score": 22.216033935546875, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.87", 
+          "stage_pos": [
+            -845204, 
+            812852
+          ], 
+          "raster_index": 52, 
+          "raster_pos": [
+            79, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.4758558536484065, 
+        "astig_score": 0.017401623714280296, 
+        "mean": 32915
+      }, 
+      {
+        "img_path": "20170829130243451_295434_5LC_0064_01_redo_001050_0_80_2.tif", 
+        "min": 14912, 
+        "max": 65520, 
+        "focus_score": 22.134370803833008, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.87", 
+          "stage_pos": [
+            -857708, 
+            812884
+          ], 
+          "raster_index": 53, 
+          "raster_pos": [
+            80, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.2270139998993908, 
+        "astig_score": 0.028713602833439357, 
+        "mean": 32949
+      }, 
+      {
+        "img_path": "20170829130243748_295434_5LC_0064_01_redo_001050_0_81_2.tif", 
+        "min": 13760, 
+        "max": 65520, 
+        "focus_score": 21.953542709350586, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -870204, 
+            812902
+          ], 
+          "raster_index": 54, 
+          "raster_pos": [
+            81, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.4544406740476095, 
+        "astig_score": 0.015206747664201811, 
+        "mean": 32873
+      }, 
+      {
+        "img_path": "20170829130244080_295434_5LC_0064_01_redo_001050_0_82_2.tif", 
+        "min": 13488, 
+        "max": 65520, 
+        "focus_score": 21.95958709716797, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -882706, 
+            812895
+          ], 
+          "raster_index": 55, 
+          "raster_pos": [
+            82, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.509919973598904, 
+        "astig_score": 0.02327708946858278, 
+        "mean": 32856
+      }, 
+      {
+        "img_path": "20170829130244421_295434_5LC_0064_01_redo_001050_0_83_2.tif", 
+        "min": 13952, 
+        "max": 65520, 
+        "focus_score": 22.636938095092773, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -895202, 
+            812837
+          ], 
+          "raster_index": 56, 
+          "raster_pos": [
+            83, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.1366391667158817, 
+        "astig_score": -0.014872640823100206, 
+        "mean": 32935
+      }, 
+      {
+        "img_path": "20170829130244785_295434_5LC_0064_01_redo_001050_0_84_2.tif", 
+        "min": 13728, 
+        "max": 65520, 
+        "focus_score": 22.25672721862793, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -907703, 
+            812909
+          ], 
+          "raster_index": 57, 
+          "raster_pos": [
+            84, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.7002599652838752, 
+        "astig_score": -0.005479788818138151, 
+        "mean": 32917
+      }, 
+      {
+        "img_path": "20170829130245134_295434_5LC_0064_01_redo_001050_0_85_2.tif", 
+        "min": 13104, 
+        "max": 65520, 
+        "focus_score": 22.390033721923828, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -920204, 
+            812895
+          ], 
+          "raster_index": 58, 
+          "raster_pos": [
+            85, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.6708675949407783, 
+        "astig_score": -0.0016091507139882845, 
+        "mean": 32801
+      }, 
+      {
+        "img_path": "20170829130245468_295434_5LC_0064_01_redo_001050_0_86_2.tif", 
+        "min": 13552, 
+        "max": 65520, 
+        "focus_score": 22.30851173400879, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -932699, 
+            812913
+          ], 
+          "raster_index": 59, 
+          "raster_pos": [
+            86, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.5659075666471667, 
+        "astig_score": 0.012598300852971605, 
+        "mean": 32781
+      }, 
+      {
+        "img_path": "20170829130245849_295434_5LC_0064_01_redo_001050_0_87_2.tif", 
+        "min": 14864, 
+        "max": 65520, 
+        "focus_score": 22.585390090942383, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -945197, 
+            812896
+          ], 
+          "raster_index": 60, 
+          "raster_pos": [
+            87, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.8501589996181396, 
+        "astig_score": -0.01944025373810851, 
+        "mean": 32848
+      }, 
+      {
+        "img_path": "20170829130246183_295434_5LC_0064_01_redo_001050_0_88_2.tif", 
+        "min": 13616, 
+        "max": 65520, 
+        "focus_score": 22.021503448486328, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -957697, 
+            812906
+          ], 
+          "raster_index": 61, 
+          "raster_pos": [
+            88, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.1355546471753635, 
+        "astig_score": -0.02811822381342942, 
+        "mean": 32719
+      }, 
+      {
+        "img_path": "20170829130246493_295434_5LC_0064_01_redo_001050_0_89_2.tif", 
+        "min": 13840, 
+        "max": 65520, 
+        "focus_score": 22.301095962524414, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -970197, 
+            812889
+          ], 
+          "raster_index": 62, 
+          "raster_pos": [
+            89, 
+            2
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.4150810059977453, 
+        "astig_score": -0.02115147834974327, 
+        "mean": 32872
+      }, 
+      {
+        "img_path": "20170829130246989_295434_5LC_0064_01_redo_001050_0_31_3.tif", 
+        "min": 13440, 
+        "max": 65520, 
+        "focus_score": 20.138761520385742, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.86", 
+          "stage_pos": [
+            -245249, 
+            800443
+          ], 
+          "raster_index": 63, 
+          "raster_pos": [
+            31, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.87710902481675, 
+        "astig_score": 0.06778445122127849, 
+        "mean": 33710
+      }, 
+      {
+        "img_path": "20170829130247321_295434_5LC_0064_01_redo_001050_0_32_3.tif", 
+        "min": 14464, 
+        "max": 65520, 
+        "focus_score": 20.670024871826172, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.87", 
+          "stage_pos": [
+            -257740, 
+            800423
+          ], 
+          "raster_index": 64, 
+          "raster_pos": [
+            32, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.5430129256822518, 
+        "astig_score": 0.0635970058366459, 
+        "mean": 33556
+      }, 
+      {
+        "img_path": "20170829130247663_295434_5LC_0064_01_redo_001050_0_33_3.tif", 
+        "min": 13600, 
+        "max": 65520, 
+        "focus_score": 21.371538162231445, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.87", 
+          "stage_pos": [
+            -270242, 
+            800400
+          ], 
+          "raster_index": 65, 
+          "raster_pos": [
+            33, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.3723529956115466, 
+        "astig_score": 0.06663051290959801, 
+        "mean": 33468
+      }, 
+      {
+        "img_path": "20170829130248009_295434_5LC_0064_01_redo_001050_0_34_3.tif", 
+        "min": 13712, 
+        "max": 65520, 
+        "focus_score": 21.876415252685547, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.87", 
+          "stage_pos": [
+            -282735, 
+            800395
+          ], 
+          "raster_index": 66, 
+          "raster_pos": [
+            34, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.7264544573099326, 
+        "astig_score": -0.03588191660597315, 
+        "mean": 33328
+      }, 
+      {
+        "img_path": "20170829130248341_295434_5LC_0064_01_redo_001050_0_35_3.tif", 
+        "min": 14144, 
+        "max": 65520, 
+        "focus_score": 22.35812759399414, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.87", 
+          "stage_pos": [
+            -295240, 
+            800405
+          ], 
+          "raster_index": 67, 
+          "raster_pos": [
+            35, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.5483431336646796, 
+        "astig_score": -0.0301729892590204, 
+        "mean": 33364
+      }, 
+      {
+        "img_path": "20170829130248717_295434_5LC_0064_01_redo_001050_0_36_3.tif", 
+        "min": 13568, 
+        "max": 65520, 
+        "focus_score": 22.697782516479492, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.87", 
+          "stage_pos": [
+            -307742, 
+            800403
+          ], 
+          "raster_index": 68, 
+          "raster_pos": [
+            36, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.992086000353643, 
+        "astig_score": -0.03482437007087622, 
+        "mean": 33379
+      }, 
+      {
+        "img_path": "20170829130249089_295434_5LC_0064_01_redo_001050_0_37_3.tif", 
+        "min": 14592, 
+        "max": 65520, 
+        "focus_score": 22.764606475830078, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.86", 
+          "stage_pos": [
+            -320240, 
+            800422
+          ], 
+          "raster_index": 69, 
+          "raster_pos": [
+            37, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.40408661891133985, 
+        "astig_score": -0.02426330297404038, 
+        "mean": 33323
+      }, 
+      {
+        "img_path": "20170829130249471_295434_5LC_0064_01_redo_001050_0_38_3.tif", 
+        "min": 14064, 
+        "max": 65520, 
+        "focus_score": 22.804428100585938, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.86", 
+          "stage_pos": [
+            -332738, 
+            800390
+          ], 
+          "raster_index": 70, 
+          "raster_pos": [
+            38, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.315577836444496, 
+        "astig_score": -0.0050661545289483875, 
+        "mean": 33201
+      }, 
+      {
+        "img_path": "20170829130249813_295434_5LC_0064_01_redo_001050_0_39_3.tif", 
+        "min": 13968, 
+        "max": 65520, 
+        "focus_score": 22.252283096313477, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.86", 
+          "stage_pos": [
+            -345235, 
+            800405
+          ], 
+          "raster_index": 71, 
+          "raster_pos": [
+            39, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.6554470906264338, 
+        "astig_score": -0.015297995023117811, 
+        "mean": 33220
+      }, 
+      {
+        "img_path": "20170829130250150_295434_5LC_0064_01_redo_001050_0_40_3.tif", 
+        "min": 13920, 
+        "max": 65520, 
+        "focus_score": 22.073461532592773, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.86", 
+          "stage_pos": [
+            -357739, 
+            800405
+          ], 
+          "raster_index": 72, 
+          "raster_pos": [
+            40, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.6458845170384043, 
+        "astig_score": 0.024748761923567168, 
+        "mean": 33304
+      }, 
+      {
+        "img_path": "20170829130250480_295434_5LC_0064_01_redo_001050_0_41_3.tif", 
+        "min": 14192, 
+        "max": 65520, 
+        "focus_score": 21.991199493408203, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.86", 
+          "stage_pos": [
+            -370234, 
+            800377
+          ], 
+          "raster_index": 73, 
+          "raster_pos": [
+            41, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.215566436182747, 
+        "astig_score": 0.020104049447129412, 
+        "mean": 33299
+      }, 
+      {
+        "img_path": "20170829130250817_295434_5LC_0064_01_redo_001050_0_42_3.tif", 
+        "min": 14176, 
+        "max": 65520, 
+        "focus_score": 21.817211151123047, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.87", 
+          "stage_pos": [
+            -382740, 
+            800395
+          ], 
+          "raster_index": 74, 
+          "raster_pos": [
+            42, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.5139862088536304, 
+        "astig_score": 0.03131100088310941, 
+        "mean": 33250
+      }, 
+      {
+        "img_path": "20170829130251161_295434_5LC_0064_01_redo_001050_0_43_3.tif", 
+        "min": 14000, 
+        "max": 65520, 
+        "focus_score": 21.816814422607422, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.87", 
+          "stage_pos": [
+            -395233, 
+            800408
+          ], 
+          "raster_index": 75, 
+          "raster_pos": [
+            43, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.40910451667070896, 
+        "astig_score": 0.0132007209736149, 
+        "mean": 33230
+      }, 
+      {
+        "img_path": "20170829130251487_295434_5LC_0064_01_redo_001050_0_44_3.tif", 
+        "min": 14368, 
+        "max": 65520, 
+        "focus_score": 21.960466384887695, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.87", 
+          "stage_pos": [
+            -407734, 
+            800403
+          ], 
+          "raster_index": 76, 
+          "raster_pos": [
+            44, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.1444125463721924, 
+        "astig_score": 0.031365665205186036, 
+        "mean": 33252
+      }, 
+      {
+        "img_path": "20170829130251821_295434_5LC_0064_01_redo_001050_0_45_3.tif", 
+        "min": 13472, 
+        "max": 65520, 
+        "focus_score": 21.981767654418945, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.87", 
+          "stage_pos": [
+            -420238, 
+            800387
+          ], 
+          "raster_index": 77, 
+          "raster_pos": [
+            45, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.8211682006063112, 
+        "astig_score": 0.020628670394467263, 
+        "mean": 33306
+      }, 
+      {
+        "img_path": "20170829130252165_295434_5LC_0064_01_redo_001050_0_46_3.tif", 
+        "min": 14432, 
+        "max": 65520, 
+        "focus_score": 22.644208908081055, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.87", 
+          "stage_pos": [
+            -432731, 
+            800397
+          ], 
+          "raster_index": 78, 
+          "raster_pos": [
+            46, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.8605954828863062, 
+        "astig_score": 0.008076997823205208, 
+        "mean": 33274
+      }, 
+      {
+        "img_path": "20170829130252508_295434_5LC_0064_01_redo_001050_0_47_3.tif", 
+        "min": 13840, 
+        "max": 65520, 
+        "focus_score": 22.424448013305664, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.87", 
+          "stage_pos": [
+            -445230, 
+            800409
+          ], 
+          "raster_index": 79, 
+          "raster_pos": [
+            47, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.4370779994697178, 
+        "astig_score": -0.022501124959587046, 
+        "mean": 33337
+      }, 
+      {
+        "img_path": "20170829130252850_295434_5LC_0064_01_redo_001050_0_48_3.tif", 
+        "min": 13504, 
+        "max": 65520, 
+        "focus_score": 22.22306251525879, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.87", 
+          "stage_pos": [
+            -457732, 
+            800406
+          ], 
+          "raster_index": 80, 
+          "raster_pos": [
+            48, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.1965457568095899, 
+        "astig_score": -0.018320342209032364, 
+        "mean": 33252
+      }, 
+      {
+        "img_path": "20170829130253205_295434_5LC_0064_01_redo_001050_0_49_3.tif", 
+        "min": 14096, 
+        "max": 65520, 
+        "focus_score": 22.503620147705078, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.87", 
+          "stage_pos": [
+            -470226, 
+            800391
+          ], 
+          "raster_index": 81, 
+          "raster_pos": [
+            49, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.4250942090695848, 
+        "astig_score": -0.009639483634176492, 
+        "mean": 33270
+      }, 
+      {
+        "img_path": "20170829130253547_295434_5LC_0064_01_redo_001050_0_50_3.tif", 
+        "min": 14064, 
+        "max": 65520, 
+        "focus_score": 22.087209701538086, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.87", 
+          "stage_pos": [
+            -482727, 
+            800389
+          ], 
+          "raster_index": 82, 
+          "raster_pos": [
+            50, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.4293042708671453, 
+        "astig_score": -0.010796431217552542, 
+        "mean": 33285
+      }, 
+      {
+        "img_path": "20170829130253875_295434_5LC_0064_01_redo_001050_0_51_3.tif", 
+        "min": 14112, 
+        "max": 65520, 
+        "focus_score": 22.038143157958984, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.87", 
+          "stage_pos": [
+            -495229, 
+            800408
+          ], 
+          "raster_index": 83, 
+          "raster_pos": [
+            51, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.045353352375067, 
+        "astig_score": -0.03892658890363906, 
+        "mean": 33289
+      }, 
+      {
+        "img_path": "20170829130254207_295434_5LC_0064_01_redo_001050_0_52_3.tif", 
+        "min": 14048, 
+        "max": 65520, 
+        "focus_score": 22.284757614135742, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -507723, 
+            800385
+          ], 
+          "raster_index": 84, 
+          "raster_pos": [
+            52, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.1189568087903434, 
+        "astig_score": -0.018786298097634126, 
+        "mean": 33216
+      }, 
+      {
+        "img_path": "20170829130254533_295434_5LC_0064_01_redo_001050_0_53_3.tif", 
+        "min": 13584, 
+        "max": 65520, 
+        "focus_score": 22.294631958007812, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -520229, 
+            800394
+          ], 
+          "raster_index": 85, 
+          "raster_pos": [
+            53, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.2551380917398083, 
+        "astig_score": -0.023984123233390872, 
+        "mean": 33106
+      }, 
+      {
+        "img_path": "20170829130254870_295434_5LC_0064_01_redo_001050_0_54_3.tif", 
+        "min": 14048, 
+        "max": 65520, 
+        "focus_score": 22.110021591186523, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -532730, 
+            800402
+          ], 
+          "raster_index": 86, 
+          "raster_pos": [
+            54, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.0929677694719635, 
+        "astig_score": -0.03059792206164739, 
+        "mean": 33221
+      }, 
+      {
+        "img_path": "20170829130255200_295434_5LC_0064_01_redo_001050_0_55_3.tif", 
+        "min": 13456, 
+        "max": 65520, 
+        "focus_score": 22.328855514526367, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -545225, 
+            800405
+          ], 
+          "raster_index": 87, 
+          "raster_pos": [
+            55, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.0698665921276298, 
+        "astig_score": -0.02484256619292674, 
+        "mean": 33191
+      }, 
+      {
+        "img_path": "20170829130255527_295434_5LC_0064_01_redo_001050_0_56_3.tif", 
+        "min": 14448, 
+        "max": 65520, 
+        "focus_score": 22.285924911499023, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -557722, 
+            800405
+          ], 
+          "raster_index": 88, 
+          "raster_pos": [
+            56, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.23881519655723737, 
+        "astig_score": -0.015364977154517486, 
+        "mean": 33080
+      }, 
+      {
+        "img_path": "20170829130255888_295434_5LC_0064_01_redo_001050_0_57_3.tif", 
+        "min": 14464, 
+        "max": 65520, 
+        "focus_score": 22.596139907836914, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -570221, 
+            800386
+          ], 
+          "raster_index": 89, 
+          "raster_pos": [
+            57, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.7827949437925048, 
+        "astig_score": -0.01994757470724373, 
+        "mean": 33217
+      }, 
+      {
+        "img_path": "20170829130256224_295434_5LC_0064_01_redo_001050_0_58_3.tif", 
+        "min": 14080, 
+        "max": 65520, 
+        "focus_score": 22.45009994506836, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -582720, 
+            800403
+          ], 
+          "raster_index": 90, 
+          "raster_pos": [
+            58, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.25419639792669735, 
+        "astig_score": -0.030950000264831582, 
+        "mean": 33262
+      }, 
+      {
+        "img_path": "20170829130256562_295434_5LC_0064_01_redo_001050_0_59_3.tif", 
+        "min": 13552, 
+        "max": 65520, 
+        "focus_score": 22.55966567993164, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -595223, 
+            800399
+          ], 
+          "raster_index": 91, 
+          "raster_pos": [
+            59, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.3018655758135664, 
+        "astig_score": -0.018483052458923774, 
+        "mean": 33218
+      }, 
+      {
+        "img_path": "20170829130256939_295434_5LC_0064_01_redo_001050_0_60_3.tif", 
+        "min": 14288, 
+        "max": 65520, 
+        "focus_score": 22.716474533081055, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -607721, 
+            800426
+          ], 
+          "raster_index": 92, 
+          "raster_pos": [
+            60, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.33265409760428455, 
+        "astig_score": -0.012999386454463522, 
+        "mean": 33264
+      }, 
+      {
+        "img_path": "20170829130257269_295434_5LC_0064_01_redo_001050_0_61_3.tif", 
+        "min": 14352, 
+        "max": 65520, 
+        "focus_score": 22.16876220703125, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -620222, 
+            800402
+          ], 
+          "raster_index": 93, 
+          "raster_pos": [
+            61, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.1847382478279413, 
+        "astig_score": -0.028753308074244383, 
+        "mean": 33240
+      }, 
+      {
+        "img_path": "20170829130257598_295434_5LC_0064_01_redo_001050_0_62_3.tif", 
+        "min": 14320, 
+        "max": 65520, 
+        "focus_score": 22.001686096191406, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -632718, 
+            800424
+          ], 
+          "raster_index": 94, 
+          "raster_pos": [
+            62, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.7960175821094219, 
+        "astig_score": -0.025828382570385243, 
+        "mean": 33210
+      }, 
+      {
+        "img_path": "20170829130257929_295434_5LC_0064_01_redo_001050_0_63_3.tif", 
+        "min": 13232, 
+        "max": 65520, 
+        "focus_score": 22.21100616455078, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -645219, 
+            800414
+          ], 
+          "raster_index": 95, 
+          "raster_pos": [
+            63, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.8750934854011988, 
+        "astig_score": -0.018191794386460017, 
+        "mean": 33202
+      }, 
+      {
+        "img_path": "20170829130258265_295434_5LC_0064_01_redo_001050_0_64_3.tif", 
+        "min": 14000, 
+        "max": 65520, 
+        "focus_score": 22.12969398498535, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -657717, 
+            800419
+          ], 
+          "raster_index": 96, 
+          "raster_pos": [
+            64, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.8181946441361068, 
+        "astig_score": -0.029307801739283084, 
+        "mean": 33102
+      }, 
+      {
+        "img_path": "20170829130258593_295434_5LC_0064_01_redo_001050_0_65_3.tif", 
+        "min": 13760, 
+        "max": 65520, 
+        "focus_score": 22.035554885864258, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -670215, 
+            800401
+          ], 
+          "raster_index": 97, 
+          "raster_pos": [
+            65, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.0286209261260655, 
+        "astig_score": -0.015477642763689925, 
+        "mean": 33164
+      }, 
+      {
+        "img_path": "20170829130258959_295434_5LC_0064_01_redo_001050_0_66_3.tif", 
+        "min": 14672, 
+        "max": 65520, 
+        "focus_score": 22.70823097229004, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -682715, 
+            800390
+          ], 
+          "raster_index": 98, 
+          "raster_pos": [
+            66, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.349279913860453, 
+        "astig_score": -0.01859170341615849, 
+        "mean": 33083
+      }, 
+      {
+        "img_path": "20170829130259279_295434_5LC_0064_01_redo_001050_0_67_3.tif", 
+        "min": 13952, 
+        "max": 65520, 
+        "focus_score": 22.48662567138672, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -695215, 
+            800392
+          ], 
+          "raster_index": 99, 
+          "raster_pos": [
+            67, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.3459764406885823, 
+        "astig_score": -0.017015294756365047, 
+        "mean": 33134
+      }, 
+      {
+        "img_path": "20170829130259635_295434_5LC_0064_01_redo_001050_0_68_3.tif", 
+        "min": 13696, 
+        "max": 65520, 
+        "focus_score": 22.15984344482422, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -707717, 
+            800408
+          ], 
+          "raster_index": 100, 
+          "raster_pos": [
+            68, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.0728727946044352, 
+        "astig_score": -0.014406782929844346, 
+        "mean": 33065
+      }, 
+      {
+        "img_path": "20170829130259977_295434_5LC_0064_01_redo_001050_0_69_3.tif", 
+        "min": 13552, 
+        "max": 65520, 
+        "focus_score": 22.433645248413086, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -720213, 
+            800405
+          ], 
+          "raster_index": 101, 
+          "raster_pos": [
+            69, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.1105187871314228, 
+        "astig_score": -0.02069184428303313, 
+        "mean": 33205
+      }, 
+      {
+        "img_path": "20170829130300309_295434_5LC_0064_01_redo_001050_0_70_3.tif", 
+        "min": 13664, 
+        "max": 65520, 
+        "focus_score": 22.38220977783203, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -732715, 
+            800420
+          ], 
+          "raster_index": 102, 
+          "raster_pos": [
+            70, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.8794125538233156, 
+        "astig_score": -0.02045737023937292, 
+        "mean": 33129
+      }, 
+      {
+        "img_path": "20170829130300652_295434_5LC_0064_01_redo_001050_0_71_3.tif", 
+        "min": 13184, 
+        "max": 65520, 
+        "focus_score": 22.31888771057129, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -745217, 
+            800387
+          ], 
+          "raster_index": 103, 
+          "raster_pos": [
+            71, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.29944114070787, 
+        "astig_score": -0.020891617800313542, 
+        "mean": 33061
+      }, 
+      {
+        "img_path": "20170829130300990_295434_5LC_0064_01_redo_001050_0_72_3.tif", 
+        "min": 12704, 
+        "max": 65520, 
+        "focus_score": 22.34050750732422, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -757709, 
+            800405
+          ], 
+          "raster_index": 104, 
+          "raster_pos": [
+            72, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.8456334166472109, 
+        "astig_score": -0.012820226011034518, 
+        "mean": 33038
+      }, 
+      {
+        "img_path": "20170829130301350_295434_5LC_0064_01_redo_001050_0_73_3.tif", 
+        "min": 12512, 
+        "max": 65520, 
+        "focus_score": 22.699203491210938, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -770208, 
+            800403
+          ], 
+          "raster_index": 105, 
+          "raster_pos": [
+            73, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.37261291407282154, 
+        "astig_score": -0.012996826158830688, 
+        "mean": 33086
+      }, 
+      {
+        "img_path": "20170829130301731_295434_5LC_0064_01_redo_001050_0_74_3.tif", 
+        "min": 13808, 
+        "max": 65520, 
+        "focus_score": 22.60198211669922, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -782707, 
+            800408
+          ], 
+          "raster_index": 106, 
+          "raster_pos": [
+            74, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.11039011086085707, 
+        "astig_score": -0.016236246183743606, 
+        "mean": 33076
+      }, 
+      {
+        "img_path": "20170829130302059_295434_5LC_0064_01_redo_001050_0_75_3.tif", 
+        "min": 13760, 
+        "max": 65520, 
+        "focus_score": 22.00686264038086, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -795212, 
+            800396
+          ], 
+          "raster_index": 107, 
+          "raster_pos": [
+            75, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.3577834497601438, 
+        "astig_score": 0.027630490872750647, 
+        "mean": 33016
+      }, 
+      {
+        "img_path": "20170829130302427_295434_5LC_0064_01_redo_001050_0_76_3.tif", 
+        "min": 14032, 
+        "max": 65520, 
+        "focus_score": 22.692052841186523, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -807706, 
+            800413
+          ], 
+          "raster_index": 108, 
+          "raster_pos": [
+            76, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.3539923679536239, 
+        "astig_score": -0.014467379149680978, 
+        "mean": 33111
+      }, 
+      {
+        "img_path": "20170829130302769_295434_5LC_0064_01_redo_001050_0_77_3.tif", 
+        "min": 14096, 
+        "max": 65520, 
+        "focus_score": 22.407827377319336, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -820205, 
+            800393
+          ], 
+          "raster_index": 109, 
+          "raster_pos": [
+            77, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.5460110024523672, 
+        "astig_score": 0.032248552774381496, 
+        "mean": 33123
+      }, 
+      {
+        "img_path": "20170829130303100_295434_5LC_0064_01_redo_001050_0_78_3.tif", 
+        "min": 13008, 
+        "max": 65520, 
+        "focus_score": 22.038156509399414, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -832709, 
+            800408
+          ], 
+          "raster_index": 110, 
+          "raster_pos": [
+            78, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.3630687799286758, 
+        "astig_score": -0.022731415557121645, 
+        "mean": 33058
+      }, 
+      {
+        "img_path": "20170829130303437_295434_5LC_0064_01_redo_001050_0_79_3.tif", 
+        "min": 12592, 
+        "max": 65520, 
+        "focus_score": 22.63837242126465, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -845207, 
+            800403
+          ], 
+          "raster_index": 111, 
+          "raster_pos": [
+            79, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.2722856428014833, 
+        "astig_score": -0.007144735273445875, 
+        "mean": 33100
+      }, 
+      {
+        "img_path": "20170829130303785_295434_5LC_0064_01_redo_001050_0_80_3.tif", 
+        "min": 13248, 
+        "max": 65520, 
+        "focus_score": 22.269336700439453, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -857707, 
+            800282
+          ], 
+          "raster_index": 112, 
+          "raster_pos": [
+            80, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.469983881186581, 
+        "astig_score": -0.019776644888344568, 
+        "mean": 32991
+      }, 
+      {
+        "img_path": "20170829130304104_295434_5LC_0064_01_redo_001050_0_81_3.tif", 
+        "min": 13776, 
+        "max": 65520, 
+        "focus_score": 22.01706314086914, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -870206, 
+            800407
+          ], 
+          "raster_index": 113, 
+          "raster_pos": [
+            81, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.45225900805094144, 
+        "astig_score": -0.01648083969551407, 
+        "mean": 32938
+      }, 
+      {
+        "img_path": "20170829130304468_295434_5LC_0064_01_redo_001050_0_82_3.tif", 
+        "min": 14480, 
+        "max": 65520, 
+        "focus_score": 22.76751708984375, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -882705, 
+            800401
+          ], 
+          "raster_index": 114, 
+          "raster_pos": [
+            82, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.0063909591004823, 
+        "astig_score": -0.017242465611340064, 
+        "mean": 33054
+      }, 
+      {
+        "img_path": "20170829130304817_295434_5LC_0064_01_redo_001050_0_83_3.tif", 
+        "min": 13680, 
+        "max": 65520, 
+        "focus_score": 22.43777847290039, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -895202, 
+            800437
+          ], 
+          "raster_index": 115, 
+          "raster_pos": [
+            83, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.477379215723325, 
+        "astig_score": -0.017724422405050982, 
+        "mean": 33112
+      }, 
+      {
+        "img_path": "20170829130305164_295434_5LC_0064_01_redo_001050_0_84_3.tif", 
+        "min": 13552, 
+        "max": 65520, 
+        "focus_score": 22.519001007080078, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -907703, 
+            800394
+          ], 
+          "raster_index": 116, 
+          "raster_pos": [
+            84, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.5697239495748794, 
+        "astig_score": -0.009007474399657087, 
+        "mean": 32929
+      }, 
+      {
+        "img_path": "20170829130305497_295434_5LC_0064_01_redo_001050_0_85_3.tif", 
+        "min": 14128, 
+        "max": 65520, 
+        "focus_score": 22.45591926574707, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -920203, 
+            800399
+          ], 
+          "raster_index": 117, 
+          "raster_pos": [
+            85, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.35476386804856536, 
+        "astig_score": -0.015160086456657666, 
+        "mean": 32881
+      }, 
+      {
+        "img_path": "20170829130305871_295434_5LC_0064_01_redo_001050_0_86_3.tif", 
+        "min": 14672, 
+        "max": 65520, 
+        "focus_score": 22.805330276489258, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -932699, 
+            800401
+          ], 
+          "raster_index": 118, 
+          "raster_pos": [
+            86, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.3155477066588943, 
+        "astig_score": -0.009891925088233167, 
+        "mean": 32858
+      }, 
+      {
+        "img_path": "20170829130306214_295434_5LC_0064_01_redo_001050_0_87_3.tif", 
+        "min": 13024, 
+        "max": 65520, 
+        "focus_score": 21.993207931518555, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -945196, 
+            800399
+          ], 
+          "raster_index": 119, 
+          "raster_pos": [
+            87, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.8229824847559417, 
+        "astig_score": -0.016963471341226524, 
+        "mean": 32962
+      }, 
+      {
+        "img_path": "20170829130306550_295434_5LC_0064_01_redo_001050_0_88_3.tif", 
+        "min": 13760, 
+        "max": 65520, 
+        "focus_score": 22.082780838012695, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -957698, 
+            800416
+          ], 
+          "raster_index": 120, 
+          "raster_pos": [
+            88, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.054939261865068, 
+        "astig_score": -0.019010725003600334, 
+        "mean": 32930
+      }, 
+      {
+        "img_path": "20170829130306937_295434_5LC_0064_01_redo_001050_0_89_3.tif", 
+        "min": 13168, 
+        "max": 65520, 
+        "focus_score": 22.788345336914062, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -970197, 
+            800392
+          ], 
+          "raster_index": 121, 
+          "raster_pos": [
+            89, 
+            3
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.42817461448032385, 
+        "astig_score": -0.013067430950106278, 
+        "mean": 32928
+      }, 
+      {
+        "img_path": "20170829130307520_295434_5LC_0064_01_redo_001050_0_12_4.tif", 
+        "min": 14320, 
+        "max": 65520, 
+        "focus_score": 20.08830451965332, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.87", 
+          "stage_pos": [
+            -7757, 
+            787840
+          ], 
+          "raster_index": 122, 
+          "raster_pos": [
+            12, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.1727181079422313, 
+        "astig_score": -0.07015113094959216, 
+        "mean": 33978
+      }, 
+      {
+        "img_path": "20170829130307864_295434_5LC_0064_01_redo_001050_0_13_4.tif", 
+        "min": 14064, 
+        "max": 65520, 
+        "focus_score": 20.393455505371094, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.87", 
+          "stage_pos": [
+            -20259, 
+            787898
+          ], 
+          "raster_index": 123, 
+          "raster_pos": [
+            13, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.9651083081488739, 
+        "astig_score": -0.07610777807044264, 
+        "mean": 33846
+      }, 
+      {
+        "img_path": "20170829130308193_295434_5LC_0064_01_redo_001050_0_14_4.tif", 
+        "min": 14336, 
+        "max": 65520, 
+        "focus_score": 20.875160217285156, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.87", 
+          "stage_pos": [
+            -32755, 
+            787904
+          ], 
+          "raster_index": 124, 
+          "raster_pos": [
+            14, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.7750003170473295, 
+        "astig_score": -0.071747196786086, 
+        "mean": 33678
+      }, 
+      {
+        "img_path": "20170829130308528_295434_5LC_0064_01_redo_001050_0_15_4.tif", 
+        "min": 14032, 
+        "max": 65520, 
+        "focus_score": 21.26255226135254, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.87", 
+          "stage_pos": [
+            -45258, 
+            787888
+          ], 
+          "raster_index": 125, 
+          "raster_pos": [
+            15, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.5275251362132402, 
+        "astig_score": -0.06442882498079958, 
+        "mean": 33584
+      }, 
+      {
+        "img_path": "20170829130308862_295434_5LC_0064_01_redo_001050_0_16_4.tif", 
+        "min": 14112, 
+        "max": 65520, 
+        "focus_score": 21.689380645751953, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.87", 
+          "stage_pos": [
+            -57755, 
+            787910
+          ], 
+          "raster_index": 126, 
+          "raster_pos": [
+            16, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.5063111503210709, 
+        "astig_score": -0.04965898269551669, 
+        "mean": 33493
+      }, 
+      {
+        "img_path": "20170829130309190_295434_5LC_0064_01_redo_001050_0_17_4.tif", 
+        "min": 14000, 
+        "max": 65520, 
+        "focus_score": 22.098535537719727, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.87", 
+          "stage_pos": [
+            -70253, 
+            787907
+          ], 
+          "raster_index": 127, 
+          "raster_pos": [
+            17, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.23899358422099903, 
+        "astig_score": -0.05262176524259975, 
+        "mean": 33517
+      }, 
+      {
+        "img_path": "20170829130309536_295434_5LC_0064_01_redo_001050_0_18_4.tif", 
+        "min": 13088, 
+        "max": 65520, 
+        "focus_score": 22.477535247802734, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.87", 
+          "stage_pos": [
+            -82756, 
+            787922
+          ], 
+          "raster_index": 128, 
+          "raster_pos": [
+            18, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.7745387460265792, 
+        "astig_score": -0.022775481565771936, 
+        "mean": 33527
+      }, 
+      {
+        "img_path": "20170829130309879_295434_5LC_0064_01_redo_001050_0_19_4.tif", 
+        "min": 14080, 
+        "max": 65520, 
+        "focus_score": 21.815465927124023, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.87", 
+          "stage_pos": [
+            -95258, 
+            787959
+          ], 
+          "raster_index": 129, 
+          "raster_pos": [
+            19, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.1124519975693414, 
+        "astig_score": -0.006537281245718956, 
+        "mean": 33586
+      }, 
+      {
+        "img_path": "20170829130310228_295434_5LC_0064_01_redo_001050_0_20_4.tif", 
+        "min": 13968, 
+        "max": 65520, 
+        "focus_score": 22.086774826049805, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.87", 
+          "stage_pos": [
+            -107755, 
+            787890
+          ], 
+          "raster_index": 130, 
+          "raster_pos": [
+            20, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.0906844315111475, 
+        "astig_score": -0.02221746602201668, 
+        "mean": 33538
+      }, 
+      {
+        "img_path": "20170829130310554_295434_5LC_0064_01_redo_001050_0_21_4.tif", 
+        "min": 13360, 
+        "max": 65520, 
+        "focus_score": 21.994586944580078, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -120254, 
+            787901
+          ], 
+          "raster_index": 131, 
+          "raster_pos": [
+            21, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.1027925814025303, 
+        "astig_score": -0.03186699804295833, 
+        "mean": 33466
+      }, 
+      {
+        "img_path": "20170829130310890_295434_5LC_0064_01_redo_001050_0_22_4.tif", 
+        "min": 13888, 
+        "max": 65520, 
+        "focus_score": 22.297697067260742, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -132749, 
+            787882
+          ], 
+          "raster_index": 132, 
+          "raster_pos": [
+            22, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.1076077376886637, 
+        "astig_score": -0.008590812600475294, 
+        "mean": 33488
+      }, 
+      {
+        "img_path": "20170829130311221_295434_5LC_0064_01_redo_001050_0_23_4.tif", 
+        "min": 13904, 
+        "max": 65520, 
+        "focus_score": 22.05744171142578, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -145246, 
+            787904
+          ], 
+          "raster_index": 133, 
+          "raster_pos": [
+            23, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.541118019670242, 
+        "astig_score": 0.024523410611682693, 
+        "mean": 33477
+      }, 
+      {
+        "img_path": "20170829130311550_295434_5LC_0064_01_redo_001050_0_24_4.tif", 
+        "min": 14080, 
+        "max": 65520, 
+        "focus_score": 22.211299896240234, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -157749, 
+            787786
+          ], 
+          "raster_index": 134, 
+          "raster_pos": [
+            24, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.0500701848274168, 
+        "astig_score": 0.01743048091939453, 
+        "mean": 33513
+      }, 
+      {
+        "img_path": "20170829130311898_295434_5LC_0064_01_redo_001050_0_25_4.tif", 
+        "min": 14864, 
+        "max": 65520, 
+        "focus_score": 22.49388313293457, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -170248, 
+            787902
+          ], 
+          "raster_index": 135, 
+          "raster_pos": [
+            25, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.5005709367667062, 
+        "astig_score": -0.0015714513132244925, 
+        "mean": 33450
+      }, 
+      {
+        "img_path": "20170829130312222_295434_5LC_0064_01_redo_001050_0_26_4.tif", 
+        "min": 14528, 
+        "max": 65520, 
+        "focus_score": 21.925052642822266, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -182748, 
+            787952
+          ], 
+          "raster_index": 136, 
+          "raster_pos": [
+            26, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.0587451768714915, 
+        "astig_score": 0.025830489182120477, 
+        "mean": 33410
+      }, 
+      {
+        "img_path": "20170829130312546_295434_5LC_0064_01_redo_001050_0_27_4.tif", 
+        "min": 13808, 
+        "max": 65520, 
+        "focus_score": 22.241477966308594, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -195246, 
+            787916
+          ], 
+          "raster_index": 137, 
+          "raster_pos": [
+            27, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.26376406315936124, 
+        "astig_score": 0.022206480605084417, 
+        "mean": 33428
+      }, 
+      {
+        "img_path": "20170829130312869_295434_5LC_0064_01_redo_001050_0_28_4.tif", 
+        "min": 14448, 
+        "max": 65520, 
+        "focus_score": 22.05113983154297, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -207749, 
+            787883
+          ], 
+          "raster_index": 138, 
+          "raster_pos": [
+            28, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.104848140298697, 
+        "astig_score": 0.016690958154141296, 
+        "mean": 33389
+      }, 
+      {
+        "img_path": "20170829130313256_295434_5LC_0064_01_redo_001050_0_29_4.tif", 
+        "min": 14016, 
+        "max": 65520, 
+        "focus_score": 22.590227127075195, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -220244, 
+            787902
+          ], 
+          "raster_index": 139, 
+          "raster_pos": [
+            29, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.2802853733301325, 
+        "astig_score": 0.008483642896225883, 
+        "mean": 33414
+      }, 
+      {
+        "img_path": "20170829130313588_295434_5LC_0064_01_redo_001050_0_30_4.tif", 
+        "min": 14624, 
+        "max": 65520, 
+        "focus_score": 21.83873176574707, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -232746, 
+            787872
+          ], 
+          "raster_index": 140, 
+          "raster_pos": [
+            30, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.5691982408534572, 
+        "astig_score": 0.008822349208220661, 
+        "mean": 33448
+      }, 
+      {
+        "img_path": "20170829130313926_295434_5LC_0064_01_redo_001050_0_31_4.tif", 
+        "min": 13488, 
+        "max": 65520, 
+        "focus_score": 22.342010498046875, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -245247, 
+            787907
+          ], 
+          "raster_index": 141, 
+          "raster_pos": [
+            31, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -1.5918571057636681, 
+        "astig_score": 0.017745864929907575, 
+        "mean": 33451
+      }, 
+      {
+        "img_path": "20170829130314275_295434_5LC_0064_01_redo_001050_0_32_4.tif", 
+        "min": 13488, 
+        "max": 65520, 
+        "focus_score": 22.308589935302734, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -257742, 
+            787907
+          ], 
+          "raster_index": 142, 
+          "raster_pos": [
+            32, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.0037886971093696806, 
+        "astig_score": -0.0045661860435036025, 
+        "mean": 33400
+      }, 
+      {
+        "img_path": "20170829130314602_295434_5LC_0064_01_redo_001050_0_33_4.tif", 
+        "min": 14992, 
+        "max": 65520, 
+        "focus_score": 22.20318603515625, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -270242, 
+            787907
+          ], 
+          "raster_index": 143, 
+          "raster_pos": [
+            33, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.9495336178512997, 
+        "astig_score": 0.014005268943311857, 
+        "mean": 33475
+      }, 
+      {
+        "img_path": "20170829130314936_295434_5LC_0064_01_redo_001050_0_34_4.tif", 
+        "min": 13376, 
+        "max": 65520, 
+        "focus_score": 22.243244171142578, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -282739, 
+            787907
+          ], 
+          "raster_index": 144, 
+          "raster_pos": [
+            34, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.7779068232688053, 
+        "astig_score": -0.002555391368817862, 
+        "mean": 33450
+      }, 
+      {
+        "img_path": "20170829130315275_295434_5LC_0064_01_redo_001050_0_35_4.tif", 
+        "min": 13776, 
+        "max": 65520, 
+        "focus_score": 22.459182739257812, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -295239, 
+            787903
+          ], 
+          "raster_index": 145, 
+          "raster_pos": [
+            35, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.002743908279384, 
+        "astig_score": 0.0053907228301061285, 
+        "mean": 33472
+      }, 
+      {
+        "img_path": "20170829130315605_295434_5LC_0064_01_redo_001050_0_36_4.tif", 
+        "min": 14064, 
+        "max": 65520, 
+        "focus_score": 22.14282989501953, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -307742, 
+            787876
+          ], 
+          "raster_index": 146, 
+          "raster_pos": [
+            36, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.7531140254612468, 
+        "astig_score": -0.014517792776649144, 
+        "mean": 33499
+      }, 
+      {
+        "img_path": "20170829130315948_295434_5LC_0064_01_redo_001050_0_37_4.tif", 
+        "min": 13696, 
+        "max": 65520, 
+        "focus_score": 22.614503860473633, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -320239, 
+            787895
+          ], 
+          "raster_index": 147, 
+          "raster_pos": [
+            37, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.4644426735263911, 
+        "astig_score": -0.012801740971900639, 
+        "mean": 33430
+      }, 
+      {
+        "img_path": "20170829130316275_295434_5LC_0064_01_redo_001050_0_38_4.tif", 
+        "min": 13888, 
+        "max": 65520, 
+        "focus_score": 22.238554000854492, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -332744, 
+            787896
+          ], 
+          "raster_index": 148, 
+          "raster_pos": [
+            38, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.0918565272882181, 
+        "astig_score": -0.018420517076630855, 
+        "mean": 33465
+      }, 
+      {
+        "img_path": "20170829130316645_295434_5LC_0064_01_redo_001050_0_39_4.tif", 
+        "min": 15200, 
+        "max": 65520, 
+        "focus_score": 22.710126876831055, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -345240, 
+            787877
+          ], 
+          "raster_index": 149, 
+          "raster_pos": [
+            39, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.7314217987910123, 
+        "astig_score": -0.019122877950507437, 
+        "mean": 33459
+      }, 
+      {
+        "img_path": "20170829130316992_295434_5LC_0064_01_redo_001050_0_40_4.tif", 
+        "min": 14224, 
+        "max": 65520, 
+        "focus_score": 22.17463493347168, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -357741, 
+            787909
+          ], 
+          "raster_index": 150, 
+          "raster_pos": [
+            40, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.9959704617075145, 
+        "astig_score": -0.0187970550044883, 
+        "mean": 33452
+      }, 
+      {
+        "img_path": "20170829130317314_295434_5LC_0064_01_redo_001050_0_41_4.tif", 
+        "min": 14080, 
+        "max": 65520, 
+        "focus_score": 22.31434440612793, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -370235, 
+            787896
+          ], 
+          "raster_index": 151, 
+          "raster_pos": [
+            41, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.5568430688048164, 
+        "astig_score": -0.020916696063005995, 
+        "mean": 33479
+      }, 
+      {
+        "img_path": "20170829130317647_295434_5LC_0064_01_redo_001050_0_42_4.tif", 
+        "min": 13936, 
+        "max": 65520, 
+        "focus_score": 22.215198516845703, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -382739, 
+            787914
+          ], 
+          "raster_index": 152, 
+          "raster_pos": [
+            42, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.1985951214040986, 
+        "astig_score": -0.017939898789250747, 
+        "mean": 33457
+      }, 
+      {
+        "img_path": "20170829130318006_295434_5LC_0064_01_redo_001050_0_43_4.tif", 
+        "min": 14000, 
+        "max": 65520, 
+        "focus_score": 22.729833602905273, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -395233, 
+            787910
+          ], 
+          "raster_index": 153, 
+          "raster_pos": [
+            43, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.028071058141324105, 
+        "astig_score": -0.020862509954339352, 
+        "mean": 33450
+      }, 
+      {
+        "img_path": "20170829130318372_295434_5LC_0064_01_redo_001050_0_44_4.tif", 
+        "min": 14800, 
+        "max": 65520, 
+        "focus_score": 22.73513412475586, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -407727, 
+            787896
+          ], 
+          "raster_index": 154, 
+          "raster_pos": [
+            44, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.016689933759666962, 
+        "astig_score": -0.01676807059510443, 
+        "mean": 33478
+      }, 
+      {
+        "img_path": "20170829130318743_295434_5LC_0064_01_redo_001050_0_45_4.tif", 
+        "min": 13632, 
+        "max": 65520, 
+        "focus_score": 22.530168533325195, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -420235, 
+            787883
+          ], 
+          "raster_index": 155, 
+          "raster_pos": [
+            45, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.28383346070135884, 
+        "astig_score": -0.02489657904389407, 
+        "mean": 33413
+      }, 
+      {
+        "img_path": "20170829130319071_295434_5LC_0064_01_redo_001050_0_46_4.tif", 
+        "min": 13472, 
+        "max": 65520, 
+        "focus_score": 22.44090461730957, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.88", 
+          "stage_pos": [
+            -432732, 
+            787884
+          ], 
+          "raster_index": 156, 
+          "raster_pos": [
+            46, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.7918924225501986, 
+        "astig_score": -0.0163971442625914, 
+        "mean": 33348
+      }, 
+      {
+        "img_path": "20170829130319413_295434_5LC_0064_01_redo_001050_0_47_4.tif", 
+        "min": 14640, 
+        "max": 65520, 
+        "focus_score": 22.336788177490234, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -445235, 
+            787895
+          ], 
+          "raster_index": 157, 
+          "raster_pos": [
+            47, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.7586002019634167, 
+        "astig_score": -0.013741364923333487, 
+        "mean": 33432
+      }, 
+      {
+        "img_path": "20170829130319747_295434_5LC_0064_01_redo_001050_0_48_4.tif", 
+        "min": 13904, 
+        "max": 65520, 
+        "focus_score": 22.22568130493164, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -457732, 
+            787914
+          ], 
+          "raster_index": 158, 
+          "raster_pos": [
+            48, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.4443088419842842, 
+        "astig_score": -0.027840474049114917, 
+        "mean": 33370
+      }, 
+      {
+        "img_path": "20170829130320095_295434_5LC_0064_01_redo_001050_0_49_4.tif", 
+        "min": 14864, 
+        "max": 65520, 
+        "focus_score": 22.215620040893555, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -470229, 
+            787914
+          ], 
+          "raster_index": 159, 
+          "raster_pos": [
+            49, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.644956491139856, 
+        "astig_score": -0.021547902679419178, 
+        "mean": 33347
+      }, 
+      {
+        "img_path": "20170829130320426_295434_5LC_0064_01_redo_001050_0_50_4.tif", 
+        "min": 14432, 
+        "max": 65520, 
+        "focus_score": 22.29914093017578, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -482730, 
+            787896
+          ], 
+          "raster_index": 160, 
+          "raster_pos": [
+            50, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.0805527836650404, 
+        "astig_score": -0.018555813864618888, 
+        "mean": 33378
+      }, 
+      {
+        "img_path": "20170829130320765_295434_5LC_0064_01_redo_001050_0_51_4.tif", 
+        "min": 13744, 
+        "max": 65520, 
+        "focus_score": 22.46076202392578, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -495228, 
+            787904
+          ], 
+          "raster_index": 161, 
+          "raster_pos": [
+            51, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.02110211278302435, 
+        "astig_score": -0.0174491310102536, 
+        "mean": 33378
+      }, 
+      {
+        "img_path": "20170829130321133_295434_5LC_0064_01_redo_001050_0_52_4.tif", 
+        "min": 13584, 
+        "max": 65520, 
+        "focus_score": 22.709203720092773, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -507727, 
+            787884
+          ], 
+          "raster_index": 162, 
+          "raster_pos": [
+            52, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.058975302150629516, 
+        "astig_score": -0.017071783805882843, 
+        "mean": 33419
+      }, 
+      {
+        "img_path": "20170829130321491_295434_5LC_0064_01_redo_001050_0_53_4.tif", 
+        "min": 13376, 
+        "max": 65520, 
+        "focus_score": 22.76065444946289, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -520225, 
+            787909
+          ], 
+          "raster_index": 163, 
+          "raster_pos": [
+            53, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.22905823709520615, 
+        "astig_score": -0.027269986248461765, 
+        "mean": 33344
+      }, 
+      {
+        "img_path": "20170829130321831_295434_5LC_0064_01_redo_001050_0_54_4.tif", 
+        "min": 13824, 
+        "max": 65520, 
+        "focus_score": 22.622852325439453, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -532726, 
+            787896
+          ], 
+          "raster_index": 164, 
+          "raster_pos": [
+            54, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.639826997208226, 
+        "astig_score": -0.020312948118229153, 
+        "mean": 33321
+      }, 
+      {
+        "img_path": "20170829130322154_295434_5LC_0064_01_redo_001050_0_55_4.tif", 
+        "min": 13952, 
+        "max": 65520, 
+        "focus_score": 22.44849395751953, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -545226, 
+            787909
+          ], 
+          "raster_index": 165, 
+          "raster_pos": [
+            55, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.71920145149395, 
+        "astig_score": -0.010894334896364889, 
+        "mean": 33312
+      }, 
+      {
+        "img_path": "20170829130322503_295434_5LC_0064_01_redo_001050_0_56_4.tif", 
+        "min": 14544, 
+        "max": 65520, 
+        "focus_score": 22.286518096923828, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -557729, 
+            787895
+          ], 
+          "raster_index": 166, 
+          "raster_pos": [
+            56, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.3914960594213285, 
+        "astig_score": -0.025841139262491795, 
+        "mean": 33317
+      }, 
+      {
+        "img_path": "20170829130322836_295434_5LC_0064_01_redo_001050_0_57_4.tif", 
+        "min": 14256, 
+        "max": 65520, 
+        "focus_score": 22.747005462646484, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -570222, 
+            787901
+          ], 
+          "raster_index": 167, 
+          "raster_pos": [
+            57, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.22355718543751385, 
+        "astig_score": -0.016509102917161216, 
+        "mean": 33244
+      }, 
+      {
+        "img_path": "20170829130323152_295434_5LC_0064_01_redo_001050_0_58_4.tif", 
+        "min": 13728, 
+        "max": 65520, 
+        "focus_score": 22.2543888092041, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -582724, 
+            787904
+          ], 
+          "raster_index": 168, 
+          "raster_pos": [
+            58, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.7766915963042772, 
+        "astig_score": -0.03295337510428764, 
+        "mean": 33270
+      }, 
+      {
+        "img_path": "20170829130323527_295434_5LC_0064_01_redo_001050_0_59_4.tif", 
+        "min": 14064, 
+        "max": 65520, 
+        "focus_score": 22.612689971923828, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -595222, 
+            787895
+          ], 
+          "raster_index": 169, 
+          "raster_pos": [
+            59, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.042093257346265955, 
+        "astig_score": -0.019760028987593502, 
+        "mean": 33356
+      }, 
+      {
+        "img_path": "20170829130323860_295434_5LC_0064_01_redo_001050_0_60_4.tif", 
+        "min": 14560, 
+        "max": 65520, 
+        "focus_score": 22.2831974029541, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -607718, 
+            787898
+          ], 
+          "raster_index": 170, 
+          "raster_pos": [
+            60, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.6950418782514706, 
+        "astig_score": -0.03533086076390375, 
+        "mean": 33323
+      }, 
+      {
+        "img_path": "20170829130324207_295434_5LC_0064_01_redo_001050_0_61_4.tif", 
+        "min": 14256, 
+        "max": 65520, 
+        "focus_score": 22.62599754333496, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -620218, 
+            787909
+          ], 
+          "raster_index": 171, 
+          "raster_pos": [
+            61, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.42854051933402587, 
+        "astig_score": -0.03368890840666364, 
+        "mean": 33275
+      }, 
+      {
+        "img_path": "20170829130324543_295434_5LC_0064_01_redo_001050_0_62_4.tif", 
+        "min": 14208, 
+        "max": 65520, 
+        "focus_score": 22.560508728027344, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -632721, 
+            787891
+          ], 
+          "raster_index": 172, 
+          "raster_pos": [
+            62, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.19452494029967501, 
+        "astig_score": -0.025878662897806964, 
+        "mean": 33304
+      }, 
+      {
+        "img_path": "20170829130324882_295434_5LC_0064_01_redo_001050_0_63_4.tif", 
+        "min": 13952, 
+        "max": 65520, 
+        "focus_score": 22.313064575195312, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -645216, 
+            787901
+          ], 
+          "raster_index": 173, 
+          "raster_pos": [
+            63, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.9401053592743799, 
+        "astig_score": -0.020799939744786295, 
+        "mean": 33304
+      }, 
+      {
+        "img_path": "20170829130325251_295434_5LC_0064_01_redo_001050_0_64_4.tif", 
+        "min": 13440, 
+        "max": 65520, 
+        "focus_score": 22.207704544067383, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -657715, 
+            787918
+          ], 
+          "raster_index": 174, 
+          "raster_pos": [
+            64, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.5925915113841729, 
+        "astig_score": -0.013379047473605975, 
+        "mean": 33421
+      }, 
+      {
+        "img_path": "20170829130325588_295434_5LC_0064_01_redo_001050_0_65_4.tif", 
+        "min": 14416, 
+        "max": 65520, 
+        "focus_score": 22.539701461791992, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -670215, 
+            787895
+          ], 
+          "raster_index": 175, 
+          "raster_pos": [
+            65, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.3826082427924151, 
+        "astig_score": -0.01158473378836558, 
+        "mean": 33333
+      }, 
+      {
+        "img_path": "20170829130325938_295434_5LC_0064_01_redo_001050_0_66_4.tif", 
+        "min": 13872, 
+        "max": 65520, 
+        "focus_score": 22.285690307617188, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -682718, 
+            787910
+          ], 
+          "raster_index": 176, 
+          "raster_pos": [
+            66, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.0067479024179793, 
+        "astig_score": -0.022322211516387344, 
+        "mean": 33172
+      }, 
+      {
+        "img_path": "20170829130326289_295434_5LC_0064_01_redo_001050_0_67_4.tif", 
+        "min": 14144, 
+        "max": 65520, 
+        "focus_score": 22.62279510498047, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -695215, 
+            787883
+          ], 
+          "raster_index": 177, 
+          "raster_pos": [
+            67, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.6296804402325743, 
+        "astig_score": -0.015725826243832883, 
+        "mean": 33172
+      }, 
+      {
+        "img_path": "20170829130326660_295434_5LC_0064_01_redo_001050_0_68_4.tif", 
+        "min": 14096, 
+        "max": 65520, 
+        "focus_score": 22.801069259643555, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -707715, 
+            787904
+          ], 
+          "raster_index": 178, 
+          "raster_pos": [
+            68, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.9235395225379498, 
+        "astig_score": -0.011638028331819714, 
+        "mean": 33237
+      }, 
+      {
+        "img_path": "20170829130326986_295434_5LC_0064_01_redo_001050_0_69_4.tif", 
+        "min": 13904, 
+        "max": 65520, 
+        "focus_score": 22.032991409301758, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -720217, 
+            787922
+          ], 
+          "raster_index": 179, 
+          "raster_pos": [
+            69, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.25873600195421076, 
+        "astig_score": -0.01745964602989735, 
+        "mean": 33245
+      }, 
+      {
+        "img_path": "20170829130327315_295434_5LC_0064_01_redo_001050_0_70_4.tif", 
+        "min": 13728, 
+        "max": 65520, 
+        "focus_score": 22.37601089477539, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -732715, 
+            787921
+          ], 
+          "raster_index": 180, 
+          "raster_pos": [
+            70, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.037536276736370874, 
+        "astig_score": -0.008821851435001265, 
+        "mean": 33263
+      }, 
+      {
+        "img_path": "20170829130327635_295434_5LC_0064_01_redo_001050_0_71_4.tif", 
+        "min": 14352, 
+        "max": 65520, 
+        "focus_score": 21.459104537963867, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -745211, 
+            787903
+          ], 
+          "raster_index": 181, 
+          "raster_pos": [
+            71, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.7367400126593684, 
+        "astig_score": -0.019101655111249984, 
+        "mean": 33267
+      }, 
+      {
+        "img_path": "20170829130327968_295434_5LC_0064_01_redo_001050_0_72_4.tif", 
+        "min": 13808, 
+        "max": 65520, 
+        "focus_score": 22.63551902770996, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -757710, 
+            787892
+          ], 
+          "raster_index": 182, 
+          "raster_pos": [
+            72, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.6414782756411292, 
+        "astig_score": -0.018524552375807562, 
+        "mean": 33161
+      }, 
+      {
+        "img_path": "20170829130328283_295434_5LC_0064_01_redo_001050_0_73_4.tif", 
+        "min": 14288, 
+        "max": 65520, 
+        "focus_score": 22.03899383544922, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -770209, 
+            787896
+          ], 
+          "raster_index": 183, 
+          "raster_pos": [
+            73, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.984408275409853, 
+        "astig_score": -0.01888050219991863, 
+        "mean": 33267
+      }, 
+      {
+        "img_path": "20170829130328616_295434_5LC_0064_01_redo_001050_0_74_4.tif", 
+        "min": 13104, 
+        "max": 65520, 
+        "focus_score": 22.538637161254883, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -782710, 
+            787892
+          ], 
+          "raster_index": 184, 
+          "raster_pos": [
+            74, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.22254676054515912, 
+        "astig_score": -0.01691709299937926, 
+        "mean": 33214
+      }, 
+      {
+        "img_path": "20170829130328969_295434_5LC_0064_01_redo_001050_0_75_4.tif", 
+        "min": 14208, 
+        "max": 65520, 
+        "focus_score": 22.107091903686523, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -795207, 
+            787896
+          ], 
+          "raster_index": 185, 
+          "raster_pos": [
+            75, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.5368338882029466, 
+        "astig_score": -0.012120234794610723, 
+        "mean": 33214
+      }, 
+      {
+        "img_path": "20170829130329303_295434_5LC_0064_01_redo_001050_0_76_4.tif", 
+        "min": 14416, 
+        "max": 65520, 
+        "focus_score": 22.115861892700195, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -807709, 
+            787903
+          ], 
+          "raster_index": 186, 
+          "raster_pos": [
+            76, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.3288051804306336, 
+        "astig_score": -0.03915965830949468, 
+        "mean": 33171
+      }, 
+      {
+        "img_path": "20170829130329643_295434_5LC_0064_01_redo_001050_0_77_4.tif", 
+        "min": 13984, 
+        "max": 65520, 
+        "focus_score": 22.483983993530273, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -820207, 
+            787869
+          ], 
+          "raster_index": 187, 
+          "raster_pos": [
+            77, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.10697419653197338, 
+        "astig_score": -0.013775313424292647, 
+        "mean": 33216
+      }, 
+      {
+        "img_path": "20170829130329990_295434_5LC_0064_01_redo_001050_0_78_4.tif", 
+        "min": 13616, 
+        "max": 65520, 
+        "focus_score": 22.256467819213867, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -832706, 
+            787935
+          ], 
+          "raster_index": 188, 
+          "raster_pos": [
+            78, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.45857566347494527, 
+        "astig_score": -0.01473840411479421, 
+        "mean": 33215
+      }, 
+      {
+        "img_path": "20170829130330325_295434_5LC_0064_01_redo_001050_0_79_4.tif", 
+        "min": 13120, 
+        "max": 65520, 
+        "focus_score": 22.082218170166016, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -845204, 
+            787891
+          ], 
+          "raster_index": 189, 
+          "raster_pos": [
+            79, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.107097994744679, 
+        "astig_score": -0.022844959747597433, 
+        "mean": 33192
+      }, 
+      {
+        "img_path": "20170829130330660_295434_5LC_0064_01_redo_001050_0_80_4.tif", 
+        "min": 14144, 
+        "max": 65520, 
+        "focus_score": 21.775331497192383, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -857704, 
+            787903
+          ], 
+          "raster_index": 190, 
+          "raster_pos": [
+            80, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.8239282483065045, 
+        "astig_score": -0.013994660470982244, 
+        "mean": 33187
+      }, 
+      {
+        "img_path": "20170829130331005_295434_5LC_0064_01_redo_001050_0_81_4.tif", 
+        "min": 14304, 
+        "max": 65520, 
+        "focus_score": 22.35781478881836, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -870202, 
+            787889
+          ], 
+          "raster_index": 191, 
+          "raster_pos": [
+            81, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.36216315702742363, 
+        "astig_score": -0.02113894131271409, 
+        "mean": 33122
+      }, 
+      {
+        "img_path": "20170829130331329_295434_5LC_0064_01_redo_001050_0_82_4.tif", 
+        "min": 13520, 
+        "max": 65520, 
+        "focus_score": 22.172170639038086, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.89", 
+          "stage_pos": [
+            -882705, 
+            787914
+          ], 
+          "raster_index": 192, 
+          "raster_pos": [
+            82, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.9840874912248833, 
+        "astig_score": -0.020820121566515703, 
+        "mean": 33090
+      }, 
+      {
+        "img_path": "20170829130331660_295434_5LC_0064_01_redo_001050_0_83_4.tif", 
+        "min": 14256, 
+        "max": 65520, 
+        "focus_score": 22.744491577148438, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.90", 
+          "stage_pos": [
+            -895199, 
+            787894
+          ], 
+          "raster_index": 193, 
+          "raster_pos": [
+            83, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.1136118753656041, 
+        "astig_score": -0.013500071926974253, 
+        "mean": 33075
+      }, 
+      {
+        "img_path": "20170829130331993_295434_5LC_0064_01_redo_001050_0_84_4.tif", 
+        "min": 12976, 
+        "max": 65520, 
+        "focus_score": 22.402164459228516, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.90", 
+          "stage_pos": [
+            -907701, 
+            787903
+          ], 
+          "raster_index": 194, 
+          "raster_pos": [
+            84, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 1.1317818849170551, 
+        "astig_score": -0.01178651587398375, 
+        "mean": 33020
+      }, 
+      {
+        "img_path": "20170829130332323_295434_5LC_0064_01_redo_001050_0_85_4.tif", 
+        "min": 14416, 
+        "max": 65520, 
+        "focus_score": 22.39997100830078, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.90", 
+          "stage_pos": [
+            -920201, 
+            787892
+          ], 
+          "raster_index": 195, 
+          "raster_pos": [
+            85, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.059139395724363546, 
+        "astig_score": -0.004139274740138609, 
+        "mean": 32939
+      }, 
+      {
+        "img_path": "20170829130332648_295434_5LC_0064_01_redo_001050_0_86_4.tif", 
+        "min": 13824, 
+        "max": 65520, 
+        "focus_score": 21.931880950927734, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.90", 
+          "stage_pos": [
+            -932699, 
+            787909
+          ], 
+          "raster_index": 196, 
+          "raster_pos": [
+            86, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.9579379368141843, 
+        "astig_score": -0.02181365889639719, 
+        "mean": 32992
+      }, 
+      {
+        "img_path": "20170829130332956_295434_5LC_0064_01_redo_001050_0_87_4.tif", 
+        "min": 13936, 
+        "max": 65520, 
+        "focus_score": 22.750898361206055, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.90", 
+          "stage_pos": [
+            -945199, 
+            787904
+          ], 
+          "raster_index": 197, 
+          "raster_pos": [
+            87, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": -0.15635130813509446, 
+        "astig_score": -0.01772774080070261, 
+        "mean": 33020
+      }, 
+      {
+        "img_path": "20170829130333283_295434_5LC_0064_01_redo_001050_0_88_4.tif", 
+        "min": 13712, 
+        "max": 65520, 
+        "focus_score": 21.9399471282959, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.90", 
+          "stage_pos": [
+            -957696, 
+            787882
+          ], 
+          "raster_index": 198, 
+          "raster_pos": [
+            88, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.9708205884516157, 
+        "astig_score": -0.018455503361259337, 
+        "mean": 32882
+      }, 
+      {
+        "img_path": "20170829130333618_295434_5LC_0064_01_redo_001050_0_89_4.tif", 
+        "min": 14720, 
+        "max": 65520, 
+        "focus_score": 22.065168380737305, 
+        "img_meta": {
+          "angle": 180.0, 
+          "pixel_size_y_move": 3.5, 
+          "fps": "2.90", 
+          "stage_pos": [
+            -970196, 
+            787922
+          ], 
+          "raster_index": 199, 
+          "raster_pos": [
+            89, 
+            4
+          ], 
+          "pixel_size_x_move": 3.5, 
+          "pixel_size": 3.5
+        }, 
+        "astig_angle": 0.8155298087756448, 
+        "astig_score": -0.019413292460075348, 
+        "mean": 32937
+      }
+    ]
+  }
+]

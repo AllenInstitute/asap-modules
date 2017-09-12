@@ -9,7 +9,6 @@ import multiprocessing as mp
 from functools import partial
 import urllib
 import urlparse
-import tempfile
 
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.dataimport.apply_mipmaps_to_render"
@@ -35,14 +34,15 @@ example = {
 def addMipMapsToRender(render, input_stack, mipmap_dir, imgformat, levels, z):
     tilespecPaths = []
 
-    tilespecs = render.run(renderapi.tilespec.get_tile_specs_from_z, input_stack, z)
+    tilespecs = render.run(renderapi.tilespec.get_tile_specs_from_z,
+                           input_stack, z)
 
     print z
     for ts in tilespecs:
         mm1 = ts.ip.mipMapLevels[0]
 
         oldUrl = mm1.imageUrl
-        filepath = urllib.unquote(urlparse.urlparse(str(oldUrl).path))
+        filepath = urllib.unquote(urlparse.urlparse(str(oldUrl)).path)
         # filepath = str(oldUrl).lstrip('file:/')
         # filepath = filepath.replace("%20", " ")
 
@@ -56,21 +56,13 @@ def addMipMapsToRender(render, input_stack, mipmap_dir, imgformat, levels, z):
             imgf = ".tif"
 
         for i in range(1, levels+1):
-            scUrl = 'file:' + os.path.join(mipmap_dir, str(i), filepath) + imgf
+            scUrl = 'file:' + os.path.join(
+                mipmap_dir, str(i), filepath.lstrip(os.sep)) + imgf
             print scUrl
             mm1 = renderapi.tilespec.MipMapLevel(level=i, imageUrl=scUrl)
             ts.ip.update(mm1)
 
-        tempjson = tempfile.NamedTemporaryFile(
-            suffix=".json", mode='r', delete=False)
-        tempjson.close()
-        tsjson = tempjson.name
-
-        with open(tsjson, 'w') as f:
-            renderapi.utils.renderdump(tilespecs, f)
-        f.close()
-        tilespecPaths.append(tsjson)
-
+    tilespecPaths.append(renderapi.utils.renderdump_temp(tilespecs))
     return tilespecPaths
 
 
@@ -154,7 +146,8 @@ class AddMipMapsToStack(RenderModule):
             self.args['levels'])
 
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
-            tilespecPaths = pool.map(mypartial, zvalues)
+            tilespecPaths = [i for l in pool.map(mypartial, zvalues)
+                             for i in l]
 
         # add the tile spec to render stack
         try:
