@@ -65,9 +65,15 @@ def test_consolidate(render,test_stack):
     assert(input_z[0] not in output_z)
     assert(len(output_z)==len(input_z)-1)
 
-    #make sure the output_tilespecs are correct
+    #make sure the input_tilespecs are correct
+    input_tilespecs = renderapi.tilespec.get_tile_specs_from_stack(test_stack, render=render)   
+    # 2lens correction, 2 affines
+    assert all([len(ts.tforms)==4 for ts in input_tilespecs])
+
+    #make sure the output_tilespecs have the right number of transforms
     output_tilespecs = renderapi.tilespec.get_tile_specs_from_stack(output_stack, render=render)   
-    assert all([len(ts.tforms)==2 for ts in output_tilespecs])
+    #2 lens correction, 1 combined affine
+    assert all([len(ts.tforms)==3 for ts in output_tilespecs])
 
     input_tilespec = renderapi.tilespec.get_tile_spec(test_stack,output_tilespecs[0].tileId, render=render)
     orig_tform = input_tilespec.tforms[1]
