@@ -1,8 +1,65 @@
 import renderapi
+import numpy as np
 from rendermodules.lens_correction.apply_lens_correction import ApplyLensCorrection
-from test_data import render_host,render_port,client_script_location
+from rendermodules.lens_correction.lens_correction import LensCorrectionModule
+from test_data import render_host, render_port, client_script_location
+
+def test_lens_correction():
+    example_input = {
+        "manifest_path": "/allen/programs/celltypes/workgroups/em-connectomics/samk/lc_test_data/Wij_Set_594451332/594089217_594451332/_trackem_20170502174048_295434_5LC_0064_01_20170502174047_reference_0_.txt",
+        "project_path": "/allen/programs/celltypes/workgroups/em-connectomics/samk/lc_test_data/Wij_Set_594451332/594089217_594451332/",
+        "fiji_path": "/allen/programs/celltypes/workgroups/em-connectomics/samk/Fiji.app/ImageJ-linux64",
+        "grid_size": 3,
+        "heap_size": 20,
+        "outfile": "test_LC.json",
+        "processing_directory": None,
+        "SIFT_params": {
+            "initialSigma": 1.6,
+            "steps": 3,
+            "minOctaveSize": 800,
+            "maxOctaveSize": 1200,
+            "fdSize": 4,
+            "fdBins": 8
+        },
+        "align_params": {
+            "rod": 0.92,
+            "maxEpsilon": 5.0,
+            "minInlierRatio": 0.0,
+            "minNumInliers": 5,
+            "expectedModelIndex": 1,
+            "multipleHypotheses": True,
+            "rejectIdentity": True,
+            "identityTolerance": 5.0,
+            "tilesAreInPlace": True,
+            "desiredModelIndex": 0,
+            "regularize": False,
+            "maxIterationsOptimize": 2000,
+            "maxPlateauWidthOptimize": 200,
+            "dimension": 5,
+            "lambdaVal": 0.01,
+            "clearTransform": True,
+            "visualize": False
+        }
+    }
+
+    mod = LensCorrectionModule(input_data=example_input, args=[])
+    mod.run()
+
+    with open(example_input["outfile"]) as outjson:
+        test_tform = json.load(outjson)
+
+    good_tform_array = map(float, good_tform['transform']['dataString'].split().string())
+    good_tform_array = np.asarray(good_tform_array)
+
+    test_tform_array = map(float, test_tform['transform']['dataString'].split().string())
+    test_tform_array = np.asarray(test_tform_array)
+
+    assert good_tform['transform']['type'] == test_tform['transform']['type']
+    assert good_tform['transform']['className'] == test_tform['transform']['className']
+    assert np.allclose(test_tform_array, good_form_array, rtol=1e-00)
+
 def test_apply_lens_correction():
-     example_input = {
+    example_input = {
         "render": {
             "host": render_host,
             "port": render_port,
@@ -52,6 +109,8 @@ def test_apply_lens_correction():
         },
         "refId": None
     }
-    mod=ApplyLensCorrection(input_data = example_input,args=[])
+
+    mod = ApplyLensCorrection(input_data=example_input, args=[])
     mod.run()
+    
     assert True
