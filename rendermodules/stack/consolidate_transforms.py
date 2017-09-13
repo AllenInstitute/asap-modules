@@ -16,10 +16,11 @@ example_json = {
         "client_scripts": "/pipeline/render/render-ws-java-client/src/main/scripts"
     },
     "stack": "ROUGHALIGN_LENS_DAPI_1_deconvnew",
-    "output_stack" : "ROUGHALIGN_LENS_DAPI_1_deconvnew_CONS",
-    "transforms_slice" : ":",
+    "output_stack": "ROUGHALIGN_LENS_DAPI_1_deconvnew_CONS",
+    "transforms_slice": ":",
     "pool_size": 10,
 }
+
 
 class ConsolidateTransformsParameters(RenderParameters):
     stack = Str(required=True,
@@ -40,10 +41,12 @@ class ConsolidateTransformsParameters(RenderParameters):
                  description="""minimaximummum z to consolidate in read in from stack and write to output_stack\
                  default to maximum z in stack""")
 
+
 class ConsolidateTransformsOutputParameters(mm.Schema):
-    output_stack = Str(required=True,description = "name of output stack")
-    numZ = Int(required=True,description="Number of z values processed")
-    
+    output_stack = Str(required=True, description="name of output stack")
+    numZ = Int(required=True, description="Number of z values processed")
+
+
 def consolidate_transforms(tforms, logger, makePolyDegree=0):
     tform_total = AffineModel()
     start_index = 0
@@ -75,60 +78,66 @@ def consolidate_transforms(tforms, logger, makePolyDegree=0):
         else:
             new_tform_list.append(tform_total)
     return new_tform_list
-    
 
-def process_z(render, logger, stack, outstack, transform_slice,z):
-    tilespecs = renderapi.tilespec.get_tile_specs_from_z(
+
+def process_z(render, logger, stack, outstack, transform_slice, z):
+    resolved_tiles = renderapi.resolvedtiles.get_resolved_tiles_from_z(
         stack, z, render=render)
-    for ts in tilespecs:
+
+    for ts in resolved_tiles.tilespecs:
         logger.debug('process_z_make_json: tileId {}'.format(ts.tileId))
-        ts.tforms[transform_slice] = consolidate_transforms(ts.tforms[transform_slice], logger)
+        ts.tforms[transform_slice] = consolidate_transforms(
+            ts.tforms[transform_slice], logger)
         logger.debug('consolatedate tformlist {}'.format(ts.tforms[0]))
 
     logger.debug("tileid:{} transforms:{}".format(
-        tilespecs[0].tileId, tilespecs[0].tforms))
-    json_filepath=renderapi.utils.renderdump_temp(tilespecs)
-    return json_filepath
+        resolved_tiles.tilespecs[0].tileId, resolved_tiles.tilespecs[0].tforms))
+    renderapi.client.import_tilespecs(outstack, resolved_tiles.tilespecs,
+                                      resolved_tiles.transforms, render=render)
+    #json_filepath = renderapi.utils.renderdump_temp(resolved_tiles.tilespecs)
+    return resolved_tiles
 
 
 class ConsolidateTransforms(RenderModule):
     default_schema = ConsolidateTransformsParameters
     default_output_schema = ConsolidateTransformsOutputParameters
+
     def run(self):
         stack = self.args['stack']
         outstack = self.args.get('output_stack', None)
         if outstack is None:
             outstack = stack + self.args['postfix']
 
-        #get z values in z value range specified or dynamically
-        #choose
+        # get z values in z value range specified or dynamically
+        # choose
         zvalues = np.array(self.render.run(
             renderapi.stack.get_z_values_for_stack, stack))
-        minZ = self.args.get('minZ',np.min(zvalues))
-        maxZ = self.args.get('maxZ',np.max(zvalues))
-        zvalues = zvalues[zvalues>=minZ]
-        zvalues = zvalues[zvalues<=maxZ]
-
-        with renderapi.client.WithPool(self.args['pool_size']) as pool:
-            json_files = pool.map(partial(
-                                  process_z,
-                                  self.render,
-                                  stack,
-                                  outstack,
-                                  self.logger,
-                                  self.args['transforms_slice']), zvalues)
+        minZ = self.args.get('minZ', np.min(zvalues))
+        maxZ = self.args.get('maxZ', np.max(zvalues))
+        zvalues = zvalues[zvalues >= minZ]
+        zvalues = zvalues[zvalues <= maxZ]
 
         self.render.run(renderapi.stack.create_stack, outstack)
-        self.render.run(
-            renderapi.client.import_jsonfiles_parallel, outstack, json_files)
+        with renderapi.client.WithPool(self.args['pool_size']) as pool:
+            resolved_tiles_list = pool.map(partial(
+                                  process_z,
+                                  self.render,
+                                  self.logger,
+                                  stack,
+                                  outstack,
+                                  self.args['transforms_slice']), zvalues)
+
+        
+        # self.render.run(
+        #     renderapi.client.import_jsonfiles_parallel, outstack, json_files)
 
         output_d = {
-            "output_stack":outstack,
-            "numZ":len(zvalues)
+            "output_stack": outstack,
+            "numZ": len(zvalues)
         }
         self.output(output_d)
 
 
 if __name__ == "__main__":
-    mod = ConsolidateTransforms(input_data = example_json)
+    mod = ConsolidateTransforms(input_data=example_json)
     mod.run()
