@@ -46,7 +46,7 @@ def test_stack(render,render_example_tilespec_and_transforms):
 def test_consolidate(render,test_stack):
     output_stack = test_stack + "_CONS"
     input_z = np.array(renderapi.stack.get_z_values_for_stack(test_stack,render=render))
-
+    print input_z
     params = {
         "render":render_params,
         "stack": test_stack,
@@ -54,7 +54,8 @@ def test_consolidate(render,test_stack):
         "transforms_slice" : "1:",
         "pool_size": 2,
         "minZ":input_z[1],
-        "maxZ":np.max(input_z)
+        "maxZ":np.max(input_z),
+        "output_json":"test.json"
     }
     
     mod = ConsolidateTransforms(input_data = params,args=[])
@@ -68,11 +69,15 @@ def test_consolidate(render,test_stack):
     output_tilespecs = renderapi.tilespec.get_tile_specs_from_stack(output_stack, render=render)   
     assert all([len(ts.tforms)==2 for ts in output_tilespecs])
 
-    input_tilespec = renderapi.tilespec.get_tile_spec(output_stack,output_tilespecs[0].tileId, render=render)
+    input_tilespec = renderapi.tilespec.get_tile_spec(test_stack,output_tilespecs[0].tileId, render=render)
     orig_tform = input_tilespec.tforms[1]
     cons_tform = output_tilespecs[0].tforms[1]
-    for orig_elem,new_elem in zip(np.ravel(orig_tform),np.ravel(cons_tform)):
-        assert(np.abs(orig_elem*3.0 - new_elem)<EPSILON)
+    expected_new=renderapi.transform.AffineModel(3.0,0,0,3.0,0,0).concatenate(orig_tform)
+    print input_tilespec.tforms
+    print orig_tform.M
+    print cons_tform.M
+    for orig_elem,new_elem in zip(np.ravel(expected_new.M),np.ravel(cons_tform.M)):
+        assert(np.abs(orig_elem - new_elem)<EPSILON)
 
 
     
