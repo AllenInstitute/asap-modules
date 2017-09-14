@@ -4,3 +4,4 @@ numpy
 pillow
 pathos
 tifffile
+pathlib

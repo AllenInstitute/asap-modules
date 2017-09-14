@@ -20,12 +20,15 @@ def create_mipmaps(inputImage, outputDirectory='.', mipmaplevels=[1, 2, 3],
         outdir = os.path.join(outputDirectory, str(level),
                               os.path.dirname(inputImage[1:]))
 
-        if not os.path.isdir(outdir):
-            os.makedirs(outdir, 0775)
+        try:
+            os.makedirs(outdir, 0o775)
+        except OSError as e:
+            pass  # TODO better validation
 
         outpath = os.path.join(outputDirectory, str(level),
                                '{basename}.{fmt}'.format(
-                                   basename=inputImage[1:], fmt=outputformat))
+                                   basename=inputImage.lstrip(os.sep),
+                                   fmt=outputformat))
 
         print outpath
         try:
