@@ -24,7 +24,10 @@ class RenderClientParameters(argschema.schemas.DefaultSchema):
 
 
 class RenderParameters(argschema.ArgSchema):
-    render = argschema.fields.Nested(RenderClientParameters)
+    render = argschema.fields.Nested(
+        RenderClientParameters,
+        required=True,
+        description="parameters to connect to render server")
 
 class ArgSchemaModule(argschema.ArgSchemaParser):
     default_schema = None
