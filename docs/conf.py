@@ -87,8 +87,16 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
 
+import sphinx_rtd_theme
+html_theme = "sphinx_rtd_theme"
+html_theme_path = ["_themes", ]
+
+# html_context = {
+#     'css_files': [
+#         '_static/theme_overrides.css',  # override wide tables in RTD theme
+#         ],
+#      }
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
@@ -183,3 +191,4 @@ intersphinx_mapping = {'marshmallow':('http://marshmallow.readthedocs.io/en/late
 
 def setup(app):
     app.connect('autodoc-process-docstring',process_schemas)
+    app.add_stylesheet("theme_overrides.css")
