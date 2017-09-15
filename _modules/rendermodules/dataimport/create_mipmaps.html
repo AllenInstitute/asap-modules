@@ -62,12 +62,15 @@
         <span class="n">outdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outputDirectory</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">level</span><span class="p">),</span>
                               <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">inputImage</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">outdir</span><span class="p">):</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="mi">0775</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="mo">0o775</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">pass</span>  <span class="c1"># TODO better validation</span>
 
         <span class="n">outpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outputDirectory</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">level</span><span class="p">),</span>
                                <span class="s1">&#39;</span><span class="si">{basename}</span><span class="s1">.</span><span class="si">{fmt}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                                   <span class="n">basename</span><span class="o">=</span><span class="n">inputImage</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">fmt</span><span class="o">=</span><span class="n">outputformat</span><span class="p">))</span>
+                                   <span class="n">basename</span><span class="o">=</span><span class="n">inputImage</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">),</span>
+                                   <span class="n">fmt</span><span class="o">=</span><span class="n">outputformat</span><span class="p">))</span>
 
         <span class="nb">print</span> <span class="n">outpath</span>
         <span class="k">try</span><span class="p">:</span>

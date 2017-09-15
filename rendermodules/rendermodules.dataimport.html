@@ -70,47 +70,110 @@
 <dd><p>Bases: <a class="reference internal" href="rendermodules.module.html#rendermodules.module.render_module.RenderParameters" title="rendermodules.module.render_module.RenderParameters"><code class="xref py py-class docutils literal"><span class="pre">rendermodules.module.render_module.RenderParameters</span></code></a></p>
 <blockquote>
 <div>This schema is designed to be a schema_type for an ArgSchemaParser object</div></blockquote>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<dl class="last docutils">
-<dt>keys: (field_type : raw_type) description</dt>
-<dd><table class="first last docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
+<table border="1" class="colwidths-given docutils" id="id1">
+<caption><span class="caption-text">AddMipMapsToStackParameters</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="15%" />
+<col width="40%" />
+<col width="15%" />
+<col width="15%" />
+<col width="15%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">key</th>
+<th class="head">description</th>
+<th class="head">default</th>
+<th class="head">field_type</th>
+<th class="head">json_type</th>
+</tr>
+</thead>
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">imgformat:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) mipmap image format, default is tiff (default = tiff)</td>
+<tr class="row-even"><td>imgformat</td>
+<td>mipmap image format, default is tiff</td>
+<td>tiff</td>
+<td><a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">String</span></code></a></td>
+<td>unicode</td>
 </tr>
-<tr class="field-even field"><th class="field-name">input_stack:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) stack for which the mipmaps are to be generated REQUIRED</td>
+<tr class="row-odd"><td>input_stack</td>
+<td>stack for which the mipmaps are to be generated</td>
+<td>(REQUIRED)</td>
+<td><a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">String</span></code></a></td>
+<td>unicode</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">output_json:</th><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.OutputFile" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.files.OutputFile</span></code></a> : unicode) file path to output json file</td>
+<tr class="row-even"><td>output_json</td>
+<td>file path to output json file</td>
+<td>NA</td>
+<td><a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.OutputFile" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">OutputFile</span></code></a></td>
+<td>unicode</td>
 </tr>
-<tr class="field-even field"><th class="field-name">log_level:</th><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.loglevel.LogLevel" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.loglevel.LogLevel</span></code></a> : unicode) set the logging level of the module (default = ERROR)</td>
+<tr class="row-odd"><td>log_level</td>
+<td>set the logging level of the module</td>
+<td>ERROR</td>
+<td><a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.loglevel.LogLevel" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">LogLevel</span></code></a></td>
+<td>unicode</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">render:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Nested" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Nested</span></code></a> : dict(<a class="reference internal" href="rendermodules.module.html#rendermodules.module.render_module.RenderClientParameters" title="rendermodules.module.render_module.RenderClientParameters"><code class="xref py py-class docutils literal"><span class="pre">RenderClientParameters</span></code></a>)) no description</td>
+<tr class="row-even"><td>render</td>
+<td>no description</td>
+<td>NA</td>
+<td><a class="reference internal" href="rendermodules.module.html#rendermodules.module.render_module.RenderClientParameters" title="rendermodules.module.render_module.RenderClientParameters"><code class="xref py py-class docutils literal"><span class="pre">RenderClientParameters</span></code></a></td>
+<td>dict</td>
 </tr>
-<tr class="field-even field"><th class="field-name">zstart:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) start z-index in the stack</td>
+<tr class="row-odd"><td>zstart</td>
+<td>start z-index in the stack</td>
+<td>NA</td>
+<td><a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">Integer</span></code></a></td>
+<td>int</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">zend:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) end z-index in the stack</td>
+<tr class="row-even"><td>zend</td>
+<td>end z-index in the stack</td>
+<td>NA</td>
+<td><a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">Integer</span></code></a></td>
+<td>int</td>
 </tr>
-<tr class="field-even field"><th class="field-name">output_stack:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) the output stack name. Leave to overwrite input stack (default = None)</td>
+<tr class="row-odd"><td>output_stack</td>
+<td>the output stack name. Leave to overwrite input stack</td>
+<td>None</td>
+<td><a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">String</span></code></a></td>
+<td>unicode</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">pool_size:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) number of cores to be used (default = 20)</td>
+<tr class="row-even"><td>pool_size</td>
+<td>number of cores to be used</td>
+<td>20</td>
+<td><a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">Integer</span></code></a></td>
+<td>int</td>
 </tr>
-<tr class="field-even field"><th class="field-name">levels:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) number of levels of mipmaps, default is 6 (default = 6)</td>
+<tr class="row-odd"><td>levels</td>
+<td>number of levels of mipmaps, default is 6</td>
+<td>6</td>
+<td><a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">Integer</span></code></a></td>
+<td>int</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">mipmap_dir:</th><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.InputDir" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.files.InputDir</span></code></a> : unicode) directory to which the mipmaps will be stored REQUIRED</td>
+<tr class="row-even"><td>mipmap_dir</td>
+<td>directory to which the mipmaps will be stored</td>
+<td>(REQUIRED)</td>
+<td><a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.InputDir" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">InputDir</span></code></a></td>
+<td>unicode</td>
 </tr>
-<tr class="field-even field"><th class="field-name">z:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) z-index of section in the stack</td>
+<tr class="row-odd"><td>z</td>
+<td>z-index of section in the stack</td>
+<td>NA</td>
+<td><a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">Integer</span></code></a></td>
+<td>int</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">input_json:</th><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.InputFile" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.files.InputFile</span></code></a> : unicode) file path of input json file</td>
+<tr class="row-even"><td>input_json</td>
+<td>file path of input json file</td>
+<td>NA</td>
+<td><a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.InputFile" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">InputFile</span></code></a></td>
+<td>unicode</td>
 </tr>
-<tr class="field-even field"><th class="field-name">close_stack:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Boolean" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Boolean</span></code></a> : bool) whether to set output stack state to ‘COMPLETE’ upon completion (default = False)</td>
+<tr class="row-odd"><td>close_stack</td>
+<td>whether to set output stack state to ‘COMPLETE’ upon completion</td>
+<td>False</td>
+<td><a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Boolean" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">Boolean</span></code></a></td>
+<td>bool</td>
 </tr>
 </tbody>
 </table>
-</dd>
-</dl>
-</div>
 <dl class="attribute">
 <dt id="rendermodules.dataimport.apply_mipmaps_to_render.AddMipMapsToStackParameters.opts">
 <code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#rendermodules.dataimport.apply_mipmaps_to_render.AddMipMapsToStackParameters.opts" title="Permalink to this definition">¶</a></dt>
@@ -192,21 +255,32 @@
 <dt id="rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsOutput">
 <em class="property">class </em><code class="descclassname">rendermodules.dataimport.generate_EM_tilespecs_from_metafile.</code><code class="descname">GenerateEMTileSpecsOutput</code><span class="sig-paren">(</span><em>only=()</em>, <em>exclude=()</em>, <em>prefix=u''</em>, <em>strict=None</em>, <em>many=False</em>, <em>context=None</em>, <em>load_only=()</em>, <em>dump_only=()</em>, <em>partial=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rendermodules/dataimport/generate_EM_tilespecs_from_metafile.html#GenerateEMTileSpecsOutput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsOutput" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">marshmallow.schema.Schema</span></code></p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<dl class="last docutils">
-<dt>keys: (field_type : raw_type) description</dt>
-<dd><table class="first last docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
+<table border="1" class="colwidths-given docutils" id="id2">
+<caption><span class="caption-text">GenerateEMTileSpecsOutput</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="15%" />
+<col width="40%" />
+<col width="15%" />
+<col width="15%" />
+<col width="15%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">key</th>
+<th class="head">description</th>
+<th class="head">default</th>
+<th class="head">field_type</th>
+<th class="head">json_type</th>
+</tr>
+</thead>
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">stack:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) stack to which generated tiles were added REQUIRED</td>
+<tr class="row-even"><td>stack</td>
+<td>stack to which generated tiles were added</td>
+<td>(REQUIRED)</td>
+<td><a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">String</span></code></a></td>
+<td>unicode</td>
 </tr>
 </tbody>
 </table>
-</dd>
-</dl>
-</div>
 <dl class="attribute">
 <dt id="rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsOutput.opts">
 <code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsOutput.opts" title="Permalink to this definition">¶</a></dt>
@@ -220,51 +294,110 @@
 <dd><p>Bases: <a class="reference internal" href="rendermodules.module.html#rendermodules.module.render_module.RenderParameters" title="rendermodules.module.render_module.RenderParameters"><code class="xref py py-class docutils literal"><span class="pre">rendermodules.module.render_module.RenderParameters</span></code></a></p>
 <blockquote>
 <div>This schema is designed to be a schema_type for an ArgSchemaParser object</div></blockquote>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<dl class="last docutils">
-<dt>keys: (field_type : raw_type) description</dt>
-<dd><table class="first last docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
+<table border="1" class="colwidths-given docutils" id="id3">
+<caption><span class="caption-text">GenerateEMTileSpecsParameters</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="15%" />
+<col width="40%" />
+<col width="15%" />
+<col width="15%" />
+<col width="15%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">key</th>
+<th class="head">description</th>
+<th class="head">default</th>
+<th class="head">field_type</th>
+<th class="head">json_type</th>
+</tr>
+</thead>
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name" colspan="2">image_directory:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.InputDir" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.files.InputDir</span></code></a> : unicode) directory used in determining absolute paths to images. Defaults to parent directory containing metafile if omitted.</td>
+<tr class="row-even"><td>image_directory</td>
+<td>directory used in determining absolute paths to images. Defaults to parent directory containing metafile if omitted.</td>
+<td>NA</td>
+<td><a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.InputDir" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">InputDir</span></code></a></td>
+<td>unicode</td>
 </tr>
-<tr class="field-even field"><th class="field-name">close_stack:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Boolean" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Boolean</span></code></a> : bool) whether to set stack to ‘COMPLETE’ after performing operation (default = False)</td>
+<tr class="row-odd"><td>close_stack</td>
+<td>whether to set stack to ‘COMPLETE’ after performing operation</td>
+<td>False</td>
+<td><a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Boolean" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">Boolean</span></code></a></td>
+<td>bool</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">output_json:</th><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.OutputFile" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.files.OutputFile</span></code></a> : unicode) file path to output json file</td>
+<tr class="row-even"><td>output_json</td>
+<td>file path to output json file</td>
+<td>NA</td>
+<td><a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.OutputFile" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">OutputFile</span></code></a></td>
+<td>unicode</td>
 </tr>
-<tr class="field-even field"><th class="field-name">z_index:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) z value to which tilespecs from ROI will be added REQUIRED</td>
+<tr class="row-odd"><td>z_index</td>
+<td>z value to which tilespecs from ROI will be added</td>
+<td>(REQUIRED)</td>
+<td><a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">Integer</span></code></a></td>
+<td>int</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">render:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Nested" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Nested</span></code></a> : dict(<a class="reference internal" href="rendermodules.module.html#rendermodules.module.render_module.RenderClientParameters" title="rendermodules.module.render_module.RenderClientParameters"><code class="xref py py-class docutils literal"><span class="pre">RenderClientParameters</span></code></a>)) no description</td>
+<tr class="row-even"><td>render</td>
+<td>no description</td>
+<td>NA</td>
+<td><a class="reference internal" href="rendermodules.module.html#rendermodules.module.render_module.RenderClientParameters" title="rendermodules.module.render_module.RenderClientParameters"><code class="xref py py-class docutils literal"><span class="pre">RenderClientParameters</span></code></a></td>
+<td>dict</td>
 </tr>
-<tr class="field-even field"><th class="field-name">sectionId:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) sectionId to apply to tiles during ingest.  If unspecified will default to a string representation of the float value of z_index.</td>
+<tr class="row-odd"><td>sectionId</td>
+<td>sectionId to apply to tiles during ingest.  If unspecified will default to a string representation of the float value of z_index.</td>
+<td>NA</td>
+<td><a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">String</span></code></a></td>
+<td>unicode</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">metafile:</th><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.InputFile" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.files.InputFile</span></code></a> : unicode) metadata file containing TEMCA acquisition data REQUIRED</td>
+<tr class="row-even"><td>metafile</td>
+<td>metadata file containing TEMCA acquisition data</td>
+<td>(REQUIRED)</td>
+<td><a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.InputFile" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">InputFile</span></code></a></td>
+<td>unicode</td>
 </tr>
-<tr class="field-even field"><th class="field-name">pool_size:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) processes to spawn for parallelization (default = 1)</td>
+<tr class="row-odd"><td>pool_size</td>
+<td>processes to spawn for parallelization</td>
+<td>1</td>
+<td><a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">Integer</span></code></a></td>
+<td>int</td>
 </tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">maximum_intensity:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) intensity value to interpret as white (default = 255)</td>
+<tr class="row-even"><td>maximum_intensity</td>
+<td>intensity value to interpret as white</td>
+<td>255</td>
+<td><a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">Integer</span></code></a></td>
+<td>int</td>
 </tr>
-<tr class="field-even field"><th class="field-name" colspan="2">overwrite_zlayer:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Boolean" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Boolean</span></code></a> : bool) whether to remove the existing layer from the target stack before uploading. (default = False)</td>
+<tr class="row-odd"><td>overwrite_zlayer</td>
+<td>whether to remove the existing layer from the target stack before uploading.</td>
+<td>False</td>
+<td><a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Boolean" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">Boolean</span></code></a></td>
+<td>bool</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">log_level:</th><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.loglevel.LogLevel" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.loglevel.LogLevel</span></code></a> : unicode) set the logging level of the module (default = ERROR)</td>
+<tr class="row-even"><td>log_level</td>
+<td>set the logging level of the module</td>
+<td>ERROR</td>
+<td><a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.loglevel.LogLevel" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">LogLevel</span></code></a></td>
+<td>unicode</td>
 </tr>
-<tr class="field-even field"><th class="field-name" colspan="2">minimum_intensity:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) intensity value to interpret as black (default = 0)</td>
+<tr class="row-odd"><td>minimum_intensity</td>
+<td>intensity value to interpret as black</td>
+<td>0</td>
+<td><a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">Integer</span></code></a></td>
+<td>int</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">input_json:</th><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.InputFile" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.files.InputFile</span></code></a> : unicode) file path of input json file</td>
+<tr class="row-even"><td>input_json</td>
+<td>file path of input json file</td>
+<td>NA</td>
+<td><a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.InputFile" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">InputFile</span></code></a></td>
+<td>unicode</td>
 </tr>
-<tr class="field-even field"><th class="field-name">stack:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) stack to which tiles should be added REQUIRED</td>
+<tr class="row-odd"><td>stack</td>
+<td>stack to which tiles should be added</td>
+<td>(REQUIRED)</td>
+<td><a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">String</span></code></a></td>
+<td>unicode</td>
 </tr>
 </tbody>
 </table>
-</dd>
-</dl>
-</div>
 <dl class="attribute">
 <dt id="rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsParameters.opts">
 <code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#rendermodules.dataimport.generate_EM_tilespecs_from_metafile.GenerateEMTileSpecsParameters.opts" title="Permalink to this definition">¶</a></dt>
@@ -297,50 +430,116 @@
 <dd><p>Bases: <a class="reference internal" href="rendermodules.module.html#rendermodules.module.render_module.RenderParameters" title="rendermodules.module.render_module.RenderParameters"><code class="xref py py-class docutils literal"><span class="pre">rendermodules.module.render_module.RenderParameters</span></code></a></p>
 <blockquote>
 <div>This schema is designed to be a schema_type for an ArgSchemaParser object</div></blockquote>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<dl class="last docutils">
-<dt>keys: (field_type : raw_type) description</dt>
-<dd><table class="first last docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
+<table border="1" class="colwidths-given docutils" id="id4">
+<caption><span class="caption-text">GenerateMipMapsParameters</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="15%" />
+<col width="40%" />
+<col width="15%" />
+<col width="15%" />
+<col width="15%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">key</th>
+<th class="head">description</th>
+<th class="head">default</th>
+<th class="head">field_type</th>
+<th class="head">json_type</th>
+</tr>
+</thead>
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">imgformat:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) image format for mipmaps (default tiff) (default = tiff)</td>
+<tr class="row-even"><td>imgformat</td>
+<td>image format for mipmaps (default tiff)</td>
+<td>tiff</td>
+<td><a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">String</span></code></a></td>
+<td>unicode</td>
 </tr>
-<tr class="field-even field"><th class="field-name">input_stack:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) stack for which the mipmaps are to be generated REQUIRED</td>
+<tr class="row-odd"><td>input_stack</td>
+<td>stack for which the mipmaps are to be generated</td>
+<td>(REQUIRED)</td>
+<td><a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">String</span></code></a></td>
+<td>unicode</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">output_json:</th><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.OutputFile" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.files.OutputFile</span></code></a> : unicode) file path to output json file</td>
+<tr class="row-even"><td>output_json</td>
+<td>file path to output json file</td>
+<td>NA</td>
+<td><a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.OutputFile" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">OutputFile</span></code></a></td>
+<td>unicode</td>
 </tr>
-<tr class="field-even field"><th class="field-name">log_level:</th><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.loglevel.LogLevel" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.loglevel.LogLevel</span></code></a> : unicode) set the logging level of the module (default = ERROR)</td>
+<tr class="row-odd"><td>log_level</td>
+<td>set the logging level of the module</td>
+<td>ERROR</td>
+<td><a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.loglevel.LogLevel" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">LogLevel</span></code></a></td>
+<td>unicode</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">render:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Nested" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Nested</span></code></a> : dict(<a class="reference internal" href="rendermodules.module.html#rendermodules.module.render_module.RenderClientParameters" title="rendermodules.module.render_module.RenderClientParameters"><code class="xref py py-class docutils literal"><span class="pre">RenderClientParameters</span></code></a>)) no description</td>
+<tr class="row-even"><td>render</td>
+<td>no description</td>
+<td>NA</td>
+<td><a class="reference internal" href="rendermodules.module.html#rendermodules.module.render_module.RenderClientParameters" title="rendermodules.module.render_module.RenderClientParameters"><code class="xref py py-class docutils literal"><span class="pre">RenderClientParameters</span></code></a></td>
+<td>dict</td>
 </tr>
-<tr class="field-even field"><th class="field-name">force_redo:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Boolean" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Boolean</span></code></a> : bool) force re-generation of existing mipmaps (default = True)</td>
+<tr class="row-odd"><td>force_redo</td>
+<td>force re-generation of existing mipmaps</td>
+<td>True</td>
+<td><a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Boolean" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">Boolean</span></code></a></td>
+<td>bool</td>
 </tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">convert_to_8bit:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Boolean" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Boolean</span></code></a> : bool) convert the data from 16 to 8 bit (default True) (default = True)</td>
+<tr class="row-even"><td>convert_to_8bit</td>
+<td>convert the data from 16 to 8 bit (default True)</td>
+<td>True</td>
+<td><a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Boolean" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">Boolean</span></code></a></td>
+<td>bool</td>
 </tr>
-<tr class="field-even field"><th class="field-name">zstart:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) start z-index in the stack</td>
+<tr class="row-odd"><td>zstart</td>
+<td>start z-index in the stack</td>
+<td>NA</td>
+<td><a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">Integer</span></code></a></td>
+<td>int</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">zend:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) end z-index in the stack</td>
+<tr class="row-even"><td>zend</td>
+<td>end z-index in the stack</td>
+<td>NA</td>
+<td><a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">Integer</span></code></a></td>
+<td>int</td>
 </tr>
-<tr class="field-even field"><th class="field-name">pool_size:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) number of cores to be used (default = 20)</td>
+<tr class="row-odd"><td>pool_size</td>
+<td>number of cores to be used</td>
+<td>20</td>
+<td><a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">Integer</span></code></a></td>
+<td>int</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">levels:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) number of levels of mipmaps, default is 6 (default = 6)</td>
+<tr class="row-even"><td>levels</td>
+<td>number of levels of mipmaps, default is 6</td>
+<td>6</td>
+<td><a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">Integer</span></code></a></td>
+<td>int</td>
 </tr>
-<tr class="field-even field"><th class="field-name">output_dir:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) directory to which the mipmaps will be stored REQUIRED</td>
+<tr class="row-odd"><td>output_dir</td>
+<td>directory to which the mipmaps will be stored</td>
+<td>(REQUIRED)</td>
+<td><a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">String</span></code></a></td>
+<td>unicode</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">z:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.Integer</span></code></a> : int) z-index in the stack</td>
+<tr class="row-even"><td>z</td>
+<td>z-index in the stack</td>
+<td>NA</td>
+<td><a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.Integer" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">Integer</span></code></a></td>
+<td>int</td>
 </tr>
-<tr class="field-even field"><th class="field-name">input_json:</th><td class="field-body">(<a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.InputFile" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">argschema.fields.files.InputFile</span></code></a> : unicode) file path of input json file</td>
+<tr class="row-odd"><td>input_json</td>
+<td>file path of input json file</td>
+<td>NA</td>
+<td><a class="reference external" href="http://argschema.readthedocs.io/en/latest/api/argschema.fields.html#argschema.fields.files.InputFile" title="(in argschema v1.1)"><code class="xref py py-class docutils literal"><span class="pre">InputFile</span></code></a></td>
+<td>unicode</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">method:</th><td class="field-body">(<a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">marshmallow.fields.String</span></code></a> : unicode) method to downsample mipmapLevels, can be ‘block_reduce’ for skimage based area downsampling, ‘PIL’ for PIL Image (currently NEAREST) filtered resize, ‘render’ for render-ws based rendering.  Currently only PIL is implemented, while others may fall back to this. REQUIRED  (default = block_reduce)</td>
+<tr class="row-even"><td>method</td>
+<td>method to downsample mipmapLevels, can be ‘block_reduce’ for skimage based area downsampling, ‘PIL’ for PIL Image (currently NEAREST) filtered resize, ‘render’ for render-ws based rendering.  Currently only PIL is implemented, while others may fall back to this.</td>
+<td>block_reduce</td>
+<td><a class="reference external" href="http://marshmallow.readthedocs.io/en/latest/api_reference.html#marshmallow.fields.String" title="(in marshmallow v3.0.0b3)"><code class="xref py py-class docutils literal"><span class="pre">String</span></code></a></td>
+<td>unicode</td>
 </tr>
 </tbody>
 </table>
-</dd>
-</dl>
-</div>
 <dl class="attribute">
 <dt id="rendermodules.dataimport.generate_mipmaps.GenerateMipMapsParameters.opts">
 <code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#rendermodules.dataimport.generate_mipmaps.GenerateMipMapsParameters.opts" title="Permalink to this definition">¶</a></dt>

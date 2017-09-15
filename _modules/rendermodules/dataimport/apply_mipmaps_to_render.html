@@ -51,7 +51,6 @@
 <span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
 <span class="kn">import</span> <span class="nn">urllib</span>
 <span class="kn">import</span> <span class="nn">urlparse</span>
-<span class="kn">import</span> <span class="nn">tempfile</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span> <span class="ow">and</span> <span class="n">__package__</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">__package__</span> <span class="o">=</span> <span class="s2">&quot;rendermodules.dataimport.apply_mipmaps_to_render&quot;</span>
@@ -77,14 +76,15 @@
 <div class="viewcode-block" id="addMipMapsToRender"><a class="viewcode-back" href="../../../rendermodules/rendermodules.dataimport.html#rendermodules.dataimport.apply_mipmaps_to_render.addMipMapsToRender">[docs]</a><span class="k">def</span> <span class="nf">addMipMapsToRender</span><span class="p">(</span><span class="n">render</span><span class="p">,</span> <span class="n">input_stack</span><span class="p">,</span> <span class="n">mipmap_dir</span><span class="p">,</span> <span class="n">imgformat</span><span class="p">,</span> <span class="n">levels</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
     <span class="n">tilespecPaths</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="n">tilespecs</span> <span class="o">=</span> <span class="n">render</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">renderapi</span><span class="o">.</span><span class="n">tilespec</span><span class="o">.</span><span class="n">get_tile_specs_from_z</span><span class="p">,</span> <span class="n">input_stack</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+    <span class="n">tilespecs</span> <span class="o">=</span> <span class="n">render</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">renderapi</span><span class="o">.</span><span class="n">tilespec</span><span class="o">.</span><span class="n">get_tile_specs_from_z</span><span class="p">,</span>
+                           <span class="n">input_stack</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
 
     <span class="nb">print</span> <span class="n">z</span>
     <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="n">tilespecs</span><span class="p">:</span>
         <span class="n">mm1</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">ip</span><span class="o">.</span><span class="n">mipMapLevels</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="n">oldUrl</span> <span class="o">=</span> <span class="n">mm1</span><span class="o">.</span><span class="n">imageUrl</span>
-        <span class="n">filepath</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">unquote</span><span class="p">(</span><span class="n">urlparse</span><span class="o">.</span><span class="n">urlparse</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">oldUrl</span><span class="p">)</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">unquote</span><span class="p">(</span><span class="n">urlparse</span><span class="o">.</span><span class="n">urlparse</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">oldUrl</span><span class="p">))</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
         <span class="c1"># filepath = str(oldUrl).lstrip(&#39;file:/&#39;)</span>
         <span class="c1"># filepath = filepath.replace(&quot;%20&quot;, &quot; &quot;)</span>
 
@@ -98,21 +98,13 @@
             <span class="n">imgf</span> <span class="o">=</span> <span class="s2">&quot;.tif&quot;</span>
 
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">levels</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
-            <span class="n">scUrl</span> <span class="o">=</span> <span class="s1">&#39;file:&#39;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mipmap_dir</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">filepath</span><span class="p">)</span> <span class="o">+</span> <span class="n">imgf</span>
+            <span class="n">scUrl</span> <span class="o">=</span> <span class="s1">&#39;file:&#39;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">mipmap_dir</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">filepath</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">))</span> <span class="o">+</span> <span class="n">imgf</span>
             <span class="nb">print</span> <span class="n">scUrl</span>
             <span class="n">mm1</span> <span class="o">=</span> <span class="n">renderapi</span><span class="o">.</span><span class="n">tilespec</span><span class="o">.</span><span class="n">MipMapLevel</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">imageUrl</span><span class="o">=</span><span class="n">scUrl</span><span class="p">)</span>
             <span class="n">ts</span><span class="o">.</span><span class="n">ip</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">mm1</span><span class="p">)</span>
 
-        <span class="n">tempjson</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span>
-            <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.json&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">tempjson</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="n">tsjson</span> <span class="o">=</span> <span class="n">tempjson</span><span class="o">.</span><span class="n">name</span>
-
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">tsjson</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">renderapi</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">renderdump</span><span class="p">(</span><span class="n">tilespecs</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="n">tilespecPaths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tsjson</span><span class="p">)</span>
-
+    <span class="n">tilespecPaths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">renderapi</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">renderdump_temp</span><span class="p">(</span><span class="n">tilespecs</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">tilespecPaths</span></div>
 
 
@@ -196,7 +188,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;levels&#39;</span><span class="p">])</span>
 
         <span class="k">with</span> <span class="n">renderapi</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">WithPool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;pool_size&#39;</span><span class="p">])</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
-            <span class="n">tilespecPaths</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">mypartial</span><span class="p">,</span> <span class="n">zvalues</span><span class="p">)</span>
+            <span class="n">tilespecPaths</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">mypartial</span><span class="p">,</span> <span class="n">zvalues</span><span class="p">)</span>
+                             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">l</span><span class="p">]</span>
 
         <span class="c1"># add the tile spec to render stack</span>
         <span class="k">try</span><span class="p">:</span>
