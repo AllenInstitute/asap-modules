@@ -29,6 +29,14 @@ class RenderParameters(argschema.ArgSchema):
         required=True,
         description="parameters to connect to render server")
 
+#this is deprecated and unnecessary now, leaving it in to minimize rewrite
+class ArgSchemaModule(argschema.ArgSchemaParser):
+     def __init__(self, *args, **kwargs):
+        super(ArgSchemaModule, self).__init__(
+            *args, **kwargs)
+        self.logger.warning("DEPRECATED: please just use \
+            argschema.ArgSchemaParser which has this functionality")
+            
 class RenderModule(argschema.ArgSchemaParser):
     default_schema = RenderParameters
 
