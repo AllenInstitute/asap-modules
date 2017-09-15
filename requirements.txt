@@ -1,5 +1,5 @@
 render-python
-argschema>=1.15
+argschema>=1.15.2
 numpy
 pillow
 pathos
