@@ -3,7 +3,7 @@ import os
 import subprocess
 import tempfile
 import shutil
-from argschema import ArgSchema
+from argschema import ArgSchema, ArgSchemaParser
 from argschema.fields import Bool, Float, Int, Nested, Str, InputFile
 from argschema.schemas import DefaultSchema
 from rendermodules.module.render_module import (
@@ -142,7 +142,7 @@ class LensCorrectionException(RenderModuleException):
     pass
 
 
-class LensCorrectionModule(ArgSchemaModule):
+class LensCorrectionModule(ArgSchemaParser):
     default_schema = LensCorrectionParameters
     default_output_schema = LensCorrectionOutput
 
