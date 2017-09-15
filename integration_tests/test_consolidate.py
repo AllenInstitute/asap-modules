@@ -76,8 +76,8 @@ def test_consolidate(render,test_stack):
     assert all([len(ts.tforms)==3 for ts in output_tilespecs])
 
     input_tilespec = renderapi.tilespec.get_tile_spec(test_stack,output_tilespecs[0].tileId, render=render)
-    orig_tform = input_tilespec.tforms[1]
-    cons_tform = output_tilespecs[0].tforms[1]
+    orig_tform = input_tilespec.tforms[2]
+    cons_tform = output_tilespecs[0].tforms[2]
     expected_new=renderapi.transform.AffineModel(3.0,0,0,3.0,0,0).concatenate(orig_tform)
     print input_tilespec.tforms
     print orig_tform.M
