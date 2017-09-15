@@ -29,12 +29,7 @@ class RenderParameters(argschema.ArgSchema):
         required=True,
         description="parameters to connect to render server")
 
-class ArgSchemaModule(argschema.ArgSchemaParser):
-    default_schema = None
-    default_output_schema = None
-
-
-class RenderModule(ArgSchemaModule):
+class RenderModule(argschema.ArgSchemaParser):
     default_schema = RenderParameters
 
     def __init__(self, schema_type=None, *args, **kwargs):
