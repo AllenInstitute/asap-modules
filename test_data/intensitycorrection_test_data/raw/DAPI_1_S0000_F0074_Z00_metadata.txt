@@ -1,0 +1,4 @@
+Channel	Width	Height	MosaicX	MosaicY	ScaleX	ScaleY	ExposureTime
+DAPI_1	2048	2048	1	1	0.103175	0.103175	200.000000
+XPositions	YPositions	FocusPositions
+-10477.7359088	98516.6445006	7310.24971
