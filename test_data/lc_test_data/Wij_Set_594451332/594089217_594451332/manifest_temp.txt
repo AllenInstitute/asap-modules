@@ -1,0 +1,9 @@
+/allen/programs/celltypes/workgroups/em-connectomics/samk/lc_test_data/Wij_Set_594451332/594089217_594451332/20170502174050326_295434_5LC_0064_01_20170502174047_reference_0_0_0.tif	2	4	0	3840	3840	0	255	0	
+/allen/programs/celltypes/workgroups/em-connectomics/samk/lc_test_data/Wij_Set_594451332/594089217_594451332/20170502174053399_295434_5LC_0064_01_20170502174047_reference_0_0_1.tif	2	1568	0	3840	3840	0	255	0	
+/allen/programs/celltypes/workgroups/em-connectomics/samk/lc_test_data/Wij_Set_594451332/594089217_594451332/20170502174056559_295434_5LC_0064_01_20170502174047_reference_0_0_2.tif	4	3095	0	3840	3840	0	255	0	
+/allen/programs/celltypes/workgroups/em-connectomics/samk/lc_test_data/Wij_Set_594451332/594089217_594451332/20170502174050585_295434_5LC_0064_01_20170502174047_reference_0_1_0.tif	1538	6	0	3840	3840	0	255	0	
+/allen/programs/celltypes/workgroups/em-connectomics/samk/lc_test_data/Wij_Set_594451332/594089217_594451332/20170502174053647_295434_5LC_0064_01_20170502174047_reference_0_1_1.tif	1538	1544	0	3840	3840	0	255	0	
+/allen/programs/celltypes/workgroups/em-connectomics/samk/lc_test_data/Wij_Set_594451332/594089217_594451332/20170502174056818_295434_5LC_0064_01_20170502174047_reference_0_1_2.tif	1538	3080	0	3840	3840	0	255	0	
+/allen/programs/celltypes/workgroups/em-connectomics/samk/lc_test_data/Wij_Set_594451332/594089217_594451332/20170502174050864_295434_5LC_0064_01_20170502174047_reference_0_2_0.tif	3074	4	0	3840	3840	0	255	0	
+/allen/programs/celltypes/workgroups/em-connectomics/samk/lc_test_data/Wij_Set_594451332/594089217_594451332/20170502174053945_295434_5LC_0064_01_20170502174047_reference_0_2_1.tif	3074	1545	0	3840	3840	0	255	0	
+/allen/programs/celltypes/workgroups/em-connectomics/samk/lc_test_data/Wij_Set_594451332/594089217_594451332/20170502174057105_295434_5LC_0064_01_20170502174047_reference_0_2_2.tif	3073	3075	0	3840	3840	0	255	0	

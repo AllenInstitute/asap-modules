@@ -1,0 +1,16 @@
+#!/bin/bash
+#PBS -q lims2
+#PBS -l vmem=40g,ncpus=4
+#PBS -l walltime=1:00:00
+#PBS -N EM_LENS_CORRECTION_QUEUE_594451332
+#PBS -V
+#PBS -r n
+#PBS -W umask=022
+#PBS -j oe
+#PBS -o /allen/programs/celltypes/production/wijem/prod7/Wij_Set_594451332/EM_LENS_CORRECTION_QUEUE_594451332.log
+#PBS -m n 
+umask 022
+xvfb-run -a /data/informatics/EM/Fiji.app/ImageJ-linux64 -Xms20g -Xmx20g -Xincgc -Ddir='/allen/programs/celltypes/production/wijem/prod7/Wij_Set_594451332/594089217_594451332/' -Dfile='/allen/programs/celltypes/production/wijem/prod7/Wij_Set_594451332/594089217_594451332/_trackem_20170502174048_295434_5LC_0064_01_20170502174047_reference_0_.txt' -- --no-splash /shared/bioapps/infoapps/lims2_modules/em/stitching_alignment/scripts/run_lens_correction.bsh
+rtn_code=$?
+curl --request GET -d return_code=$rtn_code http://lims2/jobs/finish_job/594451596 --max-time 300 --retry 5 --retry-delay 300
+exit $rtn_code
