@@ -20,7 +20,7 @@ class TemplateOutputParameters(argschema.schemas.DefaultSchema):
     output_value = argschema.fields.Str(required=True,
                                         description= "an output of the module")
 
-class Template(RenderModule):
+class TemplateModule(RenderModule):
     default_schema = TemplateParameters
     default_output_schema = TemplateOutputParameters
     def run(self):
