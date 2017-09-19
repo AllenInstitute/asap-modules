@@ -58,7 +58,7 @@ def dereference_tforms(tforms,ref_tforms):
     deref_tforms = []
     for tf in tforms:
         if isinstance(tf, ReferenceTransform):
-            mtf = next(mt for me in ref_tforms if mt.transformId == tf.refId)
+            mtf = next(mt for mt in ref_tforms if mt.transformId == tf.refId)
             deref_tforms.append(mtf)
         else:
             deref_tforms.append(tf)
