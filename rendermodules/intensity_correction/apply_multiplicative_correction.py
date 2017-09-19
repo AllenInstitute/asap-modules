@@ -137,7 +137,7 @@ def process_tile(C, dirout, stackname, input_ts, regex_pattern=None,
     for i in range(1, len(d['mipmapLevels'])):
         del d['mipmapLevels'][i]
     d['mipmapLevels'][0]['imageUrl'] = outImage
-    output_ts.from_dict(d)
+    output_ts = renderapi.tilespec.TileSpec(json=d)
     return input_ts, output_ts
 
 
