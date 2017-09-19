@@ -1,5 +1,5 @@
 if __name__ == "__main__" and __package__ is None:
-    __package__ = "renderapps.intensity_correction.apply_muliplicative_correction"
+    __package__ = "rendermodules.intensity_correction.apply_muliplicative_correction"
 import json
 import os
 import renderapi
