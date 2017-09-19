@@ -25,6 +25,7 @@ def render():
 def raw_stack(render):
     stack = 'input_raw'
     renderapi.stack.create_stack(stack, render=render)
+    print MULTIPLICATIVE_INPUT_JSON
     renderapi.client.import_single_json_file(stack, MULTIPLICATIVE_INPUT_JSON, render=render)
     renderapi.stack.set_stack_state(stack, 'COMPLETE', render=render)
     yield stack
