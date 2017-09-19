@@ -7,6 +7,7 @@ import os
 from test_data import MULTIPLICATIVE_INPUT_JSON, render_host, render_port,client_script_location
 import shutil
 import pytest
+import logging
 
 render_params = {
     'host':render_host,
@@ -24,6 +25,8 @@ def render():
 @pytest.fixture(scope='module')
 def raw_stack(render):
     stack = 'input_raw'
+    logger = renderapi.client.logger
+    logger.setLevel(logging.DEBUG)
     renderapi.stack.create_stack(stack, render=render)
     print MULTIPLICATIVE_INPUT_JSON
     renderapi.client.import_single_json_file(stack, MULTIPLICATIVE_INPUT_JSON, render=render)
