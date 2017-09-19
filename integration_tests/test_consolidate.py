@@ -90,9 +90,10 @@ def test_consolidate_module(render,test_stack):
     return mod
 
 def test_consolidate_single(render,test_stack,test_consolidate_module):
+    input_z = np.array(renderapi.stack.get_z_values_for_stack(test_stack,render=render))
     (tilespecs, tforms)=process_z(render, 
               test_consolidate_module.logger,
               test_consolidate_module.args['stack'],
               test_consolidate_module.args['output_stack'],
               test_consolidate_module.args['transforms_slice'],
-              0.0)
+              input_z[0])
