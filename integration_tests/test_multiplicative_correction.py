@@ -36,7 +36,7 @@ def raw_stack(render):
     renderapi.stack.delete_stack(stack, render=render)
 
 @pytest.fixture(scope='module')
-def median_stack(raw_stack,render,tmp_dir_factory):
+def median_stack(raw_stack,render,tmpdir_factory):
     median_stack = 'median_stack'
     output_directory = str(tmp_dir_factory.mktmp('Median'))
     #output_directory = os.path.join(os.path.split(MULTIPLICATIVE_INPUT_JSON)[0],'Medians')
