@@ -98,7 +98,7 @@ def getImage(ts):
     """
     d = ts.to_dict()
     mml = ts.ip.get(0)
-    img0 = tifffile.imread(mml.imageUrl)
+    img0 = tifffile.imread(mml['imageUrl'])
     (N, M) = img0.shape
     return N, M, img0
 
