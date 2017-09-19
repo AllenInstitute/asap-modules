@@ -1,9 +1,10 @@
 import renderapi
-from rendermodules.stack.consolidate_transforms import ConsolidateTransforms
+from rendermodules.stack.consolidate_transforms import ConsolidateTransforms, process_z
 from test_data import render_host,render_port,client_script_location, tilespec_file, tform_file
 import pytest
 import numpy as np
 import json
+import logging
 
 EPSILON = .001
 render_params = {
@@ -43,7 +44,7 @@ def test_stack(render,render_example_tilespec_and_transforms):
     yield stack
     renderapi.stack.delete_stack(stack, render=render)
 
-def test_consolidate(render,test_stack):
+def test_consolidate_module(render,test_stack):
     output_stack = test_stack + "_CONS"
     input_z = np.array(renderapi.stack.get_z_values_for_stack(test_stack,render=render))
     print input_z
@@ -85,6 +86,12 @@ def test_consolidate(render,test_stack):
     for orig_elem,new_elem in zip(np.ravel(expected_new.M),np.ravel(cons_tform.M)):
         assert(np.abs(orig_elem - new_elem)<EPSILON)
 
-
+    return mod
+def test_consolidate_single(render,test_stack,test_consolidate_module):
     
-
+    (tilespecs, tforms)=process_z(render, 
+              test_consolidate_module.logger,
+              test_consolidate_module['input_stack'],
+              test_consolidate_module['output_stack'],
+              test_consolidate_module['transforms_slice'],
+              0.0)
