@@ -6,10 +6,7 @@ import renderapi
 from ..module.render_module import RenderModule, RenderParameters
 from argschema.fields import InputFile, InputDir, Str, Float, Int, Bool, OutputDir
 from functools import partial
-import glob
-import time
 import numpy as np
-import time
 from PIL import Image
 import tifffile
 import re
@@ -35,29 +32,30 @@ class MultIntensityCorrParams(RenderParameters):
     input_stack = Str(required=True,
                       description="Input stack")
     output_stack = Str(required=True,
-                       description= 'Output stack')
+                       description='Output stack')
     correction_stack = Str(required=True,
-                       description= 'Correction stack (usually median stack for AT data)')
+                           description='Correction stack (usually median stack for AT data)')
     output_directory = OutputDir(required=True,
-                       description= 'Directory for storing Images')
+                                 description='Directory for storing Images')
     z_index = Int(required=True,
-              description= 'z value for section')
+                  description='z value for section')
     pool_size = Int(required=False, default=20,
-                description='size of pool for parallel processing (default=20)')
+                    description='size of pool for parallel processing (default=20)')
     move_input = Bool(required=False, default=False,
-                 description = "whether to move input tiles to new location")
+                      description="whether to move input tiles to new location")
     move_input_regex_find = Str(required=False,
-                                default = "",
-                                description = "regex string to find in input filenames")
-    move_input_regex_replace = Str(required = False,
-                                   default = "",
-                                   description = "regex string to replace in input filenames")
+                                default="",
+                                description="regex string to find in input filenames")
+    move_input_regex_replace = Str(required=False,
+                                   default="",
+                                   description="regex string to replace in input filenames")
+
 
 def intensity_corr(img, ff):
     """utility function to correct an image with a flatfield correction
     will take img and return 
     img_out = img * max(ff) / (ff + .0001)
-    coverted to a numpy.uint16
+    converted back to the original type of img
 
     Parameters
     ==========
@@ -65,20 +63,21 @@ def intensity_corr(img, ff):
         N,M array to correct, could be any type
     ff: numpy.array
         N,M array of flatfield correction, could be of any type
-    img = img.astype(float)
-    ff = ff.astype(float)
 
     Returns
     =======
     numpy.array
-        N,M uint16 numpy array of normalized images
+        N,M  numpy array of the same type as img but now corrected
     """
-
+    img_type = img.dtype
+    img = img.astype(float)
+    ff = ff.astype(float)
     num = np.ones((ff.shape[0], ff.shape[1]))
     fac = np.divide(num * np.amax(ff), ff + 0.0001)
     result = np.multiply(img, fac)
     result = np.multiply(result, np.mean(img) / np.mean(result))
-    result_int = np.uint16(result)
+    # convert back to original type
+    result_int = result.astype(img_type)
     return result_int
 
 
@@ -91,23 +90,24 @@ def getImage(ts):
     ts: renderapi.tilespec.TileSpec
         tilespec to get images from 
         (presently assumes this is a tiff image whose URL can be read with tifffile)
-    
+
     Returns
     =======
     numpy.array
         2d numpy array of this image
     """
     d = ts.to_dict()
-    mml=ts.ip.get(0)
+    mml = ts.ip.get(0)
     img0 = tifffile.imread(mml.imageUrl)
     (N, M) = img0.shape
     return N, M, img0
 
-def process_tile(C, dirout, stackname, input_ts, regex_pattern = None,
-                 regex_replace = None):
+
+def process_tile(C, dirout, stackname, input_ts, regex_pattern=None,
+                 regex_replace=None):
     """function to correct each tile in the input_ts with the matrix C,
     and potentially move the original tiles to a new location.abs
-    
+
     Parameters
     ==========
     C: numpy.array
@@ -129,7 +129,8 @@ def process_tile(C, dirout, stackname, input_ts, regex_pattern = None,
     if not os.path.exists(dirout):
         os.makedirs(dirout)
     [head, tail] = os.path.split(input_ts.ip.get(0).imageUrl)
-    outImage = os.path.join("%s"%dirout,"%s_%04d_%s" % (stackname, input_ts.z, tail))
+    outImage = os.path.join("%s" % dirout, "%s_%04d_%s" %
+                            (stackname, input_ts.z, tail))
     tifffile.imsave(outImage, I)
 
     d = input_ts.to_dict()
@@ -137,7 +138,8 @@ def process_tile(C, dirout, stackname, input_ts, regex_pattern = None,
         del d['mipmapLevels'][i]
     d['mipmapLevels'][0]['imageUrl'] = outImage
     output_ts.from_dict(d)
-    return input_ts,output_ts
+    return input_ts, output_ts
+
 
 class MultIntensityCorr(RenderModule):
     default_schema = MultIntensityCorrParams
@@ -145,8 +147,8 @@ class MultIntensityCorr(RenderModule):
     def run(self):
 
         if self.args['move_input']:
-            assert(len(self.args['move_input_regex_find'])>0)
-            assert(len(self.args['move_input_regex_replace'])>0)
+            assert(len(self.args['move_input_regex_find']) > 0)
+            assert(len(self.args['move_input_regex_replace']) > 0)
             regex_pattern = re.compile(self.args['move_input_regex_find'])
             regex_replace = self.args['move_input_regex_replace']
         else:
@@ -179,13 +181,14 @@ class MultIntensityCorr(RenderModule):
         renderapi.stack.set_stack_state(
             self.args['output_stack'], "COMPLETE", render=self.render)
 
-        #upload new input tilespecs
+        # upload new input tilespecs
         if regex_pattern is not None:
             renderapi.client.import_tilespecs(
                 self.args['input_stack'],
-                new_input_tilespecs, render = self.render)
+                new_input_tilespecs, render=self.render)
             renderapi.stack.set_stack_state(
                 self.args['input_stack'], "COMPLETE", render=self.render)
+
 
 if __name__ == "__main__":
     mod = MultIntensityCorr(input_data=example_input)
