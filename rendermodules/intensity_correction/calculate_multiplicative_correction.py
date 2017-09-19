@@ -4,7 +4,7 @@ import json
 import os
 import renderapi
 from ..module.render_module import RenderModule, RenderParameters
-from argschema.fields import InputFile, InputDir, Str, Float, Int
+from argschema.fields import InputFile, InputDir, Str, Float, Int, OutputDir
 from functools import partial
 import glob
 import time
@@ -38,7 +38,7 @@ class MakeMedianParams(RenderParameters):
                       description='Input stack to derive median from')
     file_prefix = Str(required=False, default="Median",
                       description='File prefix for median image file that is saved')
-    output_directory = Str(required=True,
+    output_directory = OutputDir(required=True,
                            description='Output Directory for saving median image')
     output_stack = Str(required=True,
                        description='Output stack to save correction into')
