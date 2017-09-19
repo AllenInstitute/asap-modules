@@ -93,7 +93,7 @@ def test_consolidate_single(render,test_stack,test_consolidate_module):
     input_z = np.array(renderapi.stack.get_z_values_for_stack(test_stack,render=render))
     print input_z,type(input_z)
     print len(input_z)
-    (tilespecs, tforms)=process_z(render, 
+    outputs=process_z(render, 
               test_consolidate_module.logger,
               test_consolidate_module.args['stack'],
               test_consolidate_module.args['output_stack'],
