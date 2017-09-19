@@ -37,7 +37,8 @@ def raw_stack(render):
 @pytest.fixture(scope='module')
 def median_stack(raw_stack,render):
     median_stack = 'median_stack'
-    output_directory = os.path.join(MULTIPLICATIVE_INPUT_JSON,'Medians')
+
+    output_directory = os.path.join(os.path.split(MULTIPLICATIVE_INPUT_JSON)[0],'Medians')
     params = {
         "render":render_params,
         "input_stack": raw_stack,
