@@ -1,5 +1,5 @@
 import numpy as np
-from renderapi.transform import AffineModel, Polynomial2DTransform
+from renderapi.transform import AffineModel, ReferenceTransform, Polynomial2DTransform, TransformList
 from functools import partial
 import os
 import renderapi
@@ -47,7 +47,31 @@ class ConsolidateTransformsOutputParameters(mm.Schema):
     numZ = Int(required=True, description="Number of z values processed")
 
 
-def consolidate_transforms(tforms, logger, makePolyDegree=0):
+def flatten_tforms(tforms):
+    flat_tforms = []
+    for tf in tforms:
+        if isinstance(tf, TransformList):
+            flat_tforms += flatten_tforms(tf.tforms)
+    return flat_tforms
+
+def dereference_tforms(tforms,ref_tforms):
+    deref_tforms = []
+    for tf in tforms:
+        if isinstance(tf, ReferenceTransform):
+            mtf = next(mt for me in ref_tforms if mt.transformId == tf.refId)
+            deref_tforms.append(mtf)
+        else:
+            deref_tforms.append(tf)
+    return deref_tforms
+
+def flatten_and_reference_tforms(tforms,ref_tforms):
+    flat_tforms = flat_tforms(tforms)
+    deref_tforms = dereference_tforms(flat_tforms,ref_tforms)
+    return deref_tforms
+
+def consolidate_transforms(tforms, ref_tforms, logger, makePolyDegree=0):
+    #first flatten and dereference this transform list
+    tforms = flatten_and_reference_tforms(tforms,ref_tforms)
     tform_total = AffineModel()
     start_index = 0
     total_affines = 0
@@ -87,7 +111,7 @@ def process_z(render, logger, stack, outstack, transform_slice, z):
     for ts in resolved_tiles.tilespecs:
         logger.debug('process_z_make_json: tileId {}'.format(ts.tileId))
         ts.tforms[transform_slice] = consolidate_transforms(
-            ts.tforms[transform_slice], logger)
+            ts.tforms[transform_slice], resolved_tiles.transforms, logger)
         logger.debug('consolatedate tformlist {}'.format(ts.tforms[0]))
 
     logger.debug("tileid:{} transforms:{}".format(
@@ -120,14 +144,13 @@ class ConsolidateTransforms(RenderModule):
         self.render.run(renderapi.stack.create_stack, outstack)
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
             resolved_tiles_list = pool.map(partial(
-                                  process_z,
-                                  self.render,
-                                  self.logger,
-                                  stack,
-                                  outstack,
-                                  self.args['transforms_slice']), zvalues)
+                process_z,
+                self.render,
+                self.logger,
+                stack,
+                outstack,
+                self.args['transforms_slice']), zvalues)
 
-        
         # self.render.run(
         #     renderapi.client.import_jsonfiles_parallel, outstack, json_files)
 
