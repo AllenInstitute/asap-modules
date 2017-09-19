@@ -102,7 +102,7 @@ class MakeMedian(RenderModule):
         if not os.path.exists(outdir):
             os.makedirs(outdir)
 
-        for ind,z in enumerate(range(self.args['minZ'], self.args['maxZ'])):
+        for ind,z in enumerate(range(self.args['minZ'], self.args['maxZ']+1)):
             outImage = outdir + \
                 "/%s_%s_%d.tif" % (self.args['file_prefix'],
                                    self.args['output_stack'], z)
