@@ -52,6 +52,8 @@ def flatten_tforms(tforms):
     for tf in tforms:
         if isinstance(tf, TransformList):
             flat_tforms += flatten_tforms(tf.tforms)
+        else:
+            flat_tforms.append(tf)
     return flat_tforms
 
 def dereference_tforms(tforms,ref_tforms):
