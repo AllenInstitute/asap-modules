@@ -68,7 +68,7 @@ class MakeMedian(RenderModule):
 
         # get tilespecs for z
 
-        for z in range(self.args['minZ'], self.args['maxZ']):
+        for z in range(self.args['minZ'], self.args['maxZ']+1):
             tilespecs = self.render.run(
                 renderapi.tilespec.get_tile_specs_from_z, self.args['input_stack'], z)
             alltilespecs.extend(tilespecs)
