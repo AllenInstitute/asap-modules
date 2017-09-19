@@ -110,7 +110,7 @@ class MakeMedian(RenderModule):
             ts = firstts[ind]
             ts.z = z
             mml=ts.ip.get(0)
-            mml.imageUrl = outImage
+            mml['imageUrl'] = outImage
             outtilespecs.append(ts)
     
 
