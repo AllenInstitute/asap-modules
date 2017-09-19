@@ -109,8 +109,8 @@ class MakeMedian(RenderModule):
             tifffile.imsave(outImage, med)
             ts = firstts[ind]
             ts.z = z
-            mml=ts.ip.get(0)
-            mml['imageUrl'] = outImage
+            mmld=ts.ip.get(0)
+            mml = renderapi.tilespec.MipMapLevel(level = 0, outImage, maskUrl = mmld.get('maskUrl',None))
             ts.ip.update(mml)
             outtilespecs.append(ts)
     
