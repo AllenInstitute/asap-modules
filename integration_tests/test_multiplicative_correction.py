@@ -42,7 +42,8 @@ def median_stack(raw_stack,render):
         "output_directory": output_directory,
         "minZ": 0,
         "maxZ": 0,
-        "pool_size": 3
+        "pool_size": 3,
+        "log_level": "DEBUG"
     }
     mod=MakeMedian(input_data = params)
     mod.run()
