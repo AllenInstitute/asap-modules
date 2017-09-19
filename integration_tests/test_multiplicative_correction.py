@@ -49,7 +49,7 @@ def median_stack(raw_stack,render):
         "pool_size": 3,
         "log_level": "DEBUG"
     }
-    mod=MakeMedian(input_data = params)
+    mod=MakeMedian(input_data = params, args=[])
     mod.run()
 
     median_tilespecs = renderapi.tilespec.get_tile_specs_from_stack(median_stack, render=render)
