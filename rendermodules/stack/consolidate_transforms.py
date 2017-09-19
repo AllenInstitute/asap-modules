@@ -71,7 +71,7 @@ def flatten_and_dereference_tforms(tforms,ref_tforms):
 
 def consolidate_transforms(tforms, ref_tforms, logger, makePolyDegree=0):
     #first flatten and dereference this transform list
-    tforms = flatten_and_reference_tforms(tforms,ref_tforms)
+    tforms = flatten_and_dereference_tforms(tforms,ref_tforms)
     tform_total = AffineModel()
     start_index = 0
     total_affines = 0
