@@ -8,7 +8,7 @@ def test_template_module(tmpdir):
         "example":"my example parameters",
         "output_json":str(tmpfile)
     }
-    mod = TemplateModule(input_data = d)
+    mod = TemplateModule(input_data = d, args = [])
     mod.run()
 
     with open(str(tmpfile),'r') as fp:
