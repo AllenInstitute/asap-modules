@@ -65,7 +65,7 @@ def dereference_tforms(tforms,ref_tforms):
     return deref_tforms
 
 def flatten_and_reference_tforms(tforms,ref_tforms):
-    flat_tforms = flat_tforms(tforms)
+    flat_tforms = flatten_tforms(tforms)
     deref_tforms = dereference_tforms(flat_tforms,ref_tforms)
     return deref_tforms
 
