@@ -7,14 +7,14 @@ import argschema
 import marshmallow as mm
 
 example_json={
-        "render":{
-            "host":"ibs-forrestc-ux1",
-            "port":8080,
-            "owner":"Forrest",
-            "project":"M247514_Rorb_1",
-            "client_scripts":"/pipeline/render/render-ws-java-client/src/main/scripts"
+    "render":{
+            "host": "ibs-forrestc-ux1",
+            "port": 8080,
+            "owner": "NewOwner",
+            "project": "H1706003_z150",
+            "client_scripts": "/pipeline/render/render-ws-java-client/src/main/scripts"
         },
-        "example":"my example parameters",
+        "example":"my example parameters"
 }
 
 class TemplateParameters(RenderParameters):
@@ -23,17 +23,20 @@ class TemplateParameters(RenderParameters):
     default_val = argschema.fields.Str(required=False,default="a default value",
         description='an example with a default')
 
+class TemplateOutputParameters(argschema.schemas.DefaultSchema):
+    output_value = argschema.fields.Str(required=True,
+                                        description= "an output of the module")
 
-class Template(RenderModule):
-    def __init__(self,schema_type=None,*args,**kwargs):
-        if schema_type is None:
-            schema_type = TemplateParameters
-        super(Template,self).__init__(schema_type=schema_type,*args,**kwargs)
+class TemplateModule(RenderModule):
+    default_schema = TemplateParameters
+    default_output_schema = TemplateOutputParameters
     def run(self):
-        print self.args
-        self.logger.error('WARNING NEEDS TO BE TESTED, TALK TO FORREST IF BROKEN')
-
+        d = {
+            "output_value":self.args['example']+self.args['default_val']
+        }
+        self.output(d)
+        self.logger.error('this module does nothing useful')
 
 if __name__ == "__main__":
-    mod = Template(input_data= example_json)
+    mod = TemplateModule(input_data= example_json)
     mod.run()
