@@ -5,6 +5,13 @@ import json
 def test_template_module(tmpdir):
     tmpfile = tmpdir.join('output.json')
     d = {
+        "render":{
+            "host": "ibs-forrestc-ux1",
+            "port": 8080,
+            "owner": "NewOwner",
+            "project": "H1706003_z150",
+            "client_scripts": "/pipeline/render/render-ws-java-client/src/main/scripts"
+        },
         "example":"my example parameters",
         "output_json":str(tmpfile)
     }

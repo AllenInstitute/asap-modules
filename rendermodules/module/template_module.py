@@ -7,10 +7,17 @@ import argschema
 import marshmallow as mm
 
 example_json={
+    "render":{
+            "host": "ibs-forrestc-ux1",
+            "port": 8080,
+            "owner": "NewOwner",
+            "project": "H1706003_z150",
+            "client_scripts": "/pipeline/render/render-ws-java-client/src/main/scripts"
+        },
         "example":"my example parameters"
 }
 
-class TemplateParameters(argschema.schemas.ArgSchema):
+class TemplateParameters(RenderParameters):
     example = argschema.fields.Str(required=True,
         description='an example')
     default_val = argschema.fields.Str(required=False,default="a default value",
@@ -31,5 +38,5 @@ class TemplateModule(RenderModule):
         self.logger.error('this module does nothing useful')
 
 if __name__ == "__main__":
-    mod = Template(input_data= example_json)
+    mod = TemplateModule(input_data= example_json)
     mod.run()
