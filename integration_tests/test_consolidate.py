@@ -44,7 +44,7 @@ def test_stack(render,render_example_tilespec_and_transforms):
     yield stack
     renderapi.stack.delete_stack(stack, render=render)
 
-pytest.fixture(scope='module')
+@pytest.fixture(scope='module')
 def test_consolidate_module(render,test_stack):
     output_stack = test_stack + "_CONS"
     input_z = np.array(renderapi.stack.get_z_values_for_stack(test_stack,render=render))
