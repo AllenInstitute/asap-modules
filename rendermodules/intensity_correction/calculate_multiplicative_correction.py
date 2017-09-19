@@ -110,7 +110,7 @@ class MakeMedian(RenderModule):
             ts = firstts[ind]
             ts.z = z
             mmld=ts.ip.get(0)
-            mml = renderapi.tilespec.MipMapLevel(level = 0, outImage, maskUrl = mmld.get('maskUrl',None))
+            mml = renderapi.tilespec.MipMapLevel(level = 0, imageUrl = outImage, maskUrl = mmld.get('maskUrl',None))
             ts.ip.update(mml)
             outtilespecs.append(ts)
     
