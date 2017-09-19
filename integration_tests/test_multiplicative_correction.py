@@ -62,7 +62,7 @@ def median_stack(raw_stack, render, tmpdir_factory):
 
     median_tilespecs = renderapi.tilespec.get_tile_specs_from_stack(
         median_stack, render=render)
-    median_image = getImage(median_tilespecs[0])
+    N,M,median_image = getImage(median_tilespecs[0])
 
     expected_median_file = os.path.join(multiplicative_correction_example_dir,'median','Median_median_stack_0.tif')
     expect_median = tifffile.imread(expected_median_file)
