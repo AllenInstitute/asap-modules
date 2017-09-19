@@ -92,7 +92,7 @@ def test_consolidate_module(render,test_stack):
 def test_consolidate_single(render,test_stack,test_consolidate_module):
     (tilespecs, tforms)=process_z(render, 
               test_consolidate_module.logger,
-              test_consolidate_module['input_stack'],
-              test_consolidate_module['output_stack'],
-              test_consolidate_module['transforms_slice'],
+              test_consolidate_module.args['input_stack'],
+              test_consolidate_module.args['output_stack'],
+              test_consolidate_module.args['transforms_slice'],
               0.0)
