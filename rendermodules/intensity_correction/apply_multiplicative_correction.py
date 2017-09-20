@@ -152,8 +152,8 @@ class MultIntensityCorr(RenderModule):
             regex_pattern = re.compile(self.args['move_input_regex_find'])
             regex_replace = self.args['move_input_regex_replace']
         else:
-            p = None
             regex_replace = None
+            regex_pattern = None
 
         # get tilespecs
         Z = self.args['z_index']
