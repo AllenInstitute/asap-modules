@@ -148,9 +148,10 @@ def process_tile(C, dirout, stackname, input_ts, regex_pattern=None,
                 str(mmld['imageUrl'])).path)
         filepath_out = regex_pattern.sub(regex_replace,filepath_in)
         shutil.move(filepath_in,filepath_out)
-        mml = renderapi.tilespec.MipMapLevel(level = mmld['level'],
+        mml = renderapi.tilespec.MipMapLevel(mmld['level'],
                                              filepath_out,
                                              mmld['maskUrl'])
+        input_ts.ip.update(mml)
 
     return input_ts, output_ts
 
