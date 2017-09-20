@@ -162,7 +162,7 @@ class MultIntensityCorr(RenderModule):
             self.args['correction_stack'], Z, render=self.render)
         # mult intensity correct each tilespecs and return tilespecs
         render = self.render
-        N,M,C = getImage(corr_tilespecs[0])
+        N, M, C = getImage(corr_tilespecs[0])
         mypartial = partial(
             process_tile, C, self.args['output_directory'], self.args['output_stack'],
             regex_pattern=regex_pattern, regex_replace=regex_replace)

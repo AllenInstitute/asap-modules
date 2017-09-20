@@ -9,11 +9,10 @@ from functools import partial
 import glob
 import time
 import numpy as np
-import time
 from PIL import Image
 import tifffile
 from scipy.ndimage.filters import gaussian_filter
-from apply_multiplicative_correction import getImage
+from rendermodules.intensity_correction.apply_multiplicative_correction import getImage
 
 example_input = {
     "render": {
@@ -39,7 +38,7 @@ class MakeMedianParams(RenderParameters):
     file_prefix = Str(required=False, default="Median",
                       description='File prefix for median image file that is saved')
     output_directory = OutputDir(required=True,
-                           description='Output Directory for saving median image')
+                                 description='Output Directory for saving median image')
     output_stack = Str(required=True,
                        description='Output stack to save correction into')
     minZ = Int(required=True,
@@ -49,9 +48,11 @@ class MakeMedianParams(RenderParameters):
     pool_size = Int(required=False, default=20,
                     description='size of pool for parallel processing (default=20)')
 
+
 def getImageFromTilespecs(alltilespecs, index):
     N, M, img = getImage(alltilespecs[index])
     return img
+
 
 class MakeMedian(RenderModule):
     default_schema = MakeMedianParams
@@ -68,7 +69,7 @@ class MakeMedian(RenderModule):
 
         # get tilespecs for z
 
-        for z in range(self.args['minZ'], self.args['maxZ']+1):
+        for z in range(self.args['minZ'], self.args['maxZ'] + 1):
             tilespecs = self.render.run(
                 renderapi.tilespec.get_tile_specs_from_z, self.args['input_stack'], z)
             alltilespecs.extend(tilespecs)
@@ -102,18 +103,18 @@ class MakeMedian(RenderModule):
         if not os.path.exists(outdir):
             os.makedirs(outdir)
 
-        for ind,z in enumerate(range(self.args['minZ'], self.args['maxZ']+1)):
+        for ind, z in enumerate(range(self.args['minZ'], self.args['maxZ'] + 1)):
             outImage = outdir + \
                 "/%s_%s_%d.tif" % (self.args['file_prefix'],
                                    self.args['output_stack'], z)
             tifffile.imsave(outImage, med)
             ts = firstts[ind]
             ts.z = z
-            mmld=ts.ip.get(0)
-            mml = renderapi.tilespec.MipMapLevel(level = 0, imageUrl = outImage, maskUrl = mmld.get('maskUrl',None))
+            mmld = ts.ip.get(0)
+            mml = renderapi.tilespec.MipMapLevel(
+                level=0, imageUrl=outImage, maskUrl=mmld.get('maskUrl', None))
             ts.ip.update(mml)
             outtilespecs.append(ts)
-    
 
         # upload to render
         renderapi.stack.create_stack(

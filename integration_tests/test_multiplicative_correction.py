@@ -1,17 +1,16 @@
-import argschema
-from rendermodules.intensity_correction.calculate_multiplicative_correction import MakeMedian
-from rendermodules.intensity_correction.apply_multiplicative_correction import MultIntensityCorr, getImage
-import renderapi
+
 import json
 import os
-from test_data import MULTIPLICATIVE_INPUT_JSON, multiplicative_correction_example_dir,\
-    render_host, render_port, client_script_location
-import shutil
 import pytest
 import logging
+import renderapi
 import tifffile
 import numpy as np
 import random
+from test_data import MULTIPLICATIVE_INPUT_JSON, multiplicative_correction_example_dir,\
+    render_host, render_port, client_script_location
+from rendermodules.intensity_correction.calculate_multiplicative_correction import MakeMedian
+from rendermodules.intensity_correction.apply_multiplicative_correction import MultIntensityCorr, getImage
 
 render_params = {
     'host': render_host,
@@ -92,13 +91,13 @@ def test_median_stack(raw_stack, render, tmpdir_factory):
 
 
 def test_apply_correction(test_median_stack, mini_raw_stack, render, tmpdir):
-    #output_directory = os.path.join(os.path.split(
+    # output_directory = os.path.join(os.path.split(
     #    MULTIPLICATIVE_INPUT_JSON)[0], 'corrected')
     output_directory = str(tmpdir.join('corrected'))
     output_stack = "Flatfield_corrected_test"
     params = {
         "render": render_params,
-        "input_stack": raw_stack,
+        "input_stack": mini_raw_stack,
         "correction_stack": test_median_stack,
         "output_stack": output_stack,
         "output_directory": output_directory,
