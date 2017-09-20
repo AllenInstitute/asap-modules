@@ -100,7 +100,7 @@ def test_apply_correction(test_median_stack, raw_stack, render, tmpdir):
         "render": render_params,
         "input_stack": raw_stack,
         "correction_stack": test_median_stack,
-        "output_stack": "Flatfield_TEST_DAPI_1",
+        "output_stack": output_stack,
         "output_directory": output_directory,
         "z_index": 0,
         "pool_size": 10
