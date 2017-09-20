@@ -10,7 +10,7 @@ import random
 from test_data import MULTIPLICATIVE_INPUT_JSON, multiplicative_correction_example_dir,\
     render_host, render_port, client_script_location
 from rendermodules.intensity_correction.calculate_multiplicative_correction import MakeMedian
-from rendermodules.intensity_correction.apply_multiplicative_correction import MultIntensityCorr, getImage
+from rendermodules.intensity_correction.apply_multiplicative_correction import MultIntensityCorr, getImage, process_tile
 
 render_params = {
     'host': render_host,
@@ -118,3 +118,19 @@ def test_apply_correction(test_median_stack, mini_raw_stack, render, tmpdir):
         out_file = os.path.split(out_filepath)[1]
         exp_image = tifffile.imread(os.path.join(expected_directory, out_file))
         assert(np.max(np.abs(exp_image - out_image)) < 3)
+    return mod
+
+def test_single_tile(test_apply_correction,render,tmpdir):
+
+    # get tilespecs
+    Z = test_apply_correction.args['z_index']
+    inp_tilespecs = renderapi.tilespec.get_tile_specs_from_z(
+        test_apply_correction.args['input_stack'], Z, render=test_apply_correction.render)
+    corr_tilespecs = renderapi.tilespec.get_tile_specs_from_z(
+        test_apply_correction.args['correction_stack'], Z, render=test_apply_correction.render)
+    # mult intensity correct each tilespecs and return tilespecs
+    N, M, C = getImage(corr_tilespecs[0])
+    process_tile(C, 
+                 test_apply_correction.args['output_directory'],
+                 test_apply_correction.args['output_stack'],
+                 inp_tilespecs[0])
