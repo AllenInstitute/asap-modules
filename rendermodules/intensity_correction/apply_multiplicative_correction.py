@@ -127,7 +127,7 @@ def process_tile(C, dirout, stackname, input_ts, regex_pattern=None,
     Res = intensity_corr(I, C)
     if not os.path.exists(dirout):
         os.makedirs(dirout)
-    [head, tail] = os.path.split(input_ts.ip.get(0).imageUrl)
+    [head, tail] = os.path.split(input_ts.ip.get(0)['imageUrl'])
     outImage = os.path.join("%s" % dirout, "%s_%04d_%s" %
                             (stackname, input_ts.z, tail))
     tifffile.imsave(outImage, I)
@@ -160,7 +160,6 @@ class MultIntensityCorr(RenderModule):
             self.args['input_stack'], Z, render=self.render)
         corr_tilespecs = renderapi.tilespec.get_tile_specs_from_z(
             self.args['correction_stack'], Z, render=self.render)
-        print inp_tilespecs
         # mult intensity correct each tilespecs and return tilespecs
         render = self.render
         N,M,C = getImage(corr_tilespecs[0])
