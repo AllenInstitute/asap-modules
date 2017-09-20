@@ -5,3 +5,4 @@ pillow
 pathos
 tifffile
 pathlib
+scipy

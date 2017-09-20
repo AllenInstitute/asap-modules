@@ -44,14 +44,18 @@ class MultIntensityCorrParams(RenderParameters):
                   description='z value for section')
     pool_size = Int(required=False, default=20,
                     description='size of pool for parallel processing (default=20)')
-    move_input = Bool(required=False, default=False,
-                      description="whether to move input tiles to new location")
-    move_input_regex_find = Str(required=False,
-                                default="",
-                                description="regex string to find in input filenames")
-    move_input_regex_replace = Str(required=False,
-                                   default="",
-                                   description="regex string to replace in input filenames")
+    cycle_number = Int(required=False, default=2,
+                       description="what cycleNumber to upload for output_stack on render")
+    cycle_step_number = Int(required=False, default=1,
+                            description="what cycleStepNumber to upload for output_stack on render")
+    # move_input = Bool(required=False, default=False,
+    #                   description="whether to move input tiles to new location")
+    # move_input_regex_find = Str(required=False,
+    #                             default="",
+    #                             description="regex string to find in input filenames")
+    # move_input_regex_replace = Str(required=False,
+    #                                default="",
+    #                                description="regex string to replace in input filenames")
 
 
 def intensity_corr(img, ff):
@@ -105,9 +109,16 @@ def getImage(ts):
     (N, M) = img0.shape
     return N, M, img0
 
+#, regex_pattern=None, regex_replace=None):
+# regex_pattern: re.Pattern or None
+#     if not None this is the regex pattern to find in the input_ts path when saving
+#     the original image file to a new location. If None the input file will not be moved
+# regex_replace:
+#     this is the string to replace the regex pattern with in the input_ts path when
+#     saving the original image file to a new location
 
-def process_tile(C, dirout, stackname, input_ts, regex_pattern=None,
-                 regex_replace=None):
+
+def process_tile(C, dirout, stackname, input_ts):
     """function to correct each tile in the input_ts with the matrix C,
     and potentially move the original tiles to a new location.abs
 
@@ -119,17 +130,10 @@ def process_tile(C, dirout, stackname, input_ts, regex_pattern=None,
         the path to the directory to save all corrected images
     input_ts: renderapi.tilespec.TileSpec
         the tilespec with the tiles to be corrected
-    regex_pattern: re.Pattern or None
-        if not None this is the regex pattern to find in the input_ts path when saving
-        the original image file to a new location. If None the input file will not be moved
-    regex_replace:
-        this is the string to replace the regex pattern with in the input_ts path when
-        saving the original image file to a new location
     """
     [N1, M1, I] = getImage(input_ts)
     Res = intensity_corr(I, C)
-    if not os.path.exists(dirout):
-        os.makedirs(dirout)
+
     [head, tail] = os.path.split(input_ts.ip.get(0)['imageUrl'])
     outImage = os.path.join("%s" % dirout, "%s_%04d_%s" %
                             (stackname, input_ts.z, tail))
@@ -141,17 +145,16 @@ def process_tile(C, dirout, stackname, input_ts, regex_pattern=None,
     d['mipmapLevels'][0]['imageUrl'] = outImage
     output_ts = renderapi.tilespec.TileSpec(json=d)
 
-
-    if regex_pattern is not None:
-        mmld = input_ts.get(0)
-        filepath_in = urllib.unquote(urlparse.urlparse(
-                str(mmld['imageUrl'])).path)
-        filepath_out = regex_pattern.sub(regex_replace,filepath_in)
-        shutil.move(filepath_in,filepath_out)
-        mml = renderapi.tilespec.MipMapLevel(mmld['level'],
-                                             filepath_out,
-                                             mmld['maskUrl'])
-        input_ts.ip.update(mml)
+    # if regex_pattern is not None:
+    #     mmld = input_ts.get(0)
+    #     filepath_in = urllib.unquote(urlparse.urlparse(
+    #             str(mmld['imageUrl'])).path)
+    #     filepath_out = regex_pattern.sub(regex_replace,filepath_in)
+    #     shutil.move(filepath_in,filepath_out)
+    #     mml = renderapi.tilespec.MipMapLevel(mmld['level'],
+    #                                          filepath_out,
+    #                                          mmld['maskUrl'])
+    #     input_ts.ip.update(mml)
 
     return input_ts, output_ts
 
@@ -161,14 +164,14 @@ class MultIntensityCorr(RenderModule):
 
     def run(self):
 
-        if self.args['move_input']:
-            assert(len(self.args['move_input_regex_find']) > 0)
-            assert(len(self.args['move_input_regex_replace']) > 0)
-            regex_pattern = re.compile(self.args['move_input_regex_find'])
-            regex_replace = self.args['move_input_regex_replace']
-        else:
-            regex_replace = None
-            regex_pattern = None
+        # if self.args['move_input']:
+        #     assert(len(self.args['move_input_regex_find']) > 0)
+        #     assert(len(self.args['move_input_regex_replace']) > 0)
+        #     regex_pattern = re.compile(self.args['move_input_regex_find'])
+        #     regex_replace = self.args['move_input_regex_replace']
+        # else:
+        #     regex_replace = None
+        #     regex_pattern = None
 
         # get tilespecs
         Z = self.args['z_index']
@@ -180,8 +183,7 @@ class MultIntensityCorr(RenderModule):
         render = self.render
         N, M, C = getImage(corr_tilespecs[0])
         mypartial = partial(
-            process_tile, C, self.args['output_directory'], self.args['output_stack'],
-            regex_pattern=regex_pattern, regex_replace=regex_replace)
+            process_tile, C, self.args['output_directory'], self.args['output_stack'])
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
             tilespecs = pool.map(mypartial, inp_tilespecs)
         #tilespecs = map(mypartial, inp_tilespecs)
@@ -191,19 +193,20 @@ class MultIntensityCorr(RenderModule):
 
         # upload to render
         renderapi.stack.create_stack(
-            self.args['output_stack'], cycleNumber=2, cycleStepNumber=1, render=self.render)
-        renderapi.client.import_tilespecs(
+            self.args['output_stack'], cycleNumber=self.args['cycle_number'],
+             cycleStepNumber=self.args['cycle_step_number'], render=self.render)
+        renderapi.client.import_tilespecs_parallel(
             self.args['output_stack'], output_tilespecs, render=self.render)
         renderapi.stack.set_stack_state(
             self.args['output_stack'], "COMPLETE", render=self.render)
 
-        # upload new input tilespecs
-        if regex_pattern is not None:
-            renderapi.client.import_tilespecs(
-                self.args['input_stack'],
-                new_input_tilespecs, render=self.render)
-            renderapi.stack.set_stack_state(
-                self.args['input_stack'], "COMPLETE", render=self.render)
+        # # upload new input tilespecs
+        # if regex_pattern is not None:
+        #     renderapi.client.import_tilespecs(
+        #         self.args['input_stack'],
+        #         new_input_tilespecs, render=self.render)
+        #     renderapi.stack.set_stack_state(
+        #         self.args['input_stack'], "COMPLETE", render=self.render)
 
 
 if __name__ == "__main__":
