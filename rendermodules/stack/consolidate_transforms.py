@@ -69,6 +69,7 @@ def dereference_tforms(tforms,ref_tforms):
 def flatten_and_dereference_tforms(tforms,ref_tforms):
     flat_tforms = flatten_tforms(tforms)
     deref_tforms = dereference_tforms(flat_tforms,ref_tforms)
+    deref_tforms = flatten_tforms(deref_tforms)
     return deref_tforms
 
 def consolidate_transforms(tforms, ref_tforms, logger, makePolyDegree=0):
