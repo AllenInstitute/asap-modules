@@ -39,9 +39,24 @@ def raw_stack(render):
         stack, MULTIPLICATIVE_INPUT_JSON, render=render)
     renderapi.stack.set_stack_state(stack, 'COMPLETE', render=render)
     yield stack
-    #renderapi.stack.delete_stack(stack, render=render)
+    renderapi.stack.delete_stack(stack, render=render)
+@pytest.fixture(scope='module')
+def mini_raw_stack(render):
+    stack = 'mini_input_raw'
+    logger = renderapi.client.logger
+    logger.setLevel(logging.DEBUG)
+    renderapi.stack.create_stack(stack, render=render)
+    with open(MULTIPLICATIVE_INPUT_JSON,'r') as fp:
+        tsj = json.load(fp)
+    tilespecs = [renderapi.tilespec.TileSpec(json=ts) for ts in tsj]
+    tilespecs = random.sample(tilespecs,5)
 
+    renderapi.client.import_tilespecs(stack, tilespecs, render=render)
+    renderapi.stack.set_stack_state(stack, 'COMPLETE', render=render)
+    yield stack
+    renderapi.stack.delete_stack(stack, render=render)
 
+@pytest.fixture(scope='module')
 def test_median_stack(raw_stack, render, tmpdir_factory):
     median_stack = 'median_stack'
     output_directory = str(tmpdir_factory.mktemp('Median'))
@@ -89,11 +104,9 @@ def test_apply_correction(test_median_stack,raw_stack,render,tmpdir):
     mod.run()
 
     expected_directory = os.path.join(os.path.split(MULTIPLICATIVE_INPUT_JSON)[0],'corrected')
-
     output_tilespecs = renderapi.tilespec.get_tile_specs_from_z(output_stack, 0, render=render)
-    test_tilesepcs = random.sample(output_tilespecs,5)
 
-    for ts in test_tilesepcs:
+    for ts in output_tilespecs:
         N,M,out_image = getImage(ts)
         out_filepath = ts.ip.get(0)['imageUrl']
         out_file = os.path.split(out_filepath)[0]
