@@ -161,7 +161,7 @@ class MultIntensityCorr(RenderModule):
             renderapi.tilespec.get_tile_specs_from_z, self.args['input_stack'], Z)
         corr_tilespecs = self.render.run(
             renderapi.tilespec.get_tile_specs_from_z, self.args['correction_stack'], Z)
-
+        print inp_tilespecs
         # mult intensity correct each tilespecs and return tilespecs
         render = self.render
         C = getImage(corr_tilespecs[0])

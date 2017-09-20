@@ -5,11 +5,11 @@ import renderapi
 import json
 import os
 from test_data import MULTIPLICATIVE_INPUT_JSON, multiplicative_correction_example_dir,\
-                      render_host, render_port, client_script_location
+    render_host, render_port, client_script_location
 import shutil
 import pytest
 import logging
-import tifffile 
+import tifffile
 import numpy as np
 import random
 
@@ -40,21 +40,24 @@ def raw_stack(render):
     renderapi.stack.set_stack_state(stack, 'COMPLETE', render=render)
     yield stack
     renderapi.stack.delete_stack(stack, render=render)
+
+
 @pytest.fixture(scope='module')
 def mini_raw_stack(render):
     stack = 'mini_input_raw'
     logger = renderapi.client.logger
     logger.setLevel(logging.DEBUG)
     renderapi.stack.create_stack(stack, render=render)
-    with open(MULTIPLICATIVE_INPUT_JSON,'r') as fp:
+    with open(MULTIPLICATIVE_INPUT_JSON, 'r') as fp:
         tsj = json.load(fp)
     tilespecs = [renderapi.tilespec.TileSpec(json=ts) for ts in tsj]
-    tilespecs = random.sample(tilespecs,5)
+    tilespecs = random.sample(tilespecs, 5)
 
     renderapi.client.import_tilespecs(stack, tilespecs, render=render)
     renderapi.stack.set_stack_state(stack, 'COMPLETE', render=render)
     yield stack
     renderapi.stack.delete_stack(stack, render=render)
+
 
 @pytest.fixture(scope='module')
 def test_median_stack(raw_stack, render, tmpdir_factory):
@@ -77,22 +80,24 @@ def test_median_stack(raw_stack, render, tmpdir_factory):
 
     median_tilespecs = renderapi.tilespec.get_tile_specs_from_stack(
         median_stack, render=render)
-    N,M,median_image = getImage(median_tilespecs[0])
+    N, M, median_image = getImage(median_tilespecs[0])
 
-    expected_median_file = os.path.join(multiplicative_correction_example_dir,'median','Median_median_stack_0.tif')
+    expected_median_file = os.path.join(
+        multiplicative_correction_example_dir, 'median', 'Median_median_stack_0.tif')
     expect_median = tifffile.imread(expected_median_file)
 
-    assert(np.max(np.abs(median_image-expect_median))<3)
+    assert(np.max(np.abs(median_image - expect_median)) < 3)
 
     yield median_stack
 
 
-def test_apply_correction(test_median_stack,raw_stack,render,tmpdir):
-    output_directory = os.path.join(os.path.split(MULTIPLICATIVE_INPUT_JSON)[0],'corrected')
+def test_apply_correction(test_median_stack, raw_stack, render, tmpdir):
+    output_directory = os.path.join(os.path.split(
+        MULTIPLICATIVE_INPUT_JSON)[0], 'corrected')
     #output_directory = str(tmpdir.join('corrected'))
     output_stack = "Flatfield_corrected_test"
     params = {
-        "render":render_params,
+        "render": render_params,
         "input_stack": raw_stack,
         "correction_stack": test_median_stack,
         "output_stack": "Flatfield_TEST_DAPI_1",
@@ -100,15 +105,17 @@ def test_apply_correction(test_median_stack,raw_stack,render,tmpdir):
         "z_index": 0,
         "pool_size": 10
     }
-    mod = MultIntensityCorr(input_data = params, args=[])
+    mod = MultIntensityCorr(input_data=params, args=[])
     mod.run()
 
-    expected_directory = os.path.join(os.path.split(MULTIPLICATIVE_INPUT_JSON)[0],'corrected')
-    output_tilespecs = renderapi.tilespec.get_tile_specs_from_z(output_stack, 0, render=render)
+    expected_directory = os.path.join(os.path.split(
+        MULTIPLICATIVE_INPUT_JSON)[0], 'corrected')
+    output_tilespecs = renderapi.tilespec.get_tile_specs_from_z(
+        output_stack, 0, render=render)
 
     for ts in output_tilespecs:
-        N,M,out_image = getImage(ts)
+        N, M, out_image = getImage(ts)
         out_filepath = ts.ip.get(0)['imageUrl']
         out_file = os.path.split(out_filepath)[0]
-        exp_image = tifffile.imread(os.path.join(expected_directory,out_file))
-        assert(np.max(np.abs(exp_image-out_image))<3)
+        exp_image = tifffile.imread(os.path.join(expected_directory, out_file))
+        assert(np.max(np.abs(exp_image - out_image)) < 3)
