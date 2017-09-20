@@ -166,9 +166,9 @@ class MultIntensityCorr(RenderModule):
         mypartial = partial(
             process_tile, C, self.args['output_directory'], self.args['output_stack'],
             regex_pattern=regex_pattern, regex_replace=regex_replace)
-        # with renderapi.client.WithPool(self.args['pool_size']) as pool:
-        #    tilespecs = pool.map(mypartial, inp_tilespecs)
-        tilespecs = map(mypartial, inp_tilespecs)
+        with renderapi.client.WithPool(self.args['pool_size']) as pool:
+            tilespecs = pool.map(mypartial, inp_tilespecs)
+        #tilespecs = map(mypartial, inp_tilespecs)
 
         output_tilespecs = [ts[1] for ts in tilespecs]
         new_input_tilespecs = [ts[0] for ts in tilespecs]
