@@ -73,7 +73,7 @@ def test_median_stack(raw_stack, render, tmpdir_factory):
 
 
 def test_apply_correction(test_median_stack,raw_stack,render,tmpdir):
-    output_directory = os.path.join(os.path.split(MULTIPLICATIVE_INPUT_JSON)[0],'Corrected')
+    output_directory = os.path.join(os.path.split(MULTIPLICATIVE_INPUT_JSON)[0],'corrected')
     #output_directory = str(tmpdir.join('corrected'))
     output_stack = "Flatfield_corrected_test"
     params = {
@@ -99,4 +99,3 @@ def test_apply_correction(test_median_stack,raw_stack,render,tmpdir):
         out_file = os.path.split(out_filepath)[0]
         exp_image = tifffile.imread(os.path.join(expected_directory,out_file))
         assert(np.max(np.abs(exp_image-out_image))<3)
-        
