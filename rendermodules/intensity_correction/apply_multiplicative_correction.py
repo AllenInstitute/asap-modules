@@ -123,7 +123,6 @@ def process_tile(C, dirout, stackname, input_ts, regex_pattern=None,
         this is the string to replace the regex pattern with in the input_ts path when
         saving the original image file to a new location
     """
-    [N, M, C] = getImage(input_ts)
     [N1, M1, I] = getImage(input_ts)
     Res = intensity_corr(I, C)
     if not os.path.exists(dirout):
@@ -157,21 +156,21 @@ class MultIntensityCorr(RenderModule):
 
         # get tilespecs
         Z = self.args['z_index']
-        inp_tilespecs = self.render.run(
-            renderapi.tilespec.get_tile_specs_from_z, self.args['input_stack'], Z)
-        corr_tilespecs = self.render.run(
-            renderapi.tilespec.get_tile_specs_from_z, self.args['correction_stack'], Z)
+        inp_tilespecs = renderapi.tilespec.get_tile_specs_from_z(
+            self.args['input_stack'], Z, render=self.render)
+        corr_tilespecs = renderapi.tilespec.get_tile_specs_from_z(
+            self.args['correction_stack'], Z, render=self.render)
         print inp_tilespecs
         # mult intensity correct each tilespecs and return tilespecs
         render = self.render
         C = getImage(corr_tilespecs[0])
         mypartial = partial(
             process_tile, C, self.args['output_directory'], self.args['output_stack'],
-            regex_pattern, regex_replace)
-        #with renderapi.client.WithPool(self.args['pool_size']) as pool:
+            regex_pattern=regex_pattern, regex_replace=regex_replace)
+        # with renderapi.client.WithPool(self.args['pool_size']) as pool:
         #    tilespecs = pool.map(mypartial, inp_tilespecs)
-        tilespecs = map(mypartial,inp_tilespecs)
-        
+        tilespecs = map(mypartial, inp_tilespecs)
+
         output_tilespecs = [ts[1] for ts in tilespecs]
         new_input_tilespecs = [ts[0] for ts in tilespecs]
 
