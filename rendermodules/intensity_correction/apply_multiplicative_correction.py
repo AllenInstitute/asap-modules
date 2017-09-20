@@ -170,8 +170,8 @@ class MultIntensityCorr(RenderModule):
             regex_pattern, regex_replace)
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
             tilespecs = pool.map(mypartial, inp_tilespecs)
-        output_tilespecs = [tilespec[1] for ts in tilespecs]
-        new_input_tilespecs = [tilespec[0] for ts in tilespecs]
+        output_tilespecs = [ts[1] for ts in tilespecs]
+        new_input_tilespecs = [ts[0] for ts in tilespecs]
 
         # upload to render
         renderapi.stack.create_stack(
