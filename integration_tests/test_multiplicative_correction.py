@@ -11,6 +11,7 @@ import pytest
 import logging
 import tifffile 
 import numpy as np
+import random
 
 render_params = {
     'host': render_host,
@@ -72,8 +73,8 @@ def test_median_stack(raw_stack, render, tmpdir_factory):
 
 
 def test_apply_correction(test_median_stack,raw_stack,render,tmpdir):
-    
-    output_directory = str(tmpdir.join('corrected'))
+    output_directory = os.path.join(os.path.split(MULTIPLICATIVE_INPUT_JSON)[0],'Corrected')
+    #output_directory = str(tmpdir.join('corrected'))
     output_stack = "Flatfield_corrected_test"
     params = {
         "render":render_params,
@@ -87,3 +88,15 @@ def test_apply_correction(test_median_stack,raw_stack,render,tmpdir):
     mod = MultIntensityCorr(input_data = params, args=[])
     mod.run()
 
+    expected_directory = os.path.join(os.path.split(MULTIPLICATIVE_INPUT_JSON)[0],'corrected')
+
+    output_tilespecs = renderapi.tilespec.get_tile_specs_from_z(output_stack, 0, render=render)
+    test_tilesepcs = random.sample(output_tilespecs,5)
+
+    for ts in test_tilesepcs:
+        N,M,out_image = getImage(ts)
+        out_filepath = ts.ip.get(0)['imageUrl']
+        out_file = os.path.split(out_filepath)[0]
+        exp_image = tifffile.imread(os.path.join(expected_directory,out_file))
+        assert(np.max(np.abs(exp_image-out_image))<3)
+        
