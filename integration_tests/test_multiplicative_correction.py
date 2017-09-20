@@ -89,11 +89,11 @@ def test_median_stack(raw_stack, render, tmpdir_factory):
 
     yield median_stack
 
-
-def test_apply_correction(test_median_stack, mini_raw_stack, render, tmpdir):
+@pytest.fixture(scope='module')
+def test_apply_correction(test_median_stack, mini_raw_stack, render, tmpdir_factory):
     # output_directory = os.path.join(os.path.split(
     #    MULTIPLICATIVE_INPUT_JSON)[0], 'corrected')
-    output_directory = str(tmpdir.join('corrected'))
+    output_directory = str(tmpdir_factory.mktemp('corrected'))
     output_stack = "Flatfield_corrected_test"
     params = {
         "render": render_params,
