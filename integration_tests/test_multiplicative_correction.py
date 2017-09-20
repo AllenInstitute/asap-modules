@@ -41,8 +41,7 @@ def raw_stack(render):
     #renderapi.stack.delete_stack(stack, render=render)
 
 
-@pytest.fixture(scope='module')
-def median_stack(raw_stack, render, tmpdir_factory):
+def test_median_stack(raw_stack, render, tmpdir_factory):
     median_stack = 'median_stack'
     output_directory = str(tmpdir_factory.mktemp('Median'))
     #output_directory = os.path.join(os.path.split(MULTIPLICATIVE_INPUT_JSON)[0],'Medians')
@@ -72,5 +71,19 @@ def median_stack(raw_stack, render, tmpdir_factory):
     yield median_stack
 
 
-def test_median_stack(median_stack):
-    assert True
+def test_apply_correction(test_median_stack,raw_stack,render,tmpdir):
+    
+    output_directory = str(tmpdir.join('corrected'))
+    output_stack = "Flatfield_corrected_test"
+    params = {
+        "render":render_params,
+        "input_stack": raw_stack,
+        "correction_stack": test_median_stack,
+        "output_stack": "Flatfield_TEST_DAPI_1",
+        "output_directory": output_directory,
+        "z_index": 0,
+        "pool_size": 10
+    }
+    mod = MultIntensityCorr(input_data = params, args=[])
+    mod.run()
+
