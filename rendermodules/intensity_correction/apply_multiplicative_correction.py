@@ -10,6 +10,9 @@ import numpy as np
 from PIL import Image
 import tifffile
 import re
+import shutil
+import urllib
+import urlparse
 
 example_input = {
     "render": {
@@ -137,6 +140,18 @@ def process_tile(C, dirout, stackname, input_ts, regex_pattern=None,
         del d['mipmapLevels'][i]
     d['mipmapLevels'][0]['imageUrl'] = outImage
     output_ts = renderapi.tilespec.TileSpec(json=d)
+
+
+    if regex_pattern is not None:
+        mmld = input_ts.get(0)
+        filepath_in = urllib.unquote(urlparse.urlparse(
+                str(mmld['imageUrl'])).path)
+        filepath_out = regex_pattern.sub(regex_replace,filepath_in)
+        shutil.move(filepath_in,filepath_out)
+        mml = renderapi.tilespec.MipMapLevel(level = mmld['level'],
+                                             filepath_out,
+                                             mmld['maskUrl'])
+
     return input_ts, output_ts
 
 
