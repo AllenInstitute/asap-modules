@@ -53,7 +53,7 @@ def make_tilespecs_and_cmds(render, inputStack, output_dir, zvalues, levels,
         for ts in tilespecs:
             mml = ts.ip.mipMapLevels[0]
 
-            old_url = mml['imageUrl']
+            old_url = mml.imageUrl
             filepath_in = urllib.unquote(urlparse.urlparse(
                 str(old_url)).path)
 
