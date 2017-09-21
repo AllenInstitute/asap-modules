@@ -7,19 +7,15 @@ import renderapi
 import tifffile
 import numpy as np
 import random
-from test_data import MULTIPLICATIVE_INPUT_JSON, multiplicative_correction_example_dir,\
-    render_host, render_port, client_script_location
+from test_data import (MULTIPLICATIVE_INPUT_JSON, multiplicative_correction_example_dir,
+                       render_params)
 from rendermodules.intensity_correction.calculate_multiplicative_correction import MakeMedian
 from rendermodules.intensity_correction.apply_multiplicative_correction import MultIntensityCorr, getImage, process_tile
 
-render_params = {
-    'host': render_host,
-    'port': render_port,
-    'owner': 'test',
-    'project': 'multi_correct_test',
-    'client_scripts': client_script_location
-}
+render_params['project']='multi_correct_test'
 
+logger = renderapi.client.logger
+logger.setLevel(logging.DEBUG)
 
 @pytest.fixture(scope='module')
 def render():
@@ -34,8 +30,6 @@ def test_tilespecs():
 @pytest.fixture(scope='module')
 def raw_stack(render,test_tilespecs):
     stack = 'input_raw'
-    logger = renderapi.client.logger
-    logger.setLevel(logging.DEBUG)
     renderapi.stack.create_stack(stack, render=render)
     renderapi.client.import_tilespecs(
         stack, test_tilespecs, render=render)
@@ -47,8 +41,6 @@ def raw_stack(render,test_tilespecs):
 @pytest.fixture(scope='module')
 def mini_raw_stack(render,test_tilespecs):
     stack = 'mini_input_raw'
-    logger = renderapi.client.logger
-    logger.setLevel(logging.DEBUG)
     renderapi.stack.create_stack(stack, render=render)
     tilespecs = random.sample(test_tilespecs, 5)
 

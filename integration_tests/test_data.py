@@ -7,6 +7,18 @@ render_host = os.environ.get(
     'RENDER_HOST', 'renderservice')
 render_port = os.environ.get(
     'RENDER_PORT', 8080)
+render_test_owner = os.environ.get(
+    'RENDER_TEST_OWNER','test'
+)
+
+render_params = {
+    "host":render_host,
+    "port":render_port,
+    "owner":render_test_owner,
+    "project":"test_project",
+    "client_scripts":client_script_location
+}
+
 client_script_location = os.environ.get(
     'RENDER_CLIENT_SCRIPTS',
     ('/var/www/render/render-ws-java-client/'

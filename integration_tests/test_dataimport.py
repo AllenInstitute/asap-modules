@@ -9,23 +9,14 @@ import renderapi
 from rendermodules.dataimport import generate_EM_tilespecs_from_metafile
 from rendermodules.dataimport import generate_mipmaps
 from rendermodules.dataimport import apply_mipmaps_to_render
-from test_data import (render_host, render_port, client_script_location,
+from test_data import (render_params, 
                        METADATA_FILE, MIPMAP_TILESPECS_JSON, scratch_dir)
-
 
 @pytest.fixture(scope='module')
 def render():
-    render_test_parameters = {
-        'host': render_host,
-        'port': render_port,
-        'owner': 'test',
-        'project': 'test_project',
-        'client_scripts': client_script_location}
-    return renderapi.connect(**render_test_parameters)
-
+    return renderapi.connect(**render_params)
 
 def test_generate_EM_metadata(render):
-    assert os.path.isdir(client_script_location)
     assert isinstance(render, renderapi.render.RenderClient)
     with open(METADATA_FILE, 'r') as f:
         md = json.load(f)

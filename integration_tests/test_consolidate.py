@@ -1,20 +1,13 @@
 import renderapi
 from rendermodules.stack.consolidate_transforms import ConsolidateTransforms, process_z
-from test_data import render_host,render_port,client_script_location, cons_ex_tilespec_json, cons_ex_transform_json
+from test_data import render_params, cons_ex_tilespec_json, cons_ex_transform_json
 import pytest
 import numpy as np
 import json
 import logging
 
 EPSILON = .001
-render_params = {
-    "host":render_host,
-    "port":render_port,
-    "owner":"test",
-    "project":"consolidate_test",
-    "client_scripts":client_script_location
-}
-
+render_params['project'] = "consolidate_test"
 
 @pytest.fixture(scope='module')
 def render():

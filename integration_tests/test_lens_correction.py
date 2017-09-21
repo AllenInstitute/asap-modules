@@ -1,15 +1,11 @@
 import renderapi
 from rendermodules.lens_correction.apply_lens_correction import ApplyLensCorrection
-from test_data import render_host,render_port,client_script_location
+from test_data import render_params
+
+render_params['project']='LENS_CORRECTION_TEST'
 def test_apply_lens_correction():
     example_input = {
-        "render": {
-            "host": render_host,
-            "port": render_port,
-            "owner": "test",
-            "project": "RENDERAPI_TEST",
-            "client_scripts": client_script_location
-        },
+        "render":render_params,
         "inputStack": "test_noLC",
         "outputStack": "test_LC",
         "zs": [2266],
