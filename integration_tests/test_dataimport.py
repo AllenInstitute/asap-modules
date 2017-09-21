@@ -109,9 +109,9 @@ def test_mipmaps(render, input_stack='MIPMAPTEST', output_stack=None):
                     is None else output_stack)
 
     # TODO should maybe make this  fixture to separate tests
-    with open(MIPMAP_TILESPECS_JSON, 'r') as f:
-        tspecs_to_mipmap = [
-            renderapi.tilespec.TileSpec(json=d) for d in json.load(f)]
+
+    tspecs_to_mipmap = [renderapi.tilespec.TileSpec(json=d) 
+        for d in MIPMAP_TILESPECS_JSON]
     renderapi.stack.create_stack(input_stack, render=render)
     renderapi.client.import_tilespecs_parallel(
         input_stack, tspecs_to_mipmap, render=render)

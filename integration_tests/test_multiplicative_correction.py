@@ -26,31 +26,31 @@ def render():
     render = renderapi.connect(**render_params)
     return render
 
+@pytest.fixture(scope='module')
+def test_tilespecs():
+     tilespecs = [renderapi.tilespec.TileSpec(json=d) for d in MULTIPLICATIVE_INPUT_JSON]
+     return tilespecs
 
 @pytest.fixture(scope='module')
-def raw_stack(render):
+def raw_stack(render,test_tilespecs):
     stack = 'input_raw'
     logger = renderapi.client.logger
     logger.setLevel(logging.DEBUG)
     renderapi.stack.create_stack(stack, render=render)
-    print MULTIPLICATIVE_INPUT_JSON
-    renderapi.client.import_single_json_file(
-        stack, MULTIPLICATIVE_INPUT_JSON, render=render)
+    renderapi.client.import_tilespecs(
+        stack, test_tilespecs, render=render)
     renderapi.stack.set_stack_state(stack, 'COMPLETE', render=render)
     yield stack
     renderapi.stack.delete_stack(stack, render=render)
 
 
 @pytest.fixture(scope='module')
-def mini_raw_stack(render):
+def mini_raw_stack(render,test_tilespecs):
     stack = 'mini_input_raw'
     logger = renderapi.client.logger
     logger.setLevel(logging.DEBUG)
     renderapi.stack.create_stack(stack, render=render)
-    with open(MULTIPLICATIVE_INPUT_JSON, 'r') as fp:
-        tsj = json.load(fp)
-    tilespecs = [renderapi.tilespec.TileSpec(json=ts) for ts in tsj]
-    tilespecs = random.sample(tilespecs, 5)
+    tilespecs = random.sample(test_tilespecs, 5)
 
     renderapi.client.import_tilespecs(stack, tilespecs, render=render)
     renderapi.stack.set_stack_state(stack, 'COMPLETE', render=render)
