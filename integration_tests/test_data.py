@@ -63,5 +63,5 @@ cons_ex_transform_json = render_json_template(env,  'cycle1_step1_acquire_transf
 
 multiplicative_correction_example_dir=os.path.join(TEST_DATA_ROOT,'intensitycorrection_test_data')
 
-MULTIPLICATIVE_INPUT_JSON = render_json_template(env,  'DAPI_1_rib0000sess0001sect0000.json',
+MULTIPLICATIVE_INPUT_JSON = render_json_template(env,'intensity_correction_template.json',
     test_data_root=TEST_DATA_ROOT)
