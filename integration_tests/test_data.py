@@ -10,6 +10,10 @@ render_port = os.environ.get(
 render_test_owner = os.environ.get(
     'RENDER_TEST_OWNER','test'
 )
+client_script_location = os.environ.get(
+    'RENDER_CLIENT_SCRIPTS',
+    ('/shared/render/render-ws-java-client/'
+     'src/main/scripts/'))
 
 render_params = {
     "host":render_host,
@@ -19,10 +23,7 @@ render_params = {
     "client_scripts":client_script_location
 }
 
-client_script_location = os.environ.get(
-    'RENDER_CLIENT_SCRIPTS',
-    ('/var/www/render/render-ws-java-client/'
-     'src/main/scripts/'))
+
 
 scratch_dir = os.environ.get(
     'SCRATCH_DIR', '/var/www/render/scratch/')
