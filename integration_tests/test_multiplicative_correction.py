@@ -99,8 +99,7 @@ def test_apply_correction(test_median_stack, mini_raw_stack, render, tmpdir_fact
     mod = MultIntensityCorr(input_data=params, args=[])
     mod.run()
 
-    expected_directory = os.path.join(os.path.split(
-        MULTIPLICATIVE_INPUT_JSON)[0], 'corrected')
+    expected_directory = os.path.join(multiplicative_correction_example_dir, 'corrected')
     output_tilespecs = renderapi.tilespec.get_tile_specs_from_z(
         output_stack, 0, render=render)
 
