@@ -61,7 +61,7 @@ def apply_rough_alignment(render, input_stack, prealigned_stack, lowres_stack, o
         # get the lowres stack rough alignment transformation
         tforms = lowres_ts[0].tforms
         print "B"
-        d = tforms[0].to_dict()
+        d = tforms[-1].to_dict()
         dsList = d['dataString'].split()
         v0 = float(dsList[0])*scale
         v1 = float(dsList[1])*scale
@@ -70,7 +70,7 @@ def apply_rough_alignment(render, input_stack, prealigned_stack, lowres_stack, o
         v4 = float(dsList[4])
         v5 = float(dsList[5])
         d['dataString'] = "%f %f %f %f %s %s"%(v0, v1, v2, v3, v4, v5)
-        tforms[0].from_dict(d)
+        tforms[-1].from_dict(d)
         print "C"
         stackbounds = render.run(
                             renderapi.stack.get_bounds_from_z,
@@ -93,11 +93,15 @@ def apply_rough_alignment(render, input_stack, prealigned_stack, lowres_stack, o
         v3 = 1.0
         v4 = tx
         v5 = ty
-        d['dataString'] = "%f %f %f %f %s %s"%(v0,v1,v2,v3, v4,v5)
+        d['dataString'] = "%f %f %f %f %s %s"%(v0,v1,v2,v3,v4,v5)
         tforms1[-1].from_dict(d)
         print "E"
 
+        print tforms1
+        print tforms
+
         ftform = tforms1 + tforms
+        print ftform
         print "F"
         allts = []
         highres_ts1 = render.run(
@@ -105,16 +109,16 @@ def apply_rough_alignment(render, input_stack, prealigned_stack, lowres_stack, o
                             input_stack,
                             z)
         for t in highres_ts1:
-            print "f1"
+            #print "f1"
             t.tforms.append(ftform)
-            print "f2"
+            #print "f2"
             d1 = t.to_dict()
-            print "f3"
-            print d1['mipmapLevels'][0]['imageUrl']
+            #print "f3"
+            #print d1['mipmapLevels'][0]['imageUrl']
             d1['z'] = newz
             t.from_dict(d1)
             allts.append(t)
-            
+
         print "G"
         tilespecfilename = os.path.join(output_dir,'tilespec_%04d.json'%newz)
         print tilespecfilename
