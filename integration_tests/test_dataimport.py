@@ -3,7 +3,6 @@ import pytest
 import urllib
 import urlparse
 import tempfile
-import os
 from PIL import Image
 import renderapi
 from rendermodules.dataimport import generate_EM_tilespecs_from_metafile

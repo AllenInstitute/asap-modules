@@ -1,4 +1,3 @@
-import renderapi
 from rendermodules.lens_correction.apply_lens_correction import ApplyLensCorrection
 from test_data import render_params
 

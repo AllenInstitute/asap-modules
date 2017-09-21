@@ -3,7 +3,7 @@ import argparse
 import os
 
 
-def create_mipmaps(inputImage, outputDirectory='.', mipmaplevels=[1, 2, 3],
+def create_mipmaps(inputImage, outputDirectory='.', mipmaplevels=(1, 2, 3),
                    outputformat='tif', convertTo8bit=True, force_redo=True):
     # Need to check if the level 0 image exists
     im = Image.open(inputImage)
