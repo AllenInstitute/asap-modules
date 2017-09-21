@@ -30,3 +30,12 @@ tilespec_file = os.path.join(
      example_dir_env, 'example_1', 'cycle1_step1_acquire_tiles.json')
 tform_file = os.path.join(
      example_dir_env, 'example_1', 'cycle1_step1_acquire_transforms.json')
+# tilespec_file = os.path.join(
+#     example_dir, 'example_1', 'cycle1_step1_acquire_tiles.json')
+# tform_file = os.path.join(
+#     example_dir, 'example_1', 'cycle1_step1_acquire_transforms.json')
+
+multiplicative_correction_example_dir = os.environ.get('RENDER_MODULES_MC_TEST_DATA',
+    '/allen/aibs/pipeline/image_processing/volume_assembly/intensitycorrection_test_data/')
+
+MULTIPLICATIVE_INPUT_JSON = os.path.join(multiplicative_correction_example_dir,'DAPI_1_rib0000sess0001sect0000.json')
