@@ -47,6 +47,6 @@ def test_apply_lens_correction():
         },
         "refId": None
     }
-    #mod=ApplyLensCorrection(input_data = example_input,args=[])
-    #mod.run()
+    mod=ApplyLensCorrection(input_data = example_input,args=[])
+    mod.run()
     assert True
