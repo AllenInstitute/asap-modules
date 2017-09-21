@@ -1,4 +1,4 @@
-render-python
+render-python>=1.0.3
 argschema>=1.15.2
 numpy
 pillow
