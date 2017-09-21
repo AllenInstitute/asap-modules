@@ -39,7 +39,7 @@ TEST_DATA_ROOT = os.environ.get(
     'RENDER_TEST_DATA_ROOT', '/allen/aibs/pipeline/image_processing/volume_assembly')
 
 FIJI_PATH = os.environ.get(
-    'FIJI_PATH', '/allen/aibs/pipeline/image_processing/volume_assembly/Fiji.App')
+    'FIJI_PATH', '/allen/aibs/pipeline/image_processing/volume_assembly/Fiji.app')
 
 def render_json_template(env,template_file,**kwargs):
     template = env.get_template(template_file)
