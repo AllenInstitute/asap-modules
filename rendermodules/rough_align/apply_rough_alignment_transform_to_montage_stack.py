@@ -8,6 +8,9 @@ from argschema import InputFile, InputDir
 import marshmallow as mm
 from ..module.render_module import RenderModule, RenderParameters
 from functools import partial
+from renderapi.transform import AffineModel
+from renderapi.transform import Polynomial2DTransform
+
 
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.rough_align.apply_rough_alignment_transform_to_montage_stack"
@@ -22,7 +25,7 @@ example = {
     },
     "montage_stack": "mm2_acquire_8bit_reimage_clone",
     "prealigned_stack": "mm2_acquire_8bit_reimage_clone",
-    "lowres_stack": "mm2_8bit_reimage_minimaps",
+    "lowres_stack": "mm2_8bit_reimage_minimaps_rough_aligned",
     "output_stack": "mm2_8bit_reimage_raw_rough_aligned",
     "tilespec_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch/rough/jsonFiles",
     "set_new_z": "False",
@@ -32,6 +35,61 @@ example = {
     "pool_size": 10
 }
 
+# Another way is to use ConsolidateTransforms module
+def consolidate_transforms(tforms, verbose=False, makePolyDegree=0):
+    # Adapted from Forrest's and Sharmishtaa's render-python-apps
+    # combines only the affine transformations
+    if verbose:
+        points = np.array([[0,0], [1000,1000]])
+        print 'consolidate_transforms:before 0,0 maps to'
+        for tform in tforms:
+            points = tform.tform(points)
+            print tform.M
+        print points
+
+    tform_total = AffineModel()
+    start_index = 0
+    total_affines = 0
+    new_tform_list = []
+
+    for i,tform in enumerate(tforms):
+        #print tform.className
+        if 'AffineModel2D' in tform.className:
+            total_affines+=1
+            tform_total = tform.concatenate(tform_total)
+            #tform_total.M=tform.M.dot(tform_total.M)
+        else:
+            if verbose:
+                print 'non affine',tform
+            if total_affines>0:
+                if makePolyDegree>0:
+                    polyTform = Polynomial2DTransform()._fromAffine(tform_total)
+                    polyTform=polyTform.asorder(makePolyDegree)
+                    new_tform_list.append(polyTform)
+                else:
+                    new_tform_list.append(tform_total)
+                tform_total = AffineModel()
+                total_affines =0
+            new_tform_list.append(tform)
+    if total_affines>0:
+        if makePolyDegree>0:
+            polyTform = Polynomial2DTransform()._fromAffine(tform_total)
+            polyTform=polyTform.asorder(makePolyDegree)
+            new_tform_list.append(polyTform)
+        else:
+            new_tform_list.append(tform_total)
+
+    if verbose:
+        points = np.array([[0,0],[1000,1000]])
+        print 'consolidate_transforms: after 0,0 maps to '
+        for tform in new_tform_list:
+            points = tform.tform(points)
+        print points
+        print 'tforms after',new_tform_list
+    return new_tform_list
+
+
+
 
 def apply_rough_alignment(render, input_stack, prealigned_stack, lowres_stack, output_dir, scale, Z):
     z = Z[0]
@@ -39,7 +97,6 @@ def apply_rough_alignment(render, input_stack, prealigned_stack, lowres_stack, o
 
     try:
         print z
-        print "A"
         # get lowres stack tile specs
         lowres_ts = render.run(
                             renderapi.tilespec.get_tile_specs_from_z,
@@ -52,15 +109,8 @@ def apply_rough_alignment(render, input_stack, prealigned_stack, lowres_stack, o
                             input_stack,
                             z)[0]
 
-        # get the section bounding box
-        sectionbounds = render.run(
-                            renderapi.stack.get_bounds_from_z,
-                            prealigned_stack,
-                            z)
-
         # get the lowres stack rough alignment transformation
         tforms = lowres_ts[0].tforms
-        print "B"
         d = tforms[-1].to_dict()
         dsList = d['dataString'].split()
         v0 = float(dsList[0])*scale
@@ -71,7 +121,6 @@ def apply_rough_alignment(render, input_stack, prealigned_stack, lowres_stack, o
         v5 = float(dsList[5])
         d['dataString'] = "%f %f %f %f %s %s"%(v0, v1, v2, v3, v4, v5)
         tforms[-1].from_dict(d)
-        print "C"
         stackbounds = render.run(
                             renderapi.stack.get_bounds_from_z,
                             input_stack,
@@ -82,10 +131,9 @@ def apply_rough_alignment(render, input_stack, prealigned_stack, lowres_stack, o
                             z)
         tx =  int(stackbounds['minX']) - int(prestackbounds['minX'])
         ty =  int(stackbounds['minY']) - int(prestackbounds['minY'])
-        print "D"
         tforms1 = highres_ts.tforms
         d = tforms1[-1].to_dict()
-        print d
+        #print d
         dsList = d['dataString'].split()
         v0 = 1.0
         v1 = 0.0
@@ -95,35 +143,30 @@ def apply_rough_alignment(render, input_stack, prealigned_stack, lowres_stack, o
         v5 = ty
         d['dataString'] = "%f %f %f %f %s %s"%(v0,v1,v2,v3,v4,v5)
         tforms1[-1].from_dict(d)
-        print "E"
-
-        print tforms1
-        print tforms
+        # delete the lens correction transform
+        del tforms1[0]
 
         ftform = tforms1 + tforms
-        print ftform
-        print "F"
+        #newt = consolidate_transforms(ftform)
+
         allts = []
         highres_ts1 = render.run(
                             renderapi.tilespec.get_tile_specs_from_z,
                             input_stack,
                             z)
-        for t in highres_ts1:
-            #print "f1"
-            t.tforms.append(ftform)
-            #print "f2"
-            d1 = t.to_dict()
-            #print "f3"
-            #print d1['mipmapLevels'][0]['imageUrl']
-            d1['z'] = newz
-            t.from_dict(d1)
-            allts.append(t)
 
-        print "G"
+        for t in highres_ts1:
+            for f in ftform:
+                t.tforms.append(f)
+            newt = consolidate_transforms(t.tforms)
+            t.tforms = newt
+            d1 = t.to_dict()
+            d1['z'] = newz
+            allts.append(d1)
+
         tilespecfilename = os.path.join(output_dir,'tilespec_%04d.json'%newz)
-        print tilespecfilename
         fp = open(tilespecfilename,'w')
-        json.dump([ts.to_dict() for ts in allts] ,fp,indent=4)
+        json.dump([ts for ts in allts], fp, indent=4)
         fp.close()
     except:
         print "This z has not been aligned!"

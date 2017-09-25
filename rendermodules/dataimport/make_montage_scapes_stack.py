@@ -24,7 +24,7 @@ example = {
         "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_20170613/render-ws-java-client/src/main/scripts"
     },
     "montage_stack": "mm2_acquire_8bit_reimage",
-    "output_stack": "mm2_8bit_reimage_minimaps",
+    "output_stack": "mm2_8bit_reimage_minimaps_not_scaled",
     "image_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch",
     "num_sections_file": "file.txt",
     "set_new_z":"False",
