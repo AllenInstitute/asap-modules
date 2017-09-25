@@ -1,14 +1,49 @@
+import json
+import pytest
+import logging
 import renderapi
 import numpy as np
 from rendermodules.lens_correction.apply_lens_correction import ApplyLensCorrection
 from rendermodules.lens_correction.lens_correction import LensCorrectionModule
 from test_data import render_host, render_port, client_script_location
 
+render_params = {
+    "host": render_host,
+    "port": render_port,
+    "owner": "test",
+    "project": "lens_correction_test",
+    "client_scripts": client_script_location
+}
+
+def render():
+    render = renderapi.connect(**render_params)
+    return render
+
+def stack_no_lc(render):
+    stack = "test_no_lc"
+    logger = renderapi.client.logger
+    logger.setLevel(logging.DEBUG)
+    renderapi.stack.create_stack(stack, render=render)
+    # populate stack
+    renderapi.stack.set_stack_state(stack, 'COMPLETE', render=render)
+    yield stack
+    renderapi.stack.delete_stack(stack, render=render)
+
+def stack_lc(render):
+    stack = "test_lc"
+    logger = renderapi.client.logger
+    logger.setLevel(logging.DEBUG)
+    renderapi.stack.create_stack(stack, render=render)
+    # populate stack
+    renderapi.stack.set_stack_state(stack, 'COMPLETE', render=render)
+    yield stack
+    renderapi.stack.delete_stack(stack, render=render)
+
 def test_lens_correction():
-    example_input = {
-        "manifest_path": "/allen/programs/celltypes/workgroups/em-connectomics/samk/lc_test_data/Wij_Set_594451332/594089217_594451332/_trackem_20170502174048_295434_5LC_0064_01_20170502174047_reference_0_.txt",
-        "project_path": "/allen/programs/celltypes/workgroups/em-connectomics/samk/lc_test_data/Wij_Set_594451332/594089217_594451332/",
-        "fiji_path": "/allen/programs/celltypes/workgroups/em-connectomics/samk/Fiji.app/ImageJ-linux64",
+    params = {
+        "manifest_path": "/allen/aibs/pipeline/image_processing/volume_assembly/lc_test_data/Wij_Set_594451332/594089217_594451332/_trackem_20170502174048_295434_5LC_0064_01_20170502174047_reference_0_.txt",
+        "project_path": "/allen/aibs/pipeline/image_processing/volume_assembly/lc_test_data/Wij_Set_594451332/594089217_594451332/",
+        "fiji_path": "/allen/aibs/pipeline/image_processing/volume_assembly/Fiji.app/ImageJ-linux64",
         "grid_size": 3,
         "heap_size": 20,
         "outfile": "test_LC.json",
@@ -42,7 +77,7 @@ def test_lens_correction():
         }
     }
 
-    mod = LensCorrectionModule(input_data=example_input, args=[])
+    mod = LensCorrectionModule(input_data=params, args=['--output_json', 'test_LC_out.json'])
     mod.run()
 
     assert True
@@ -65,17 +100,11 @@ def test_lens_correction():
     assert np.allclose(test_tform_array, good_form_array, rtol=1e-00)
     """
 
-def test_apply_lens_correction():
-    example_input = {
-        "render": {
-            "host": render_host,
-            "port": render_port,
-            "owner": "test",
-            "project": "RENDERAPI_TEST",
-            "client_scripts": client_script_location
-        },
-        "inputStack": "test_noLC",
-        "outputStack": "test_LC",
+def test_apply_lens_correction(render, stack_no_lc, stack_lc):
+    params = {
+        "render": render_params,
+        "inputStack": stack_no_lc,
+        "outputStack": stack_lc,
         "zs": [2266],
         "transform": {
             "type": "leaf",
@@ -117,7 +146,7 @@ def test_apply_lens_correction():
         "refId": None
     }
 
-    mod = ApplyLensCorrection(input_data=example_input, args=[])
+    mod = ApplyLensCorrection(input_data=params, args=[])
     mod.run()
 
     """
