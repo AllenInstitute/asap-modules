@@ -71,9 +71,6 @@ class ApplyLensCorrection(RenderModule):
                 ts.tforms = [lc_tform] + ts.tforms
                 new_tspecs.append(ts)
 
-        # statement to delete stack if desired
-        # renderapi.stack.delete_stack(outputStack, render=r)
-
         renderapi.stack.create_stack(outputStack, render=r)
         renderapi.stack.set_stack_state(outputStack, 'LOADING', render=r)
         renderapi.client.import_tilespecs(outputStack, new_tspecs, render=r)
@@ -145,9 +142,6 @@ if __name__ == '__main__':
         },
         "refId": None
     }
-
-    # remove tabs, endlines from dataString formatting above
-    # example_input['transform']['dataString'] = example_input['transform']['dataString'].replace('\n\t\t\t\t', '')
 
     module = ApplyLensCorrection(input_data=example_input)
     module.run()

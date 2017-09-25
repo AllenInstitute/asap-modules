@@ -45,6 +45,8 @@ def test_lens_correction():
     mod = LensCorrectionModule(input_data=example_input, args=[])
     mod.run()
 
+    assert True
+
     """
     with open(example_input["outfile"]) as outjson:
         test_tform = json.load(outjson)
