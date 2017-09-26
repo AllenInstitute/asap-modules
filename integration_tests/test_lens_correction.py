@@ -5,7 +5,7 @@ import renderapi
 import numpy as np
 from rendermodules.lens_correction.apply_lens_correction import ApplyLensCorrection
 from rendermodules.lens_correction.lens_correction import LensCorrectionModule
-from test_data import render_host, render_port, client_script_location
+from test_data import STACK_NO_LC_JSON, STACK_LC_JSON, render_host, render_port, client_script_location
 
 render_params = {
     "host": render_host,
@@ -69,7 +69,8 @@ def stack_no_lc(render):
     logger.setLevel(logging.DEBUG)
     renderapi.stack.create_stack(stack, render=render)
 
-    # populate stack
+    renderapi.client.import_single_json_file(
+        stack, STACK_NO_LC_JSON, render=render)
 
     renderapi.stack.set_stack_state(stack, 'COMPLETE', render=render)
 
@@ -84,7 +85,8 @@ def stack_lc(render):
     logger.setLevel(logging.DEBUG)
     renderapi.stack.create_stack(stack, render=render)
 
-    # populate stack
+    renderapi.client.import_single_json_file(
+        stack, STACK_LC_JSON, render=render)
 
     renderapi.stack.set_stack_state(stack, 'COMPLETE', render=render)
 
@@ -163,12 +165,12 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_lc_transfo
         "refId": None
     }
 
-    # mod = ApplyLensCorrection(input_data=params, args=[])
-    # mod.run()
+    mod = ApplyLensCorrection(input_data=params, args=[])
+    mod.run()
 
     """
     r = renderapi.render.connect(**alc_input['render'])
     tspecs = renderapi.tilespec.get_tile_specs_from_stack(example_input['render'], render=r)
     """
 
-    # assert True
+    assert True

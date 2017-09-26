@@ -22,7 +22,6 @@ example_dir = os.path.join(os.path.dirname(__file__), 'test_files')
 # test data for dataimport testing
 METADATA_FILE = os.path.join(example_dir, 'TEMCA_mdfile.json')
 MIPMAP_TILESPECS_JSON = os.path.join(example_dir, 'mipmap_tilespecs.json')
-# TEST_NO_LC = os.path.join(example_dir, 'test_no_lc.json')
 
 example_dir_env = os.environ.get(
      'RENDER_EXAMPLE_DATA', '/var/www/render/examples/')
@@ -37,3 +36,10 @@ multiplicative_correction_example_dir = os.environ.get('RENDER_MODULES_MC_TEST_D
 
 MULTIPLICATIVE_INPUT_JSON = os.path.join(multiplicative_correction_example_dir,'DAPI_1_rib0000sess0001sect0000.json')
 
+# lc_example_dir = os.environ.get('RENDER_MODULES_LC_TEST_DATA',
+#     'allen/aibs/pipeline/image_processing/volume_assembly/lc_test_data/')
+
+lc_example_dir = '/allen/aibs/pipeline/image_processing/volume_assembly/lc_test_data/'
+
+STACK_NO_LC_JSON = os.path.join(lc_example_dir, 'test_noLC.json')
+STACK_LC_JSON = os.path.join(lc_example_dir, 'test_LC.json')
