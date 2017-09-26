@@ -22,6 +22,7 @@ example_dir = os.path.join(os.path.dirname(__file__), 'test_files')
 # test data for dataimport testing
 METADATA_FILE = os.path.join(example_dir, 'TEMCA_mdfile.json')
 MIPMAP_TILESPECS_JSON = os.path.join(example_dir, 'mipmap_tilespecs.json')
+# TEST_NO_LC = os.path.join(example_dir, 'test_no_lc.json')
 
 example_dir_env = os.environ.get(
      'RENDER_EXAMPLE_DATA', '/var/www/render/examples/')
