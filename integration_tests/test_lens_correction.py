@@ -146,7 +146,7 @@ def test_lens_correction(example_lc_transform):
 
     lc_tform_path = os.path.join(params['project_path'], 'lens_correction.json')
     with open(lc_tform_path, 'r') as fp:
-        lc_tform = json.load(lc_tform)
+        lc_tform = json.load(fp)
 
     print lc_tform
 
