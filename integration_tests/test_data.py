@@ -41,5 +41,5 @@ MULTIPLICATIVE_INPUT_JSON = os.path.join(multiplicative_correction_example_dir,'
 
 lc_example_dir = '/allen/aibs/pipeline/image_processing/volume_assembly/lc_test_data/'
 
-STACK_NO_LC_JSON = os.path.join(lc_example_dir, 'test_noLC.json')
-STACK_LC_JSON = os.path.join(lc_example_dir, 'test_LC.json')
+TILESPECS_NO_LC_JSON = os.path.join(lc_example_dir, 'test_noLC.json')
+TILESPECS_LC_JSON = os.path.join(lc_example_dir, 'test_LC.json')

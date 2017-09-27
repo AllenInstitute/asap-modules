@@ -69,8 +69,13 @@ def stack_no_lc(render):
     logger.setLevel(logging.DEBUG)
     renderapi.stack.create_stack(stack, render=render)
 
-    renderapi.client.import_single_json_file(
-        stack, STACK_NO_LC_JSON, render=render)
+    # renderapi.client.import_single_json_file(
+    #     stack, TILESPECS_NO_LC_JSON, render=render)
+
+    with open(TILESPECS_NO_LC_JSON, 'r') as fp:
+        tspecs_json = json.load(fp)
+    tspecs = [renderapi.tilespec.TileSpec(json=tspec) for tspec in tspecs_json]
+    renderapi.client.import_tilespecs(stack, tspecs, render=render)
 
     renderapi.stack.set_stack_state(stack, 'COMPLETE', render=render)
 
@@ -85,8 +90,13 @@ def stack_lc(render):
     logger.setLevel(logging.DEBUG)
     renderapi.stack.create_stack(stack, render=render)
 
-    renderapi.client.import_single_json_file(
-        stack, STACK_LC_JSON, render=render)
+    # renderapi.client.import_single_json_file(
+    #     stack, TILESPECS_LC_JSON, render=render)
+
+    with open(TILESPECS_LC_JSON, 'r') as fp:
+        tspecs_json = json.load(fp)
+    tspecs = [renderapi.tilespec.TileSpec(json=tspec) for tspec in tspecs_json]
+    renderapi.client.import_tilespecs(stack, tspecs, render=render)
 
     renderapi.stack.set_stack_state(stack, 'COMPLETE', render=render)
 
