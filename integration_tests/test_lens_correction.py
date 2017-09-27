@@ -142,8 +142,6 @@ def test_lens_correction(example_lc_transform):
     mod = LensCorrectionModule(input_data=params, args=['--output_json', 'test_LC_out.json'])
     mod.run()
 
-    assert True
-
     lc_tform_path = os.path.join(params['project_path'], 'lens_correction.json')
     with open(lc_tform_path, 'r') as fp:
         lc_tform = json.load(fp)
@@ -153,6 +151,7 @@ def test_lens_correction(example_lc_transform):
     assert example_lc_transform['type'] == lc_tform['transform']['type']
     assert example_lc_transform['className'] == lc_tform['transform']['className']
 
+    ''.join(example_lc_transform['dataString'])
     example_lc_transform_array = map(float, example_lc_transform['dataString'].split().string())
     example_lc_transform_array = np.asarray(example_lc_transform_array)
 
