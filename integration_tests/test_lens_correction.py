@@ -78,7 +78,7 @@ def stack_no_lc(render):
     renderapi.client.import_tilespecs(stack, tspecs, render=render)
     renderapi.stack.set_stack_state(stack, 'COMPLETE', render=render)
     yield stack
-    
+
     renderapi.stack.delete_stack(stack, render=render)
 
 @pytest.fixture(scope='module')
@@ -171,7 +171,7 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_lc_transfo
         "refId": None
     }
 
-    mod = ApplyLensCorrection(input_data=params, args=[])
+    mod = ApplyLensCorrection(input_data=params, args=['--output_json', 'test_ALC_out.json'])
     mod.run()
 
     """
