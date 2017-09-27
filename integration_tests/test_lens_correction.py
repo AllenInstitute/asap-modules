@@ -160,23 +160,7 @@ def test_lens_correction(example_lc_transform):
     assert example_lc_transform_array[0] == lc_tform_array[0]
     assert example_lc_transform_array[1] == lc_tform_array[1]
 
-    """
-    with open(example_input["outfile"]) as outjson:
-        test_tform = json.load(outjson)
-
-    with open('test_files/lc_transform.json') as good_outjson:
-        good_tform = json.load(good_outjson)
-
-    good_tform_array = map(float, good_tform['transform']['dataString'].split().string())
-    good_tform_array = np.asarray(good_tform_array)
-
-    test_tform_array = map(float, test_tform['transform']['dataString'].split().string())
-    test_tform_array = np.asarray(test_tform_array)
-
-    assert good_tform['transform']['type'] == test_tform['transform']['type']
-    assert good_tform['transform']['className'] == test_tform['transform']['className']
-    assert np.allclose(test_tform_array, good_form_array, rtol=1e-00)
-    """
+    # assert np.allclose(lc_tform_array, example_lc_transform_array, rtol=1e-00)
 
 def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_lc_transform):
     params = {
@@ -191,9 +175,12 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_lc_transfo
     mod = ApplyLensCorrection(input_data=params, args=['--output_json', 'test_ALC_out.json'])
     mod.run()
 
-    """
-    r = renderapi.render.connect(**alc_input['render'])
-    tspecs = renderapi.tilespec.get_tile_specs_from_stack(example_input['render'], render=r)
-    """
+    # tspecs = renderapi.tilespec.get_tile_specs_from_stack(params['render'], render=render)
+
+    for z in self.args['zs']:
+        tspecs = renderapi.tilespec.get_tile_specs_from_z(params['render'], render=render)
+
+        for ts in tspecs:
+            print ts.tforms
 
     assert True
