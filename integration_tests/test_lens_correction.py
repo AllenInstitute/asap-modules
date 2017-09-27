@@ -153,6 +153,15 @@ def test_lens_correction(example_lc_transform):
     assert example_lc_transform['type'] == lc_tform['transform']['type']
     assert example_lc_transform['className'] == lc_tform['transform']['className']
 
+    example_lc_transform_array = map(float, example_lc_transform['dataString'].split().string())
+    example_lc_transform_array = np.asarray(example_lc_transform_array)
+
+    lc_tform_array = map(float, lc_tform['transform']['dataString'].split().string())
+    lc_tform_array = np.asarray(lc_tform_array)
+
+    assert example_lc_transform_array[0] == lc_tform_array[0]
+    assert example_lc_transform_array[1] == lc_tform_array[1]
+
     """
     with open(example_input["outfile"]) as outjson:
         test_tform = json.load(outjson)
