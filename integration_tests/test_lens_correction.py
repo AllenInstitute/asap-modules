@@ -100,7 +100,7 @@ def stack_lc(render):
 
     renderapi.stack.delete_stack(stack, render=render)
 
-def test_lens_correction():
+def test_lens_correction(example_lc_transform):
     params = {
         "manifest_path": "/allen/aibs/pipeline/image_processing/volume_assembly/lc_test_data/Wij_Set_594451332/594089217_594451332/_trackem_20170502174048_295434_5LC_0064_01_20170502174047_reference_0_.txt",
         "project_path": "/allen/aibs/pipeline/image_processing/volume_assembly/lc_test_data/Wij_Set_594451332/594089217_594451332/",
@@ -142,6 +142,15 @@ def test_lens_correction():
     mod.run()
 
     assert True
+
+    lc_tform_path = os.path.join(params['project_path'], 'lens_correction.json')
+    with open(lc_tform_path, 'r') as fp:
+        lc_tform = json.load(lc_tform)
+
+    print lc_tform
+
+    assert example_lc_transform['type'] == lc_tform['transform']['type']
+    assert example_lc_transform['className'] == lc_tform['transform']['className']
 
     """
     with open(example_input["outfile"]) as outjson:
