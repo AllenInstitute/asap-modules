@@ -5,7 +5,7 @@ import renderapi
 import numpy as np
 from rendermodules.lens_correction.apply_lens_correction import ApplyLensCorrection
 from rendermodules.lens_correction.lens_correction import LensCorrectionModule
-from test_data import STACK_NO_LC_JSON, STACK_LC_JSON, render_host, render_port, client_script_location
+from test_data import TILESPECS_NO_LC_JSON, TILESPECS_LC_JSON, render_host, render_port, client_script_location
 
 render_params = {
     "host": render_host,
