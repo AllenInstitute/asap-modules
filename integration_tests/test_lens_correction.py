@@ -177,8 +177,8 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_lc_transfo
 
     # tspecs = renderapi.tilespec.get_tile_specs_from_stack(params['render'], render=render)
 
-    for z in self.args['zs']:
-        tspecs = renderapi.tilespec.get_tile_specs_from_z(params['render'], render=render)
+    for z in params['zs']:
+        tspecs = renderapi.tilespec.get_tile_specs_from_z(params['outputStack'], z, render=render)
 
         for ts in tspecs:
             print ts.tforms
