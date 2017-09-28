@@ -182,6 +182,5 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_lc_transfo
         tspecs = renderapi.tilespec.get_tile_specs_from_z(params['outputStack'], z, render=render)
 
         for ts in tspecs:
-            print ts.tforms
-            print ts.tforms[0]['className']
-            assert ts.tforms[0]['className'] == 'mpicbg.trakem2.transform.NonLinearCoordinateTransform'
+            lc_tform = ts.tforms[0].to_dict()
+            assert lc_tform['className'] == 'mpicbg.trakem2.transform.NonLinearCoordinateTransform'
