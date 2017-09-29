@@ -189,4 +189,4 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_tform_dict
             # example_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=params['transform']['dataString'])
             test_new_tform = new_tform.tform(test_points)
 
-            assert np.allclose(test_example_tform, new_example_tform, atol=2)
+            assert np.allclose(test_example_tform, test_new_tform, atol=2)
