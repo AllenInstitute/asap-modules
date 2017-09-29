@@ -180,7 +180,7 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_tform_dict
         tspecs = renderapi.tilespec.get_tile_specs_from_z(params['outputStack'], z, render=render)
 
         for ts in tspecs:
-            new_tform_dict = ts_out.tforms[0].to_dict()
+            new_tform_dict = ts.tforms[0].to_dict()
             new_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=new_tform_dict['dataString'])
 
             assert np.array_equal([example_tform.height, example_tform.width, example_tform.length, example_tform.dimension],
