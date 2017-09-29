@@ -163,7 +163,7 @@ def test_lens_correction(example_lc_transform):
     assert example_lc_transform_array[-2] == lc_tform_array[-2]
     assert example_lc_transform_array[-1] == lc_tform_array[-1]
 
-    # assert np.allclose(lc_tform_array, example_lc_transform_array, rtol=1e-00)
+    assert np.allclose(lc_tform_array[2:-2], example_lc_transform_array[2:-2], rtol=1e01)
 
 def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_lc_transform):
     params = {
@@ -179,8 +179,10 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_lc_transfo
     mod.run()
 
     for z in params['zs']:
-        tspecs = renderapi.tilespec.get_tile_specs_from_z(params['outputStack'], z, render=render)
+        tspecs_in = renderapi.tilespec.get_tile_specs_from_z(params['inputStack'], z, render=render)
+        tspecs_out = renderapi.tilespec.get_tile_specs_from_z(params['outputStack'], z, render=render)
 
-        for ts in tspecs:
-            lc_tform = ts.tforms[0].to_dict()
+        for ts_in, ts_out in zip(tspecs_in, tspecs_out):
+            assert len(ts_out.tforms) == len(ts_in.tforms) + 1
+            lc_tform = ts_out.tforms[0].to_dict()
             assert lc_tform['className'] == 'mpicbg.trakem2.transform.NonLinearCoordinateTransform'
