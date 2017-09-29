@@ -22,8 +22,8 @@ def render():
     return render
 
 @pytest.fixture(scope='module')
-def example_lc_transform():
-    lc_tform = {
+def example_tform_dict():
+    tform = {
         "type": "leaf",
         "className": "lenscorrection.NonLinearTransform",
         "dataString": (
@@ -61,7 +61,7 @@ def example_lc_transform():
             "1.23651446458254E17 1.85995206005396736E17 0.0 3840 3840 ")
     }
 
-    return lc_tform
+    return tform
 
 @pytest.fixture(scope='module')
 def stack_no_lc(render):
@@ -101,7 +101,7 @@ def stack_lc(render):
 
     renderapi.stack.delete_stack(stack, render=render)
 
-def test_lens_correction(example_lc_transform):
+def test_lens_correction(example_tform_dict):
     params = {
         "manifest_path": "/allen/aibs/pipeline/image_processing/volume_assembly/lc_test_data/Wij_Set_594451332/594089217_594451332/_trackem_20170502174048_295434_5LC_0064_01_20170502174047_reference_0_.txt",
         "project_path": "/allen/aibs/pipeline/image_processing/volume_assembly/lc_test_data/Wij_Set_594451332/594089217_594451332/",
@@ -142,51 +142,51 @@ def test_lens_correction(example_lc_transform):
     mod = LensCorrectionModule(input_data=params, args=['--output_json', 'test_LC_out.json'])
     mod.run()
 
-    lc_tform_path = os.path.join(params['project_path'], 'lens_correction.json')
-    with open(lc_tform_path, 'r') as fp:
-        lc_tform = json.load(fp)
+    new_tform_path = os.path.join(params['project_path'], 'lens_correction.json')
+    with open(new_tform_path, 'r') as fp:
+        new_tform_dict = json.load(fp)
 
-    print lc_tform
+    example_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=example_tform_dict['dataString'])
+    new_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=new_tform_dict['dataString'])
 
-    assert example_lc_transform['type'] == lc_tform['transform']['type']
-    assert example_lc_transform['className'] == lc_tform['transform']['className']
+    assert np.array_equal([example_tform.height, example_tform.width, example_tform.length, example_tform.dimension],
+                          [new_tform.height, new_tform.width, new_tform.length, new_tform.dimension])
 
-    example_lc_transform_array = map(float, example_lc_transform['dataString'].split())
-    example_lc_transform_array = np.asarray(example_lc_transform_array)
+    test_points = np.random.randint(example_tform.height, size=(50,2))
 
-    lc_tform_array = map(float, lc_tform['transform']['dataString'].split())
-    lc_tform_array = np.asarray(lc_tform_array)
+    test_example_tform = example_tform.tform(test_points)
+    new_example_tform = new_tform.tform(test_points)
 
-    assert example_lc_transform_array[0] == lc_tform_array[0]
-    assert example_lc_transform_array[1] == lc_tform_array[1]
+    assert np.allclose(test_example_tform, new_example_tform, atol=2)
 
-    assert example_lc_transform_array[-2] == lc_tform_array[-2]
-    assert example_lc_transform_array[-1] == lc_tform_array[-1]
-
-    # assert np.allclose(lc_tform_array[2:-2], example_lc_transform_array[2:-2], rtol=1e01)
-
-def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_lc_transform):
+def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_tform_dict):
     params = {
         "render": render_params,
         "inputStack": stack_no_lc,
         "outputStack": stack_lc,
         "zs": [2266],
-        "transform": example_lc_transform,
+        "transform": example_tform_dict,
         "refId": None
     }
 
     mod = ApplyLensCorrection(input_data=params, args=['--output_json', 'test_ALC_out.json'])
     mod.run()
 
+    example_tform - renderapi.transform.NonLinearCoordinateTransform(dataString=params['transform']['dataString'])
+    test_points = np.random.randint(example_tform.height, size=(50,2))
+    test_example_tform = example_tform.tform(test_points)
+
     for z in params['zs']:
-        tspecs_in = renderapi.tilespec.get_tile_specs_from_z(params['inputStack'], z, render=render)
-        tspecs_out = renderapi.tilespec.get_tile_specs_from_z(params['outputStack'], z, render=render)
+        tspecs = renderapi.tilespec.get_tile_specs_from_z(params['outputStack'], z, render=render)
 
-        # for ts_in, ts_out in zip(tspecs_in, tspecs_out):
-        #     assert len(ts_out.tforms) == len(ts_in.tforms) + 1
-        #     lc_tform = ts_out.tforms[0].to_dict()
-        #     assert lc_tform['className'] == 'mpicbg.trakem2.transform.NonLinearCoordinateTransform'
+        for ts in tspecs:
+            new_tform_dict = ts_out.tforms[0].to_dict()
+            new_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=new_tform_dict['dataString'])
 
-        for ts_out in tspecs_out:
-            lc_tform = ts_out.tforms[0].to_dict()
-            assert lc_tform['className'] == 'mpicbg.trakem2.transform.NonLinearCoordinateTransform'
+            assert np.array_equal([example_tform.height, example_tform.width, example_tform.length, example_tform.dimension],
+                                  [new_tform.height, new_tform.width, new_tform.length, new_tform.dimension])
+
+            # example_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=params['transform']['dataString'])
+            test_new_tform = new_tform.tform(test_points)
+
+            assert np.allclose(test_example_tform, new_example_tform, atol=2)
