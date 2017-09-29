@@ -147,7 +147,7 @@ def test_lens_correction(example_tform_dict):
         new_tform_dict = json.load(fp)
 
     example_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=example_tform_dict['dataString'])
-    new_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=new_tform_dict['dataString'])
+    new_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=new_tform_dict['transform']['dataString'])
 
     assert np.array_equal([example_tform.height, example_tform.width, example_tform.length, example_tform.dimension],
                           [new_tform.height, new_tform.width, new_tform.length, new_tform.dimension])
@@ -172,7 +172,7 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_tform_dict
     mod = ApplyLensCorrection(input_data=params, args=['--output_json', 'test_ALC_out.json'])
     mod.run()
 
-    example_tform - renderapi.transform.NonLinearCoordinateTransform(dataString=params['transform']['dataString'])
+    example_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=params['transform']['dataString'])
     test_points = np.random.randint(example_tform.height, size=(50,2))
     test_example_tform = example_tform.tform(test_points)
 
