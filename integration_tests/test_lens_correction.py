@@ -101,6 +101,16 @@ def stack_lc(render):
 
     renderapi.stack.delete_stack(stack, render=render)
 
+def point_array(tform):
+    x = np.arange(0, tform.width, 10, dtype=np.float64)
+    y = np.arange(0, tform.height, 10, dtype=np.float64)
+
+    xv, yv = np.meshgrid(x, y)
+    xv = xv.flatten()
+    yv = yv.flatten()
+    
+    return np.array([xv, yv]).T
+
 def test_lens_correction(example_tform_dict):
     params = {
         "manifest_path": "/allen/aibs/pipeline/image_processing/volume_assembly/lc_test_data/Wij_Set_594451332/594089217_594451332/_trackem_20170502174048_295434_5LC_0064_01_20170502174047_reference_0_.txt",
@@ -149,15 +159,25 @@ def test_lens_correction(example_tform_dict):
     example_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=example_tform_dict['dataString'])
     new_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=new_tform_dict['transform']['dataString'])
 
+
+
+    example_points = point_array(example_tform)
+    new_points = point_array(new_tform)
+
     assert np.array_equal([example_tform.height, example_tform.width, example_tform.length, example_tform.dimension],
                           [new_tform.height, new_tform.width, new_tform.length, new_tform.dimension])
 
-    test_points = np.random.randint(example_tform.height, size=(50,2))
-
+    x = np.arange(0, tform.width, 50, dtype=np.float64)
+    y = np.arange(0, tform.height, 50, dtype=np.float64)
+    xv, yv = np.meshgrid(x, y)
+    xv = xv.flatten()
+    yv = yv.flatten()
+    test_points = np.array([xv, yv]).T
     test_example_tform = example_tform.tform(test_points)
     new_example_tform = new_tform.tform(test_points)
 
-    assert np.allclose(test_example_tform, new_example_tform, atol=2)
+    # assert np.allclose(test_example_tform, new_example_tform, atol=2)
+    assert np.linalg.norm(test_new_tform - test_example_tform) / math.sqrt(test_new_tform.size) < 20
 
 def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_tform_dict):
     params = {
@@ -173,7 +193,13 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_tform_dict
     mod.run()
 
     example_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=params['transform']['dataString'])
-    test_points = np.random.randint(example_tform.height, size=(50,2))
+    
+    x = np.arange(0, tform.width, 50, dtype=np.float64)
+    y = np.arange(0, tform.height, 50, dtype=np.float64)
+    xv, yv = np.meshgrid(x, y)
+    xv = xv.flatten()
+    yv = yv.flatten()
+    test_points = np.array([xv, yv]).T    
     test_example_tform = example_tform.tform(test_points)
 
     for z in params['zs']:
@@ -189,4 +215,4 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_tform_dict
             # example_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=params['transform']['dataString'])
             test_new_tform = new_tform.tform(test_points)
 
-            assert np.allclose(test_example_tform, test_new_tform, atol=2)
+            assert np.linalg.norm(test_new_tform - test_example_tform) / math.sqrt(test_new_tform.size) < 20
