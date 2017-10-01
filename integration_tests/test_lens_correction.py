@@ -147,8 +147,8 @@ def test_lens_correction(example_tform_dict):
     assert np.array_equal([example_tform.height, example_tform.width, example_tform.length, example_tform.dimension],
                           [new_tform.height, new_tform.width, new_tform.length, new_tform.dimension])
 
-    x = np.arange(0, tform.width, 50, dtype=np.float64)
-    y = np.arange(0, tform.height, 50, dtype=np.float64)
+    x = np.arange(0, example_tform.width, 50, dtype=np.float64)
+    y = np.arange(0, example_tform.height, 50, dtype=np.float64)
     xv, yv = np.meshgrid(x, y)
     xv = xv.flatten()
     yv = yv.flatten()
@@ -174,8 +174,8 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_tform_dict
 
     example_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=params['transform']['dataString'])
     
-    x = np.arange(0, tform.width, 50, dtype=np.float64)
-    y = np.arange(0, tform.height, 50, dtype=np.float64)
+    x = np.arange(0, example_tform.width, 50, dtype=np.float64)
+    y = np.arange(0, example_tform.height, 50, dtype=np.float64)
     xv, yv = np.meshgrid(x, y)
     xv = xv.flatten()
     yv = yv.flatten()
