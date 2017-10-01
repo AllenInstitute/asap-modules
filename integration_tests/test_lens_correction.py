@@ -143,9 +143,6 @@ def test_lens_correction(example_tform_dict):
     example_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=example_tform_dict['dataString'])
     new_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=new_tform_dict['transform']['dataString'])
 
-    example_points = point_array(example_tform)
-    new_points = point_array(new_tform)
-
     assert np.array_equal([example_tform.height, example_tform.width, example_tform.length, example_tform.dimension],
                           [new_tform.height, new_tform.width, new_tform.length, new_tform.dimension])
 
