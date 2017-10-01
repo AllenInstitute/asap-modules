@@ -154,7 +154,7 @@ def test_lens_correction(example_tform_dict):
     yv = yv.flatten()
     test_points = np.array([xv, yv]).T
     test_example_tform = example_tform.tform(test_points)
-    new_example_tform = new_tform.tform(test_points)
+    test_new_tform = new_tform.tform(test_points)
 
     print np.linalg.norm(test_new_tform - test_example_tform) / math.sqrt(test_new_tform.size)
     assert True
