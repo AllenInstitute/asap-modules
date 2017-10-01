@@ -4,6 +4,7 @@ import pytest
 import logging
 import renderapi
 import numpy as np
+import math
 from rendermodules.lens_correction.apply_lens_correction import ApplyLensCorrection
 from rendermodules.lens_correction.lens_correction import LensCorrectionModule
 from test_data import TILESPECS_NO_LC_JSON, TILESPECS_LC_JSON, render_host, render_port, client_script_location
