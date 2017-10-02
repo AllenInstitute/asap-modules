@@ -96,7 +96,19 @@ def stack_lc(render):
 
     renderapi.stack.delete_stack(stack, render=render)
 
-def test_lens_correction(example_tform_dict):
+@pytest.fixture(scope='module')
+def test_points(example_tform_dict):
+    example_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=example_tform_dict['dataString'])
+    x = np.arange(0, example_tform.width, 100, dtype=np.float64)
+    y = np.arange(0, example_tform.height, 100, dtype=np.float64)
+    xv, yv = np.meshgrid(x, y)
+    xv = xv.flatten()
+    yv = yv.flatten()
+    test_points = np.array([xv, yv]).T
+
+    return test_points
+
+def test_lens_correction(example_tform_dict, test_points):
     params = {
         "manifest_path": "/allen/aibs/pipeline/image_processing/volume_assembly/lc_test_data/Wij_Set_594451332/594089217_594451332/_trackem_20170502174048_295434_5LC_0064_01_20170502174047_reference_0_.txt",
         "project_path": "/allen/aibs/pipeline/image_processing/volume_assembly/lc_test_data/Wij_Set_594451332/594089217_594451332/",
@@ -137,7 +149,6 @@ def test_lens_correction(example_tform_dict):
     mod = LensCorrectionModule(input_data=params, args=['--output_json', 'test_LC_out.json'])
     mod.run()
 
-    # new_tform_path = os.path.join(params['project_path'], 'lens_correction.json')
     new_tform_path = params['outfile']
     with open(new_tform_path, 'r') as fp:
         new_tform_dict = json.load(fp)
@@ -148,12 +159,6 @@ def test_lens_correction(example_tform_dict):
     assert np.array_equal([example_tform.height, example_tform.width, example_tform.length, example_tform.dimension],
                           [new_tform.height, new_tform.width, new_tform.length, new_tform.dimension])
 
-    x = np.arange(0, example_tform.width, 50, dtype=np.float64)
-    y = np.arange(0, example_tform.height, 50, dtype=np.float64)
-    xv, yv = np.meshgrid(x, y)
-    xv = xv.flatten()
-    yv = yv.flatten()
-    test_points = np.array([xv, yv]).T
     test_example_tform = example_tform.tform(test_points)
     test_new_tform = new_tform.tform(test_points)
 
@@ -162,7 +167,7 @@ def test_lens_correction(example_tform_dict):
     print tform_norm
     assert tform_norm < 3
 
-def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_tform_dict):
+def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_tform_dict, test_points):
     params = {
         "render": render_params,
         "inputStack": stack_no_lc,
@@ -177,12 +182,6 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_tform_dict
 
     example_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=params['transform']['dataString'])
     
-    x = np.arange(0, example_tform.width, 100, dtype=np.float64)
-    y = np.arange(0, example_tform.height, 100, dtype=np.float64)
-    xv, yv = np.meshgrid(x, y)
-    xv = xv.flatten()
-    yv = yv.flatten()
-    test_points = np.array([xv, yv]).T    
     test_example_tform = example_tform.tform(test_points)
 
     for z in params['zs']:
