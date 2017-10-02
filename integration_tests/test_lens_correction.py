@@ -108,6 +108,15 @@ def test_points(example_tform_dict):
 
     return test_points
 
+@pytest.fixture(scope='module')
+def compute_lc_norm_and_max(test_example_tform, test_new_tform):
+    tform_norm = np.linalg.norm(test_new_tform - test_example_tform) / math.sqrt(test_new_tform.size)
+    tform_diff = np.power(test_new_tform - test_example_tform, 2)
+    tform_max_diff = max(np.power(tform_max_diff[:,0] - tform_max_diff[:,1], 0.5))
+    print 'Norm: %s Max difference: %s' % (tform_norm, tform_max_diff)
+    assert tform_max_diff < 3
+    assert tform_norm < 1
+
 def test_lens_correction(example_tform_dict, test_points):
     params = {
         "manifest_path": "/allen/aibs/pipeline/image_processing/volume_assembly/lc_test_data/Wij_Set_594451332/594089217_594451332/_trackem_20170502174048_295434_5LC_0064_01_20170502174047_reference_0_.txt",
@@ -162,10 +171,7 @@ def test_lens_correction(example_tform_dict, test_points):
     test_example_tform = example_tform.tform(test_points)
     test_new_tform = new_tform.tform(test_points)
 
-    tform_norm = np.linalg.norm(test_new_tform - test_example_tform) / math.sqrt(test_new_tform.size)
-    print 'Computed norm:'
-    print tform_norm
-    assert tform_norm < 3
+    compute_lc_norm_and_max(test_example_tform, test_new_tform)
 
 def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_tform_dict, test_points):
     params = {
@@ -196,7 +202,4 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_tform_dict
 
             test_new_tform = new_tform.tform(test_points)
 
-            tform_norm = np.linalg.norm(test_new_tform - test_example_tform) / math.sqrt(test_new_tform.size)
-            print 'Computed norm:'
-            print tform_norm
-            assert tform_norm < 3
+            compute_lc_norm_and_max(test_example_tform, test_new_tform)
