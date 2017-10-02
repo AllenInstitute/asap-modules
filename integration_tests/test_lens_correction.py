@@ -137,7 +137,8 @@ def test_lens_correction(example_tform_dict):
     mod = LensCorrectionModule(input_data=params, args=['--output_json', 'test_LC_out.json'])
     mod.run()
 
-    new_tform_path = os.path.join(params['project_path'], 'lens_correction.json')
+    # new_tform_path = os.path.join(params['project_path'], 'lens_correction.json')
+    new_tform_path = params['outfile']
     with open(new_tform_path, 'r') as fp:
         new_tform_dict = json.load(fp)
 
