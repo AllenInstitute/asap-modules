@@ -112,7 +112,7 @@ def test_points(example_tform_dict):
 def compute_lc_norm_and_max(test_example_tform, test_new_tform):
     tform_norm = np.linalg.norm(test_new_tform - test_example_tform) / math.sqrt(test_new_tform.size)
     tform_diff = np.power(test_new_tform - test_example_tform, 2)
-    tform_max_diff = max(np.power(tform_diff[:,0] - tform_diff[:,1], 0.5))
+    tform_max_diff = max(np.power(tform_diff[:,0] + tform_diff[:,1], 0.5))
     print 'Norm: %s Max difference: %s' % (tform_norm, tform_max_diff)
     assert tform_max_diff < 3
     assert tform_norm < 1
