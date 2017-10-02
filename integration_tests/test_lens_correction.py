@@ -159,7 +159,7 @@ def test_lens_correction(example_tform_dict):
     tform_norm = np.linalg.norm(test_new_tform - test_example_tform) / math.sqrt(test_new_tform.size)
     print 'Computed norm:'
     print tform_norm
-    assert tform_norm < 10
+    assert tform_norm < 3
 
 def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_tform_dict):
     params = {
@@ -176,8 +176,8 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_tform_dict
 
     example_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=params['transform']['dataString'])
     
-    x = np.arange(0, example_tform.width, 50, dtype=np.float64)
-    y = np.arange(0, example_tform.height, 50, dtype=np.float64)
+    x = np.arange(0, example_tform.width, 100, dtype=np.float64)
+    y = np.arange(0, example_tform.height, 100, dtype=np.float64)
     xv, yv = np.meshgrid(x, y)
     xv = xv.flatten()
     yv = yv.flatten()
@@ -199,4 +199,4 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_tform_dict
             tform_norm = np.linalg.norm(test_new_tform - test_example_tform) / math.sqrt(test_new_tform.size)
             print 'Computed norm:'
             print tform_norm
-            assert tform_norm < 10
+            assert tform_norm < 3
