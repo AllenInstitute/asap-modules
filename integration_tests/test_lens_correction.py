@@ -156,8 +156,7 @@ def test_lens_correction(example_tform_dict):
     test_example_tform = example_tform.tform(test_points)
     test_new_tform = new_tform.tform(test_points)
 
-    print np.linalg.norm(test_new_tform - test_example_tform) / math.sqrt(test_new_tform.size)
-    assert True
+    assert np.linalg.norm(test_new_tform - test_example_tform) / math.sqrt(test_new_tform.size)
 
 def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_tform_dict):
     params = {
@@ -194,5 +193,4 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_tform_dict
 
             test_new_tform = new_tform.tform(test_points)
 
-            print np.linalg.norm(test_new_tform - test_example_tform) / math.sqrt(test_new_tform.size)
-            assert True
+            assert np.linalg.norm(test_new_tform - test_example_tform) / math.sqrt(test_new_tform.size) < 20
