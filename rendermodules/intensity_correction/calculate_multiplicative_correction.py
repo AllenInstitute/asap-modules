@@ -4,7 +4,7 @@ import json
 import os
 import renderapi
 from ..module.render_module import RenderModule, RenderParameters
-from argschema.fields import InputFile, InputDir, Str, Float, Int, OutputDir
+from argschema.fields import InputFile, InputDir, Str, Float, Int, OutputDir, Bool
 from functools import partial
 import glob
 import time
@@ -47,6 +47,8 @@ class MakeMedianParams(RenderParameters):
                description='z value for section')
     pool_size = Int(required=False, default=20,
                     description='size of pool for parallel processing (default=20)')
+    close_stack = Bool(required=False, default=False,
+                       description="whether to close stack or not")
 
 
 def getImageFromTilespecs(alltilespecs, index):
@@ -123,9 +125,9 @@ class MakeMedian(RenderModule):
             self.args['output_stack'], "LOADING", render=self.render)
         renderapi.client.import_tilespecs_parallel(
             self.args['output_stack'], outtilespecs, 
-            poolsize=self.args['pool_size'],render=self.render)
-        renderapi.stack.set_stack_state(
-            self.args['output_stack'], "COMPLETE", render=self.render)
+            poolsize=self.args['pool_size'],render=self.render,close_stack=self.args['close_stack'])
+        #renderapi.stack.set_stack_state(
+        #    self.args['output_stack'], "COMPLETE", render=self.render)
 
 
 if __name__ == "__main__":

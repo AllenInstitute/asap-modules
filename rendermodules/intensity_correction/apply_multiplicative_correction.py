@@ -48,6 +48,9 @@ class MultIntensityCorrParams(RenderParameters):
                        description="what cycleNumber to upload for output_stack on render")
     cycle_step_number = Int(required=False, default=1,
                             description="what cycleStepNumber to upload for output_stack on render")
+    close_stack = Bool(required=False, default=False,
+                       description="whether to close stack or not")
+
     # move_input = Bool(required=False, default=False,
     #                   description="whether to move input tiles to new location")
     # move_input_regex_find = Str(required=False,
@@ -197,9 +200,9 @@ class MultIntensityCorr(RenderModule):
              cycleStepNumber=self.args['cycle_step_number'], render=self.render)
         renderapi.client.import_tilespecs_parallel(
             self.args['output_stack'], output_tilespecs,
-            poolsize = self.args['pool_size'],render=self.render)
-        renderapi.stack.set_stack_state(
-            self.args['output_stack'], "COMPLETE", render=self.render)
+            poolsize = self.args['pool_size'],render=self.render,close_stack=self.args['close_stack'])
+        #renderapi.stack.set_stack_state(
+        #    self.args['output_stack'], "COMPLETE", render=self.render)
 
         # # upload new input tilespecs
         # if regex_pattern is not None:
