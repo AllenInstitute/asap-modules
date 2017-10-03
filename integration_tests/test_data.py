@@ -63,5 +63,15 @@ cons_ex_transform_json = render_json_template(example_env,  'cycle1_step1_acquir
 multiplicative_correction_example_dir = os.path.join(
     TEST_DATA_ROOT, 'intensitycorrection_test_data')
 
+<<<<<<< HEAD
 MULTIPLICATIVE_INPUT_JSON = render_json_template(example_env, 'intensity_correction_template.json',
                                                  test_data_root=TEST_DATA_ROOT)
+=======
+# lc_example_dir = os.environ.get('RENDER_MODULES_LC_TEST_DATA',
+#     'allen/aibs/pipeline/image_processing/volume_assembly/lc_test_data/')
+
+lc_example_dir = '/allen/aibs/pipeline/image_processing/volume_assembly/lc_test_data/'
+
+TILESPECS_NO_LC_JSON = os.path.join(lc_example_dir, 'test_noLC.json')
+TILESPECS_LC_JSON = os.path.join(lc_example_dir, 'test_LC.json')
+>>>>>>> develop
