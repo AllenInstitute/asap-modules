@@ -112,6 +112,7 @@ def test_calc_lens_correction(example_tform_dict, test_points,tmpdir):
     print outfile
 
     mod = LensCorrectionModule(input_data=calc_lens_parameters, args=['--output_json', outfile])
+    mod.logger.setLevel(logging.DEBUG)
     mod.run()
 
     with open(calc_lens_parameters['outfile'],'r') as fp:
