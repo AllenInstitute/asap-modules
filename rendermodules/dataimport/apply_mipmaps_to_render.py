@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 import os
 import renderapi
-from ..module.render_module import RenderModule, RenderParameters
-from rendermodules_schemas.dataimport.apply_mipmaps_to_render import AddMipMapsToStackParameters
-import multiprocessing as mp
+from ..module.render_module import RenderModule
 from functools import partial
 import urllib
 import urlparse
+from rendermodules.dataimport.schemas import AddMipMapsToStackParameters
 
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.dataimport.apply_mipmaps_to_render"

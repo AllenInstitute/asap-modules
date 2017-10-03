@@ -1,6 +1,6 @@
 import argschema
 import renderapi
-from rendermodules_schemas.module.render_module import RenderParameters
+from rendermodules.module.schemas import RenderParameters
 
 class RenderModuleException(Exception):
     """Base Exception class for render module"""
