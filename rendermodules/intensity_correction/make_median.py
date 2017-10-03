@@ -26,7 +26,7 @@ example_input = {
     "output_stack": "Median_TEST_DAPI_1",
     "output_directory": "/nas/data/M246930_Scnn1a_4/processed/Medians",
     "minZ": 100,
-    "maxZ": 103,
+    "maxZ": 101,
     "pool_size": 20
 }
 
@@ -90,6 +90,8 @@ class MakeMedian(RenderModule):
         #calculate median
         for i in range(0,len(images)):
             stack[:,:,i] = images[i]
+	print "Size images: "
+	print stack.shape
         np.median(stack,axis=2,overwrite_input=True)
         (A,B,C)=stack.shape
         if (numtiles%2 == 0):
@@ -116,10 +118,12 @@ class MakeMedian(RenderModule):
             outtilespecs.append(ts)
             ind += 1
 
+	print outtilespecs[0].to_dict()
+
         #upload to render
         renderapi.stack.create_stack(self.args['output_stack'],cycleNumber=2,cycleStepNumber=1,render=self.render)
         renderapi.stack.set_stack_state(self.args['output_stack'],"LOADING",render=self.render)
-        renderapi.client.import_tilespecs_parallel(self.args['output_stack'],outtilespecs,render=self.render)
+        renderapi.client.import_tilespecs(self.args['output_stack'],outtilespecs,render=self.render)
         renderapi.stack.set_stack_state(self.args['output_stack'],"COMPLETE",render=self.render)
 
 if __name__ == "__main__":
