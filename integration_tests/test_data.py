@@ -45,9 +45,6 @@ def render_json_template(env, template_file, **kwargs):
     return d
 
 
-calc_lens_parameters = render_json_template(example_env, 'calc_lens_correction_parameters.json',
-                                            test_data_root=TEST_DATA_ROOT, fiji_path=FIJI_PATH)
-
 # test data for dataimport testing
 METADATA_FILE = os.path.join(example_dir, 'TEMCA_mdfile.json')
 
@@ -68,7 +65,11 @@ MULTIPLICATIVE_INPUT_JSON = render_json_template(example_env, 'intensity_correct
 # lc_example_dir = os.environ.get('RENDER_MODULES_LC_TEST_DATA',
 #     'allen/aibs/pipeline/image_processing/volume_assembly/lc_test_data/')
 
-lc_example_dir = '/allen/aibs/pipeline/image_processing/volume_assembly/lc_test_data/'
 
-TILESPECS_NO_LC_JSON = os.path.join(lc_example_dir, 'test_noLC.json')
-TILESPECS_LC_JSON = os.path.join(lc_example_dir, 'test_LC.json')
+calc_lens_parameters = render_json_template(example_env, 'calc_lens_correction_parameters.json',
+                                            test_data_root=TEST_DATA_ROOT, fiji_path=FIJI_PATH)
+
+TILESPECS_NO_LC_JSON = render_json_template(example_env, 'test_noLC.json',
+                                            test_data_root=TEST_DATA_ROOT)
+TILESPECS_LC_JSON = render_json_template(example_env, 'test_LC.json',
+                                         test_data_root=TEST_DATA_ROOT)
