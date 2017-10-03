@@ -6,7 +6,7 @@ import numpy as np
 import math
 from rendermodules.lens_correction.apply_lens_correction import ApplyLensCorrection
 from rendermodules.lens_correction.lens_correction import LensCorrectionModule
-from test_data import render_params, TILESPECS_NO_LC_JSON, TILESPECS_LC_JSON, render_host, render_port, client_script_location
+from test_data import render_params, TILESPECS_NO_LC_JSON, TILESPECS_LC_JSON
 from test_data import calc_lens_parameters
 
 render_params['project'] = "lens_correction_test"
@@ -114,12 +114,8 @@ def test_calc_lens_correction(example_tform_dict, test_points,tmpdir):
     mod = LensCorrectionModule(input_data=calc_lens_parameters, args=['--output_json', outfile])
     mod.run()
 
-    with open(outfile,'r') as fp:
-        output_d = json.load(fp)
-
-    with open(output_d['output_json'],'r') as fp:
-        new_tform_dict=json.load(fp)
-        print new_tform_dict
+    with open(calc_lens_parameters['outfile'],'r') as fp:
+        new_tform_dict = json.load(fp)
 
     # new_tform_path = calc_lens_parameters['outfile']
     # with open(new_tform_path, 'r') as fp:
