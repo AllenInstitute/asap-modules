@@ -4,7 +4,7 @@
     "fiji_path": "{{fiji_path}}/ImageJ-linux64",
     "grid_size": 3,
     "heap_size": 20,
-    "outfile": "test_LC.json",
+    "outfile": "{{test_output}}/test_LC.json",
     "SIFT_params": {
         "initialSigma": 1.6,
         "steps": 3,

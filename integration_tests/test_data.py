@@ -1,6 +1,7 @@
 import os
 from jinja2 import Environment, FileSystemLoader
 import json
+import tempfile
 
 render_host = os.environ.get(
     'RENDER_HOST', 'renderservice')
@@ -67,7 +68,9 @@ MULTIPLICATIVE_INPUT_JSON = render_json_template(example_env, 'intensity_correct
 
 
 calc_lens_parameters = render_json_template(example_env, 'calc_lens_correction_parameters.json',
-                                            test_data_root=TEST_DATA_ROOT, fiji_path=FIJI_PATH)
+                                            test_data_root=TEST_DATA_ROOT, 
+                                            fiji_path=FIJI_PATH,
+                                            test_output=tempfile.mkdtemp())
 
 TILESPECS_NO_LC_JSON = render_json_template(example_env, 'test_noLC.json',
                                             test_data_root=TEST_DATA_ROOT)

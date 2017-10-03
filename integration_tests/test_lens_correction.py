@@ -107,13 +107,23 @@ def compute_lc_norm_and_max(test_example_tform, test_new_tform):
     assert tform_max_diff < 3
     assert tform_norm < 1
 
-def test_calc_lens_correction(example_tform_dict, test_points):
-    mod = LensCorrectionModule(input_data=calc_lens_parameters, args=['--output_json', 'test_LC_out.json'])
+def test_calc_lens_correction(example_tform_dict, test_points,tmpdir):
+    outfile = str(tmpdir.join('test_LC_out.json'))
+    print outfile
+
+    mod = LensCorrectionModule(input_data=calc_lens_parameters, args=['--output_json', outfile])
     mod.run()
 
-    new_tform_path = calc_lens_parameters['outfile']
-    with open(new_tform_path, 'r') as fp:
-        new_tform_dict = json.load(fp)
+    with open(outfile,'r') as fp:
+        output_d = json.load(fp)
+
+    with open(output_d['output_json'],'r') as fp:
+        new_tform_dict=json.load(fp)
+        print new_tform_dict
+
+    # new_tform_path = calc_lens_parameters['outfile']
+    # with open(new_tform_path, 'r') as fp:
+    #     new_tform_dict = json.load(fp)
 
     example_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=example_tform_dict['dataString'])
     new_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=new_tform_dict['transform']['dataString'])
