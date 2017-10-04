@@ -44,12 +44,6 @@ example_input = {
     }
 }
 
-class LensCorrectionOutput(DefaultSchema):
-    # TODO probably easier to output the resulting file via python
-    output_json = Str(required=True,
-                      description='path to file ')
-
-
 class LensCorrectionException(RenderModuleException):
     pass
 
