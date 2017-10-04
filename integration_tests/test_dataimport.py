@@ -3,6 +3,7 @@ import pytest
 import urllib
 import urlparse
 import tempfile
+import logging
 from PIL import Image
 import renderapi
 from rendermodules.dataimport import generate_EM_tilespecs_from_metafile
@@ -57,6 +58,7 @@ def apply_generated_mipmaps(r, output_stack, generate_params):
             ex['input_stack'], render=r)}
 
     mod = apply_mipmaps_to_render.AddMipMapsToStack(input_data=ex, args=[])
+    mod.logger.setLevel(logging.DEBUG)
     mod.run()
 
     out_tileIdtotspecs = {
@@ -69,12 +71,13 @@ def apply_generated_mipmaps(r, output_stack, generate_params):
     for tId, out_ts in out_tileIdtotspecs.iteritems():
         in_ts = in_tileIdtotspecs[tId]
 
-        print out_ts.to_dict()
-        print in_ts.to_dict()
+        mod.logger.debug(out_ts.to_dict())
+        mod.logger.debug(in_ts.to_dict())
         # make sure that the corresponding tiles' l0s match
-        assert urllib.unquote(urlparse.urlparse(
-            in_ts.ip.get(0)['imageUrl']).path) == urllib.unquote(
-                urlparse.urlparse(out_ts.ip.get(0)['imageUrl']).path)
+        inpath = generate_mipmaps.get_filepath_from_tilespec(in_ts)
+        outpath = generate_mipmaps.get_filepath_from_tilespec(out_ts)
+
+        assert inpath==outpath
 
         # make sure all levels have been assigned
         assert sorted(out_ts.ip.levels) == range(ex['levels'] + 1)
@@ -92,25 +95,33 @@ def apply_generated_mipmaps(r, output_stack, generate_params):
             assert w == expected_width // (2 ** lvl)
             assert h == expected_height // (2 ** lvl)
 
-
-def test_mipmaps(render, input_stack='MIPMAPTEST', output_stack=None):
-    assert isinstance(render, renderapi.render.RenderClient)
-    output_stack = ('{}OUT'.format(input_stack) if output_stack
-                    is None else output_stack)
-
-    # TODO should maybe make this  fixture to separate tests
-
-    tspecs_to_mipmap = [renderapi.tilespec.TileSpec(json=d) 
+@pytest.fixture(scope='module')
+def tspecs_to_mipmap():
+    tilespecs = [renderapi.tilespec.TileSpec(json=d) 
         for d in MIPMAP_TILESPECS_JSON]
-    renderapi.stack.create_stack(input_stack, render=render)
+    return tilespecs
+
+@pytest.fixture(scope='module')
+def input_stack(render,tspecs_to_mipmap):
+    # TODO should maybe make this  fixture to separate tests
+    test_input_stack='MIPMAPTEST'
+
+    renderapi.stack.create_stack(test_input_stack, render=render)
     renderapi.client.import_tilespecs_parallel(
-        input_stack, tspecs_to_mipmap, render=render)
+        test_input_stack, tspecs_to_mipmap, render=render)
 
     # assure stack is built correctly
     assert len({tspec.tileId for tspec
                 in tspecs_to_mipmap}.symmetric_difference(set(
                     renderapi.stack.get_stack_tileIds(
-                        input_stack, render=render)))) == 0
+                        test_input_stack, render=render)))) == 0
+    yield test_input_stack
+    renderapi.stack.delete_stack(test_input_stack, render=render)
+
+def test_mipmaps(render, input_stack, tspecs_to_mipmap, output_stack=None):
+    assert isinstance(render, renderapi.render.RenderClient)
+    output_stack = ('{}OUT'.format(input_stack) if output_stack
+                    is None else output_stack)
 
     ex = generate_mipmaps.example
     ex['render'] = render.make_kwargs()
@@ -125,4 +136,11 @@ def test_mipmaps(render, input_stack='MIPMAPTEST', output_stack=None):
     apply_generated_mipmaps(render, output_stack, ex)
 
     renderapi.stack.delete_stack(output_stack, render=render)
-    renderapi.stack.delete_stack(input_stack, render=render)
+
+def test_create_mipmap_from_tuple(tspecs_to_mipmap,tmpdir):
+    ts = tspecs_to_mipmap[0]
+    filename=generate_mipmaps.get_filepath_from_tilespec(ts)
+    mytuple = (filename,str(tmpdir))
+    generate_mipmaps.create_mipmap_from_tuple(mytuple)
+    
+
