@@ -43,9 +43,9 @@ def create_mipmap_from_tuple(mipmap_tuple, levels=[1, 2, 3],
 
 
 def get_filepath_from_tilespec(ts):
-    mml = ts.ip.mipMapLevels[0]
+    mml = ts.ip.get(0)
 
-    old_url = mml.imageUrl
+    old_url = mml['imageUrl']
     filepath_in = urllib.unquote(urlparse.urlparse(
         str(old_url)).path)
     return filepath_in
