@@ -142,5 +142,3 @@ def test_create_mipmap_from_tuple(tspecs_to_mipmap,tmpdir):
     filename=generate_mipmaps.get_filepath_from_tilespec(ts)
     mytuple = (filename,str(tmpdir))
     generate_mipmaps.create_mipmap_from_tuple(mytuple)
-    
-
