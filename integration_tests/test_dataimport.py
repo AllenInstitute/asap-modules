@@ -147,7 +147,7 @@ def test_addMipMapsToRender(render,input_stack,tmpdir):
     mipmap_dir=str(tmpdir)
     imgformat='tif'
     levels=(1,2,3)
-    zvalues = renderapi.stack.get_z_values_for_stack(input_stack)
+    zvalues = renderapi.stack.get_z_values_for_stack(input_stack,render=render)
     z = zvalues[0]
 
     ts_paths=apply_mipmaps_to_render.addMipMapsToRender(render, 
