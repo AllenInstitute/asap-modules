@@ -5,7 +5,7 @@ import tempfile
 import shutil
 from rendermodules.lens_correction.schemas import LensCorrectionOutput, LensCorrectionParameters
 from argschema import ArgSchemaParser
-    RenderModuleException, ArgSchemaModule)
+from rendermodules.module.render_module import RenderModuleException, ArgSchemaModule
 
 example_input = {
     "manifest_path": "/allen/programs/celltypes/workgroups/em-connectomics/samk/lc_test_data/Wij_Set_594451332/594089217_594451332/_trackem_20170502174048_295434_5LC_0064_01_20170502174047_reference_0_.txt",
