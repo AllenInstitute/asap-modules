@@ -144,7 +144,7 @@ def test_create_mipmap_from_tuple(tspecs_to_mipmap,tmpdir):
 
 def test_addMipMapsToRender(render,input_stack,tmpdir):
     imgformat='tif'
-    levels=(1,2,3)
+    levels=3
     zvalues = renderapi.stack.get_z_values_for_stack(input_stack,render=render)
     z = zvalues[0]
 
