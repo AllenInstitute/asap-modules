@@ -162,7 +162,10 @@ def test_addMipMapsToRender(render,input_stack,tmpdir):
     tilespecs_out = []
     for ts_path in ts_paths:
         with open(ts_path,'r') as fp:
-            tilespecs_out.append(renderapi.tilespec.TileSpec(json=json.load(fp)))
+            tilespec_dicts = json.load(fp)
+        for tsd in tilespec_dicts:
+            tilespecs_out.append(renderapi.tilespec.TileSpec(json=tsd))
+            
     out_tileIdtotspecs = {ts.tileId: ts for ts in tilespecs_out}
 
     for tId, out_ts in out_tileIdtotspecs.iteritems():
