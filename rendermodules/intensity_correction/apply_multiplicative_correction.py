@@ -1,18 +1,12 @@
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.intensity_correction.apply_muliplicative_correction"
-import json
 import os
 import renderapi
-from ..module.render_module import RenderModule, RenderParameters
-from argschema.fields import InputFile, InputDir, Str, Float, Int, Bool, OutputDir
 from functools import partial
 import numpy as np
-from PIL import Image
 import tifffile
-import re
-import shutil
-import urllib
-import urlparse
+from ..module.render_module import RenderModule
+from rendermodules.intensity_correction.schemas import MultIntensityCorrParams
 
 example_input = {
     "render": {
@@ -29,33 +23,6 @@ example_input = {
     "z_index": 102,
     "pool_size": 20
 }
-
-
-class MultIntensityCorrParams(RenderParameters):
-    input_stack = Str(required=True,
-                      description="Input stack")
-    output_stack = Str(required=True,
-                       description='Output stack')
-    correction_stack = Str(required=True,
-                           description='Correction stack (usually median stack for AT data)')
-    output_directory = OutputDir(required=True,
-                                 description='Directory for storing Images')
-    z_index = Int(required=True,
-                  description='z value for section')
-    pool_size = Int(required=False, default=20,
-                    description='size of pool for parallel processing (default=20)')
-    cycle_number = Int(required=False, default=2,
-                       description="what cycleNumber to upload for output_stack on render")
-    cycle_step_number = Int(required=False, default=1,
-                            description="what cycleStepNumber to upload for output_stack on render")
-    # move_input = Bool(required=False, default=False,
-    #                   description="whether to move input tiles to new location")
-    # move_input_regex_find = Str(required=False,
-    #                             default="",
-    #                             description="regex string to find in input filenames")
-    # move_input_regex_replace = Str(required=False,
-    #                                default="",
-    #                                description="regex string to replace in input filenames")
 
 
 def intensity_corr(img, ff):
