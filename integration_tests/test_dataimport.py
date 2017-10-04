@@ -42,6 +42,28 @@ def test_generate_EM_metadata(render):
     renderapi.stack.delete_stack(ex['stack'], render=render)
     assert len(expected_tileIds.symmetric_difference(delivered_tileIds)) == 0
 
+def validate_mipmap_generated(in_ts,out_ts,levels):
+    # make sure that the corresponding tiles' l0s match
+    inpath = generate_mipmaps.get_filepath_from_tilespec(in_ts)
+    outpath = generate_mipmaps.get_filepath_from_tilespec(out_ts)
+
+    assert inpath==outpath
+
+    # make sure all levels have been assigned
+    assert sorted(out_ts.ip.levels) == range(levels + 1)
+
+    # make sure all assigned levels exist and are appropriately sized
+    assert in_ts.width == out_ts.width
+    assert in_ts.height == out_ts.height
+    expected_width = out_ts.width
+    expected_height = out_ts.height
+
+    for lvl, mmL in dict(out_ts.ip).iteritems():
+        fn = urllib.unquote(urlparse.urlparse(mmL['imageUrl']).path)
+        with Image.open(fn) as im:
+            w, h = im.size
+        assert w == expected_width // (2 ** lvl)
+        assert h == expected_height // (2 ** lvl)
 
 def apply_generated_mipmaps(r, output_stack, generate_params):
     ex = apply_mipmaps_to_render.example
@@ -70,30 +92,7 @@ def apply_generated_mipmaps(r, output_stack, generate_params):
     assert not (in_tileIdtotspecs.viewkeys() ^ out_tileIdtotspecs.viewkeys())
     for tId, out_ts in out_tileIdtotspecs.iteritems():
         in_ts = in_tileIdtotspecs[tId]
-
-        mod.logger.debug(out_ts.to_dict())
-        mod.logger.debug(in_ts.to_dict())
-        # make sure that the corresponding tiles' l0s match
-        inpath = generate_mipmaps.get_filepath_from_tilespec(in_ts)
-        outpath = generate_mipmaps.get_filepath_from_tilespec(out_ts)
-
-        assert inpath==outpath
-
-        # make sure all levels have been assigned
-        assert sorted(out_ts.ip.levels) == range(ex['levels'] + 1)
-
-        # make sure all assigned levels exist and are appropriately sized
-        assert in_ts.width == out_ts.width
-        assert in_ts.height == out_ts.height
-        expected_width = out_ts.width
-        expected_height = out_ts.height
-
-        for lvl, mmL in dict(out_ts.ip).iteritems():
-            fn = urllib.unquote(urlparse.urlparse(mmL['imageUrl']).path)
-            with Image.open(fn) as im:
-                w, h = im.size
-            assert w == expected_width // (2 ** lvl)
-            assert h == expected_height // (2 ** lvl)
+        validate_mipmap_generated(in_ts,out_ts,ex['levels'])
 
 @pytest.fixture(scope='module')
 def tspecs_to_mipmap():
@@ -144,7 +143,6 @@ def test_create_mipmap_from_tuple(tspecs_to_mipmap,tmpdir):
     generate_mipmaps.create_mipmap_from_tuple(mytuple)
 
 def test_addMipMapsToRender(render,input_stack,tmpdir):
-    mipmap_dir=str(tmpdir)
     imgformat='tif'
     levels=(1,2,3)
     zvalues = renderapi.stack.get_z_values_for_stack(input_stack,render=render)
@@ -152,8 +150,21 @@ def test_addMipMapsToRender(render,input_stack,tmpdir):
 
     ts_paths=apply_mipmaps_to_render.addMipMapsToRender(render, 
                                                         input_stack,
-                                                        mipmap_dir,
+                                                        str(tmpdir),
                                                         imgformat,
                                                         levels,
                                                         z)
-    
+    in_tileIdtotspecs = {
+        ts.tileId: ts for ts
+        in renderapi.tilespec.get_tile_specs_from_z(
+            input_stack,z, render=render)}
+
+    tilespecs_out = []
+    for ts_path in ts_paths:
+        with open(ts_path,'r') as fp:
+            tilespecs_out.append(renderapi.tilespec.TileSpec(json=json.load(fp)))
+    out_tileIdtotspecs = {ts.tileId: ts for ts in tilespecs_out}
+
+    for tId, out_ts in out_tileIdtotspecs.iteritems():
+        in_ts = in_tileIdtotspecs[tId]
+        validate_mipmap_generated(in_ts,out_ts,levels)
