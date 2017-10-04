@@ -142,3 +142,18 @@ def test_create_mipmap_from_tuple(tspecs_to_mipmap,tmpdir):
     filename=generate_mipmaps.get_filepath_from_tilespec(ts)
     mytuple = (filename,str(tmpdir))
     generate_mipmaps.create_mipmap_from_tuple(mytuple)
+
+def test_addMipMapsToRender(render,input_stack,tmpdir):
+    mipmap_dir=str(tmpdir)
+    imgformat='tif'
+    levels=(1,2,3)
+    zvalues = renderapi.stack.get_z_values_for_stack(input_stack)
+    z = zvalues[0]
+
+    ts_paths=apply_mipmaps_to_render.addMipMapsToRender(render, 
+                                                        input_stack,
+                                                        mipmap_dir,
+                                                        imgformat,
+                                                        levels,
+                                                        z)
+    
