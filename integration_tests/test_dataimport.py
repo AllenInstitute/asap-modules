@@ -141,8 +141,6 @@ def addMipMapsToRender_test(render,output_stack,generate_params):
         in renderapi.tilespec.get_tile_specs_from_z(
             output_stack,z, render=render)}
 
-    out_tileIdtotspecs = {ts.tileId: ts for ts in tilespecs_out}
-
     for tId, out_ts in out_tileIdtotspecs.iteritems():
         in_ts = in_tileIdtotspecs[tId]
         validate_mipmap_generated(in_ts,out_ts,levels)
