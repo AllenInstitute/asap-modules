@@ -9,8 +9,8 @@ import pathlib
 import numpy
 import renderapi
 import argschema
-from argschema.fields import InputFile, Str, Int, Boolean, InputDir
 from rendermodules.module.render_module import (RenderModule, RenderParameters)
+from rendermodules.dataimport.schemas import GenerateEMTileSpecsOutput, GenerateEMTileSpecsParameters
 
 example_input = {
     "render": {
@@ -31,47 +31,6 @@ example_input = {
 }
 
 
-class GenerateEMTileSpecsParameters(RenderParameters):
-    metafile = InputFile(
-        required=True,
-        description="metadata file containing TEMCA acquisition data")
-    stack = Str(required=True,
-                description="stack to which tiles should be added")
-    image_directory = InputDir(
-        required=False,
-        description=("directory used in determining absolute paths to images. "
-                     "Defaults to parent directory containing metafile "
-                     "if omitted."))
-    pool_size = Int(
-        required=False, default=1,
-        description="processes to spawn for parallelization")
-    close_stack = Boolean(
-        required=False, default=False,
-        description=("whether to set stack to 'COMPLETE' after "
-                     "performing operation"))
-    overwrite_zlayer = Boolean(
-        required=False, default=False,
-        description=("whether to remove the existing layer from the "
-                     "target stack before uploading."))
-    maximum_intensity = Int(
-        required=False, default=255,
-        description=("intensity value to interpret as white"))
-    minimum_intensity = Int(
-        required=False, default=0,
-        description=("intensity value to interpret as black"))
-    z_index = Int(
-        required=True,
-        description="z value to which tilespecs from ROI will be added")
-    sectionId = Str(
-        required=False,
-        description=("sectionId to apply to tiles during ingest.  "
-                     "If unspecified will default to a string "
-                     "representation of the float value of z_index."))
-
-
-class GenerateEMTileSpecsOutput(argschema.schemas.mm.Schema):
-    stack = Str(required=True,
-                description="stack to which generated tiles were added")
 
 
 class GenerateEMTileSpecsModule(RenderModule):
