@@ -117,6 +117,36 @@ def input_stack(render,tspecs_to_mipmap):
     yield test_input_stack
     renderapi.stack.delete_stack(test_input_stack, render=render)
 
+def addMipMapsToRender_test(render,output_stack,generate_params):
+    tmpdir=tempfile.mkdtemp()
+    input_stack = generate_params['input_stack']
+    imgformat='tif'
+    levels=3
+    zvalues = renderapi.stack.get_z_values_for_stack(input_stack,render=render)
+    z = zvalues[0]
+
+    ts_paths=apply_mipmaps_to_render.addMipMapsToRender(render, 
+                                                        input_stack,
+                                                        tmpdir,
+                                                        imgformat,
+                                                        levels,
+                                                        z)
+    in_tileIdtotspecs = {
+        ts.tileId: ts for ts
+        in renderapi.tilespec.get_tile_specs_from_z(
+            input_stack,z, render=render)}
+
+    out_tileIdtotspecs = {
+        ts.tileId: ts for ts
+        in renderapi.tilespec.get_tile_specs_from_z(
+            output_stack,z, render=render)}
+
+    out_tileIdtotspecs = {ts.tileId: ts for ts in tilespecs_out}
+
+    for tId, out_ts in out_tileIdtotspecs.iteritems():
+        in_ts = in_tileIdtotspecs[tId]
+        validate_mipmap_generated(in_ts,out_ts,levels)
+
 def test_mipmaps(render, input_stack, tspecs_to_mipmap, output_stack=None):
     assert isinstance(render, renderapi.render.RenderClient)
     output_stack = ('{}OUT'.format(input_stack) if output_stack
@@ -133,7 +163,7 @@ def test_mipmaps(render, input_stack, tspecs_to_mipmap, output_stack=None):
     mod.run()
 
     apply_generated_mipmaps(render, output_stack, ex)
-
+    addMipMapsToRender_test(render, output_stack, ex)
     renderapi.stack.delete_stack(output_stack, render=render)
 
 def test_create_mipmap_from_tuple(tspecs_to_mipmap,tmpdir):
@@ -142,32 +172,3 @@ def test_create_mipmap_from_tuple(tspecs_to_mipmap,tmpdir):
     mytuple = (filename,str(tmpdir))
     generate_mipmaps.create_mipmap_from_tuple(mytuple)
 
-def test_addMipMapsToRender(render,input_stack,tmpdir):
-    imgformat='tif'
-    levels=3
-    zvalues = renderapi.stack.get_z_values_for_stack(input_stack,render=render)
-    z = zvalues[0]
-
-    ts_paths=apply_mipmaps_to_render.addMipMapsToRender(render, 
-                                                        input_stack,
-                                                        str(tmpdir),
-                                                        imgformat,
-                                                        levels,
-                                                        z)
-    in_tileIdtotspecs = {
-        ts.tileId: ts for ts
-        in renderapi.tilespec.get_tile_specs_from_z(
-            input_stack,z, render=render)}
-
-    tilespecs_out = []
-    for ts_path in ts_paths:
-        with open(ts_path,'r') as fp:
-            tilespec_dicts = json.load(fp)
-        for tsd in tilespec_dicts:
-            tilespecs_out.append(renderapi.tilespec.TileSpec(json=tsd))
-            
-    out_tileIdtotspecs = {ts.tileId: ts for ts in tilespecs_out}
-
-    for tId, out_ts in out_tileIdtotspecs.iteritems():
-        in_ts = in_tileIdtotspecs[tId]
-        validate_mipmap_generated(in_ts,out_ts,levels)
