@@ -36,3 +36,10 @@ multiplicative_correction_example_dir = os.environ.get('RENDER_MODULES_MC_TEST_D
 
 MULTIPLICATIVE_INPUT_JSON = os.path.join(multiplicative_correction_example_dir,'DAPI_1_rib0000sess0001sect0000.json')
 
+# lc_example_dir = os.environ.get('RENDER_MODULES_LC_TEST_DATA',
+#     'allen/aibs/pipeline/image_processing/volume_assembly/lc_test_data/')
+
+lc_example_dir = '/allen/aibs/pipeline/image_processing/volume_assembly/lc_test_data/'
+
+TILESPECS_NO_LC_JSON = os.path.join(lc_example_dir, 'test_noLC.json')
+TILESPECS_LC_JSON = os.path.join(lc_example_dir, 'test_LC.json')

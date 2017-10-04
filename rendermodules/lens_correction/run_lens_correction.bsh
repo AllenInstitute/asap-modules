@@ -197,7 +197,7 @@ try {
 	className = getLensCorrectionModel(p).getClass().getCanonicalName();
 	dataString = getLensCorrectionModel(p).toDataString();
 
-  outfn = System.getProperty("outfn", dir + "/lens_correction.json");
+  	outfn = System.getProperty("outfn", dir + "/lens_correction.json");
 	// manually write to JSON file
 	FileWriter outJsonFile = new FileWriter(outfn);
 	outJsonFile.write("{\n");
