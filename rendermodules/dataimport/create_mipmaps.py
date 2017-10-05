@@ -1,8 +1,9 @@
 from PIL import Image
 import argparse
 import os
+from rendermodules.module.render_module import RenderModuleException
 
-class CreateMipMapException(Exception):
+class CreateMipMapException(RenderModuleException):
     """Exception raised when there is a problem creating a mipmap"""
 
 def create_mipmaps(inputImage, outputDirectory='.', mipmaplevels=[1, 2, 3],
