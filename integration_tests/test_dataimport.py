@@ -121,7 +121,7 @@ def addMipMapsToRender_test(render,output_stack,generate_params):
     tmpdir=tempfile.mkdtemp()
     input_stack = generate_params['input_stack']
     imgformat='tif'
-    levels=3
+    levels=generate_params['levels']
     zvalues = renderapi.stack.get_z_values_for_stack(input_stack,render=render)
     z = zvalues[0]
 
