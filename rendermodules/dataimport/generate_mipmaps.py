@@ -3,7 +3,7 @@ import urllib
 import urlparse
 from rendermodules.dataimport.create_mipmaps import create_mipmaps
 from functools import partial
-from ..module.render_module import RenderModule, RenderParameters
+from ..module.render_module import RenderModule, RenderParameters, RenderModuleException
 from rendermodules.dataimport.schemas import GenerateMipMapsParameters
 
 if __name__ == "__main__" and __package__ is None:
@@ -120,7 +120,7 @@ class GenerateMipMaps(RenderModule):
                                                   self.args['force_redo'],
                                                   self.args['pool_size'])
         else:
-            raise Exception(
+            raise RenderModuleException(
                 "method {} not supported".format(self.args['method']))
             # self.logger.debug("mipmaps generation checks...")
             # missing_files = verify_mipmap_generation(mipmap_args)
