@@ -61,25 +61,6 @@ def make_tilespecs_and_cmds(render, inputStack, output_dir, zvalues, levels,
 
         for ts in tilespecs:
             filepath_in = get_filepath_from_tilespec(ts)
-
-            # # filepath should not have leading / so as to join it with output_dir
-            # # os.path.join ignores first argument if second argument has leading /
-            # if filepath_in[0] == '/':
-            #     filepath = filepath_in[1:]
-            # else:
-            #     filepath = filepath_in
-            # # filepath = str(old_url).lstrip('file:/')
-            # # filepath = filepath.replace("%20", " ")
-            # # filepath_in = os.path.join('/', filepath)
-
-            # if imgformat is "png":
-            #     imgf = ".png"
-            # elif imgformat is "jpg":
-            #     imgf = ".jpg"
-            # else:
-            #     imgf = ".tif"
-
-            # print (filepath_in, output_dir)
             mipmap_args.append((filepath_in, output_dir))
 
     mypartial = partial(
