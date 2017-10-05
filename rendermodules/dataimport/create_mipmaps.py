@@ -56,16 +56,19 @@ def create_mipmaps(inputImage, outputDirectory='.', mipmaplevels=[1, 2, 3],
                                '{basename}.{fmt}'.format(
                                    basename=inputImage.lstrip(os.sep),
                                    fmt=outputformat))
-
-        print outpath
-        try:
-            dwnImage.save(outpath)
-        except KeyError, e:
-            # unknown output format
-            print 'KeyError - "%s"' % str(e)
-        except IndexError, e:
-            # file cannot be written to disk
-            print 'IndexError - "%s"' % str(e)
+        makeImage=True
+        if os.path.isfile(outpath):
+            if not force_redo:
+                makeImage = False
+        if makeImage:
+            try:
+                dwnImage.save(outpath)
+            except KeyError, e:
+                # unknown output format
+                print 'KeyError - "%s"' % str(e)
+            except IndexError, e:
+                # file cannot be written to disk
+                print 'IndexError - "%s"' % str(e)
 
 
 # if __name__ == '__main__':
