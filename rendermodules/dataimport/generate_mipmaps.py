@@ -39,6 +39,15 @@ def create_mipmap_from_tuple(mipmap_tuple, levels=[1, 2, 3],
                           force_redo=force_redo)
 
 
+def get_filepath_from_tilespec(ts):
+    mml = ts.ip.get(0)
+
+    old_url = mml['imageUrl']
+    filepath_in = urllib.unquote(urlparse.urlparse(
+        str(old_url)).path)
+    return filepath_in
+
+
 def make_tilespecs_and_cmds(render, inputStack, output_dir, zvalues, levels,
                             imgformat, convert_to_8bit, force_redo, pool_size):
     mipmap_args = []
@@ -48,34 +57,30 @@ def make_tilespecs_and_cmds(render, inputStack, output_dir, zvalues, levels,
                                inputStack, z)
 
         for ts in tilespecs:
-            mml = ts.ip.mipMapLevels[0]
+            filepath_in = get_filepath_from_tilespec(ts)
 
-            old_url = mml.imageUrl
-            filepath_in = urllib.unquote(urlparse.urlparse(
-                str(old_url)).path)
+            # # filepath should not have leading / so as to join it with output_dir
+            # # os.path.join ignores first argument if second argument has leading /
+            # if filepath_in[0] == '/':
+            #     filepath = filepath_in[1:]
+            # else:
+            #     filepath = filepath_in
+            # # filepath = str(old_url).lstrip('file:/')
+            # # filepath = filepath.replace("%20", " ")
+            # # filepath_in = os.path.join('/', filepath)
 
-            # filepath should not have leading / so as to join it with output_dir
-            # os.path.join ignores first argument if second argument has leading /
-            if filepath_in[0] == '/':
-                filepath = filepath_in[1:]
-            else:
-                filepath = filepath_in
-            # filepath = str(old_url).lstrip('file:/')
-            # filepath = filepath.replace("%20", " ")
-            # filepath_in = os.path.join('/', filepath)
+            # if imgformat is "png":
+            #     imgf = ".png"
+            # elif imgformat is "jpg":
+            #     imgf = ".jpg"
+            # else:
+            #     imgf = ".tif"
 
-            if imgformat is "png":
-                imgf = ".png"
-            elif imgformat is "jpg":
-                imgf = ".jpg"
-            else:
-                imgf = ".tif"
-
-            print (filepath_in, output_dir)
+            # print (filepath_in, output_dir)
             mipmap_args.append((filepath_in, output_dir))
 
     mypartial = partial(
-        create_mipmap_from_tuple, levels=range(1, levels+1),
+        create_mipmap_from_tuple, levels=range(1, levels + 1),
         convertTo8bit=convert_to_8bit, force_redo=force_redo)
 
     with renderapi.client.WithPool(pool_size) as pool:
@@ -109,8 +114,9 @@ class GenerateMipMaps(RenderModule):
 
         try:
             self.args['zstart'] and self.args['zend']
-            zvalues1 = range(self.args['zstart'], self.args['zend']+1)
-            zvalues = list(set(zvalues1).intersection(set(zvalues))) # extract only those z's that exist in the input stack
+            zvalues1 = range(self.args['zstart'], self.args['zend'] + 1)
+            # extract only those z's that exist in the input stack
+            zvalues = list(set(zvalues1).intersection(set(zvalues)))
         except NameError:
             try:
                 self.args['z']
