@@ -1,20 +1,13 @@
 import renderapi
 from rendermodules.stack.consolidate_transforms import ConsolidateTransforms, process_z
-from test_data import render_host,render_port,client_script_location, tilespec_file, tform_file
+from test_data import render_params, cons_ex_tilespec_json, cons_ex_transform_json
 import pytest
 import numpy as np
 import json
 import logging
 
 EPSILON = .001
-render_params = {
-    "host":render_host,
-    "port":render_port,
-    "owner":"test",
-    "project":"consolidate_test",
-    "client_scripts":client_script_location
-}
-
+render_params['project'] = "consolidate_test"
 
 @pytest.fixture(scope='module')
 def render():
@@ -23,13 +16,8 @@ def render():
 
 @pytest.fixture(scope='module')
 def render_example_tilespec_and_transforms():
-    with open(tilespec_file, 'r') as f:
-        ts_json = json.load(f)
-    with open(tform_file, 'r') as f:
-        tform_json = json.load(f)
-
-    tilespecs = [renderapi.tilespec.TileSpec(json=ts) for ts in ts_json]
-    tforms = [renderapi.transform.load_transform_json(td) for td in tform_json]
+    tilespecs = [renderapi.tilespec.TileSpec(json=ts) for ts in cons_ex_tilespec_json]
+    tforms = [renderapi.transform.load_transform_json(td) for td in cons_ex_transform_json]
     print tforms
     return (tilespecs, tforms)
 

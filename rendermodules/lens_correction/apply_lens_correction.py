@@ -1,10 +1,7 @@
 #!/usr/bin/env python
-from argschema.fields import Int, Nested, Str, List, Boolean
-from argschema.schemas import DefaultSchema
-from marshmallow.validate import OneOf
 import renderapi
-from rendermodules.module.render_module import (
-    RenderModule, RenderParameters)
+from rendermodules.module.render_module import RenderModule
+from rendermodules.lens_correction.schemas import ApplyLensCorrectionOutput, ApplyLensCorrectionParameters
 
 example_input = {
     "render": {
@@ -19,6 +16,8 @@ example_input = {
     },
     "inputStack": "test_noLC",
     "outputStack": "test_LC",
+    "pool_size": 10,
+    "close_stack": True,
     "zs": [2266],
     "transform": {
         "type": "leaf",
@@ -60,49 +59,6 @@ example_input = {
     "refId": None
 }
 
-
-class TransformParameters(DefaultSchema):
-    type = Str(
-        required=True,
-        validator=OneOf(["leaf", "interpolated", "list", "ref"]),
-        description=('Transform type as defined in Render Transform Spec.  '
-                     'This module currently expects a "leaf"'))
-    className = Str(
-        required=True,
-        description='mpicbg-compatible className')
-    dataString = Str(
-        required=True,
-        description='mpicbg-compatible dataString')
-
-
-class ApplyLensCorrectionParameters(RenderParameters):
-    inputStack = Str(
-        required=True,
-        description='Render Stack with tiles that should be transformed')
-    outputStack = Str(
-        required=True,
-        description=('Render Stack to which transformed tiles will be added'))
-    zs = List(
-        Int, required=True,
-        description='z indices to which transform should be prepended')
-    transform = Nested(TransformParameters)
-    refId = Str(
-        allow_none=True, required=True,
-        description=('Reference ID to use when uploading transform to '
-                     'render database (Not Implemented)'))
-    close_stack = Boolean(
-        required=False, default=False,
-        description=("whether to set output stack to 'COMPLETE' "
-                     "upon completion"))
-
-
-class ApplyLensCorrectionOutput(DefaultSchema):
-    stack = Str(required=True,
-                description='stack to which transformed tiles were written')
-    refId = Str(required=True,
-                description='unique identifier string used as reference ID')
-
-
 class ApplyLensCorrection(RenderModule):
     default_schema = ApplyLensCorrectionParameters
     default_output_schema = ApplyLensCorrectionOutput
@@ -127,9 +83,9 @@ class ApplyLensCorrection(RenderModule):
 
         renderapi.stack.create_stack(outputStack, render=r)
         renderapi.stack.set_stack_state(outputStack, 'LOADING', render=r)
-        renderapi.client.import_tilespecs(outputStack, new_tspecs, render=r)
-        if self.args['close_stack']:
-            renderapi.stack.set_stack_state(outputStack, 'COMPLETE', render=r)
+        renderapi.client.import_tilespecs_parallel(
+            outputStack, new_tspecs, poolsize=self.args['pool_size'],
+            close_stack=self.args['close_stack'], render=r)
 
         # output dict
         output = {}

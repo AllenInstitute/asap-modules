@@ -1,4 +1,3 @@
-import os
 import json
 import pytest
 import logging
@@ -7,15 +6,10 @@ import numpy as np
 import math
 from rendermodules.lens_correction.apply_lens_correction import ApplyLensCorrection
 from rendermodules.lens_correction.lens_correction import LensCorrectionModule
-from test_data import TILESPECS_NO_LC_JSON, TILESPECS_LC_JSON, render_host, render_port, client_script_location
+from test_data import render_params, TILESPECS_NO_LC_JSON, TILESPECS_LC_JSON
+from test_data import calc_lens_parameters
 
-render_params = {
-    "host": render_host,
-    "port": render_port,
-    "owner": "test",
-    "project": "lens_correction_test",
-    "client_scripts": client_script_location
-}
+render_params['project'] = "lens_correction_test"
 
 @pytest.fixture(scope='module')
 def render():
@@ -71,9 +65,7 @@ def stack_no_lc(render):
     logger.setLevel(logging.DEBUG)
     renderapi.stack.create_stack(stack, render=render)
 
-    with open(TILESPECS_NO_LC_JSON, 'r') as fp:
-        tspecs_json = json.load(fp)
-    tspecs = [renderapi.tilespec.TileSpec(json=tspec) for tspec in tspecs_json]
+    tspecs = [renderapi.tilespec.TileSpec(json=tspec) for tspec in TILESPECS_NO_LC_JSON]
     renderapi.client.import_tilespecs(stack, tspecs, render=render)
     renderapi.stack.set_stack_state(stack, 'COMPLETE', render=render)
     yield stack
@@ -87,9 +79,7 @@ def stack_lc(render):
     logger.setLevel(logging.DEBUG)
     renderapi.stack.create_stack(stack, render=render)
 
-    with open(TILESPECS_LC_JSON, 'r') as fp:
-        tspecs_json = json.load(fp)
-    tspecs = [renderapi.tilespec.TileSpec(json=tspec) for tspec in tspecs_json]
+    tspecs = [renderapi.tilespec.TileSpec(json=tspec) for tspec in TILESPECS_LC_JSON]
     renderapi.client.import_tilespecs(stack, tspecs, render=render)
     renderapi.stack.set_stack_state(stack, 'COMPLETE', render=render)
     yield stack
@@ -117,50 +107,20 @@ def compute_lc_norm_and_max(test_example_tform, test_new_tform):
     assert tform_max_diff < 3
     assert tform_norm < 1
 
-def test_lens_correction(example_tform_dict, test_points):
-    params = {
-        "manifest_path": "/allen/aibs/pipeline/image_processing/volume_assembly/lc_test_data/Wij_Set_594451332/594089217_594451332/_trackem_20170502174048_295434_5LC_0064_01_20170502174047_reference_0_.txt",
-        "project_path": "/allen/aibs/pipeline/image_processing/volume_assembly/lc_test_data/Wij_Set_594451332/594089217_594451332/",
-        "fiji_path": "/allen/aibs/pipeline/image_processing/volume_assembly/Fiji.app/ImageJ-linux64",
-        "grid_size": 3,
-        "heap_size": 20,
-        "outfile": "test_LC.json",
-        "processing_directory": None,
-        "SIFT_params": {
-            "initialSigma": 1.6,
-            "steps": 3,
-            "minOctaveSize": 800,
-            "maxOctaveSize": 1200,
-            "fdSize": 4,
-            "fdBins": 8
-        },
-        "align_params": {
-            "rod": 0.92,
-            "maxEpsilon": 5.0,
-            "minInlierRatio": 0.0,
-            "minNumInliers": 5,
-            "expectedModelIndex": 1,
-            "multipleHypotheses": True,
-            "rejectIdentity": True,
-            "identityTolerance": 5.0,
-            "tilesAreInPlace": True,
-            "desiredModelIndex": 0,
-            "regularize": False,
-            "maxIterationsOptimize": 2000,
-            "maxPlateauWidthOptimize": 200,
-            "dimension": 5,
-            "lambdaVal": 0.01,
-            "clearTransform": True,
-            "visualize": False
-        }
-    }
+def test_calc_lens_correction(example_tform_dict, test_points,tmpdir):
+    outfile = str(tmpdir.join('test_LC_out.json'))
+    print outfile
 
-    mod = LensCorrectionModule(input_data=params, args=['--output_json', 'test_LC_out.json'])
+    mod = LensCorrectionModule(input_data=calc_lens_parameters, args=['--output_json', outfile])
+    mod.logger.setLevel(logging.DEBUG)
     mod.run()
 
-    new_tform_path = params['outfile']
-    with open(new_tform_path, 'r') as fp:
+    with open(calc_lens_parameters['outfile'],'r') as fp:
         new_tform_dict = json.load(fp)
+
+    # new_tform_path = calc_lens_parameters['outfile']
+    # with open(new_tform_path, 'r') as fp:
+    #     new_tform_dict = json.load(fp)
 
     example_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=example_tform_dict['dataString'])
     new_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=new_tform_dict['transform']['dataString'])
@@ -180,14 +140,15 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_tform_dict
         "outputStack": stack_lc,
         "zs": [2266],
         "transform": example_tform_dict,
-        "refId": None
+        "refId": None,
+        "pool_size": 5
     }
 
     mod = ApplyLensCorrection(input_data=params, args=['--output_json', 'test_ALC_out.json'])
     mod.run()
 
     example_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=params['transform']['dataString'])
-    
+
     test_example_tform = example_tform.tform(test_points)
 
     for z in params['zs']:

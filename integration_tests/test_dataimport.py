@@ -3,29 +3,19 @@ import pytest
 import urllib
 import urlparse
 import tempfile
-import os
 from PIL import Image
 import renderapi
 from rendermodules.dataimport import generate_EM_tilespecs_from_metafile
 from rendermodules.dataimport import generate_mipmaps
 from rendermodules.dataimport import apply_mipmaps_to_render
-from test_data import (render_host, render_port, client_script_location,
+from test_data import (render_params, 
                        METADATA_FILE, MIPMAP_TILESPECS_JSON, scratch_dir)
-
 
 @pytest.fixture(scope='module')
 def render():
-    render_test_parameters = {
-        'host': render_host,
-        'port': render_port,
-        'owner': 'test',
-        'project': 'test_project',
-        'client_scripts': client_script_location}
-    return renderapi.connect(**render_test_parameters)
-
+    return renderapi.connect(**render_params)
 
 def test_generate_EM_metadata(render):
-    assert os.path.isdir(client_script_location)
     assert isinstance(render, renderapi.render.RenderClient)
     with open(METADATA_FILE, 'r') as f:
         md = json.load(f)
@@ -109,9 +99,9 @@ def test_mipmaps(render, input_stack='MIPMAPTEST', output_stack=None):
                     is None else output_stack)
 
     # TODO should maybe make this  fixture to separate tests
-    with open(MIPMAP_TILESPECS_JSON, 'r') as f:
-        tspecs_to_mipmap = [
-            renderapi.tilespec.TileSpec(json=d) for d in json.load(f)]
+
+    tspecs_to_mipmap = [renderapi.tilespec.TileSpec(json=d) 
+        for d in MIPMAP_TILESPECS_JSON]
     renderapi.stack.create_stack(input_stack, render=render)
     renderapi.client.import_tilespecs_parallel(
         input_stack, tspecs_to_mipmap, render=render)
