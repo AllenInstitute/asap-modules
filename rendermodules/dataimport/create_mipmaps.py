@@ -71,4 +71,4 @@ def create_mipmaps(inputImage, outputDirectory='.', mipmaplevels=[1, 2, 3],
                 raise(CreateMipMapException('KeyError - "%s"' % str(e)))
             except IOError, e:
                 # file cannot be written to disk
-                raise(CreateMipMapException('IndexError - "%s"' % str(e)))
+                raise(CreateMipMapException('IOError - "%s"' % str(e)))
