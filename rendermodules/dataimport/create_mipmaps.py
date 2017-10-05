@@ -69,7 +69,7 @@ def create_mipmaps(inputImage, outputDirectory='.', mipmaplevels=[1, 2, 3],
             except KeyError, e:
                 # unknown output format
                 raise(CreateMipMapException('KeyError - "%s"' % str(e)))
-            except IndexError, e:
+            except IOError, e:
                 # file cannot be written to disk
                 raise(CreateMipMapException('IndexError - "%s"' % str(e)))
 
