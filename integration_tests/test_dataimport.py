@@ -11,6 +11,7 @@ from rendermodules.dataimport import generate_mipmaps
 from rendermodules.dataimport import apply_mipmaps_to_render
 from test_data import (render_params, 
                        METADATA_FILE, MIPMAP_TILESPECS_JSON, scratch_dir)
+import os
 
 @pytest.fixture(scope='module')
 def render():
@@ -42,7 +43,7 @@ def test_generate_EM_metadata(render):
     renderapi.stack.delete_stack(ex['stack'], render=render)
     assert len(expected_tileIds.symmetric_difference(delivered_tileIds)) == 0
 
-def validate_mipmap_generated(in_ts,out_ts,levels):
+def validate_mipmap_generated(in_ts,out_ts,levels,imgformat='tif'):
     # make sure that the corresponding tiles' l0s match
     inpath = generate_mipmaps.get_filepath_from_tilespec(in_ts)
     outpath = generate_mipmaps.get_filepath_from_tilespec(out_ts)
@@ -60,6 +61,9 @@ def validate_mipmap_generated(in_ts,out_ts,levels):
 
     for lvl, mmL in dict(out_ts.ip).iteritems():
         fn = urllib.unquote(urlparse.urlparse(mmL['imageUrl']).path)
+        ext=os.path.splitext(fn)[1]
+        if (lvl != 0):
+            assert ext == imgformat
         with Image.open(fn) as im:
             w, h = im.size
         assert w == expected_width // (2 ** lvl)
@@ -120,7 +124,7 @@ def input_stack(render,tspecs_to_mipmap):
 def addMipMapsToRender_test(render,output_stack,generate_params):
     tmpdir=tempfile.mkdtemp()
     input_stack = generate_params['input_stack']
-    imgformat='tif'
+    imgformat=generate_params['imgformat']
     levels=generate_params['levels']
     zvalues = renderapi.stack.get_z_values_for_stack(input_stack,render=render)
     z = zvalues[0]
@@ -143,7 +147,7 @@ def addMipMapsToRender_test(render,output_stack,generate_params):
 
     for tId, out_ts in out_tileIdtotspecs.iteritems():
         in_ts = in_tileIdtotspecs[tId]
-        validate_mipmap_generated(in_ts,out_ts,levels)
+        validate_mipmap_generated(in_ts,out_ts,levels,imgformat)
 
 def test_mipmaps(render, input_stack, tspecs_to_mipmap, output_stack=None):
     assert isinstance(render, renderapi.render.RenderClient)
@@ -169,4 +173,3 @@ def test_create_mipmap_from_tuple(tspecs_to_mipmap,tmpdir):
     filename=generate_mipmaps.get_filepath_from_tilespec(ts)
     mytuple = (filename,str(tmpdir))
     generate_mipmaps.create_mipmap_from_tuple(mytuple)
-
