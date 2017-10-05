@@ -1,13 +1,10 @@
 import renderapi
 import urllib
 import urlparse
-import os
-from create_mipmaps import create_mipmaps
+from rendermodules.dataimport.create_mipmaps import create_mipmaps
 from functools import partial
 from ..module.render_module import RenderModule, RenderParameters
-import marshmallow as mm
-from marshmallow import ValidationError, validates_schema
-
+from rendermodules.dataimport.schemas import GenerateMipMapsParameters
 
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.dataimport.generate_mipmaps"
@@ -84,74 +81,10 @@ def verify_mipmap_generation(mipmap_args):
 '''
 
 
-class GenerateMipMapsParameters(RenderParameters):
-    input_stack = mm.fields.Str(
-        required=True,
-        description='stack for which the mipmaps are to be generated')
-    output_dir = mm.fields.Str(
-        required=True,
-        description='directory to which the mipmaps will be stored')
-    method = mm.fields.Str(
-        required=True, default="block_reduce",
-        validator=mm.validate.OneOf(["PIL", "block_reduce", "render"]),
-        description=(
-            "method to downsample mipmapLevels, "
-            "can be 'block_reduce' for skimage based area downsampling, "
-            "'PIL' for PIL Image (currently NEAREST) filtered resize, "
-            "'render' for render-ws based rendering.  "
-            "Currently only PIL is implemented, while others may fall "
-            "back to this."))
-    convert_to_8bit = mm.fields.Boolean(
-        required=False, default=True,
-        description='convert the data from 16 to 8 bit (default True)')
-    pool_size = mm.fields.Int(
-        required=False, default=20,
-        description='number of cores to be used')
-    imgformat = mm.fields.Str(
-        required=False, default='tiff',
-        description='image format for mipmaps (default tiff)')
-    levels = mm.fields.Int(
-        required=False, default=6,
-        description='number of levels of mipmaps, default is 6')
-    force_redo = mm.fields.Boolean(
-        required=False, default=True,
-        description='force re-generation of existing mipmaps')
-    zstart = mm.fields.Int(
-        required=False,
-        description='start z-index in the stack')
-    zend = mm.fields.Int(
-        required=False,
-        description='end z-index in the stack')
-    z = mm.fields.Int(
-        required=False,
-        description='z-index in the stack')
-
-    @validates_schema
-    def validate_zvalues(self, data):
-        if 'zstart' not in data.keys() or 'zend' not in data.keys():
-            if 'zvalue' not in data.keys():
-                raise ValidationError('Need a z value')
-        if 'zvalue' not in data.keys():
-            if 'zstart' not in data.keys() or 'zend' not in data.keys():
-                raise ValidationError('Need a z range')
-
-    @classmethod
-    def validationOptions(cls, options):
-        excluded_fields = {
-            'PIL': [''],
-            'block_reduce': [''],
-            'render': ['']
-        }
-        exc_fields = excluded_fields[options['method']]
-        return cls(exclude=exc_fields).dump(options)
 
 
 class GenerateMipMaps(RenderModule):
-    def __init__(self, schema_type=None, *args, **kwargs):
-        if schema_type is None:
-            schema_type = GenerateMipMapsParameters
-        super(GenerateMipMaps, self).__init__(
-            schema_type=schema_type, *args, **kwargs)
+    default_schema = GenerateMipMapsParameters
 
     def run(self):
         self.logger.debug('Mipmap generation module')
