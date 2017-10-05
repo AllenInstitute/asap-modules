@@ -93,13 +93,11 @@ class GenerateMipMaps(RenderModule):
                                   self.args['input_stack'])
 
         try:
-            self.args['zstart'] and self.args['zend']
             zvalues1 = range(self.args['zstart'], self.args['zend'] + 1)
             # extract only those z's that exist in the input stack
             zvalues = list(set(zvalues1).intersection(set(zvalues)))
         except NameError:
             try:
-                self.args['z']
                 if self.args['z'] in zvalues:
                     zvalues = [self.args['z']]
             except NameError:
