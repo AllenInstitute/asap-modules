@@ -50,5 +50,6 @@ class ATMontage(RenderModule):
         subprocess.call(["java","-cp",self.args['jar_file'],mod, "--input_json", self.args['stitching_json']])
 
 if __name__ == "__main__":
+    #example input at top of file
     mod = ATMontage(input_data=example_input)
     mod.run()
