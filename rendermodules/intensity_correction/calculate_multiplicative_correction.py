@@ -28,7 +28,6 @@ example_input = {
 }
 
 
-
 def getImageFromTilespecs(alltilespecs, index):
     N, M, img = getImage(alltilespecs[index])
     return img
@@ -103,9 +102,9 @@ class MakeMedian(RenderModule):
             self.args['output_stack'], "LOADING", render=self.render)
         renderapi.client.import_tilespecs_parallel(
             self.args['output_stack'], outtilespecs, 
-            poolsize=self.args['pool_size'],render=self.render)
-        renderapi.stack.set_stack_state(
-            self.args['output_stack'], "COMPLETE", render=self.render)
+            poolsize=self.args['pool_size'],render=self.render,close_stack=self.args['close_stack'])
+        #renderapi.stack.set_stack_state(
+        #    self.args['output_stack'], "COMPLETE", render=self.render)
 
 
 if __name__ == "__main__":
