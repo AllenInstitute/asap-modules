@@ -1,4 +1,4 @@
-from argschema.fields import InputFile, InputDir, Str, Float, Int, OutputDir
+from argschema.fields import InputFile, InputDir, Str, Float, Int, OutputDir, Bool
 from ..module.schemas import RenderParameters
 
 class MakeMedianParams(RenderParameters):
