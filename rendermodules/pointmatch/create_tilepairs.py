@@ -124,6 +124,22 @@ class TilePairClientModule(RenderModule):
                                 self.args['output_dir'],
                                 tilepairJsonFile)
 
+        tilepairs = self.render.run(
+                        renderapi.client.tilePairClient,
+                        self.args['stack'],
+                        self.args['minZ'],
+                        self.args['maxZ'],
+                        outjson=tilepairJsonFile,
+                        basestack=self.args['baseStack'],
+                        xyNeighborFactor=self.args['xyNeighborFactor'],
+                        zNeighborDistance=self.args['zNeighborDistance'],
+                        excludeCornerNeighbors=self.args['excludeCornerNeighbors'],
+                        excludeSameLayerNeighbors=self.args['excludeSameLayerNeighbors'],
+                        excludeCompletelyObscuredTiles=self.args['excludeCompletelyObscuredTiles'])
+
+
+        # non-render-python way of calling TilePairClient
+        '''
         run_cmd = [
                     basecmd,
                     self.args['memGB'],
@@ -146,7 +162,7 @@ class TilePairClientModule(RenderModule):
                     ]
 
         subprocess.call(run_cmd)
-
+        '''
 
 if __name__ == "__main__":
     module = TilePairClientModule(input_data=example)
