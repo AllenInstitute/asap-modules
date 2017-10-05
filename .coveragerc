@@ -19,3 +19,5 @@ exclude_lines =
     logger.warning
     logger.error
     logger.critical
+    # ignore name is main
+    if __name__ == .__main__.:
