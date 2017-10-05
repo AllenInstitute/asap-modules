@@ -22,20 +22,20 @@ example = {
         "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_20170613/render-ws-java-client/src/main/scripts"
     },
     "lowres_stack": {
-        "stack": "mm2_8bit_reimage_minimaps_not_scaled",
+        "stack": "mm2_8bit_reimage_minimaps",
         "owner": "gayathri",
         "project": "MM2"
     },
     "output_lowres_stack": {
-        "stack": "mm2_8bit_reimage_minimaps_not_scaled_rc",
+        "stack": "mm2_8bit_reimage_minimaps",
         "owner": "gayathri",
         "project": "MM2"
     },
     "point_match_collection": {
         "owner": "gayathri_MM2",
-        "collection": "mm2_8bit_reimage_minimaps_not_scaled",
+        "collection": "mm2_8bit_reimage_minimaps",
         "scale": 0.4
-    }
+    },
     "solver_options": {
         "min_tiles": 20,
         "degree": 1,

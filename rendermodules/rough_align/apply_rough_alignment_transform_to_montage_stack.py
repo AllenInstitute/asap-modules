@@ -23,16 +23,16 @@ example = {
         "project": "MM2",
         "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_20170613/render-ws-java-client/src/main/scripts"
     },
-    "montage_stack": "mm2_acquire_8bit_reimage_clone",
-    "prealigned_stack": "mm2_acquire_8bit_reimage_clone",
+    "montage_stack": "mm2_acquire_8bit_reimage_Montage",
+    "prealigned_stack": "mm2_acquire_8bit_reimage_Montage",
     "lowres_stack": "mm2_8bit_reimage_minimaps_rough_aligned",
-    "output_stack": "mm2_8bit_reimage_raw_rough_aligned",
+    "output_stack": "mm2_acquire_8bit_reimage_Montage_rough_aligned",
     "tilespec_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch/rough/jsonFiles",
     "set_new_z": "False",
     "minZ": 1015,
-    "maxZ": 1015,
+    "maxZ": 1039,
     "scale": 0.025,
-    "pool_size": 10
+    "pool_size": 20
 }
 
 # Another way is to use ConsolidateTransforms module
