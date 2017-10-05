@@ -82,8 +82,6 @@ def verify_mipmap_generation(mipmap_args):
 '''
 
 
-
-
 class GenerateMipMaps(RenderModule):
     default_schema = GenerateMipMapsParameters
 
@@ -124,7 +122,8 @@ class GenerateMipMaps(RenderModule):
                                                   self.args['force_redo'],
                                                   self.args['pool_size'])
         else:
-            raise Exception("method {} not supported".format(self.args['method']))
+            raise Exception(
+                "method {} not supported".format(self.args['method']))
             # self.logger.debug("mipmaps generation checks...")
             # missing_files = verify_mipmap_generation(mipmap_args)
             # if not missing_files:
