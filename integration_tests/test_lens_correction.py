@@ -140,14 +140,15 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_tform_dict
         "outputStack": stack_lc,
         "zs": [2266],
         "transform": example_tform_dict,
-        "refId": None
+        "refId": None,
+        "pool_size": 5
     }
 
     mod = ApplyLensCorrection(input_data=params, args=['--output_json', 'test_ALC_out.json'])
     mod.run()
 
     example_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=params['transform']['dataString'])
-    
+
     test_example_tform = example_tform.tform(test_points)
 
     for z in params['zs']:
