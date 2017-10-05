@@ -1,0 +1,3902 @@
+[
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10947.4070994, 
+            "stageY": 97502.39688160001, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0040_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000040000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 40, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 3669.223449 13107.149588"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10133.5794275, 
+            "stageY": 96826.2318022, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0024_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000024000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 24, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 11557.061316 6553.574793"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10337.0363455, 
+            "stageY": 96995.27307210001, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0026_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000026000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 26, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 9585.101849 8191.968492"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10408.9046126, 
+            "stageY": 98178.561961, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0064_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000064000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 64, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 8888.535170 19660.724382"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10540.4932635, 
+            "stageY": 97164.3143419, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0032_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000032000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 32, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 7613.142382 9830.362190"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10984.8597183, 
+            "stageY": 98516.6445006, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0071_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000071000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 71, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 3306.222539 22937.511778"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10615.398501399999, 
+            "stageY": 99192.80958, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0094_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000094000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 94, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 6887.140561 29491.086572"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10233.7894011, 
+            "stageY": 96488.1492625, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0013_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000013000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 13, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 10585.799154 3276.787396"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -11088.1066627, 
+            "stageY": 99023.7683102, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0088_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000088000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 88, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 2305.525235 27852.692874"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10512.151557, 
+            "stageY": 98685.6857705, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0075_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000075000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 75, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 7887.837866 24575.905477"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -11188.316636299998, 
+            "stageY": 98685.6857705, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0079_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000079000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 79, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 1334.263072 24575.905477"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10340.073316299999, 
+            "stageY": 97840.4794213, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0054_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000054000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 54, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 9555.666707 16383.936985"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10030.3324831, 
+            "stageY": 96319.1079927, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0005_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000005000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 5, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 12557.758621 1638.393698"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10537.4562926, 
+            "stageY": 96319.1079927, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0008_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000008000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 8, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 7642.577526 1638.393698"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10675.118885200001, 
+            "stageY": 96995.27307210001, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0028_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000028000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 28, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 6308.314452 8191.968492"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10580.982853200001, 
+            "stageY": 99023.7683102, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0085_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000085000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 85, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 7220.706330 27852.692874"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10302.6206974, 
+            "stageY": 96826.2318022, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0023_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000023000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 23, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 9918.667617 6553.574793"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10987.8966892, 
+            "stageY": 99361.8508498, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0097_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000097000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 97, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 3276.787396 31129.480270"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -11053.6910146, 
+            "stageY": 98854.7270403, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0081_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000081000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 81, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 2639.091003 26214.299175"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10709.534533299999, 
+            "stageY": 97164.3143419, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0031_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000031000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 31, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 5974.748684 9830.362190"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10099.1637794, 
+            "stageY": 96657.19053239998, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0015_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000015000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 15, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 11890.627084 4915.181095"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -11122.5223109, 
+            "stageY": 99192.80958, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0091_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000091000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 91, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 1971.959466 29491.086572"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10574.9089116, 
+            "stageY": 97333.3556117, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0037_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000037000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 37, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 7279.576614 11468.755888"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10474.698938, 
+            "stageY": 97671.4381514, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0046_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000046000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 46, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 8250.838777 14745.543286"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10509.1145861, 
+            "stageY": 97840.4794213, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0053_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000053000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 53, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 7917.273009 16383.936985"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10715.6084749, 
+            "stageY": 98854.7270403, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0083_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000083000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 83, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 5915.878400 26214.299175"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10443.3202607, 
+            "stageY": 98347.60323080001, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0065_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000065000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 65, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 8554.969402 21299.118080"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10844.160155, 
+            "stageY": 96995.27307210001, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0029_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000029000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 29, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 4669.920754 8191.968492"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10640.703237, 
+            "stageY": 96826.2318022, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0021_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000021000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 21, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 6641.880221 6553.574793"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10202.4107238, 
+            "stageY": 97164.3143419, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0034_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000034000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 34, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 10889.929780 9830.362190"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10746.987152200001, 
+            "stageY": 98178.561961, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0062_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000062000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 62, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 5611.747774 19660.724382"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10506.0776153, 
+            "stageY": 96995.27307210001, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0027_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000027000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 27, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 7946.708151 8191.968492"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10609.3245597, 
+            "stageY": 97502.39688160001, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0042_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000042000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 42, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 6946.010847 13107.149588"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10612.3615305, 
+            "stageY": 98347.60323080001, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0066_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000066000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 66, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 6916.575704 21299.118080"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -11119.4853401, 
+            "stageY": 98347.60323080001, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0069_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000069000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 69, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 2001.394608 21299.118080"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -11325.979228799999, 
+            "stageY": 99361.8508498, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0099_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000099000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 99, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 0.000000 31129.480270"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10912.9914513, 
+            "stageY": 97333.3556117, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0039_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000039000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 39, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 4002.789217 11468.755888"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10064.7481312, 
+            "stageY": 96488.1492625, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0014_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000014000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 14, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 12224.192853 3276.787396"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10164.9581048, 
+            "stageY": 96150.0667229, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0003_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000003000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 3, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 11252.930691 0.000000"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10437.2463191, 
+            "stageY": 96657.19053239998, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0017_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000017000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 17, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 8613.839687 4915.181095"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10981.822747499999, 
+            "stageY": 97671.4381514, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0049_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000049000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 49, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 3335.657682 14745.543286"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10953.481041, 
+            "stageY": 99192.80958, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0092_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000092000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 92, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 3610.353165 29491.086572"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -11050.6540438, 
+            "stageY": 98009.5206911, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0059_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000059000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 59, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 2668.526145 18022.330683"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10812.7814777, 
+            "stageY": 97671.4381514, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0048_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000048000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 48, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 4974.051380 14745.543286"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -11222.7322845, 
+            "stageY": 98854.7270403, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0080_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000080000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 80, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 1000.697304 26214.299175"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10847.1971258, 
+            "stageY": 97840.4794213, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0051_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000051000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 51, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 4640.485612 16383.936985"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10333.9993747, 
+            "stageY": 96150.0667229, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0002_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000002000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 2, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 9614.536992 0.000000"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -11153.900988200001, 
+            "stageY": 98516.6445006, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0070_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000070000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 70, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 1667.828840 22937.511778"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10740.9132106, 
+            "stageY": 96488.1492625, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0010_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000010000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 10, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 5670.618059 3276.787396"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10305.657668200001, 
+            "stageY": 97671.4381514, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0045_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000045000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 45, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 9889.232475 14745.543286"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10374.4889644, 
+            "stageY": 98009.5206911, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0055_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000055000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 55, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 9222.100939 18022.330683"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10402.830670899999, 
+            "stageY": 96488.1492625, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0012_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000012000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 12, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 8947.405456 3276.787396"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10919.065392899998, 
+            "stageY": 99023.7683102, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0087_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000087000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 87, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 3943.918933 27852.692874"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10878.5758031, 
+            "stageY": 97164.3143419, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0030_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000030000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 30, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 4336.354986 9830.362190"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10916.0284221, 
+            "stageY": 98178.561961, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0061_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000061000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 61, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 3973.354075 19660.724382"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10672.081914299999, 
+            "stageY": 96150.0667229, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0000_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000000000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 0, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 6337.749595 0.000000"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -11016.2383957, 
+            "stageY": 97840.4794213, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0050_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000050000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 50, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 3002.091913 16383.936985"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10815.8184485, 
+            "stageY": 98516.6445006, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0072_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000072000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 72, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 4944.616237 22937.511778"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10577.9458824, 
+            "stageY": 98178.561961, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0063_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000063000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 63, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 7250.141472 19660.724382"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10271.24202, 
+            "stageY": 97502.39688160001, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0044_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000044000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 44, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 10222.798244 13107.149588"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -9995.91683498, 
+            "stageY": 96150.0667229, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0004_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000004000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 4, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 12891.324389 0.000000"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10546.5672051, 
+            "stageY": 98854.7270403, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0084_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000084000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 84, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 7554.272098 26214.299175"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10571.8719408, 
+            "stageY": 96488.1492625, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0011_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000011000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 11, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 7309.011757 3276.787396"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10543.5302343, 
+            "stageY": 98009.5206911, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0056_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000056000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 56, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 7583.707240 18022.330683"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -11257.1479326, 
+            "stageY": 99023.7683102, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0089_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000089000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 89, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 667.131536 27852.692874"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10781.4028004, 
+            "stageY": 98347.60323080001, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0067_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000067000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 67, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 5278.182005 21299.118080"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10606.2875889, 
+            "stageY": 96657.19053239998, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0018_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000018000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 18, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 6975.445989 4915.181095"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10775.3288587, 
+            "stageY": 96657.19053239998, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0019_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000019000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 19, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 5337.052291 4915.181095"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10818.855419299998, 
+            "stageY": 99361.8508498, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0096_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000096000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 96, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 4915.181095 31129.480270"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10678.155856, 
+            "stageY": 97840.4794213, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0052_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000052000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 52, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 6278.879310 16383.936985"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10743.9501814, 
+            "stageY": 97333.3556117, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0038_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000038000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 38, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 5641.182916 11468.755888"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10850.234096600001, 
+            "stageY": 98685.6857705, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0077_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000077000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 77, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 4611.050470 24575.905477"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -11085.0696919, 
+            "stageY": 98178.561961, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0060_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000060000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 60, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 2334.960377 19660.724382"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10471.6619672, 
+            "stageY": 96826.2318022, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0022_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000022000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 22, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 8280.273919 6553.574793"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10268.205049200002, 
+            "stageY": 96657.19053239998, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0016_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000016000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 16, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 10252.233386 4915.181095"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10681.1928268, 
+            "stageY": 98685.6857705, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0076_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000076000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 76, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 6249.444168 24575.905477"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10167.9950756, 
+            "stageY": 96995.27307210001, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0025_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000025000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 25, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 11223.495548 8191.968492"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10477.7359088, 
+            "stageY": 98516.6445006, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0074_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000074000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 74, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 8221.403635 22937.511778"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10440.283289899999, 
+            "stageY": 97502.39688160001, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0043_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000043000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 43, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 8584.404545 13107.149588"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -11291.563580700002, 
+            "stageY": 99192.80958, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0090_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000090000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 90, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 333.565768 29491.086572"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10643.7402078, 
+            "stageY": 97671.4381514, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0047_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000047000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 47, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 6612.445079 14745.543286"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10371.4519936, 
+            "stageY": 97164.3143419, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0033_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000033000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 33, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 9251.536081 9830.362190"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10750.0241231, 
+            "stageY": 99023.7683102, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0086_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000086000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 86, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 5582.312631 27852.692874"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10236.826371899999, 
+            "stageY": 97333.3556117, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0035_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000035000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 35, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 10556.364012 11468.755888"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10368.415022799998, 
+            "stageY": 96319.1079927, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0007_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000007000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 7, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 9280.971224 1638.393698"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -11156.937959, 
+            "stageY": 99361.8508498, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0098_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000098000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 98, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 1638.393698 31129.480270"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10712.5715041, 
+            "stageY": 98009.5206911, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0057_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000057000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 57, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 5945.313542 18022.330683"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10809.744506899999, 
+            "stageY": 96826.2318022, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0020_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000020000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 20, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 5003.486522 6553.574793"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10884.6497448, 
+            "stageY": 98854.7270403, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0082_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000082000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 82, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 4277.484701 26214.299175"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10881.612774, 
+            "stageY": 98009.5206911, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0058_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000058000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 58, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 4306.919843 18022.330683"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10706.4975625, 
+            "stageY": 96319.1079927, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0009_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000009000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 9, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 6004.183827 1638.393698"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10646.7771787, 
+            "stageY": 98516.6445006, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0073_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000073000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 73, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 6583.009936 22937.511778"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10778.365829600001, 
+            "stageY": 97502.39688160001, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0041_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000041000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 41, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 5307.617148 13107.149588"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -11019.2753665, 
+            "stageY": 98685.6857705, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0078_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000078000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 78, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 2972.656771 24575.905477"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10503.040644499999, 
+            "stageY": 96150.0667229, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0001_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000001000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 1, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 7976.143293 0.000000"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10649.8141495, 
+            "stageY": 99361.8508498, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0095_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000095000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 95, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 6553.574793 31129.480270"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10199.373753, 
+            "stageY": 96319.1079927, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0006_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000006000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 6, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 10919.364922 1638.393698"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10405.8676417, 
+            "stageY": 97333.3556117, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0036_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000036000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 36, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 8917.970314 11468.755888"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10950.444070200001, 
+            "stageY": 98347.60323080001, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0068_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000068000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 68, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 3639.788307 21299.118080"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 100, 
+        "layout": {
+            "sectionId": "0", 
+            "imageRow": 0, 
+            "imageCol": 0, 
+            "stageX": -10784.4397712, 
+            "stageY": 99192.80958, 
+            "camera": "zyla", 
+            "temca": "Leica", 
+            "rotation": 0.0, 
+            "pixelsize": 0.103175
+        }, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "{{test_data_root}}/intensitycorrection_test_data/raw/DAPI_1_S0000_F0093_Z00.tif", 
+                "maskUrl": "{{test_data_root}}/intensitycorrection_test_data/mask/fullscmos.tif"
+            }
+        }, 
+        "height": 2048.0, 
+        "width": 2048.0, 
+        "tileId": 100000000093000, 
+        "inputfilters": {
+            "specList": [], 
+            "type": "list"
+        }, 
+        "frameId": 93, 
+        "maxIntensity": 10000, 
+        "z": 0.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.000000 0.000000 0.000000 1.000000 5248.746863 29491.086572"
+                }
+            ], 
+            "type": "list"
+        }
+    }
+]

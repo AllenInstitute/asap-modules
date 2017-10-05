@@ -1,0 +1,36 @@
+{
+    "manifest_path": "{{test_data_root}}/lc_test_data/Wij_Set_594451332/594089217_594451332/_trackem_20170502174048_295434_5LC_0064_01_20170502174047_reference_0_.txt",
+    "project_path": "{{test_data_root}}/lc_test_data/Wij_Set_594451332/594089217_594451332/",
+    "fiji_path": "{{fiji_path}}/ImageJ-linux64",
+    "processing_directory": null,
+    "grid_size": 3,
+    "heap_size": 20,
+    "outfile": "{{test_output}}/test_LC.json",
+    "SIFT_params": {
+        "initialSigma": 1.6,
+        "steps": 3,
+        "minOctaveSize": 800,
+        "maxOctaveSize": 1200,
+        "fdSize": 4,
+        "fdBins": 8
+    },
+    "align_params": {
+        "rod": 0.92,
+        "maxEpsilon": 5.0,
+        "minInlierRatio": 0.0,
+        "minNumInliers": 5,
+        "expectedModelIndex": 1,
+        "multipleHypotheses": true,
+        "rejectIdentity": true,
+        "identityTolerance": 5.0,
+        "tilesAreInPlace": true,
+        "desiredModelIndex": 0,
+        "regularize": false,
+        "maxIterationsOptimize": 2000,
+        "maxPlateauWidthOptimize": 200,
+        "dimension": 5,
+        "lambdaVal": 0.01,
+        "clearTransform": true,
+        "visualize": false
+    }
+}

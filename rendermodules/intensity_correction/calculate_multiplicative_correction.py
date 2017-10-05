@@ -1,18 +1,14 @@
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.intensity_correction.calculate_multiplicative_correction"
-import json
 import os
 import renderapi
-from ..module.render_module import RenderModule, RenderParameters
-from argschema.fields import InputFile, InputDir, Str, Float, Int, OutputDir, Bool
 from functools import partial
-import glob
-import time
 import numpy as np
-from PIL import Image
 import tifffile
 from scipy.ndimage.filters import gaussian_filter
 from rendermodules.intensity_correction.apply_multiplicative_correction import getImage
+from rendermodules.intensity_correction.schemas import MakeMedianParams
+from rendermodules.module.render_module import RenderModule
 
 example_input = {
     "render": {
@@ -30,25 +26,6 @@ example_input = {
     "maxZ": 103,
     "pool_size": 20
 }
-
-
-class MakeMedianParams(RenderParameters):
-    input_stack = Str(required=True,
-                      description='Input stack to derive median from')
-    file_prefix = Str(required=False, default="Median",
-                      description='File prefix for median image file that is saved')
-    output_directory = OutputDir(required=True,
-                                 description='Output Directory for saving median image')
-    output_stack = Str(required=True,
-                       description='Output stack to save correction into')
-    minZ = Int(required=True,
-               description='z value for section')
-    maxZ = Int(required=True,
-               description='z value for section')
-    pool_size = Int(required=False, default=20,
-                    description='size of pool for parallel processing (default=20)')
-    close_stack = Bool(required=False, default=False,
-                       description="whether to close stack or not")
 
 
 def getImageFromTilespecs(alltilespecs, index):

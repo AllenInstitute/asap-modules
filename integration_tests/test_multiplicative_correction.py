@@ -1,5 +1,4 @@
 
-import json
 import os
 import pytest
 import logging
@@ -7,50 +6,42 @@ import renderapi
 import tifffile
 import numpy as np
 import random
-from test_data import MULTIPLICATIVE_INPUT_JSON, multiplicative_correction_example_dir,\
-    render_host, render_port, client_script_location
+from test_data import (MULTIPLICATIVE_INPUT_JSON, multiplicative_correction_example_dir,
+                       render_params)
 from rendermodules.intensity_correction.calculate_multiplicative_correction import MakeMedian
 from rendermodules.intensity_correction.apply_multiplicative_correction import MultIntensityCorr, getImage, process_tile
 
-render_params = {
-    'host': render_host,
-    'port': render_port,
-    'owner': 'test',
-    'project': 'multi_correct_test',
-    'client_scripts': client_script_location
-}
+render_params['project']='multi_correct_test'
 
+logger = renderapi.client.logger
+logger.setLevel(logging.DEBUG)
 
 @pytest.fixture(scope='module')
 def render():
     render = renderapi.connect(**render_params)
     return render
 
+@pytest.fixture(scope='module')
+def test_tilespecs():
+     tilespecs = [renderapi.tilespec.TileSpec(json=d) for d in MULTIPLICATIVE_INPUT_JSON]
+     return tilespecs
 
 @pytest.fixture(scope='module')
-def raw_stack(render):
+def raw_stack(render,test_tilespecs):
     stack = 'input_raw'
-    logger = renderapi.client.logger
-    logger.setLevel(logging.DEBUG)
     renderapi.stack.create_stack(stack, render=render)
-    print MULTIPLICATIVE_INPUT_JSON
-    renderapi.client.import_single_json_file(
-        stack, MULTIPLICATIVE_INPUT_JSON, render=render)
+    renderapi.client.import_tilespecs(
+        stack, test_tilespecs, render=render)
     renderapi.stack.set_stack_state(stack, 'COMPLETE', render=render)
     yield stack
     renderapi.stack.delete_stack(stack, render=render)
 
 
 @pytest.fixture(scope='module')
-def mini_raw_stack(render):
+def mini_raw_stack(render,test_tilespecs):
     stack = 'mini_input_raw'
-    logger = renderapi.client.logger
-    logger.setLevel(logging.DEBUG)
     renderapi.stack.create_stack(stack, render=render)
-    with open(MULTIPLICATIVE_INPUT_JSON, 'r') as fp:
-        tsj = json.load(fp)
-    tilespecs = [renderapi.tilespec.TileSpec(json=ts) for ts in tsj]
-    tilespecs = random.sample(tilespecs, 5)
+    tilespecs = random.sample(test_tilespecs, 5)
 
     renderapi.client.import_tilespecs(stack, tilespecs, render=render)
     renderapi.stack.set_stack_state(stack, 'COMPLETE', render=render)
@@ -107,8 +98,7 @@ def test_apply_correction(test_median_stack, mini_raw_stack, render, tmpdir_fact
     mod = MultIntensityCorr(input_data=params, args=[])
     mod.run()
 
-    expected_directory = os.path.join(os.path.split(
-        MULTIPLICATIVE_INPUT_JSON)[0], 'corrected')
+    expected_directory = os.path.join(multiplicative_correction_example_dir, 'corrected')
     output_tilespecs = renderapi.tilespec.get_tile_specs_from_z(
         output_stack, 0, render=render)
 
