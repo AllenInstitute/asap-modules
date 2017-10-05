@@ -31,12 +31,13 @@ example = {
 
 
 def create_mipmap_from_tuple(mipmap_tuple, levels=[1, 2, 3],
-                             convertTo8bit=True, force_redo=True):
+                             imgformat='tif', convertTo8bit=True,
+                             force_redo=True):
     (filepath, downdir) = mipmap_tuple
     print mipmap_tuple
     return create_mipmaps(filepath, outputDirectory=downdir,
                           mipmaplevels=levels, convertTo8bit=convertTo8bit,
-                          force_redo=force_redo)
+                          outputformat=imgformat, force_redo=force_redo)
 
 
 def get_filepath_from_tilespec(ts):
@@ -62,7 +63,7 @@ def make_tilespecs_and_cmds(render, inputStack, output_dir, zvalues, levels,
 
     mypartial = partial(
         create_mipmap_from_tuple, levels=range(1, levels + 1),
-        convertTo8bit=convert_to_8bit, force_redo=force_redo)
+        convertTo8bit=convert_to_8bit, force_redo=force_redo, imgformat=imgformat)
 
     with renderapi.client.WithPool(pool_size) as pool:
         results = pool.map(mypartial, mipmap_args)
