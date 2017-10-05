@@ -20,4 +20,4 @@ exclude_lines =
     logger.error
     logger.critical
     # ignore name is main
-    if __name__ == .__main__.:
+    if __name__ == .__main__.
