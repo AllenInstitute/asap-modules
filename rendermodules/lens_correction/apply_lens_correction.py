@@ -81,9 +81,9 @@ class ApplyLensCorrection(RenderModule):
 
         renderapi.stack.create_stack(outputStack, render=r)
         renderapi.stack.set_stack_state(outputStack, 'LOADING', render=r)
-        renderapi.client.import_tilespecs(outputStack, new_tspecs, render=r)
-        if self.args['close_stack']:
-            renderapi.stack.set_stack_state(outputStack, 'COMPLETE', render=r)
+        renderapi.client.import_tilespecs_parallel(
+            outputStack, new_tspecs, poolsize=self.args['pool_size'],
+            close_stack=self.args['close_stack'], render=r)
 
         # output dict
         output = {}
