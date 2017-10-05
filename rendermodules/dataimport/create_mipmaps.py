@@ -41,33 +41,33 @@ def create_mipmaps(inputImage, outputDirectory='.', mipmaplevels=[1, 2, 3],
             print 'IndexError - "%s"' % str(e)
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description=("Create downsampled images of the input "
-                     "image at different mipmap levels"))
+# if __name__ == '__main__':
+#     parser = argparse.ArgumentParser(
+#         description=("Create downsampled images of the input "
+#                      "image at different mipmap levels"))
 
-    parser.add_argument(
-        '--inputImage', help="Path to the input image.")
-    parser.add_argument(
-        '--outputDirectory', help="Path to save midmap images", default=None)
-    parser.add_argument(
-        '--mipmaplevels', nargs='*', help="mipmaplevels to generate",
-        default=[1, 2, 3], type=int)
-    parser.add_argument(
-        '--outputformat', help="format to save images", default='tiff')
-    parser.add_argument(
-        '--verbose', help="verbose output", default=False, action="store_true")
+#     parser.add_argument(
+#         '--inputImage', help="Path to the input image.")
+#     parser.add_argument(
+#         '--outputDirectory', help="Path to save midmap images", default=None)
+#     parser.add_argument(
+#         '--mipmaplevels', nargs='*', help="mipmaplevels to generate",
+#         default=[1, 2, 3], type=int)
+#     parser.add_argument(
+#         '--outputformat', help="format to save images", default='tiff')
+#     parser.add_argument(
+#         '--verbose', help="verbose output", default=False, action="store_true")
 
-    args = parser.parse_args()
+#     args = parser.parse_args()
 
-    print 'outdir', args.outputDirectory
-    if args.outputDirectory is None:
-        args.outputDirectory = os.path.split(args.inputImage)[0]
-        if len(args.outputDirectory) == 0:
-            args.outputDirectory = '.'
+#     print 'outdir', args.outputDirectory
+#     if args.outputDirectory is None:
+#         args.outputDirectory = os.path.split(args.inputImage)[0]
+#         if len(args.outputDirectory) == 0:
+#             args.outputDirectory = '.'
 
-    create_mipmaps(args.inputImage, args.outputDirectory,
-                   args.mipmaplevels, args.outputformat)
+#     create_mipmaps(args.inputImage, args.outputDirectory,
+#                    args.mipmaplevels, args.outputformat)
 
 #     if not os.path.isdirf(args.outputDirectory):
 #         os.makedirs(args.outputDirectory)
