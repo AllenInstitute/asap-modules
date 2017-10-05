@@ -1,0 +1,110 @@
+[
+    {
+      "tileId": "20160710195316873_243774_7R_SID_01_redo_0_11_7_3_16_8.2266.0",
+      "layout": {
+        "sectionId": "2266.0"
+      },
+      "z": 2266.0,
+      "minX": 92681.0,
+      "minY": -36548.0,
+      "maxX": 98090.0,
+      "maxY": -31139.0,
+      "width": 3840.0,
+      "height": 3840.0,
+      "minIntensity": 0.0,
+      "maxIntensity": 65535.0,
+      "mipmapLevels": {
+        "0": {
+          "imageUrl": "file:/data/20160710195316873_243774_7R_SID_01_redo_0_11_7_3_16_8.tif"
+        }
+      },
+      "transforms": {
+        "type": "list",
+        "specList": [
+          {
+            "type": "leaf",
+            "className": "mpicbg.trakem2.transform.AffineModel2D",
+            "dataString": "-0.6433267575 0.7655917209 -0.7655917209 -0.6433267575 115071.0014383696 23073.7167961992"
+          },
+          {
+            "type": "leaf",
+            "className": "mpicbg.trakem2.transform.AffineModel2D",
+            "dataString": "1.0000000000 0.0000000000 0.0000000000 1.0000000000 -16981.0000000000 -57152.0000000000"
+          }
+        ]
+      },
+      "meshCellSize": 64.0
+    },
+    {
+      "tileId": "20160710195317333_243774_7R_SID_01_redo_0_11_7_3_17_8.2266.0",
+      "layout": {
+        "sectionId": "2266.0"
+      },
+      "z": 2266.0,
+      "minX": 92681.0,
+      "minY": -36548.0,
+      "maxX": 98090.0,
+      "maxY": -31139.0,
+      "width": 3840.0,
+      "height": 3840.0,
+      "minIntensity": 0.0,
+      "maxIntensity": 65535.0,
+      "mipmapLevels": {
+        "0": {
+          "imageUrl": "file:/data/20160710195317333_243774_7R_SID_01_redo_0_11_7_3_17_8.tif"
+        }
+      },
+      "transforms": {
+        "type": "list",
+        "specList": [
+          {
+            "type": "leaf",
+            "className": "mpicbg.trakem2.transform.AffineModel2D",
+            "dataString": "-0.6433267575 0.7655917209 -0.7655917209 -0.6433267575 115071.0014383696 23073.7167961993"
+          },
+          {
+            "type": "leaf",
+            "className": "mpicbg.trakem2.transform.AffineModel2D",
+            "dataString": "1.0000000000 0.0000000000 0.0000000000 1.0000000000 -16981.0000000000 -57152.0000000000"
+          }
+        ]
+      },
+      "meshCellSize": 64.0
+    },
+    {
+      "tileId": "20160710195316413_243774_7R_SID_01_redo_0_11_7_3_15_8.2266.0",
+      "layout": {
+        "sectionId": "2266.0"
+      },
+      "z": 2266.0,
+      "minX": 92681.0,
+      "minY": -36548.0,
+      "maxX": 98090.0,
+      "maxY": -31139.0,
+      "width": 3840.0,
+      "height": 3840.0,
+      "minIntensity": 0.0,
+      "maxIntensity": 65535.0,
+      "mipmapLevels": {
+        "0": {
+          "imageUrl": "file:/data/20160710195316413_243774_7R_SID_01_redo_0_11_7_3_15_8.tif"
+        }
+      },
+      "transforms": {
+        "type": "list",
+        "specList": [
+          {
+            "type": "leaf",
+            "className": "mpicbg.trakem2.transform.AffineModel2D",
+            "dataString": "-0.6433267575 0.7655917209 -0.7655917209 -0.6433267575 115071.0014383696 23073.7167961992"
+          },
+          {
+            "type": "leaf",
+            "className": "mpicbg.trakem2.transform.AffineModel2D",
+            "dataString": "1.0000000000 0.0000000000 0.0000000000 1.0000000000 -16981.0000000000 -57152.0000000000"
+          }
+        ]
+      },
+      "meshCellSize": 64.0
+    }
+  ]

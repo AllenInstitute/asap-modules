@@ -1,15 +1,11 @@
 #!/usr/bin/env python
 import os
 import renderapi
-from ..module.render_module import RenderModule, RenderParameters
-from argschema.fields import InputDir
-import marshmallow as mm
-from marshmallow import ValidationError, validates_schema
-import multiprocessing as mp
+from ..module.render_module import RenderModule
 from functools import partial
 import urllib
 import urlparse
-import tempfile
+from rendermodules.dataimport.schemas import AddMipMapsToStackParameters
 
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.dataimport.apply_mipmaps_to_render"
@@ -35,14 +31,15 @@ example = {
 def addMipMapsToRender(render, input_stack, mipmap_dir, imgformat, levels, z):
     tilespecPaths = []
 
-    tilespecs = render.run(renderapi.tilespec.get_tile_specs_from_z, input_stack, z)
+    tilespecs = render.run(renderapi.tilespec.get_tile_specs_from_z,
+                           input_stack, z)
 
     print z
     for ts in tilespecs:
         mm1 = ts.ip.mipMapLevels[0]
 
         oldUrl = mm1.imageUrl
-        filepath = urllib.unquote(urlparse.urlparse(str(oldUrl).path))
+        filepath = urllib.unquote(urlparse.urlparse(str(oldUrl)).path)
         # filepath = str(oldUrl).lstrip('file:/')
         # filepath = filepath.replace("%20", " ")
 
@@ -56,73 +53,20 @@ def addMipMapsToRender(render, input_stack, mipmap_dir, imgformat, levels, z):
             imgf = ".tif"
 
         for i in range(1, levels+1):
-            scUrl = 'file:' + os.path.join(mipmap_dir, str(i), filepath) + imgf
+            scUrl = 'file:' + os.path.join(
+                mipmap_dir, str(i), filepath.lstrip(os.sep)) + imgf
             print scUrl
             mm1 = renderapi.tilespec.MipMapLevel(level=i, imageUrl=scUrl)
             ts.ip.update(mm1)
 
-        tempjson = tempfile.NamedTemporaryFile(
-            suffix=".json", mode='r', delete=False)
-        tempjson.close()
-        tsjson = tempjson.name
-
-        with open(tsjson, 'w') as f:
-            renderapi.utils.renderdump(tilespecs, f)
-        f.close()
-        tilespecPaths.append(tsjson)
-
+    tilespecPaths.append(renderapi.utils.renderdump_temp(tilespecs))
     return tilespecPaths
 
 
-class AddMipMapsToStackParameters(RenderParameters):
-    input_stack = mm.fields.Str(
-        required=True,
-        description='stack for which the mipmaps are to be generated')
-    output_stack = mm.fields.Str(
-        required=False, default=None, allow_none=True,
-        description='the output stack name. Leave to overwrite input stack')
-    mipmap_dir = InputDir(
-        required=True,
-        description='directory to which the mipmaps will be stored')
-    levels = mm.fields.Int(
-        required=False, default=6,
-        description='number of levels of mipmaps, default is 6')
-    zstart = mm.fields.Int(
-        required=False,
-        description='start z-index in the stack')
-    zend = mm.fields.Int(
-        required=False,
-        description='end z-index in the stack')
-    z = mm.fields.Int(
-        required=False,
-        description='z-index of section in the stack')
-    imgformat = mm.fields.Str(
-        required=False, default="tiff",
-        description='mipmap image format, default is tiff')
-    pool_size = mm.fields.Int(
-        required=False, default=20,
-        description='number of cores to be used')
-    close_stack = mm.fields.Boolean(
-        required=False, default=False,
-        description=("whether to set output stack state to "
-                     "'COMPLETE' upon completion"))
-
-    @validates_schema
-    def validate_zvalues(self, data):
-        if 'zstart' not in data.keys() or 'zend' not in data.keys():
-            if 'zvalue' not in data.keys():
-                raise ValidationError('Need a z value')
-        if 'zvalue' not in data.keys():
-            if 'zstart' not in data.keys() or 'zend' not in data.keys():
-                raise ValidationError('Need a z range')
 
 
 class AddMipMapsToStack(RenderModule):
-    def __init__(self, schema_type=None, *args, **kwargs):
-        if schema_type is None:
-            schema_type = AddMipMapsToStackParameters
-        super(AddMipMapsToStack, self).__init__(
-            schema_type=schema_type, *args, **kwargs)
+    default_schema = AddMipMapsToStackParameters
 
     def run(self):
         self.logger.debug('Applying mipmaps to stack')
@@ -154,7 +98,8 @@ class AddMipMapsToStack(RenderModule):
             self.args['levels'])
 
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
-            tilespecPaths = pool.map(mypartial, zvalues)
+            tilespecPaths = [i for l in pool.map(mypartial, zvalues)
+                             for i in l]
 
         # add the tile spec to render stack
         try:
