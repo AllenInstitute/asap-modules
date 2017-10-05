@@ -22,7 +22,7 @@ example = {
     "output_dir": "/net/aidc-isi1-prd/scratch/aibs/scratch",
     "convert_to_8bit": "False",
     "method": "PIL",
-    "imgformat": "tiff",
+    "imgformat": "tif",
     "levels": 6,
     "force_redo": "True",
     "zstart": 1015,
