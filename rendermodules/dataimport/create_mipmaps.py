@@ -2,6 +2,8 @@ from PIL import Image
 import argparse
 import os
 
+class CreateMipMapException(Exception):
+    """Exception raised when there is a problem creating a mipmap"""
 
 def create_mipmaps(inputImage, outputDirectory='.', mipmaplevels=[1, 2, 3],
                    outputformat='tif', convertTo8bit=True, force_redo=True):
@@ -65,10 +67,10 @@ def create_mipmaps(inputImage, outputDirectory='.', mipmaplevels=[1, 2, 3],
                 dwnImage.save(outpath)
             except KeyError, e:
                 # unknown output format
-                print 'KeyError - "%s"' % str(e)
+                raise(CreateMipMapException('KeyError - "%s"' % str(e)))
             except IndexError, e:
                 # file cannot be written to disk
-                print 'IndexError - "%s"' % str(e)
+                raise(CreateMipMapException('IndexError - "%s"' % str(e)))
 
 
 # if __name__ == '__main__':
