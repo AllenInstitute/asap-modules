@@ -1,4 +1,4 @@
-from argschema.fields import InputFile, InputDir, Str, Float, Int, OutputDir
+from argschema.fields import InputFile, InputDir, Str, Float, Int, OutputDir, Bool
 from ..module.schemas import RenderParameters
 
 class MakeMedianParams(RenderParameters):
@@ -16,6 +16,8 @@ class MakeMedianParams(RenderParameters):
                description='z value for section')
     pool_size = Int(required=False, default=20,
                     description='size of pool for parallel processing (default=20)')
+    close_stack = Bool(required=False, default=False,
+                       description="whether to close stack or not")
 
 
 class MultIntensityCorrParams(RenderParameters):
@@ -35,6 +37,9 @@ class MultIntensityCorrParams(RenderParameters):
                        description="what cycleNumber to upload for output_stack on render")
     cycle_step_number = Int(required=False, default=1,
                             description="what cycleStepNumber to upload for output_stack on render")
+    close_stack = Bool(required=False, default=False,
+                       description="whether to close stack or not")
+
     # move_input = Bool(required=False, default=False,
     #                   description="whether to move input tiles to new location")
     # move_input_regex_find = Str(required=False,
@@ -43,4 +48,3 @@ class MultIntensityCorrParams(RenderParameters):
     # move_input_regex_replace = Str(required=False,
     #                                default="",
     #                                description="regex string to replace in input filenames")
-

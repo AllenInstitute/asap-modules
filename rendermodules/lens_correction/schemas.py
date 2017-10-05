@@ -122,6 +122,9 @@ class ApplyLensCorrectionParameters(RenderParameters):
         allow_none=True, required=True,
         description=('Reference ID to use when uploading transform to '
                      'render database (Not Implemented)'))
+    pool_size = Int(
+        required=False, default=1,
+        description="processes to spawn for parallelization")
     close_stack = Boolean(
         required=False, default=False,
         description=("whether to set output stack to 'COMPLETE' "

@@ -29,7 +29,7 @@ with open('requirements.txt', 'r') as f:
     required = f.read().splitlines()
 
 setup(name='render-modules',
-      version='0.0.1',
+      version='0.1.0',
       description='A set of python modules for doing higher level processing steps used '
                   ' render, developed for processing array tomography and EM images.'
                   'see http://github.com/saalfeldlab/render',
