@@ -164,9 +164,9 @@ class MultIntensityCorr(RenderModule):
              cycleStepNumber=self.args['cycle_step_number'], render=self.render)
         renderapi.client.import_tilespecs_parallel(
             self.args['output_stack'], output_tilespecs,
-            poolsize = self.args['pool_size'],render=self.render)
-        renderapi.stack.set_stack_state(
-            self.args['output_stack'], "COMPLETE", render=self.render)
+            poolsize = self.args['pool_size'],render=self.render,close_stack=self.args['close_stack'])
+        #renderapi.stack.set_stack_state(
+        #    self.args['output_stack'], "COMPLETE", render=self.render)
 
         # # upload new input tilespecs
         # if regex_pattern is not None:
