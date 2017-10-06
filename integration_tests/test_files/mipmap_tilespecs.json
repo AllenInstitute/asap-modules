@@ -12,7 +12,7 @@
     }, 
     "mipmapLevels": {
       "0": {
-        "imageUrl": "file:/allen/aibs/pipeline/image_processing/volume_assembly/dataimport_test_data/20170502151133847_295434_5LC_0064_01_001015_0_96_0.tif"
+        "imageUrl": "file:{{test_data_root}}/dataimport_test_data/20170502151133847_295434_5LC_0064_01_001015_0_96_0.tif"
       }
     }, 
     "height": 3840.0, 
@@ -49,7 +49,7 @@
     }, 
     "mipmapLevels": {
       "0": {
-        "imageUrl": "file:/allen/aibs/pipeline/image_processing/volume_assembly/dataimport_test_data/20170502151134102_295434_5LC_0064_01_001015_0_97_0.tif"
+        "imageUrl": "file:{{test_data_root}}/dataimport_test_data/20170502151134102_295434_5LC_0064_01_001015_0_97_0.tif"
       }
     }, 
     "height": 3840.0, 
@@ -86,7 +86,7 @@
     }, 
     "mipmapLevels": {
       "0": {
-        "imageUrl": "file:/allen/aibs/pipeline/image_processing/volume_assembly/dataimport_test_data/20170502151134639_295434_5LC_0064_01_001015_0_68_1.tif"
+        "imageUrl": "file:{{test_data_root}}/dataimport_test_data/20170502151134639_295434_5LC_0064_01_001015_0_68_1.tif"
       }
     }, 
     "height": 3840.0, 
@@ -123,7 +123,7 @@
     }, 
     "mipmapLevels": {
       "0": {
-        "imageUrl": "file:/allen/aibs/pipeline/image_processing/volume_assembly/dataimport_test_data/20170502151134939_295434_5LC_0064_01_001015_0_69_1.tif"
+        "imageUrl": "file:{{test_data_root}}/dataimport_test_data/20170502151134939_295434_5LC_0064_01_001015_0_69_1.tif"
       }
     }, 
     "height": 3840.0, 
@@ -160,7 +160,7 @@
     }, 
     "mipmapLevels": {
       "0": {
-        "imageUrl": "file:/allen/aibs/pipeline/image_processing/volume_assembly/dataimport_test_data/20170502151135237_295434_5LC_0064_01_001015_0_70_1.tif"
+        "imageUrl": "file:{{test_data_root}}/dataimport_test_data/20170502151135237_295434_5LC_0064_01_001015_0_70_1.tif"
       }
     }, 
     "height": 3840.0, 
@@ -197,7 +197,7 @@
     }, 
     "mipmapLevels": {
       "0": {
-        "imageUrl": "file:/allen/aibs/pipeline/image_processing/volume_assembly/dataimport_test_data/20170502151135548_295434_5LC_0064_01_001015_0_71_1.tif"
+        "imageUrl": "file:{{test_data_root}}/dataimport_test_data/20170502151135548_295434_5LC_0064_01_001015_0_71_1.tif"
       }
     }, 
     "height": 3840.0, 
@@ -234,7 +234,7 @@
     }, 
     "mipmapLevels": {
       "0": {
-        "imageUrl": "file:/allen/aibs/pipeline/image_processing/volume_assembly/dataimport_test_data/20170502151135857_295434_5LC_0064_01_001015_0_72_1.tif"
+        "imageUrl": "file:{{test_data_root}}/dataimport_test_data/20170502151135857_295434_5LC_0064_01_001015_0_72_1.tif"
       }
     }, 
     "height": 3840.0, 
@@ -271,7 +271,7 @@
     }, 
     "mipmapLevels": {
       "0": {
-        "imageUrl": "file:/allen/aibs/pipeline/image_processing/volume_assembly/dataimport_test_data/20170502151136161_295434_5LC_0064_01_001015_0_73_1.tif"
+        "imageUrl": "file:{{test_data_root}}/dataimport_test_data/20170502151136161_295434_5LC_0064_01_001015_0_73_1.tif"
       }
     }, 
     "height": 3840.0, 
@@ -308,7 +308,7 @@
     }, 
     "mipmapLevels": {
       "0": {
-        "imageUrl": "file:/allen/aibs/pipeline/image_processing/volume_assembly/dataimport_test_data/20170502151136470_295434_5LC_0064_01_001015_0_74_1.tif"
+        "imageUrl": "file:{{test_data_root}}/dataimport_test_data/20170502151136470_295434_5LC_0064_01_001015_0_74_1.tif"
       }
     }, 
     "height": 3840.0, 
@@ -345,7 +345,7 @@
     }, 
     "mipmapLevels": {
       "0": {
-        "imageUrl": "file:/allen/aibs/pipeline/image_processing/volume_assembly/dataimport_test_data/20170502151136730_295434_5LC_0064_01_001015_0_75_1.tif"
+        "imageUrl": "file:{{test_data_root}}/dataimport_test_data/20170502151136730_295434_5LC_0064_01_001015_0_75_1.tif"
       }
     }, 
     "height": 3840.0, 
