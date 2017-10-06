@@ -1,6 +1,15 @@
 from ..module.render_module import RenderModule, RenderParameters
 from argschema.fields import InputFile, InputDir, Str, Float, Int, OutputDir
 
+class StitchSyntheticPointMatchesParameters(RenderParameters):
+    example = argschema.fields.Str(required=True,
+        description='an example')
+    default_val = argschema.fields.Str(required=False,default="a default value",
+        description='an example with a default')
+
+class StitchSyntheticPointMatchesOutputParameters(argschema.schemas.DefaultSchema):
+    output_value = argschema.fields.Str(required=True,
+                                        description= "an output of the module")
 
 class ATMontageParams(RenderParameters):
     stitching_json = Str(required=True,
