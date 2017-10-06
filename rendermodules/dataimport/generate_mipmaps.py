@@ -109,7 +109,7 @@ class GenerateMipMaps(RenderModule):
 
         self.logger.debug("Creating mipmaps...")
 
-        if self.args['method'] in ['PIL', 'block_reduce']:
+        if self.args['method'] in ['PIL']:
             mipmap_args = make_tilespecs_and_cmds(self.render,
                                                   self.args['input_stack'],
                                                   self.args['output_dir'],
