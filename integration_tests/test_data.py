@@ -68,7 +68,7 @@ MULTIPLICATIVE_INPUT_JSON = render_json_template(example_env, 'intensity_correct
 
 
 calc_lens_parameters = render_json_template(example_env, 'calc_lens_correction_parameters.json',
-                                            test_data_root=TEST_DATA_ROOT, 
+                                            test_data_root=TEST_DATA_ROOT,
                                             fiji_path=FIJI_PATH,
                                             test_output=tempfile.mkdtemp())
 
