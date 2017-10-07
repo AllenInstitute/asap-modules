@@ -1,15 +1,25 @@
 from ..module.render_module import RenderModule, RenderParameters
 from argschema.fields import InputFile, InputDir, Str, Float, Int, OutputDir
+from argschema.schemas import DefaultSchema
 
-class StitchSyntheticPointMatchesParameters(RenderParameters):
-    example = argschema.fields.Str(required=True,
-        description='an example')
-    default_val = argschema.fields.Str(required=False,default="a default value",
-        description='an example with a default')
+class CreateMontagePointMatchParameters(RenderParameters):
+    stack = Str(required=True,
+        description='stack to take stitching from')
+    matchCollection = Str(required=True,
+        description='collection to save to')
+    minZ = Int(required=False,
+        description='min Z to consider')
+    maxZ = Int(required=False,
+        description='min Z to consider (default min in stack)')
+    dataRoot = OutputDir(required = True,
+        description='max Z to consider (default max in stack)')
+    delta = Int(required=False,default=150,
+        metadata ={'description':'number of pixels between artificial matches'})
+    pool_size = Int(required=False,default=20,
+        description='number of parallel processes (default 20)')
 
-class StitchSyntheticPointMatchesOutputParameters(argschema.schemas.DefaultSchema):
-    output_value = argschema.fields.Str(required=True,
-                                        description= "an output of the module")
+class CreateMontagePointMatchOutputParameters(DefaultSchema):
+    output_value = Str(required=True,description= "an output of the module")
 
 class ATMontageParams(RenderParameters):
     stitching_json = Str(required=True,
