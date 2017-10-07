@@ -1,10 +1,10 @@
 {
     "render": {
-        "host": "http://em-131fs",
-        "port": 8998,
-        "owner": "gayathri",
-        "project": "MM2",
-        "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_20170613/render-ws-java-client/src/main/scripts"
+        "host": "{{ render_host }}",
+        "port": "{{ render_port }}",
+        "owner": "{{ render_owner }}",
+        "project": "{{ render_project }}",
+        "client_scripts": "{{ client_scripts }}"
     },
     "lowres_stack": {
         "stack": "{{ lowres_stack_name }}",
@@ -47,7 +47,7 @@
         "verbose": 1,
         "debug": 0
     },
-    "solver_executable":"/allen/aibs/shared/image_processing/volume_assembly/EM_aligner/matlab_compiled/do_rough_alignment",
+    "solver_executable":"{{ solver_executable }}",
     "minz": {{ min_z }},
     "maxz": {{ max_z }}
 }

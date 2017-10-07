@@ -4,9 +4,9 @@ import json
 import renderapi
 import glob
 import numpy as np
-from argschema import InputFile, InputDir
-import marshmallow as mm
 from ..module.render_module import RenderModule, RenderParameters
+from rendermodules.rough_align.schemas import ApplyRoughAlignmentTransformParameters
+from rendermodules.stack.consolidate_transforms import *
 from functools import partial
 from renderapi.transform import AffineModel
 from renderapi.transform import Polynomial2DTransform
@@ -29,6 +29,7 @@ example = {
     "output_stack": "mm2_acquire_8bit_reimage_Montage_rough_aligned",
     "tilespec_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch/rough/jsonFiles",
     "set_new_z": "False",
+    "consolidate_trasnforms": "True",
     "minZ": 1015,
     "maxZ": 1039,
     "scale": 0.025,
@@ -37,15 +38,7 @@ example = {
 
 # Another way is to use ConsolidateTransforms module
 def consolidate_transforms(tforms, verbose=False, makePolyDegree=0):
-    # Adapted from Forrest's and Sharmishtaa's render-python-apps
-    # combines only the affine transformations
-    if verbose:
-        points = np.array([[0,0], [1000,1000]])
-        print 'consolidate_transforms:before 0,0 maps to'
-        for tform in tforms:
-            points = tform.tform(points)
-            print tform.M
-        print points
+    # Adapted from consolidate_transforms module
 
     tform_total = AffineModel()
     start_index = 0
@@ -59,8 +52,6 @@ def consolidate_transforms(tforms, verbose=False, makePolyDegree=0):
             tform_total = tform.concatenate(tform_total)
             #tform_total.M=tform.M.dot(tform_total.M)
         else:
-            if verbose:
-                print 'non affine',tform
             if total_affines>0:
                 if makePolyDegree>0:
                     polyTform = Polynomial2DTransform()._fromAffine(tform_total)
@@ -79,13 +70,6 @@ def consolidate_transforms(tforms, verbose=False, makePolyDegree=0):
         else:
             new_tform_list.append(tform_total)
 
-    if verbose:
-        points = np.array([[0,0],[1000,1000]])
-        print 'consolidate_transforms: after 0,0 maps to '
-        for tform in new_tform_list:
-            points = tform.tform(points)
-        print points
-        print 'tforms after',new_tform_list
     return new_tform_list
 
 
@@ -173,40 +157,6 @@ def apply_rough_alignment(render, input_stack, prealigned_stack, lowres_stack, o
 
 
 
-
-
-class ApplyRoughAlignmentTransformParameters(RenderParameters):
-    montage_stack = mm.fields.Str(
-        required=True,
-        metadata={'description':'stack to make a downsample version of'})
-    prealigned_stack = mm.fields.Str(
-        required=False,default=montage_stack,
-        metadata={'description':'stack with dropped tiles corrected for stitching errors'})
-    lowres_stack = mm.fields.Str(
-        required=True,
-        metadata={'description':'montage scape stack with rough aligned transform'})
-    output_stack = mm.fields.Str(
-        required=True,
-        metadata={'description':'output high resolution rough aligned stack'})
-    tilespec_directory = mm.fields.Str(
-        required=True,
-        metadata={'description':'path to save section images'})
-    set_new_z = mm.fields.Boolean(
-        required=False,
-        metadata={'description':'set to assign new z values starting from 0 (default - False)'})
-    scale = mm.fields.Float(
-        required=True,
-        metadata={'description':'scale of montage scapes'})
-    pool_size = mm.fields.Int(
-        require=False,
-        default=5,
-        metadata={'description':'pool size for parallel processing'})
-    minZ = mm.fields.Int(
-        required=True,
-        metadata={'description':'Minimum Z value'})
-    maxZ = mm.fields.Int(
-        required=True,
-        metadata={'description':'Maximum Z value'})
 
 
 class ApplyRoughAlignmentTransform(RenderModule):
