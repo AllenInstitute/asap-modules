@@ -4,7 +4,7 @@ import json
 import renderapi
 import glob
 import numpy as np
-from ..module.render_module import RenderModule, RenderParameters
+from ..module.render_module import RenderModule
 from rendermodules.rough_align.schemas import ApplyRoughAlignmentTransformParameters
 from rendermodules.stack.consolidate_transforms import *
 from functools import partial
@@ -26,12 +26,12 @@ example = {
     "montage_stack": "mm2_acquire_8bit_reimage_Montage",
     "prealigned_stack": "mm2_acquire_8bit_reimage_Montage",
     "lowres_stack": "mm2_8bit_reimage_minimaps_rough_aligned",
-    "output_stack": "mm2_acquire_8bit_reimage_Montage_rough_aligned",
+    "output_stack": "mm2_acquire_8bit_reimage_Montage_roughaligned",
     "tilespec_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch/rough/jsonFiles",
     "set_new_z": "False",
     "consolidate_trasnforms": "True",
     "minZ": 1015,
-    "maxZ": 1039,
+    "maxZ": 1020,
     "scale": 0.025,
     "pool_size": 20
 }
@@ -157,8 +157,6 @@ def apply_rough_alignment(render, input_stack, prealigned_stack, lowres_stack, o
 
 
 
-
-
 class ApplyRoughAlignmentTransform(RenderModule):
     def __init__(self, schema_type=None, *args, **kwargs):
         if schema_type is None:
@@ -181,6 +179,11 @@ class ApplyRoughAlignmentTransform(RenderModule):
 
         # the old and new z values are required for the AT team
         Z = [[a,b] for a,b in zip(zvalues, newzvalues)]
+
+        # delete existing json files in the tilespec directory
+        jsonfiles = glob.glob("%s/*.json"%self.args['tilespec_directory'])
+        cmd = "rm %s"%jsonfiles
+        os.system(cmd)
 
         mypartial = partial(
                         apply_rough_alignment,

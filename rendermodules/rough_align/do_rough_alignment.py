@@ -1,7 +1,7 @@
 import json
 import os
 import renderapi
-from ..module.render_module import RenderModule, RenderParameters
+from ..module.render_module import RenderModule
 from rendermodules.rough_align.schemas import SolveRoughAlignmentParameters
 from functools import partial
 import numpy as np
