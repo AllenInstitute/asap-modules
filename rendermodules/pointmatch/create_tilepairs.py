@@ -2,11 +2,9 @@
 import json
 import os
 import subprocess
-from argschema.fields import Bool, Float, Int, Nested, Str, InputDir
-from argschema.schemas import DefaultSchema
-import marshmallow as mm
 import renderapi
-from ..module.render_module import RenderModule, RenderParameters
+from ..module.render_module import RenderModule
+from rendermodules.pointmatch.schemas import TilePairClientParameters
 
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.pointmatch.create_tilepairs"
@@ -21,7 +19,7 @@ example = {
         "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_20170613/render-ws-java-client/src/main/scripts"
     },
     "minZ":1015,
-    "maxZ":1030,
+    "maxZ":1022,
     "zNeighborDistance":0,
     "baseStack":"mm2_acquire_8bit_reimage",
     "stack":"mm2_acquire_8bit_reimage",
@@ -31,51 +29,6 @@ example = {
     "excludeCompletelyObscuredTiles":"true",
     "output_dir":"/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch/montageTilepairs"
 }
-
-
-class TilePairClientParameters(RenderParameters):
-    stack = Str(
-        required=True,
-        description="input stack to which tilepairs need to be generated")
-    baseStack = Str(
-        required=False,
-        default=stack,
-        description="Base stack")
-    minZ = Int(
-        required=False,
-        default=None,
-        description="z min for generating tilepairs")
-    maxZ = Int(
-        required=False,
-        default=None,
-        description="z max for generating tilepairs")
-    xyNeighborFactor = Float(
-        required=False,
-        default=0.9,
-        description="Multiply this by max(width, height) of each tile to determine radius for locating neighbor tiles")
-    zNeighborDistance = Int(
-        required=False,
-        default=2,
-        description="Look for neighbor tiles with z values less than or equal to this distance from the current tile's z value")
-    excludeCornerNeighbors = Bool(
-        required=False,
-        default=True,
-        description="Exclude neighbor tiles whose center x and y is outside the source tile's x and y range respectively")
-    excludeSameLayerNeighbors = Bool(
-        required=False,
-        default=False,
-        description="Exclude neighbor tiles in the same layer (z) as the source tile")
-    excludeCompletelyObscuredTiles = Bool(
-        required=False,
-        default=True,
-        description="Exclude tiles that are completely obscured by reacquired tiles")
-    output_dir = Str(
-        required=True,
-        description="Output directory path to save the tilepair json file")
-    memGB = Str(
-        required=False,
-        default='6G',
-        description="Memory for the java client to run")
 
 
 
