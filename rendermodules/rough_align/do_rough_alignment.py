@@ -5,6 +5,7 @@ from ..module.render_module import RenderModule
 from rendermodules.rough_align.schemas import SolveRoughAlignmentParameters
 from functools import partial
 import numpy as np
+import tempfile
 
 
 if __name__ == "__main__" and __package__ is None:
@@ -18,19 +19,19 @@ example = {
         "project": "MM2",
         "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_20170613/render-ws-java-client/src/main/scripts"
     },
-    "lowres_stack": {
-        "stack": "mm2_8bit_reimage_minimaps",
+    "input_lowres_stack": {
+        "stack": "mm2_acquire_8bit_reimage_Downsample_Montage",
         "owner": "gayathri",
         "project": "MM2"
     },
     "output_lowres_stack": {
-        "stack": "mm2_8bit_reimage_minimaps",
+        "stack": "mm2_acquire_8bit_reimage_Downsample_Rough_test",
         "owner": "gayathri",
         "project": "MM2"
     },
     "point_match_collection": {
         "owner": "gayathri_MM2",
-        "collection": "mm2_8bit_reimage_minimaps",
+        "match_collection": "mm2_acquire_8bit_reimage_RoughAlign",
         "scale": 0.4
     },
     "solver_options": {
@@ -47,7 +48,7 @@ example = {
         "xs_weight": 1,
         "stvec_flag": 1,
         "distributed": 0,
-        "lambda": 1000,
+        "lambda_value": 1000,
         "edge_lambda": 1000,
         "use_peg": 0,
         "complete": 1,
@@ -61,7 +62,7 @@ example = {
     },
     "solver_executable":"/allen/aibs/shared/image_processing/volume_assembly/EM_aligner/matlab_compiled/do_rough_alignment",
     "minz": 1015,
-    "maxz": 1118
+    "maxz": 1026
 }
 
 
@@ -70,7 +71,9 @@ class SolveRoughAlignmentModule(RenderModule):
         if schema_type is None:
             schema_type = SolveRoughAlignmentParameters
         super(SolveRoughAlignmentModule, self).__init__(
-            schema_type=schema_type, *args **kwargs)
+            schema_type=schema_type,
+            *args,
+            **kwargs)
 
         # Khaled's solver doesn't like extra parameters in the input json file
         # Assigning the solver_executable to a different variable and removing it from args
@@ -99,7 +102,10 @@ class SolveRoughAlignmentModule(RenderModule):
             LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MCRROOT}/sys/os/glnxa64;
             LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MCRROOT}/sys/opengl/lib/glnxa64;
         '''
+        cmd = "%s %s"%(self.solver_executable, tempjson.name)
+        os.system(cmd)
 
+        '''
         if os.path.isfile(self.solver_executable) and os.access(self.solver_executable, os.X_OK):
             cmd_to_qsub = "%s %s"%(self.solver_executable, tempjson.name)
 
@@ -123,6 +129,7 @@ class SolveRoughAlignmentModule(RenderModule):
 
             qsub_cmd = 'qsub %s'%(temppbs.name)
             subprocess.call(qsub_cmd)
+        '''
 
 if __name__ == "__main__":
     mod = SolveRoughAlignmentModule(input_data=example)

@@ -1,7 +1,8 @@
 import json
 import os
 import renderapi
-from ..module.render_module import RenderModule, RenderParameters
+from ..module.render_module import RenderModule
+from rendermodules.dataimport.schemas import MakeMontageScapeSectionStackParameters
 import argschema
 import marshmallow as mm
 from functools import partial
@@ -23,18 +24,35 @@ example = {
         "project": "MM2",
         "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_20170613/render-ws-java-client/src/main/scripts"
     },
-    "montage_stack": "mm2_acquire_8bit_reimage",
-    "output_stack": "mm2_8bit_reimage_minimaps_not_scaled",
+    "montage_stack": "mm2_acquire_8bit_reimage_Montage",
+    "output_stack": "mm2_acquire_8bit_reimage_Downsample_test",
     "image_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch",
-    "num_sections_file": "file.txt",
     "set_new_z":"False",
-    "imgformat":"tif",
-    "scale": 0.025,
+    "imgformat":"png",
+    "scale": 0.01,
     "zstart": 1015,
-    "zend": 1118,
+    "zend": 1026,
     "pool_size": 20
 }
 
+'''
+example = {
+    "render": {
+        "owner": "1_ribbon_expts",
+        "project": "M335503_RIC4_Ai139_LRW",
+        "host": "ibs-forrestc-ux1",
+        "port": 8080,
+        "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_20170613/render-ws-java-client/src/main/scripts"
+    },
+    "montage_stack": "Stitched_2_DAPI_2_dropped",
+    "output_stack": "TESTGAYATHRI_DownsampledDAPI",
+    "image_directory":"/allen/aibs/shared/image_processing/volume_assembly/scratch",
+    "pool_size": 20,
+    "scale": 0.05,
+    "zstart": 0,
+    "zend": 0
+}
+'''
 
 def create_montage_scape_tile_specs(render, input_stack, image_directory, scale, project, tagstr, imgformat, Z):
 
@@ -59,6 +77,7 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory, scale,
                             '%03d'%q,
                             '%d'%s,
                             '%s.0.%s'%(str(z),imgformat))
+
 
     #print filename
     if not os.path.isfile(filename):
@@ -125,40 +144,6 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory, scale,
 
 
 
-class MakeMontageScapeSectionStackParameters(RenderParameters):
-    montage_stack = mm.fields.Str(
-        required=True,
-        metadata={'description':'stack to make a downsample version of'})
-    output_stack = mm.fields.Str(
-        required=True,
-        metadata={'description':'output stack name'})
-    image_directory = argschema.InputDir(
-        required=True,
-        metadata={'description':'directory that stores the montage scapes'})
-    num_sections_file = mm.fields.Str(
-        required=True,
-        metadata={'decription','file to save length of sections'})
-    set_new_z = mm.fields.Boolean(
-        required=False,
-        metadata={'description':'set to assign new z values starting from 0 (default - False)'})
-    imgformat = mm.fields.Str(
-        required=False,
-        default='tif',
-        metadata={'description':'image format of the montage scapes (default - tif)'})
-    scale = mm.fields.Float(
-        required=True,
-        metadata={'description':'scale of montage scapes'})
-    zstart = mm.fields.Int(
-        required=True,
-        metadata={'description':'min z value'})
-    zend = mm.fields.Int(
-        required=True,
-        metadata={'description':'max z value'})
-    pool_size = mm.fields.Int(
-        require=False,
-        default=5,
-        metadata={'description':'pool size for parallel processing'})
-
 
 class MakeMontageScapeSectionStack(RenderModule):
     def __init__(self, schema_type=None, *args, **kwargs):
@@ -194,13 +179,14 @@ class MakeMontageScapeSectionStack(RenderModule):
         tagstr = "%s_%s" % (min(zvalues), max(zvalues))
 
         # only applicable to AT team
-        f = open(self.args['num_sections_file'], 'w')
-        f.write("%d"%len(zvalues))
-        f.close()
+        #f = open(self.args['num_sections_file'], 'w')
+        #f.write("%d"%len(zvalues))
+        #f.close()
 
         tilespecdir = os.path.join(self.args['image_directory'], self.args['render']['project'], self.args['montage_stack'], 'sections_at_%s'%str(self.args['scale']), 'tilespecs_%s'%tagstr)
         if not os.path.exists(tilespecdir):
             os.makedirs(tilespecdir)
+
 
         # process for each z
         mypartial = partial(
@@ -222,9 +208,9 @@ class MakeMontageScapeSectionStack(RenderModule):
                          self.args['montage_stack'],
                          'sections_at_%s'%str(self.args['scale']),
                          'tilespecs_%s'%tagstr)
+
         jsonfiles = glob.glob("%s/*.json"%t)
 
-        #print jsonfiles
         # create the stack if it doesn't exist
         if self.args['output_stack'] not in self.render.run(renderapi.render.get_stacks_by_owner_project):
             # stack does not exist

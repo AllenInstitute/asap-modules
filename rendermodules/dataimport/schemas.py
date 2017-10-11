@@ -15,7 +15,7 @@ class GenerateMipMapsParameters(RenderParameters):
         required=True, default="block_reduce",
         validator=mm.validate.OneOf(["PIL"]),
         description=(
-            "method to downsample mipmapLevels, " 
+            "method to downsample mipmapLevels, "
             "'PIL' for PIL Image (currently NEAREST) filtered resize, "
             "Currently only PIL is implemented"))
         #"'render' for render-ws based rendering.  "
@@ -147,3 +147,40 @@ class GenerateEMTileSpecsParameters(RenderParameters):
 class GenerateEMTileSpecsOutput(DefaultSchema):
     stack = Str(required=True,
                 description="stack to which generated tiles were added")
+
+
+
+class MakeMontageScapeSectionStackParameters(RenderParameters):
+    montage_stack = mm.fields.Str(
+        required=True,
+        metadata={'description':'stack to make a downsample version of'})
+    output_stack = mm.fields.Str(
+        required=True,
+        metadata={'description':'output stack name'})
+    image_directory = InputDir(
+        required=True,
+        metadata={'description':'directory that stores the montage scapes'})
+    set_new_z = mm.fields.Boolean(
+        required=False,
+        default=False,
+        missing=False,
+        metadata={'description':'set to assign new z values starting from 0 (default - False)'})
+    imgformat = mm.fields.Str(
+        required=False,
+        default='tif',
+        missing='tif',
+        metadata={'description':'image format of the montage scapes (default - tif)'})
+    scale = mm.fields.Float(
+        required=True,
+        metadata={'description':'scale of montage scapes'})
+    zstart = mm.fields.Int(
+        required=True,
+        metadata={'description':'min z value'})
+    zend = mm.fields.Int(
+        required=True,
+        metadata={'description':'max z value'})
+    pool_size = mm.fields.Int(
+        require=False,
+        default=20,
+        missing=20,
+        metadata={'description':'pool size for parallel processing'})

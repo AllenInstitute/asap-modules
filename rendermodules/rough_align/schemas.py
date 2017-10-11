@@ -121,9 +121,14 @@ class PointMatchCollectionParameters(DefaultSchema):
     owner = Str(
         required=True,
         description="Point match collection owner")
-    collection = Str(
+    match_collection = Str(
         required=True,
         description="Point match collection name")
+    server = Str(
+        required=False,
+        default=None,
+        missing=None,
+        description="baseURL of the Render service holding the point match collection")
     scale = Float(
         required=True,
         description="Scale at which the point matches were generated (different from the scale of the downsample section images)")
@@ -138,9 +143,10 @@ class PastixParameters(DefaultSchema):
         required=False,
         default=8,
         missing=8,
+        allow_none=True,
         description="No. of cpu cores. Default = 8")
-    parms_fn = InputFile(
-        required=False,
+    params_fn = InputFile(
+        required=True,
         default=None,
         missing=None,
         description="Path to parameters pastix parameters file")
@@ -148,6 +154,7 @@ class PastixParameters(DefaultSchema):
         required=False,
         default=1,
         missing=1,
+        allow_none=True,
         description="set to either 0 (no split) or 1 (split)")
 
 
@@ -211,7 +218,7 @@ class SolverParameters(DefaultSchema):
         default=0,
         missing=0,
         description="distributed or not?")
-    lambdas = Float(
+    lambda_value = Float(
         required=True,
         description="regularization parameter")
     edge_lambda = Float(
@@ -257,9 +264,12 @@ class SolverParameters(DefaultSchema):
         default=0,
         missing=0,
         description="Debug mode?")
-    pstix = Nested(
+    pastix = Nested(
         PastixParameters,
-        required=False)
+        required=False,
+        default=None,
+        missing=None,
+        description="Pastix parameters if solving using Pastix")
 
 class SolveRoughAlignmentParameters(RenderParameters):
     minz = Int(
@@ -268,10 +278,10 @@ class SolveRoughAlignmentParameters(RenderParameters):
     maxz = Int(
         required=True,
         description="Max Z value")
-    lowres_stack_parameters = Nested(
+    input_lowres_stack = Nested(
         LowresStackParameters,
         required=True)
-    output_stack_parameters = Nested(
+    output_lowres_stack = Nested(
         OutputLowresStackParameters,
         required=True)
     solver_options = Nested(
@@ -287,34 +297,44 @@ class SolveRoughAlignmentParameters(RenderParameters):
     @post_load()
     def add_missing_values(self, data):
         # cannot create "lambda" as a variable name in SolverParameters. So, adding it here
-        data['solver_options']['lambda'] = data['solver_options']['lambdas']
-        data['solver_options'].pop('lambdas', None)
+        data['solver_options']['lambda'] = data['solver_options']['lambda_value']
+        data['solver_options'].pop('lambda_value', None)
+        if data['solver_options']['pastix'] is None:
+            data['solver_options'].pop('pastix', None)
 
     @validates_schema()
     def validate_data(self, data):
-        if data['lowres_stack_parameters']['owner'] is None:
-            data['lowres_stack_parameters']['owner'] = data['render']['owner']
-        if data['lowres_stack_parameters']['project'] is None:
-            data['lowres_stack_parameters']['project'] = data['render']['project']
-        if data['lowres_stack_parameters']['service_host'] is None:
-            data['lowres_stack_parameters']['service_host'] = data['render']['host'][7:] + ":" + str(data['render']['port'])
-        if data['lowres_stack_parameters']['baseURL'] is None:
-            data['lowres_stack_parameters']['baseURL'] = data['render']['host'] + ":" + str(data['render']['port']) + '/render-ws/v1'
-        if data['lowres_stack_parameters']['renderbinPath'] is None:
-            data['lowres_stack_parameters']['renderbinPath'] = data['render']['client_scripts']
+        if data['input_lowres_stack']['owner'] is None:
+            data['input_lowres_stack']['owner'] = data['render']['owner']
+        if data['input_lowres_stack']['project'] is None:
+            data['input_lowres_stack']['project'] = data['render']['project']
+        if data['input_lowres_stack']['service_host'] is None:
+            data['input_lowres_stack']['service_host'] = data['render']['host'][7:] + ":" + str(data['render']['port'])
+        if data['input_lowres_stack']['baseURL'] is None:
+            data['input_lowres_stack']['baseURL'] = data['render']['host'] + ":" + str(data['render']['port']) + '/render-ws/v1'
+        if data['input_lowres_stack']['renderbinPath'] is None:
+            data['input_lowres_stack']['renderbinPath'] = data['render']['client_scripts']
 
-        if data['output_stack_parameters']['owner'] is None:
-            data['output_stack_parameters']['owner'] = data['render']['owner']
-        if data['output_stack_parameters']['project'] is None:
-            data['output_stack_parameters']['project'] = data['render']['project']
-        if data['output_stack_parameters']['service_host'] is None:
-            data['output_stack_parameters']['service_host'] = data['render']['host'][7:] + ":" + str(data['render']['port'])
-        if data['output_stack_parameters']['baseURL'] is None:
-            data['output_stack_parameters']['baseURL'] = data['render']['host'] + ":" + str(data['render']['port']) + '/render-ws/v1'
-        if data['output_stack_parameters']['renderbinPath'] is None:
-            data['output_stack_parameters']['renderbinPath'] = data['render']['client_scripts']
+        if data['output_lowres_stack']['owner'] is None:
+            data['output_lowres_stack']['owner'] = data['render']['owner']
+        if data['output_lowres_stack']['project'] is None:
+            data['output_lowres_stack']['project'] = data['render']['project']
+        if data['output_lowres_stack']['service_host'] is None:
+            data['output_lowres_stack']['service_host'] = data['render']['host'][7:] + ":" + str(data['render']['port'])
+        if data['output_lowres_stack']['baseURL'] is None:
+            data['output_lowres_stack']['baseURL'] = data['render']['host'] + ":" + str(data['render']['port']) + '/render-ws/v1'
+        if data['output_lowres_stack']['renderbinPath'] is None:
+            data['output_lowres_stack']['renderbinPath'] = data['render']['client_scripts']
 
         if data['point_match_collection']['server'] is None:
-            data['point_match_collection']['server'] = data['render']['owner']
+            data['point_match_collection']['server'] = data['input_lowres_stack']['baseURL']
         if data['point_match_collection']['owner'] is None:
             data['point_match_collection']['owner'] = data['render']['owner']
+
+        # if solver is "pastix" then data['solver_options']['pastix'] is required
+        if data['solver_options']['solver'] is "pastix":
+            pastix = data['solver_options']['pastix']
+            if pastix['ncpus'] is None:
+                data['solver_options']['pastix']['ncpus'] = 8
+            if pastix['split'] is None:
+                data['solver_options']['pastix']['split'] = 1

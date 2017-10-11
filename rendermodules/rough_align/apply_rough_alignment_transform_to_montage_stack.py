@@ -25,14 +25,14 @@ example = {
     },
     "montage_stack": "mm2_acquire_8bit_reimage_Montage",
     "prealigned_stack": "mm2_acquire_8bit_reimage_Montage",
-    "lowres_stack": "mm2_8bit_reimage_minimaps_rough_aligned",
-    "output_stack": "mm2_acquire_8bit_reimage_Montage_roughaligned",
+    "lowres_stack": "mm2_acquire_8bit_reimage_Downsample_Rough",
+    "output_stack": "mm2_acquire_8bit_reimage_Rough",
     "tilespec_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch/rough/jsonFiles",
     "set_new_z": "False",
     "consolidate_trasnforms": "True",
     "minZ": 1015,
-    "maxZ": 1020,
-    "scale": 0.025,
+    "maxZ": 1026,
+    "scale": 0.01,
     "pool_size": 20
 }
 
@@ -182,8 +182,10 @@ class ApplyRoughAlignmentTransform(RenderModule):
 
         # delete existing json files in the tilespec directory
         jsonfiles = glob.glob("%s/*.json"%self.args['tilespec_directory'])
-        cmd = "rm %s"%jsonfiles
-        os.system(cmd)
+        for js in jsonfiles:
+            if os.path.exists(js):
+                cmd = "rm %s"%js
+                os.system(cmd)
 
         mypartial = partial(
                         apply_rough_alignment,
