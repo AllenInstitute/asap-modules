@@ -165,6 +165,11 @@ class MakeMontageScapeSectionStackParameters(RenderParameters):
         default=False,
         missing=False,
         metadata={'description':'set to assign new z values starting from 0 (default - False)'})
+    new_z_start = mm.fields.Int(
+        required=False,
+        default=0,
+        missing=0,
+        metadata={'description':'new starting z index'})
     imgformat = mm.fields.Str(
         required=False,
         default='tif',
@@ -184,3 +189,11 @@ class MakeMontageScapeSectionStackParameters(RenderParameters):
         default=20,
         missing=20,
         metadata={'description':'pool size for parallel processing'})
+
+    @validates_schema
+    def validate_data(self, data):
+        if data['set_new_z'] and data['new_z_start'] == 0:
+            raise ValidationError('new Z start cannot be zero')
+        elif not data['set_new_z']:
+            data['new_z_start'] = data['zstart']
+            

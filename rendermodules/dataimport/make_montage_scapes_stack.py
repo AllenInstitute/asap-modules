@@ -15,7 +15,7 @@ import glob
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.dataimport.make_montage_scapes_stack"
 
-
+'''
 example = {
     "render": {
         "host": "http://em-131fs",
@@ -28,6 +28,7 @@ example = {
     "output_stack": "mm2_acquire_8bit_reimage_Downsample_test",
     "image_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch",
     "set_new_z":"False",
+    "new_z_start": 1015,
     "imgformat":"png",
     "scale": 0.01,
     "zstart": 1015,
@@ -46,13 +47,15 @@ example = {
     },
     "montage_stack": "Stitched_2_DAPI_2_dropped",
     "output_stack": "TESTGAYATHRI_DownsampledDAPI",
-    "image_directory":"/allen/aibs/shared/image_processing/volume_assembly/scratch",
+    "image_directory":"/nas/module_test",
+    "set_new_z":"True",
+    "new_z_start": 10,
     "pool_size": 20,
     "scale": 0.05,
     "zstart": 0,
-    "zend": 0
+    "zend": 15
 }
-'''
+
 
 def create_montage_scape_tile_specs(render, input_stack, image_directory, scale, project, tagstr, imgformat, Z):
 
@@ -78,6 +81,11 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory, scale,
                             '%d'%s,
                             '%s.0.%s'%(str(z),imgformat))
 
+    # get stack bounds to set the image width and height
+    stackbounds = render.run(
+                    renderapi.stack.get_stack_bounds,
+                    input_stack)
+
 
     #print filename
     if not os.path.isfile(filename):
@@ -90,10 +98,6 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory, scale,
                         input_stack,
                         z)
 
-    # get stack bounds to set the image width and height
-    stackbounds = render.run(
-                    renderapi.stack.get_stack_bounds,
-                    input_stack)
 
     # generate tilespec for this z
     tilespecs = render.run(
@@ -128,7 +132,10 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory, scale,
     v5 = 0.0
     #d['transforms']['specList'][-1]['dataString'] = "1.0000000000 0.0000000000 0.0000000000 1.0000000000 %d %d"%(0.0, 0.0)
     d['transforms']['specList'][-1]['dataString'] = "%f %f %f %f %s %s"%(v0, v1, v2, v3, v4, v5)
-    d['transforms']['specList'].pop(0)
+
+    # if there is a lens correction transformation in the tilespecs remove that
+    if len(d['transforms']['specList']) > 1:
+        d['transforms']['specList'].pop(0)
     t.from_dict(d)
     allts = [t]
 
@@ -167,8 +174,9 @@ class MakeMontageScapeSectionStack(RenderModule):
                 self.args['montage_stack']))
 
         # generate tuple of old and new Zs
+        # setting a new z range does not check whether the range overlaps with existing sections/chunks in the output stack
         if self.args['set_new_z']:
-            newzvalues = range(0, len(zvalues))
+            newzvalues = range(self.args['new_z_start'], self.args['new_z_start']+len(zvalues))
         else:
             newzvalues = zvalues
 
