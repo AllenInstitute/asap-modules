@@ -25,3 +25,6 @@ class ConsolidateTransformsParameters(RenderParameters):
 class ConsolidateTransformsOutputParameters(DefaultSchema):
     output_stack = Str(required=True, description="name of output stack")
     numZ = Int(required=True, description="Number of z values processed")
+
+__all__ = ['ConsolidateTransformsParameters',
+           'ConsolidateTransformsOutputParameters']
