@@ -2,22 +2,11 @@ import numpy as np
 from renderapi.transform import AffineModel, ReferenceTransform, Polynomial2DTransform, TransformList
 from functools import partial
 import renderapi
-from rendermodules.stack.schemas import ConsolidateTransformsOutputParameters, ConsolidateTransformsParameters
 from rendermodules.module.render_module import RenderModule
+from rendermodules.stack.schemas.consolidate_transforms_schemas import (
+    ConsolidateTransformsParameters, ConsolidateTransformsOutputParameters,
+    example_json)
 
-example_json = {
-    "render": {
-        "host": "http://ibs-forrestc-ux1",
-        "port": 80,
-        "owner": "Forrest",
-        "project": "M247514_Rorb_1",
-        "client_scripts": "/pipeline/render/render-ws-java-client/src/main/scripts"
-    },
-    "stack": "ROUGHALIGN_LENS_DAPI_1_deconvnew",
-    "output_stack": "ROUGHALIGN_LENS_DAPI_1_deconvnew_CONS",
-    "transforms_slice": ":",
-    "pool_size": 10,
-}
 
 def flatten_tforms(tforms):
     flat_tforms = []

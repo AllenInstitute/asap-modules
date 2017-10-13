@@ -2,6 +2,21 @@ from rendermodules.module.schemas import RenderParameters
 from argschema.fields import Str, Int, Slice, Float
 from argschema.schemas import DefaultSchema
 
+example_json = {
+    "render": {
+        "host": "http://ibs-forrestc-ux1",
+        "port": 80,
+        "owner": "Forrest",
+        "project": "M247514_Rorb_1",
+        "client_scripts": "/pipeline/render/render-ws-java-client/src/main/scripts"
+    },
+    "stack": "ROUGHALIGN_LENS_DAPI_1_deconvnew",
+    "output_stack": "ROUGHALIGN_LENS_DAPI_1_deconvnew_CONS",
+    "transforms_slice": ":",
+    "pool_size": 10,
+}
+
+
 class ConsolidateTransformsParameters(RenderParameters):
     stack = Str(required=True,
                 description='stack to consolidate')
