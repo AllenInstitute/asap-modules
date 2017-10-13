@@ -83,7 +83,7 @@ class SolveMontageSectionModule(RenderModule):
         super(SolveMontageSectionModule, self).__init__(
             schema_type=schema_type, *args, **kwargs)
 
-        # Khaled's solver doesn't like extra parameters in the input json file
+        # EM_aligner doesn't like extra parameters in the input json file
         # Assigning the solver_executable to a different variable and removing it from args
         self.solver_executable = self.args['solver_executable']
         self.args.pop('solver_executable', None)
@@ -111,8 +111,32 @@ class SolveMontageSectionModule(RenderModule):
             LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MCRROOT}/sys/opengl/lib/glnxa64;
         '''
 
+        if "MCRROOT" not in os.environ:
+            raise ValidationError("MCRROOT not set")
+        
+        env = os.environ.get('LD_LIBRARY_PATH')
+        mcrroot = os.environ.get('MCRROOT')
+        path1 = os.path.join(mcrroot, 'runtime/glnxa64')
+        path2 = os.path.join(mcrroot, 'bin/glnxa64')
+        path3 = os.path.join(mcrroot, 'sys/os/glnxa64')
+        path4 = os.path.join(mcrroot, 'sys/opengl/lib/glnxa64')
+        
+        if path1 not in env:
+            os.environ['LD_LIBRARY_PATH'] += os.pathsep + path1
+        if path2 not in env:
+            os.environ['LD_LIBRARY_PATH'] += os.pathsep + path2
+        if path3 not in env:
+            os.environ['LD_LIBRARY_PATH'] += os.pathsep + path3
+        if path4 not in env:
+            os.environ['LD_LIBRARY_PATH'] += os.pathsep + path4
+        
+            
         cmd = "%s %s"%(self.solver_executable, tempjson.name)
-        os.system(cmd)
+        ret = os.system(cmd)
+        
+        # one successful completion remove the input json file
+        if ret == 0:
+            os.remove(tempjson.name)
 
         '''
         if os.path.isfile(self.solver_executable) and os.access(self.solver_executable, os.X_OK):
