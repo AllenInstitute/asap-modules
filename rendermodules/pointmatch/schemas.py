@@ -2,7 +2,7 @@ from argschema.fields import Bool, Float, Int, Nested, Str, InputDir
 from argschema.schemas import DefaultSchema
 import marshmallow as mm
 from marshmallow import ValidationError, validates_schema, post_load
-from ..module.render_module import RenderParameters
+from ..module.schemas import RenderParameters
 
 
 

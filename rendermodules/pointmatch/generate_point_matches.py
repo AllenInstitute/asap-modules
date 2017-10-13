@@ -6,7 +6,7 @@ from argschema.fields import Bool, Float, Int, Nested, Str, InputDir
 from argschema.schemas import DefaultSchema
 import marshmallow as mm
 import renderapi
-from ..module.render_module import RenderModule, RenderParameters
+from ..module.schemas import RenderModule, RenderParameters
 
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.pointmatch.generate_point_matches"
@@ -132,7 +132,7 @@ class GeneratePointMatchesSpark(RenderModule):
             schema_type=schema_type, *args, **kwargs)
 
     def run(self):
-        
+
 
 
 if __name__ == "__main__":
