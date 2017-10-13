@@ -62,3 +62,131 @@ class TilePairClientParameters(RenderParameters):
     def validate_data(self, data):
         if data['baseStack'] is None:
             data['baseStack'] = data['stack']
+
+
+#class SIFTPointMatchClientParameters(DefaultSchema):
+    
+class PointMatchClientParameters(RenderParameters):
+    method = Str(
+        required=False,
+        default='qsub',
+        missing='qsub',
+        description="Run the spark job on spark cluster or qsub cluster (default = qsub)")
+    pbs_template = Str(
+        required=True,
+        description="pbs template to wrap spark job")
+    no_nodes = Int(
+        required=False,
+        default=30,
+        missing=10,
+        description='Number of nodes to run the pbs job')
+    ppn = Int(
+        required=False,
+        default=30,
+        missing=30,
+        description='Number of processors per node (default = 30)')
+    queue_name = Str(
+        required=False,
+        default='connectome',
+        missing='connectome',
+        description='Name of the queue to submit the job')
+    memory = Str(
+        required=False,
+        default='120g',
+        missing='120g',
+        description="Memory required for spark job")
+    masterUrl = Str(
+        required=True,
+        description="Master URL for spark cluster")
+    sparkhome = Str(
+        required=False,
+        default="/allen/aibs/shared/image_processing/volume_assembly/utils/spark",
+        missing="/allen/aibs/shared/image_processing/volume_assembly/utils/spark",
+        description="Path to the spark home directory")
+    logdir = Str(
+        required=False,
+        default="/allen/aibs/shared/image_processing/volume_assembly/logs/spark_logs",
+        missing="/allen/aibs/shared/image_processing/volume_assembly/logs/spark_logs",
+        description="Directory to store spark logs")
+    jarfile = Str(
+        required=True,
+        description="Full path to the spark point match client jar file")
+    owner = Str(
+        required=False,
+        default=None,
+        missing=None,
+        description="Point match collection owner")
+    collection = Str(
+        required=True,
+        description="Name of point match collection to save point matches")
+    pairJson = Str(
+        required=True,
+        description="Full path to the input tile pair json file")
+    SIFTfdSize = Int(
+        required=False,
+        default=8,
+        missing=8,
+        description="SIFT feature descriptor size: how many samples per row and column")
+    SIFTsteps = Int(
+        required=False,
+        default=3,
+        missing=3,
+        description="SIFT steps per scale octave")
+    matchMaxEpsilon = Float(
+        required=False,
+        default=20.0,
+        missing=20.0,
+        description="Minimal allowed transfer error for match filtering")
+    maxFeatureCacheGb = Int(
+        required=False,
+        default=15,
+        missing=15,
+        description="Maximum memory (in Gb) for caching SIFT features")
+    SIFTminScale = Float(
+        required=False,
+        default=0.38,
+        missing=0.38,
+        description="SIFT minimum scale: minSize * minScale < size < maxSize * maxScale")
+    SIFTmaxScale = Float(
+        required=False,
+        default=0.82,
+        missing=0.82,
+        description="SIFT maximum scale: minSize * minScale < size < maxSize * maxScale")
+    renderScale = Float(
+        required=False,
+        default=0.3,
+        missing=0.3,
+        description="Render canvases at this scale")
+    matchRod = Float(
+        required=False,
+        default=0.92,
+        missing=0.92,
+        description="Ratio of distances for matches")
+    matchMinInlierRatio = Float(
+        required=False,
+        default=0.0,
+        missing=0.0,
+        description="Minimal ratio of inliers to candidates for match filtering")
+    matchMinNumInliers = Int(
+        required=False,
+        default=8,
+        missing=8,
+        description="Minimal absolute number of inliers for match filtering")
+    matchMaxNumInliers = Int(
+        required=False,
+        default=200,
+        description="Maximum number of inliers for match filtering")
+
+    @classmethod
+    def validationOptions(cls, options):
+        excluded_fields = {
+            'qsub': ['memory', 'masterUrl'],
+            'spark': ['pbs_template', 'no_nodes', 'ppn', 'queue_name']
+        }
+        exc_fields = excluded_fields[options['method']]
+        return cls(exclude=exc_fields).dump(options)
+
+    @validates_schema
+    def validate_options(self, data):
+        if data['owner'] is None:
+            data['owner'] = data['render']['owner']
