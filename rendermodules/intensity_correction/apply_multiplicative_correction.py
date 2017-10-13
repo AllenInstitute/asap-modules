@@ -104,7 +104,7 @@ def process_tile(C, dirout, stackname, input_ts):
     [head, tail] = os.path.split(input_ts.ip.get(0)['imageUrl'])
     outImage = os.path.join("%s" % dirout, "%s_%04d_%s" %
                             (stackname, input_ts.z, tail))
-    tifffile.imsave(outImage, I)
+    tifffile.imsave(outImage, Res)
 
     d = input_ts.to_dict()
     for i in range(1, len(d['mipmapLevels'])):
