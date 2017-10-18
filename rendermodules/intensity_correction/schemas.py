@@ -39,7 +39,10 @@ class MultIntensityCorrParams(RenderParameters):
                             description="what cycleStepNumber to upload for output_stack on render")
     close_stack = Bool(required=False, default=False,
                        description="whether to close stack or not")
-
+    clip = Bool(required=False, default=True,
+                       description="whether to clip values")
+    scale_factor = Float(required=False,default=1.0,
+		       description="scaling value")
     # move_input = Bool(required=False, default=False,
     #                   description="whether to move input tiles to new location")
     # move_input_regex_find = Str(required=False,
