@@ -25,7 +25,7 @@ example_input = {
 }
 
 
-def intensity_corr(img, ff,clip,scale_factor):
+def intensity_corr(img, ff,clip,scale_factor,clip_min,clip_max):
     """utility function to correct an image with a flatfield correction
     will take img and return 
     img_out = img * max(ff) / (ff + .0001)
@@ -53,7 +53,7 @@ def intensity_corr(img, ff,clip,scale_factor):
     #add clipping or scaling
     result = result/scale_factor
     if (clip):
-	result[result > 65535] = 65535
+	np.clip(result,clip_min,clip_max,out=result)
     # convert back to original type
     result_int = result.astype(img_type)
     return result_int
@@ -89,7 +89,7 @@ def getImage(ts):
 #     saving the original image file to a new location
 
 
-def process_tile(C, dirout, stackname, clip,scale_factor,input_ts):
+def process_tile(C, dirout, stackname, clip,scale_factor,clip_min,clip_max,input_ts):
     """function to correct each tile in the input_ts with the matrix C,
     and potentially move the original tiles to a new location.abs
 
@@ -103,7 +103,7 @@ def process_tile(C, dirout, stackname, clip,scale_factor,input_ts):
         the tilespec with the tiles to be corrected
     """
     [N1, M1, I] = getImage(input_ts)
-    Res = intensity_corr(I, C,clip,scale_factor)
+    Res = intensity_corr(I, C,clip,scale_factor,clip_min,clip_max)
 
     [head, tail] = os.path.split(input_ts.ip.get(0)['imageUrl'])
     outImage = os.path.join("%s" % dirout, "%s_%04d_%s" %
@@ -154,7 +154,7 @@ class MultIntensityCorr(RenderModule):
         render = self.render
         N, M, C = getImage(corr_tilespecs[0])
         mypartial = partial(
-            process_tile, C, self.args['output_directory'], self.args['output_stack'],self.args['clip'],self.args['scale_factor'])
+            process_tile, C, self.args['output_directory'], self.args['output_stack'],self.args['clip'],self.args['scale_factor'],self.args['clip_min'],self.args['clip_max'])
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
             tilespecs = pool.map(mypartial, inp_tilespecs)
         #tilespecs = map(mypartial, inp_tilespecs)
