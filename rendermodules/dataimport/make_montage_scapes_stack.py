@@ -15,24 +15,24 @@ import glob
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.dataimport.make_montage_scapes_stack"
 
-'''
+
 example = {
     "render": {
         "host": "http://em-131fs",
-        "port": 8998,
+        "port": 8080,
         "owner": "gayathri",
         "project": "MM2",
         "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_20170613/render-ws-java-client/src/main/scripts"
     },
-    "montage_stack": "mm2_acquire_8bit_reimage_Montage",
-    "output_stack": "mm2_acquire_8bit_reimage_Downsample_test",
-    "image_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch",
+    "montage_stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_Montage",
+    "output_stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_DS_Montage",
+    "image_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch/",
     "set_new_z":"False",
     "new_z_start": 1015,
     "imgformat":"png",
     "scale": 0.01,
-    "zstart": 1015,
-    "zend": 1026,
+    "zstart": 1051,
+    "zend": 1051,
     "pool_size": 20
 }
 
@@ -55,7 +55,7 @@ example = {
     "zstart": 0,
     "zend": 15
 }
-
+'''
 
 def create_montage_scape_tile_specs(render, input_stack, image_directory, scale, project, tagstr, imgformat, Z):
 
@@ -87,7 +87,8 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory, scale,
                     input_stack)
 
 
-    #print filename
+    # This is really a slow way of generating the downsample sections
+    # need to submit the job in a cluster
     if not os.path.isfile(filename):
         print "Montage scape does not exist for %d. Creating one now..."%z
         render.run(renderapi.client.renderSectionClient, input_stack, image_directory, [z], scale=str(scale), format=imgformat, doFilter=True, fillWithNoise=False)

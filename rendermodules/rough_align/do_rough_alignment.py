@@ -15,24 +15,24 @@ if __name__ == "__main__" and __package__ is None:
 example = {
     "render": {
         "host": "http://em-131fs",
-        "port": 8998,
+        "port": 8080,
         "owner": "gayathri",
         "project": "MM2",
-        "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_20170613/render-ws-java-client/src/main/scripts"
+        "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts"
     },
     "input_lowres_stack": {
-        "stack": "mm2_acquire_8bit_reimage_Downsample_Montage",
+        "stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_DS_Montage",
         "owner": "gayathri",
         "project": "MM2"
     },
     "output_lowres_stack": {
-        "stack": "mm2_acquire_8bit_reimage_Downsample_Rough_test",
+        "stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_DS_Rough",
         "owner": "gayathri",
         "project": "MM2"
     },
     "point_match_collection": {
         "owner": "gayathri_MM2",
-        "match_collection": "mm2_acquire_8bit_reimage_RoughAlign",
+        "match_collection": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_Rough",
         "scale": 0.4
     },
     "solver_options": {
@@ -62,8 +62,8 @@ example = {
         "debug": 0
     },
     "solver_executable":"/allen/aibs/shared/image_processing/volume_assembly/EM_aligner/matlab_compiled/do_rough_alignment",
-    "minz": 1015,
-    "maxz": 1026
+    "minz": 1021,
+    "maxz": 1100
 }
 
 '''
@@ -159,6 +159,27 @@ class SolveRoughAlignmentModule(RenderModule):
             LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MCRROOT}/sys/os/glnxa64;
             LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MCRROOT}/sys/opengl/lib/glnxa64;
         '''
+
+        if "MCRROOT" not in os.environ:
+            raise ValidationError("MCRROOT not set")
+
+        env = os.environ.get('LD_LIBRARY_PATH')
+        mcrroot = os.environ.get('MCRROOT')
+        path1 = os.path.join(mcrroot, 'runtime/glnxa64')
+        path2 = os.path.join(mcrroot, 'bin/glnxa64')
+        path3 = os.path.join(mcrroot, 'sys/os/glnxa64')
+        path4 = os.path.join(mcrroot, 'sys/opengl/lib/glnxa64')
+
+        if path1 not in env:
+            os.environ['LD_LIBRARY_PATH'] += os.pathsep + path1
+        if path2 not in env:
+            os.environ['LD_LIBRARY_PATH'] += os.pathsep + path2
+        if path3 not in env:
+            os.environ['LD_LIBRARY_PATH'] += os.pathsep + path3
+        if path4 not in env:
+            os.environ['LD_LIBRARY_PATH'] += os.pathsep + path4
+
+
         cmd = "%s %s"%(self.solver_executable, tempjson.name)
         os.system(cmd)
 

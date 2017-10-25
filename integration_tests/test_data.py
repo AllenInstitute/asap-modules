@@ -68,7 +68,7 @@ MULTIPLICATIVE_INPUT_JSON = render_json_template(example_env, 'intensity_correct
 
 
 calc_lens_parameters = render_json_template(example_env, 'calc_lens_correction_parameters.json',
-                                            test_data_root=TEST_DATA_ROOT, 
+                                            test_data_root=TEST_DATA_ROOT,
                                             fiji_path=FIJI_PATH,
                                             test_output=tempfile.mkdtemp())
 
@@ -76,3 +76,8 @@ TILESPECS_NO_LC_JSON = render_json_template(example_env, 'test_noLC.json',
                                             test_data_root=TEST_DATA_ROOT)
 TILESPECS_LC_JSON = render_json_template(example_env, 'test_LC.json',
                                          test_data_root=TEST_DATA_ROOT)
+
+
+# rough alignment test data
+rough_align_test_data_dir = os.path.join(TEST_DATA_ROOT,
+                                        'rough_align_test_data')

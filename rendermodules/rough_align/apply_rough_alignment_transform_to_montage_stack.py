@@ -18,20 +18,20 @@ if __name__ == "__main__" and __package__ is None:
 example = {
     "render": {
         "host": "http://em-131fs",
-        "port": 8998,
+        "port": 8080,
         "owner": "gayathri",
         "project": "MM2",
-        "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_20170613/render-ws-java-client/src/main/scripts"
+        "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts"
     },
-    "montage_stack": "mm2_acquire_8bit_reimage_Montage",
-    "prealigned_stack": "mm2_acquire_8bit_reimage_Montage",
-    "lowres_stack": "mm2_acquire_8bit_reimage_Downsample_Rough",
-    "output_stack": "mm2_acquire_8bit_reimage_Rough",
+    "montage_stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_Montage",
+    "prealigned_stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_Montage",
+    "lowres_stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_DS_Rough1",
+    "output_stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_Rough1",
     "tilespec_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch/rough/jsonFiles",
     "set_new_z": "False",
     "consolidate_trasnforms": "True",
-    "minZ": 1015,
-    "maxZ": 1026,
+    "minZ": 1102,
+    "maxZ": 1118,
     "scale": 0.01,
     "pool_size": 20
 }
@@ -128,7 +128,8 @@ def apply_rough_alignment(render, input_stack, prealigned_stack, lowres_stack, o
         d['dataString'] = "%f %f %f %f %s %s"%(v0,v1,v2,v3,v4,v5)
         tforms1[-1].from_dict(d)
         # delete the lens correction transform
-        del tforms1[0]
+        if len(tforms1) > 1:
+            del tforms1[0]
 
         ftform = tforms1 + tforms
         #newt = consolidate_transforms(ftform)

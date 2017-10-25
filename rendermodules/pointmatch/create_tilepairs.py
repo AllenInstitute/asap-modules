@@ -13,7 +13,7 @@ if __name__ == "__main__" and __package__ is None:
 example = {
     "render": {
         "host": "http://em-131fs",
-        "port": 8998,
+        "port": 8080,
         "owner": "gayathri",
         "project": "MM2",
         "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_20170613/render-ws-java-client/src/main/scripts"
@@ -21,7 +21,6 @@ example = {
     "minZ":1015,
     "maxZ":1022,
     "zNeighborDistance":0,
-    "baseStack":"mm2_acquire_8bit_reimage",
     "stack":"mm2_acquire_8bit_reimage",
     "xyNeighborFactor": 0.9,
     "excludeCornerNeighbors":"true",
