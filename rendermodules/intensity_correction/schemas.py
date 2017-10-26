@@ -6,7 +6,7 @@ class MakeMedianParams(RenderParameters):
                       description='Input stack to derive median from')
     file_prefix = Str(required=False, default="Median",
                       description='File prefix for median image file that is saved')
-    output_directory = OutputDir(required=True,
+    output_directory = Str(required=True,
                                  description='Output Directory for saving median image')
     output_stack = Str(required=True,
                        description='Output stack to save correction into')
@@ -27,7 +27,7 @@ class MultIntensityCorrParams(RenderParameters):
                        description='Output stack')
     correction_stack = Str(required=True,
                            description='Correction stack (usually median stack for AT data)')
-    output_directory = OutputDir(required=True,
+    output_directory = Str(required=True,
                                  description='Directory for storing Images')
     z_index = Int(required=True,
                   description='z value for section')
@@ -39,6 +39,16 @@ class MultIntensityCorrParams(RenderParameters):
                             description="what cycleStepNumber to upload for output_stack on render")
     close_stack = Bool(required=False, default=False,
                        description="whether to close stack or not")
+    clip = Bool(required=False, default=True,
+                       description="whether to clip values")
+    scale_factor = Float(required=False,default=1.0,
+		       description="scaling value")
+    clip_min = Int(required=False, default=0,
+                  description='Min Clip value')
+    clip_max = Int(required=False, default=65535,
+                  description='Max Clip value')
+
+
 
     # move_input = Bool(required=False, default=False,
     #                   description="whether to move input tiles to new location")
