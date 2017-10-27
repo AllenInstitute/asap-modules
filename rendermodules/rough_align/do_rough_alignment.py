@@ -3,6 +3,7 @@ import os
 import renderapi
 from ..module.render_module import RenderModule
 from rendermodules.rough_align.schemas import SolveRoughAlignmentParameters
+from marshmallow import ValidationError
 from functools import partial
 import numpy as np
 import tempfile
@@ -26,14 +27,14 @@ example = {
         "project": "MM2"
     },
     "output_lowres_stack": {
-        "stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_DS_Rough",
+        "stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_DS_Rough_Scaled",
         "owner": "gayathri",
         "project": "MM2"
     },
     "point_match_collection": {
         "owner": "gayathri_MM2",
         "match_collection": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_Rough",
-        "scale": 0.4
+        "scale": 1.0
     },
     "solver_options": {
         "min_tiles": 20,

@@ -3,7 +3,7 @@ import marshmallow as mm
 from argschema.fields import Bool, Float, Int, Nested, Str, InputFile
 from argschema.schemas import DefaultSchema
 from ..module.schemas import RenderParameters
-from marshmallow import validates_schema, post_load
+from marshmallow import validates_schema, post_load, ValidationError
 import argschema
 
 
@@ -52,7 +52,7 @@ class ApplyRoughAlignmentTransformParameters(RenderParameters):
         required=True,
         metadata={'description':'Maximum Z value'})
 
-    @validates_schema()
+    @post_load
     def validate_data(self, data):
         if data['prealigned_stack'] is None:
             data['prealigned_stack'] = data['montage_stack']
@@ -294,7 +294,7 @@ class SolveRoughAlignmentParameters(RenderParameters):
         required=True,
         description="Rough alignment solver executable file with full path")
 
-    @post_load()
+    @post_load
     def add_missing_values(self, data):
         # cannot create "lambda" as a variable name in SolverParameters. So, adding it here
         data['solver_options']['lambda'] = data['solver_options']['lambda_value']
@@ -302,8 +302,6 @@ class SolveRoughAlignmentParameters(RenderParameters):
         if data['solver_options']['pastix'] is None:
             data['solver_options'].pop('pastix', None)
 
-    @validates_schema()
-    def validate_data(self, data):
         if data['input_lowres_stack']['owner'] is None:
             data['input_lowres_stack']['owner'] = data['render']['owner']
         if data['input_lowres_stack']['project'] is None:

@@ -1,7 +1,7 @@
 import marshmallow as mm
 from argschema.fields import InputDir,InputFile, Str, Int, Boolean, InputDir
 from ..module.schemas import RenderParameters
-from marshmallow import ValidationError, validates_schema
+from marshmallow import ValidationError, validates_schema, post_load
 from argschema.schemas import DefaultSchema
 
 class GenerateMipMapsParameters(RenderParameters):
@@ -45,7 +45,7 @@ class GenerateMipMapsParameters(RenderParameters):
         required=False,
         description='z-index in the stack')
 
-    @validates_schema
+    @post_load
     def validate_zvalues(self, data):
         if 'zstart' not in data.keys() or 'zend' not in data.keys():
             if 'zvalue' not in data.keys():
@@ -97,7 +97,7 @@ class AddMipMapsToStackParameters(RenderParameters):
         description=("whether to set output stack state to "
                      "'COMPLETE' upon completion"))
 
-    @validates_schema
+    @post_load
     def validate_zvalues(self, data):
         if 'zstart' not in data.keys() or 'zend' not in data.keys():
             if 'zvalue' not in data.keys():
@@ -190,10 +190,9 @@ class MakeMontageScapeSectionStackParameters(RenderParameters):
         missing=20,
         metadata={'description':'pool size for parallel processing'})
 
-    @validates_schema
+    @post_load
     def validate_data(self, data):
         if data['set_new_z'] and data['new_z_start'] == 0:
             raise ValidationError('new Z start cannot be zero')
         elif not data['set_new_z']:
             data['new_z_start'] = data['zstart']
-            

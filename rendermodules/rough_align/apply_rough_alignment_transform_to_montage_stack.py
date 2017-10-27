@@ -26,7 +26,7 @@ example = {
     "montage_stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_Montage_rev1039",
     "prealigned_stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_Montage_rev1039",
     "lowres_stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_DS_Rough",
-    "output_stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_Rough_Test",
+    "output_stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_Rough_Test_New",
     "tilespec_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch/rough/jsonFiles",
     "set_new_z": "False",
     "consolidate_trasnforms": "True",
