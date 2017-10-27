@@ -42,7 +42,7 @@ example = {
         "solver": "backslash",
         "matrix_only": 0,
         "distribute_A": 1,
-        "dir_scratch": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch",
+        "dir_scratch": "/allen/aibs/pipeline/image_processing/volume_assembly/scratch",
         "min_points": 20,
         "max_points": 100,
         "nbrs": 3,
@@ -58,10 +58,10 @@ example = {
         "scale_fac": 20.0,
         "translation_only": 0,
         "translate_to_origin": 1,
-        "verbose": 1,
+        "verbose": 0,
         "debug": 0
     },
-    "solver_executable":"/allen/aibs/shared/image_processing/volume_assembly/EM_aligner/matlab_compiled/do_rough_alignment",
+    "solver_executable":"/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/matlab_compiled/do_rough_alignment",
     "minz": 1021,
     "maxz": 1100
 }

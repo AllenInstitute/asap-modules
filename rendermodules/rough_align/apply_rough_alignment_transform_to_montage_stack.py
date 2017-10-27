@@ -23,16 +23,16 @@ example = {
         "project": "MM2",
         "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts"
     },
-    "montage_stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_Montage",
-    "prealigned_stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_Montage",
-    "lowres_stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_DS_Rough1",
-    "output_stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_Rough1",
+    "montage_stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_Montage_rev1039",
+    "prealigned_stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_Montage_rev1039",
+    "lowres_stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_DS_Rough",
+    "output_stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_Rough_Test",
     "tilespec_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch/rough/jsonFiles",
     "set_new_z": "False",
     "consolidate_trasnforms": "True",
-    "minZ": 1102,
-    "maxZ": 1118,
-    "scale": 0.01,
+    "minZ": 1039,
+    "maxZ": 1039,
+    "scale": 0.05,
     "pool_size": 20
 }
 
