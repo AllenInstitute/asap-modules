@@ -1,7 +1,7 @@
 import marshmallow as mm
 from argschema.fields import InputDir,InputFile, Str, Int, Boolean, InputDir
 from ..module.schemas import RenderParameters
-from marshmallow import ValidationError, validates_schema
+from marshmallow import ValidationError, validates_schema, post_load
 from argschema.schemas import DefaultSchema
 
 class GenerateMipMapsParameters(RenderParameters):
@@ -15,7 +15,7 @@ class GenerateMipMapsParameters(RenderParameters):
         required=True, default="block_reduce",
         validator=mm.validate.OneOf(["PIL"]),
         description=(
-            "method to downsample mipmapLevels, " 
+            "method to downsample mipmapLevels, "
             "'PIL' for PIL Image (currently NEAREST) filtered resize, "
             "Currently only PIL is implemented"))
         #"'render' for render-ws based rendering.  "
@@ -45,7 +45,7 @@ class GenerateMipMapsParameters(RenderParameters):
         required=False,
         description='z-index in the stack')
 
-    @validates_schema
+    @post_load
     def validate_zvalues(self, data):
         if 'zstart' not in data.keys() or 'zend' not in data.keys():
             if 'zvalue' not in data.keys():
@@ -97,7 +97,7 @@ class AddMipMapsToStackParameters(RenderParameters):
         description=("whether to set output stack state to "
                      "'COMPLETE' upon completion"))
 
-    @validates_schema
+    @post_load
     def validate_zvalues(self, data):
         if 'zstart' not in data.keys() or 'zend' not in data.keys():
             if 'zvalue' not in data.keys():

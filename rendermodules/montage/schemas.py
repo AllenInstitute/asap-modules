@@ -238,7 +238,7 @@ class SolveMontageSectionParameters(RenderParameters):
         required=True,
         description="Point match collection parameters")
 
-    @post_load()
+    @post_load
     def add_missing_values(self, data):
         # cannot create "lambda" as a variable name in SolverParameters
         data['solver_options']['lambda'] = data['solver_options']['lambda_value']
