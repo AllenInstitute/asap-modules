@@ -247,9 +247,6 @@ class SolveMontageSectionParameters(RenderParameters):
         if data['renderer_client'] is None:
             data['renderer_client'] = os.path.join(data['render']['client_scripts'], 'render.sh')
 
-
-    @validates_schema()
-    def validate_data(self, data):
         if data['source_collection']['owner'] is None:
             data['source_collection']['owner'] = data['render']['owner']
         if data['source_collection']['project'] is None:

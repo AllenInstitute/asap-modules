@@ -58,14 +58,15 @@ class TilePairClientParameters(RenderParameters):
         missing='6G',
         description="Memory for the java client to run")
 
-    @validates_schema
+    @post_load
     def validate_data(self, data):
+        print data.keys()
         if data['baseStack'] is None:
             data['baseStack'] = data['stack']
 
 
 #class SIFTPointMatchClientParameters(DefaultSchema):
-    
+
 class PointMatchClientParameters(RenderParameters):
     method = Str(
         required=False,
@@ -186,7 +187,7 @@ class PointMatchClientParameters(RenderParameters):
         exc_fields = excluded_fields[options['method']]
         return cls(exclude=exc_fields).dump(options)
 
-    @validates_schema
+    @post_load
     def validate_options(self, data):
         if data['owner'] is None:
             data['owner'] = data['render']['owner']
