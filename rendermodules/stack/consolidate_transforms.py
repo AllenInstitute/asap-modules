@@ -4,6 +4,7 @@ from functools import partial
 import renderapi
 from rendermodules.stack.schemas import ConsolidateTransformsOutputParameters, ConsolidateTransformsParameters
 from rendermodules.module.render_module import RenderModule
+import logging
 
 example_json = {
     "render": {
@@ -44,7 +45,7 @@ def flatten_and_dereference_tforms(tforms,ref_tforms):
     deref_tforms = flatten_tforms(deref_tforms)
     return deref_tforms
 
-def consolidate_transforms(tforms, ref_tforms, logger, makePolyDegree=0):
+def consolidate_transforms(tforms, ref_tforms=[], logger=logging.getLogger(), makePolyDegree=0):
     #first flatten and dereference this transform list
     tforms = flatten_and_dereference_tforms(tforms,ref_tforms)
     tform_total = AffineModel()
