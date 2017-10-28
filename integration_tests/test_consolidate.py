@@ -1,5 +1,6 @@
 import renderapi
 from rendermodules.stack.consolidate_transforms import ConsolidateTransforms, process_z
+from rendermodules.module.render_module import RenderModuleException
 from test_data import render_params, cons_ex_tilespec_json, cons_ex_transform_json
 import pytest
 import numpy as np
@@ -87,3 +88,19 @@ def test_consolidate_single(render,test_stack,test_consolidate_module):
               test_consolidate_module.args['output_stack'],
               test_consolidate_module.args['transforms_slice'],
               input_z[1])
+
+def test_consolidate_transforms_function(render,test_stack):
+    input_z = np.array(renderapi.stack.get_z_values_for_stack(test_stack,render=render))
+
+    resolved_tiles = renderapi.resolvedtiles.get_resolved_tiles_from_z(
+        test_stack, input_z[1], render=render)
+    
+    tile0 = resolved_tiles.tilespecs[0]
+    new_tforms=consolidate_transforms(tile0.tforms, resolved_tiles.transforms)
+
+    assert(len(new_tforms)==1)
+
+    with pytest.raises(RenderModuleException) as e:
+        new_tforms=consolidate_transforms(tile0.tforms)
+        
+

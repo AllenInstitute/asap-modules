@@ -3,7 +3,7 @@ from renderapi.transform import AffineModel, ReferenceTransform, Polynomial2DTra
 from functools import partial
 import renderapi
 from rendermodules.stack.schemas import ConsolidateTransformsOutputParameters, ConsolidateTransformsParameters
-from rendermodules.module.render_module import RenderModule
+from rendermodules.module.render_module import RenderModule, RenderModuleException
 import logging
 
 example_json = {
@@ -33,8 +33,13 @@ def dereference_tforms(tforms,ref_tforms):
     deref_tforms = []
     for tf in tforms:
         if isinstance(tf, ReferenceTransform):
-            mtf = next(mt for mt in ref_tforms if mt.transformId == tf.refId)
-            deref_tforms.append(mtf)
+            try:
+                mtf = next(mt for mt in ref_tforms if mt.transformId == tf.refId)
+                deref_tforms.append(mtf)
+            except StopIteration as e:
+                raise RenderModuleException(("reference transform: {} ",
+                                             "not found in provided refererence ,
+                                             "transforms {}".format(tf.refId,ref_tforms)))
         else:
             deref_tforms.append(tf)
     return deref_tforms
