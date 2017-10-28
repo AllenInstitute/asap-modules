@@ -1,5 +1,5 @@
 import renderapi
-from rendermodules.stack.consolidate_transforms import ConsolidateTransforms, process_z
+from rendermodules.stack.consolidate_transforms import ConsolidateTransforms, process_z, consolidate_transforms
 from rendermodules.module.render_module import RenderModuleException
 from test_data import render_params, cons_ex_tilespec_json, cons_ex_transform_json
 import pytest
