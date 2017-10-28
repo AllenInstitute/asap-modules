@@ -20,6 +20,7 @@ example_json = {
     "pool_size": 10,
 }
 
+
 def flatten_tforms(tforms):
     flat_tforms = []
     for tf in tforms:
@@ -29,30 +30,35 @@ def flatten_tforms(tforms):
             flat_tforms.append(tf)
     return flat_tforms
 
-def dereference_tforms(tforms,ref_tforms):
+
+def dereference_tforms(tforms, ref_tforms):
     deref_tforms = []
     for tf in tforms:
         if isinstance(tf, ReferenceTransform):
             try:
-                mtf = next(mt for mt in ref_tforms if mt.transformId == tf.refId)
+                mtf = next(
+                    mt for mt in ref_tforms if mt.transformId == tf.refId)
                 deref_tforms.append(mtf)
             except StopIteration as e:
-                raise RenderModuleException(("reference transform: {} ",
-                                             "not found in provided refererence ,
-                                             "transforms {}".format(tf.refId,ref_tforms)))
+                raise RenderModuleException(
+                    ("reference transform: {} not found in provided refererence transforms {}".format(
+                                                                                                tf.refId, 
+                                                                                                ref_tforms)))
         else:
             deref_tforms.append(tf)
     return deref_tforms
 
-def flatten_and_dereference_tforms(tforms,ref_tforms):
+
+def flatten_and_dereference_tforms(tforms, ref_tforms):
     flat_tforms = flatten_tforms(tforms)
-    deref_tforms = dereference_tforms(flat_tforms,ref_tforms)
+    deref_tforms = dereference_tforms(flat_tforms, ref_tforms)
     deref_tforms = flatten_tforms(deref_tforms)
     return deref_tforms
 
+
 def consolidate_transforms(tforms, ref_tforms=[], logger=logging.getLogger(), makePolyDegree=0):
-    #first flatten and dereference this transform list
-    tforms = flatten_and_dereference_tforms(tforms,ref_tforms)
+    # first flatten and dereference this transform list
+    tforms = flatten_and_dereference_tforms(tforms, ref_tforms)
     tform_total = AffineModel()
     start_index = 0
     total_affines = 0
