@@ -98,7 +98,7 @@ def test_consolidate_transforms_function(render,test_stack):
     tile0 = resolved_tiles.tilespecs[0]
     new_tforms=consolidate_transforms(tile0.tforms, resolved_tiles.transforms)
 
-    assert(len(new_tforms)==1)
+    assert(len(new_tforms)==2)
 
     with pytest.raises(RenderModuleException) as e:
         new_tforms=consolidate_transforms(tile0.tforms)
