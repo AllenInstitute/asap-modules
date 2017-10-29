@@ -30,8 +30,8 @@ example = {
     "tilespec_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch/rough/jsonFiles",
     "set_new_z": "False",
     "consolidate_trasnforms": "True",
-    "minZ": 1039,
-    "maxZ": 1039,
+    "minZ": 1034,
+    "maxZ": 1040,
     "scale": 0.05,
     "pool_size": 20
 }

@@ -56,7 +56,7 @@ example = {
         "complete": 1,
         "disableValidation": 1,
         "apply_scaling": 1,
-        "scale_fac": 20.0,
+        "scale_fac": 1.0,
         "translation_only": 0,
         "translate_to_origin": 1,
         "verbose": 0,
