@@ -60,7 +60,6 @@ class TilePairClientParameters(RenderParameters):
 
     @post_load
     def validate_data(self, data):
-        print data.keys()
         if data['baseStack'] is None:
             data['baseStack'] = data['stack']
 
