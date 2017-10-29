@@ -238,7 +238,7 @@ class SolveMontageSectionParameters(RenderParameters):
         required=True,
         description="Point match collection parameters")
 
-    @post_load()
+    @post_load
     def add_missing_values(self, data):
         # cannot create "lambda" as a variable name in SolverParameters
         data['solver_options']['lambda'] = data['solver_options']['lambda_value']
@@ -247,9 +247,6 @@ class SolveMontageSectionParameters(RenderParameters):
         if data['renderer_client'] is None:
             data['renderer_client'] = os.path.join(data['render']['client_scripts'], 'render.sh')
 
-
-    @validates_schema()
-    def validate_data(self, data):
         if data['source_collection']['owner'] is None:
             data['source_collection']['owner'] = data['render']['owner']
         if data['source_collection']['project'] is None:
