@@ -2,7 +2,7 @@ import marshmallow as mm
 from argschema.fields import Int, Str
 
 from rendermodules.module.schemas import RenderParameters
-from .shared import Transform
+from .shared_schemas import Transform
 
 HOMOGRAPHY_TRANSFORM_CLASSES = [
     'TRANSLATION',

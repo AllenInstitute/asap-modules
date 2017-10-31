@@ -6,7 +6,7 @@ define a transformation to register the overlapping portion
 import numpy
 
 import renderapi
-from rendermodules.module.render_module import RenderModule
+from ..module.render_module import RenderModule
 from .schemas import (RegisterSubvolumeParameters,
                       RegisterSubvolumeOutputParameters)
 
