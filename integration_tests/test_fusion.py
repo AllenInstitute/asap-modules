@@ -2,6 +2,7 @@
 Test stack fusion by affine-based registration and transform interpolation
 '''
 import json
+import copy
 import numpy
 import renderapi
 import logging
@@ -60,21 +61,21 @@ def stack_DAG(test_tilespecs, render, root_index=2):
         for nd in nodelist[::-1]:
             if childnode is not None:
                 nd['children'].append(childnode)
-            childnode = nd
+            childnode = copy.copy(nd)
         return childnode
 
     # build DAG by generating children on either side of root node
     dag = nodes[root_index]
     forwardchild = buildchildren(nodes[root_index+1:])
     backwardchild = buildchildren(nodes[:root_index][::-1])
-    print dag
+    print "root dag: {}".format(renderapi.utils.renderdumps(dag, indent=2))
 
     if forwardchild is not None:
         dag['children'].append(forwardchild)
     if backwardchild is not None:
         dag['children'].append(backwardchild)
 
-    print dag
+    print "full dag: {}".format(renderapi.utils.renderdumps(dag, indent=2))
 
     # build stacks based on DAG relations
     def build_childstacks(nodelist, nodezs, tspecs, r):
@@ -148,7 +149,7 @@ def test_register_stacks(render, stack_DAG):
 
     estimated_tform = renderapi.transform.load_transform_json(
         outd['transform'])
-    tspecs = renderapi.stack.get_tile_specs_from_stack(
+    tspecs = renderapi.tilespec.get_tile_specs_from_stack(
         childstack, render=render)
     print "tspec: {}".format(tspecs[0].tforms[-1])
     print "estimated: {}".format(estimated_tform)
