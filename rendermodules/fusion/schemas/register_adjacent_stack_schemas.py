@@ -1,4 +1,4 @@
-import mm
+import marshmallow as mm
 from argschema.fields import Int, Str
 
 from rendermodules.module.schemas import RenderParameters
