@@ -1,6 +1,6 @@
 import marshmallow as mm
 import argschema
-from argschema.fields import Int, Str
+from argschema.fields import Int, Str, Nested
 
 from rendermodules.module.schemas import RenderParameters
 from .shared_schemas import Transform
