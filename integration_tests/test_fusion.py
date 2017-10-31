@@ -101,7 +101,7 @@ def stack_DAG(test_tilespecs, render, root_index=2):
     # generate root stack
     renderapi.stack.create_stack(nodes[root_index]['stack'], render=render)
     renderapi.client.import_tilespecs_parallel(
-        nodes[root_index]['stack'],\
+        nodes[root_index]['stack'],
         [ts for ts in test_tilespecs if ts.z in stackzs[root_index]],
         render=render)
 
@@ -143,7 +143,7 @@ def test_register_stacks(render, stack_DAG):
         args=['--output_json', 'register_stack_out.json'])
     rms.run()
 
-    with open(rms.output_json, 'r') as f:
+    with open(rms.args['output_json'], 'r') as f:
         outd = json.load(f)
 
     estimated_tform = renderapi.transform.load_transform_json(
@@ -169,7 +169,7 @@ def test_fuse_stacks(render, stack_DAG, validstack):
                           args=['--output_json', 'fuse_stack_out.json'])
     fs.run()
 
-    with open(fs.output_json, 'r') as f:
+    with open(fs.args['output_json'], 'r') as f:
         outd = json.load(f)
 
     validzs = set(renderapi.stack.get_z_values_for_stack(
