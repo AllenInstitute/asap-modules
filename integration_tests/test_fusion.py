@@ -60,7 +60,7 @@ def stack_DAG(test_tilespecs, render, root_index=2):
         for nd in nodelist[::-1]:
             if childnode is not None:
                 nd['children'].append(childnode)
-            childnode = nd['children']
+            childnode = nd
         return childnode
 
     # build DAG by generating children on either side of root node
