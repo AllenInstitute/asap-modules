@@ -1,7 +1,7 @@
 import argschema
 from argschema.fields import Nested, Bool, Int, Str
 
-from rendermodules.module.schemas import RenderParameters, DefaultSchema
+from rendermodules.module.schemas import RenderParameters
 from .shared_schemas import Stack
 
 

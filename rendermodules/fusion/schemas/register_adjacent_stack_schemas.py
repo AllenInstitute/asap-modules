@@ -1,7 +1,7 @@
 import mm
 from argschema.fields import Int, Str
 
-from rendermodules.module.schemas import RenderParameters, DefaultSchema
+from rendermodules.module.schemas import RenderParameters
 from .shared import Transform
 
 HOMOGRAPHY_TRANSFORM_CLASSES = [
