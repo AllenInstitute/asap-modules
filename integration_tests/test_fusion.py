@@ -148,6 +148,8 @@ def test_register_stacks(render, stack_DAG):
 
     estimated_tform = renderapi.transform.load_transform_json(
         outd['transform'])
+    print "estimated: {}".format(estimated_tform)
+    print "target: {}".format(tform)
     assert numpy.allclose(estimated_tform.M, tform.M)
     assert outd['stack_a'] == parentstack
     assert outd['stack_b'] == childstack

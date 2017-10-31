@@ -102,6 +102,8 @@ class FuseStacksModule(RenderModule):
         # generate and upload interpolated tiles
         jfiles = self.fusetoparent(
             parentstack, node['stack'], transform=node_tform)
+        renderapi.stack.create_stack(
+            self.args['output_stack'], render=self.render)
         renderapi.client.import_jsonfiles_parallel(
             self.args['output_stack'], jfiles,
             pool_size=self.args['pool_size'],
