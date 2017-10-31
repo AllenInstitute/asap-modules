@@ -49,7 +49,7 @@ def stack_DAG(test_tilespecs, render, root_index=2):
         0, len(zs), pergroup-overlap)) if len(g) > overlap]
 
     nodes = [
-        {'stack': 'stack_z{}-z{}'.format(min(groupzs), max(groupzs)),
+        {'stack': 'stack_z{}_z{}'.format(min(groupzs), max(groupzs)),
          'transform': (renderapi.transform.AffineModel() if i == root_index
                        else get_random_rigid_tform()),
          'children': []} for i, groupzs in enumerate(stackzs)]
@@ -73,23 +73,25 @@ def stack_DAG(test_tilespecs, render, root_index=2):
         dag['children'].append(backwardchild)
 
     # build stacks based on DAG relations
-    def build_childstacks(nodelist, nodezs):
+    def build_childstacks(nodelist, nodezs, r):
         last_tform = renderapi.transform.AffineModel()
         for child, zs in zip(nodelist, nodezs):
             last_tform = last_tform.concatenate(child['transform'])
             ztspecs = [ts for ts in test_tilespecs if ts.z in zs]
-            renderapi.stack.create_stack(child['stack'], render=render)
+            renderapi.stack.create_stack(child['stack'], render=r)
             renderapi.client.import_tilespecs_parallel(
-                child['stack'], ztspecs, close_stack=False, render=render)
+                child['stack'], ztspecs, close_stack=False, render=r)
             renderapi.client.transformSectionClient(
                 child['stack'], '{}_tform'.format(child['stack']),
                 last_tform.className, last_tform.dataString.replace(' ', ','),
-                zValues=zs, render=render)
+                zValues=zs, render=r)
             renderapi.stack.set_stack_state(
-                child['stack'], 'COMPLETE', render=render)
+                child['stack'], 'COMPLETE', render=r)
 
-    build_childstacks(nodes[root_index+1:], stackzs[root_index+1:])
-    build_childstacks(nodes[:root_index][::-1], stackzs[:root_index][::-1])
+    build_childstacks(
+        nodes[root_index+1:], stackzs[root_index+1:], render)
+    build_childstacks(
+        nodes[:root_index][::-1], stackzs[:root_index][::-1], render)
 
     yield dag
 
