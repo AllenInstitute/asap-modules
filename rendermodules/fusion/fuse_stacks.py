@@ -117,7 +117,7 @@ class FuseStacksModule(RenderModule):
         # recurse through depth of graph
         for child in node['children']:
             self.fuse_graph(
-                node, parentstack=node['stack'], inputtransform=node_tform)
+                child, parentstack=node['stack'], inputtransform=node_tform)
 
     def run(self):
         self.fuse_graph(self.args['stacks'])
