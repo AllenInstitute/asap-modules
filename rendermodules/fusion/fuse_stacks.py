@@ -37,7 +37,8 @@ example_parameters = {
                                     "children": []}]}]},
     "pool_size": 12,
     "interpolate_transforms": True,  # False is notimplemented
-    "output_stack": "FUSEDOUTSTACK"
+    "output_stack": "FUSEDOUTSTACK",
+    "create_nonoverlapping_zs": True
 }
 
 
@@ -90,7 +91,8 @@ class FuseStacksModule(RenderModule):
             jsonfiles.append(renderapi.utils.renderdump_temp(section_tiles))
         return jsonfiles
 
-    def fuse_graph(self, node, parentstack=None, inputtransform=None):
+    def fuse_graph(self, node, parentstack=None, inputtransform=None,
+                   create_nonoverlapping_zs=False):
         inputtransform = (renderapi.transform.AffineModel()
                           if inputtransform is None else inputtransform)
         node_edge = (renderapi.transform.AffineModel()
@@ -114,13 +116,33 @@ class FuseStacksModule(RenderModule):
         for jfile in jfiles:
             os.remove(jfile)
 
+        # FIXME I don't think this generates for overlap
+        #   not spanning a whole subvolume
+        # at distal node, generate nonoverlapping zs
+        if (create_nonoverlapping_zs and not len(node['children']):
+            missingzs = set(renderapi.stack.get_z_values_for_stack(
+                node['stack'], render=self.render)).difference(
+                    set(renderapi.stack.get_z_values_for_stack(
+                        self.args['output_stack'], self.render)))
+            for z in missingzs:
+                tspecs = renderapi.tilespec.get_tile_specs_from_z(
+                    node['stack'], z, render=self.render)
+                for ts in tspecs:
+                    ts.tforms.append[node_tform]
+
+                renderapi.client.import_tilespecs_parallel(
+                    self.args['output_stack'], tspecs, close_stack=False,
+                    render=self.render)
+
         # recurse through depth of graph
         for child in node['children']:
             self.fuse_graph(
                 child, parentstack=node['stack'], inputtransform=node_tform)
 
     def run(self):
-        self.fuse_graph(self.args['stacks'])
+        self.fuse_graph(
+            self.args['stacks'],
+            create_nonoverlapping_zs=self.args['create_nonoverlapping_zs'])
         d = {'stack': self.args['output_stack']}
         self.output(d)
 

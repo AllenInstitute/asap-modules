@@ -153,6 +153,7 @@ def test_register_stacks(render, stack_DAG):
         childstack, render=render)
     print "tspec: {}".format(tspecs[0].tforms[-1])
     print "estimated: {}".format(estimated_tform)
+    print "inverse_estimated: {}".format(estimated_tform.invert())
     print "target: {}".format(tform)
     assert numpy.allclose(estimated_tform.M, tform.M)
     assert outd['stack_a'] == parentstack

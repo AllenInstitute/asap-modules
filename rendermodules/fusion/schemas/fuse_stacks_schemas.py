@@ -19,6 +19,10 @@ class FuseStacksParameters(RenderParameters):
                                     'should be added'))
     pool_size = Int(required=False, default=1,
                     description='multiprocessing pool size')
+    create_nonoverlapping_zs = Bool(
+        required=False, default=False,
+        description=("upload uninterpolated sections for sections "
+                     "without overlap"))
 
 
 class FuseStacksOutput(argschema.schemas.DefaultSchema):
