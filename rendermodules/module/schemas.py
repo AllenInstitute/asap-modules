@@ -1,5 +1,6 @@
 import argschema
 
+
 class RenderClientParameters(argschema.schemas.DefaultSchema):
     host = argschema.fields.Str(
         required=True, description='render host')
@@ -21,3 +22,15 @@ class RenderParameters(argschema.ArgSchema):
         RenderClientParameters,
         required=True,
         description="parameters to connect to render server")
+
+
+class TemplateParameters(RenderParameters):
+    example = argschema.fields.Str(required=True,
+                                   description='an example')
+    default_val = argschema.fields.Str(required=False, default="a default value",
+                                       description='an example with a default')
+
+
+class TemplateOutputParameters(argschema.schemas.DefaultSchema):
+    output_value = argschema.fields.Str(required=True,
+                                        description="an output of the module")

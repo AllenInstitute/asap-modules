@@ -13,14 +13,13 @@ class GenerateMipMapsParameters(RenderParameters):
         description='directory to which the mipmaps will be stored')
     method = mm.fields.Str(
         required=True, default="block_reduce",
-        validator=mm.validate.OneOf(["PIL", "block_reduce", "render"]),
+        validator=mm.validate.OneOf(["PIL"]),
         description=(
-            "method to downsample mipmapLevels, "
-            "can be 'block_reduce' for skimage based area downsampling, "
+            "method to downsample mipmapLevels, " 
             "'PIL' for PIL Image (currently NEAREST) filtered resize, "
-            "'render' for render-ws based rendering.  "
-            "Currently only PIL is implemented, while others may fall "
-            "back to this."))
+            "Currently only PIL is implemented"))
+        #"'render' for render-ws based rendering.  "
+        #"can be 'block_reduce' for skimage based area downsampling, "
     convert_to_8bit = mm.fields.Boolean(
         required=False, default=True,
         description='convert the data from 16 to 8 bit (default True)')

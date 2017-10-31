@@ -3,7 +3,7 @@ import urllib
 import urlparse
 from rendermodules.dataimport.create_mipmaps import create_mipmaps
 from functools import partial
-from ..module.render_module import RenderModule, RenderParameters
+from ..module.render_module import RenderModule, RenderParameters, RenderModuleException
 from rendermodules.dataimport.schemas import GenerateMipMapsParameters
 
 if __name__ == "__main__" and __package__ is None:
@@ -22,7 +22,7 @@ example = {
     "output_dir": "/net/aidc-isi1-prd/scratch/aibs/scratch",
     "convert_to_8bit": "False",
     "method": "PIL",
-    "imgformat": "tiff",
+    "imgformat": "tif",
     "levels": 6,
     "force_redo": "True",
     "zstart": 1015,
@@ -31,12 +31,21 @@ example = {
 
 
 def create_mipmap_from_tuple(mipmap_tuple, levels=[1, 2, 3],
-                             convertTo8bit=True, force_redo=True):
+                             imgformat='tif', convertTo8bit=True,
+                             force_redo=True):
     (filepath, downdir) = mipmap_tuple
-    print mipmap_tuple
     return create_mipmaps(filepath, outputDirectory=downdir,
                           mipmaplevels=levels, convertTo8bit=convertTo8bit,
-                          force_redo=force_redo)
+                          outputformat=imgformat, force_redo=force_redo)
+
+
+def get_filepath_from_tilespec(ts):
+    mml = ts.ip.get(0)
+
+    old_url = mml['imageUrl']
+    filepath_in = urllib.unquote(urlparse.urlparse(
+        str(old_url)).path)
+    return filepath_in
 
 
 def make_tilespecs_and_cmds(render, inputStack, output_dir, zvalues, levels,
@@ -48,35 +57,12 @@ def make_tilespecs_and_cmds(render, inputStack, output_dir, zvalues, levels,
                                inputStack, z)
 
         for ts in tilespecs:
-            mml = ts.ip.mipMapLevels[0]
-
-            old_url = mml.imageUrl
-            filepath_in = urllib.unquote(urlparse.urlparse(
-                str(old_url)).path)
-
-            # filepath should not have leading / so as to join it with output_dir
-            # os.path.join ignores first argument if second argument has leading /
-            if filepath_in[0] == '/':
-                filepath = filepath_in[1:]
-            else:
-                filepath = filepath_in
-            # filepath = str(old_url).lstrip('file:/')
-            # filepath = filepath.replace("%20", " ")
-            # filepath_in = os.path.join('/', filepath)
-
-            if imgformat is "png":
-                imgf = ".png"
-            elif imgformat is "jpg":
-                imgf = ".jpg"
-            else:
-                imgf = ".tif"
-
-            print (filepath_in, output_dir)
+            filepath_in = get_filepath_from_tilespec(ts)
             mipmap_args.append((filepath_in, output_dir))
 
     mypartial = partial(
-        create_mipmap_from_tuple, levels=range(1, levels+1),
-        convertTo8bit=convert_to_8bit, force_redo=force_redo)
+        create_mipmap_from_tuple, levels=range(1, levels + 1),
+        convertTo8bit=convert_to_8bit, force_redo=force_redo, imgformat=imgformat)
 
     with renderapi.client.WithPool(pool_size) as pool:
         results = pool.map(mypartial, mipmap_args)
@@ -95,8 +81,6 @@ def verify_mipmap_generation(mipmap_args):
 '''
 
 
-
-
 class GenerateMipMaps(RenderModule):
     default_schema = GenerateMipMapsParameters
 
@@ -108,12 +92,11 @@ class GenerateMipMaps(RenderModule):
                                   self.args['input_stack'])
 
         try:
-            self.args['zstart'] and self.args['zend']
-            zvalues1 = range(self.args['zstart'], self.args['zend']+1)
-            zvalues = list(set(zvalues1).intersection(set(zvalues))) # extract only those z's that exist in the input stack
+            zvalues1 = range(self.args['zstart'], self.args['zend'] + 1)
+            # extract only those z's that exist in the input stack
+            zvalues = list(set(zvalues1).intersection(set(zvalues)))
         except NameError:
             try:
-                self.args['z']
                 if self.args['z'] in zvalues:
                     zvalues = [self.args['z']]
             except NameError:
@@ -125,7 +108,7 @@ class GenerateMipMaps(RenderModule):
 
         self.logger.debug("Creating mipmaps...")
 
-        if self.args['method'] in ['PIL', 'block_reduce']:
+        if self.args['method'] in ['PIL']:
             mipmap_args = make_tilespecs_and_cmds(self.render,
                                                   self.args['input_stack'],
                                                   self.args['output_dir'],
@@ -135,7 +118,9 @@ class GenerateMipMaps(RenderModule):
                                                   self.args['convert_to_8bit'],
                                                   self.args['force_redo'],
                                                   self.args['pool_size'])
-
+        else:
+            raise RenderModuleException(
+                "method {} not supported".format(self.args['method']))
             # self.logger.debug("mipmaps generation checks...")
             # missing_files = verify_mipmap_generation(mipmap_args)
             # if not missing_files:
