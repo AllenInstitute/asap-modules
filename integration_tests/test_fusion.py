@@ -49,7 +49,8 @@ def stack_DAG(test_tilespecs, render, root_index=2):
         0, len(zs), pergroup-overlap)) if len(g) > overlap]
 
     nodes = [
-        {'stack': 'stack_z{}_z{}'.format(min(groupzs), max(groupzs)),
+        {'stack': 'stack_z{}_z{}'.format(
+             int(float(min(groupzs))), int(float(max(groupzs)))),
          'transform': (renderapi.transform.AffineModel() if i == root_index
                        else get_random_rigid_tform()),
          'children': []} for i, groupzs in enumerate(stackzs)]
@@ -73,11 +74,11 @@ def stack_DAG(test_tilespecs, render, root_index=2):
         dag['children'].append(backwardchild)
 
     # build stacks based on DAG relations
-    def build_childstacks(nodelist, nodezs, r):
+    def build_childstacks(nodelist, nodezs, tspecs, r):
         last_tform = renderapi.transform.AffineModel()
         for child, zs in zip(nodelist, nodezs):
             last_tform = last_tform.concatenate(child['transform'])
-            ztspecs = [ts for ts in test_tilespecs if ts.z in zs]
+            ztspecs = [ts for ts in tspecs if ts.z in zs]
             renderapi.stack.create_stack(child['stack'], render=r)
             renderapi.client.import_tilespecs_parallel(
                 child['stack'], ztspecs, close_stack=False, render=r)
@@ -89,9 +90,10 @@ def stack_DAG(test_tilespecs, render, root_index=2):
                 child['stack'], 'COMPLETE', render=r)
 
     build_childstacks(
-        nodes[root_index+1:], stackzs[root_index+1:], render)
+        nodes[root_index+1:], stackzs[root_index+1:], test_tilespecs, render)
     build_childstacks(
-        nodes[:root_index][::-1], stackzs[:root_index][::-1], render)
+        nodes[:root_index][::-1], stackzs[:root_index][::-1],
+        test_tilespecs, render)
 
     yield dag
 
