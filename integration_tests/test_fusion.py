@@ -148,7 +148,8 @@ def test_register_stacks(render, stack_DAG):
 
     estimated_tform = renderapi.transform.load_transform_json(
         outd['transform'])
-    tspecs = renderapi.stack.get_tile_specs_from_stack(childstack, render=render)
+    tspecs = renderapi.stack.get_tile_specs_from_stack(
+        childstack, render=render)
     print "tspec: {}".format(tspecs[0].tforms[-1])
     print "estimated: {}".format(estimated_tform)
     print "target: {}".format(tform)
@@ -219,7 +220,7 @@ def test_fuse_stacks(render, stack_DAG, validstack):
             render=render)
 
         validcoord = numpy.array([d['world'][:2] for d in wc_valid])
-        createdcoord = numpy.array(d['world'][:2] for d in wc_created)
+        createdcoord = numpy.array([d['world'][:2] for d in wc_created])
 
         assert (numpy.linalg.norm(
             validcoord - createdcoord, axis=1).max() < distance_thres)
