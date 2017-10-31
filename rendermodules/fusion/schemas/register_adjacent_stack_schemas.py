@@ -25,7 +25,7 @@ class RegisterSubvolumeParameters(RenderParameters):
                     description='multiprocessing pool size')
 
 
-class RegisterSubvolumeOutputParameters(DefaultSchema):
+class RegisterSubvolumeOutputParameters(argschema.schemas.DefaultSchema):
     stack_a = Str(required=True,
                   description=("'parent' stack remaining fixed for this "
                                "transform to register"))

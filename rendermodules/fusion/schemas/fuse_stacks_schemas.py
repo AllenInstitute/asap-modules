@@ -21,7 +21,7 @@ class FuseStacksParameters(RenderParameters):
                     description='multiprocessing pool size')
 
 
-class FuseStacksOutput(DefaultSchema):
+class FuseStacksOutput(argschema.schemas.DefaultSchema):
     stack = Str(required=True, description='resulting stack from fused stacks')
 
 __all__ = ['FuseStacksParameters', 'FuseStacksOutput']

@@ -67,11 +67,14 @@ def stack_DAG(test_tilespecs, render, root_index=2):
     dag = nodes[root_index]
     forwardchild = buildchildren(nodes[root_index+1:])
     backwardchild = buildchildren(nodes[:root_index][::-1])
+    print dag
 
     if forwardchild is not None:
         dag['children'].append(forwardchild)
     if backwardchild is not None:
         dag['children'].append(backwardchild)
+
+    print dag
 
     # build stacks based on DAG relations
     def build_childstacks(nodelist, nodezs, tspecs, r):
