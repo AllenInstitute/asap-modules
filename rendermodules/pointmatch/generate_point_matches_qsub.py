@@ -91,7 +91,6 @@ class PointMatchClientModuleQsub(RenderModule):
         cmd_to_submit = cmd_to_submit + " -q {} -v logdir={},".format(self.args['queue_name'], self.args['logdir'])
         cmd_to_submit = cmd_to_submit + "{} {}".format(env, self.args['pbs_template'])
 
-        print cmd_to_submit
         os.system(cmd_to_submit)
 
 

@@ -75,8 +75,6 @@ class PointMatchClientModuleSpark(RenderModule):
 
         cmd_to_submit = cmd + sift_params
 
-        print cmd_to_submit
-
         os.system(cmd)
 
 if __name__ == "__main__":
