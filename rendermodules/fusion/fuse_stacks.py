@@ -119,7 +119,7 @@ class FuseStacksModule(RenderModule):
         # FIXME I don't think this generates for overlap
         #   not spanning a whole subvolume
         # at distal node, generate nonoverlapping zs
-        if (create_nonoverlapping_zs and not len(node['children']):
+        if (create_nonoverlapping_zs and not len(node['children'])):
             missingzs = set(renderapi.stack.get_z_values_for_stack(
                 node['stack'], render=self.render)).difference(
                     set(renderapi.stack.get_z_values_for_stack(
