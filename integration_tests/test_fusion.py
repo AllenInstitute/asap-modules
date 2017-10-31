@@ -81,7 +81,7 @@ def stack_DAG(test_tilespecs, render, root_index=2):
     def build_childstacks(nodelist, nodezs, tspecs, r):
         last_tform = renderapi.transform.AffineModel()
         for child, zs in zip(nodelist, nodezs):
-            last_tform = last_tform.concatenate(child['transform'])
+            last_tform = last_tform.concatenate(child['transform'].invert())
             ztspecs = [ts for ts in tspecs if ts.z in zs]
             renderapi.stack.create_stack(child['stack'], render=r)
             renderapi.client.import_tilespecs_parallel(
