@@ -1,4 +1,4 @@
-import mm
+import marshmallow as mm
 import argschema
 from argschema.fields import Str, Nested
 
