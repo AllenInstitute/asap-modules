@@ -88,6 +88,7 @@ class FuseStacksModule(RenderModule):
                         lambda_=lambda_)]
                 section_tiles.append(interp_tile)
             jsonfiles.append(renderapi.utils.renderdump_temp(section_tiles))
+        return jsonfiles
 
     def fuse_graph(self, node, parentstack=None, inputtransform=None):
         inputtransform = (renderapi.transform.AffineModel()

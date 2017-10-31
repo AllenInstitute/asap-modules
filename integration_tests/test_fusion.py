@@ -148,6 +148,8 @@ def test_register_stacks(render, stack_DAG):
 
     estimated_tform = renderapi.transform.load_transform_json(
         outd['transform'])
+    tspecs = renderapi.stack.get_tile_specs_from_stack(childstack, render=render)
+    print "tspec: {}".format(tspecs[0].tforms[-1])
     print "estimated: {}".format(estimated_tform)
     print "target: {}".format(tform)
     assert numpy.allclose(estimated_tform.M, tform.M)
