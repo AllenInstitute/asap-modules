@@ -1,7 +1,7 @@
 import argschema
 from argschema.fields import Nested, Bool, Int, Str
 
-from rendermodules.module.schemas import RenderParameters
+from rendermodules.module.schemas import RenderParameters, DefaultSchema
 from .shared_schemas import Stack
 
 
@@ -21,8 +21,7 @@ class FuseStacksParameters(RenderParameters):
                     description='multiprocessing pool size')
 
 
-class FuseStacksOutput(argschema.schemas.Schema):
-    # TODO define output schema
-    pass
+class FuseStacksOutput(DefaultSchema):
+    stack = Str(required=True, description='resulting stack from fused stacks')
 
 __all__ = ['FuseStacksParameters', 'FuseStacksOutput']
