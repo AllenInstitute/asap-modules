@@ -98,6 +98,13 @@ def stack_DAG(test_tilespecs, render, root_index=2):
         nodes[:root_index][::-1], stackzs[:root_index][::-1],
         test_tilespecs, render)
 
+    # generate root stack
+    renderapi.stack.create_stack(nodes[root_index]['stack'], render=render)
+    renderapi.client.import_tilespecs_parallel(
+        nodes[root_index]['stack'],\
+        [ts for ts in test_tilespecs if ts.z in stackzs[root_index]],
+        render=render)
+
     yield dag
 
     # remove all stacks associated with DAG

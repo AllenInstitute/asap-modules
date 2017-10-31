@@ -52,9 +52,9 @@ class FuseStacksModule(RenderModule):
 
         # get overlapping zs
         parent_zs = set(self.render.run(
-            renderapi.stack.get_z_values_for_stack(parent)))
+            renderapi.stack.get_z_values_for_stack, parent))
         child_zs = set(self.render.run(
-            renderapi.stack.get_z_values_for_stack(child)))
+            renderapi.stack.get_z_values_for_stack, child))
         z_intersection = sorted(parent_zs.intersection(child_zs))
 
         # can check order relation of child/parent stack
