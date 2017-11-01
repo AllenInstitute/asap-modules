@@ -9,7 +9,8 @@ import logging
 import pytest
 from test_data import FUSION_JSON, render_params
 
-render_params['project'] = 'fusion_test'
+rp = copy.copy(render_params)
+rp['project'] = 'fusion_test'
 
 logger = renderapi.client.logger
 logger.setLevel(logging.DEBUG)
@@ -17,7 +18,7 @@ logger.setLevel(logging.DEBUG)
 
 @pytest.fixture(scope='module')
 def render():
-    render = renderapi.connect(**render_params)
+    render = renderapi.connect(**rp)
     return render
 
 
@@ -151,10 +152,6 @@ def test_register_stacks(render, stack_DAG):
         outd['transform'])
     tspecs = renderapi.tilespec.get_tile_specs_from_stack(
         childstack, render=render)
-    print "tspec: {}".format(tspecs[0].tforms[-1])
-    print "estimated: {}".format(estimated_tform)
-    print "inverse_estimated: {}".format(estimated_tform.invert())
-    print "target: {}".format(tform)
     assert numpy.allclose(estimated_tform.M, tform.M)
     assert outd['stack_a'] == parentstack
     assert outd['stack_b'] == childstack
