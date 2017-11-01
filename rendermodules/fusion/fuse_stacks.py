@@ -123,13 +123,16 @@ class FuseStacksModule(RenderModule):
             missingzs = set(renderapi.stack.get_z_values_for_stack(
                 node['stack'], render=self.render)).difference(
                     set(renderapi.stack.get_z_values_for_stack(
-                        self.args['output_stack'], self.render)))
+                        self.args['output_stack'], render=self.render)))
             for z in missingzs:
+                self.logger.debug('generating nonoverlapping z {}'.format(z))
                 tspecs = renderapi.tilespec.get_tile_specs_from_z(
                     node['stack'], z, render=self.render)
                 for ts in tspecs:
                     ts.tforms.append[node_tform]
 
+                renderapi.stack.set_stack_state(
+                    self.args['output_stack'], 'LOADING', render=self.render)
                 renderapi.client.import_tilespecs_parallel(
                     self.args['output_stack'], tspecs, close_stack=False,
                     render=self.render)
