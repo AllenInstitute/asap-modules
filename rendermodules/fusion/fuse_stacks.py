@@ -113,12 +113,12 @@ class FuseStacksModule(RenderModule):
         # concatenate edge and input transform -- expected to work for Aff Hom
         node_tform = node_edge.concatenate(inputtransform)
 
-
         # determine zs which can be rendered uninterpolated (but tformed)
         # TODO maybe there's a better way to handle this
         # -- or move within  fusetoparent
-        parentzs = set(renderapi.stack.get_z_values_for_stack(
+        parentzs = (set(renderapi.stack.get_z_values_for_stack(
             parentstack, render=self.render))
+                    if parentstack is not None else {})
         nodezs = set(renderapi.stack.get_z_values_for_stack(
             node['stack'], render=self.render))
         childzs = (
