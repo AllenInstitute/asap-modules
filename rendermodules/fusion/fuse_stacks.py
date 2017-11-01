@@ -46,7 +46,8 @@ class FuseStacksModule(RenderModule):
     default_schema = FuseStacksParameters
     default_output_schema = FuseStacksOutput
 
-    def fusetoparent(self, parent, child, transform=None):
+    def fusetoparent(self, parent, child, transform=None,
+                     uninterpolated_zs=[]):
         transform = (renderapi.transform.AffineModel()
                      if transform is None else transform)
         parent = child if parent is None else parent
@@ -58,12 +59,22 @@ class FuseStacksModule(RenderModule):
             renderapi.stack.get_z_values_for_stack, child))
         z_intersection = sorted(parent_zs.intersection(child_zs))
 
+        jsonfiles = []
+        for z in uninterpolated_zs:
+            section_tiles = []
+            tspecs = renderapi.tilespec.get_tile_specs_from_zs(
+                child, z, render=self.render)
+            for ts in tspecs:
+                tsc = copy.copy(ts)
+                tsc.tforms.append(transform)
+                section_tiles.append(tsc)
+            jsonfiles.append(renderapi.utils.renderdump_temp(section_tiles))
+
         # can check order relation of child/parent stack
         positive = max(child_zs) > z_intersection[-1]
         self.logger.debug("positive concatenation? {}".format(positive))
 
         # generate jsonfiles representing interpolated overlapping tiles
-        jsonfiles = []
         for i, z in enumerate((
                 z_intersection if positive else z_intersection[::-1])):
             section_tiles = []
@@ -102,9 +113,27 @@ class FuseStacksModule(RenderModule):
         # concatenate edge and input transform -- expected to work for Aff Hom
         node_tform = node_edge.concatenate(inputtransform)
 
+
+        # determine zs which can be rendered uninterpolated (but tformed)
+        # TODO maybe there's a better way to handle this
+        # -- or move within  fusetoparent
+        parentzs = set(renderapi.stack.get_z_values_for_stack(
+            parentstack, render=self.render))
+        nodezs = set(renderapi.stack.get_z_values_for_stack(
+            node['stack'], render=self.render))
+        childzs = (
+            {zval for zlist in (
+                renderapi.stack.get_z_values_for_stack(
+                    c['stack'], render=self.render)
+                for c in node['children']) for zval in zlist}
+            if len(node['children']) else {})
+        uninterpolated_zs = nodezs.difference(parentzs).difference(childzs)
+
         # generate and upload interpolated tiles
         jfiles = self.fusetoparent(
-            parentstack, node['stack'], transform=node_tform)
+            parentstack, node['stack'],
+            uninterpolated_zs=uninterpolated_zs,
+            transform=node_tform)
         renderapi.stack.create_stack(
             self.args['output_stack'], render=self.render)
         renderapi.client.import_jsonfiles_parallel(
@@ -119,6 +148,7 @@ class FuseStacksModule(RenderModule):
         # FIXME I don't think this generates for overlap
         #   not spanning a whole subvolume
         # at distal node, generate nonoverlapping zs
+        '''
         if (create_nonoverlapping_zs and not len(node['children'])):
             missingzs = set(renderapi.stack.get_z_values_for_stack(
                 node['stack'], render=self.render)).difference(
@@ -137,7 +167,7 @@ class FuseStacksModule(RenderModule):
                 renderapi.client.import_tilespecs_parallel(
                     self.args['output_stack'], tspecs, close_stack=False,
                     render=self.render)
-
+        '''
         # recurse through depth of graph
         for child in node['children']:
             self.fuse_graph(
