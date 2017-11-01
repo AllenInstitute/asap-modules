@@ -32,6 +32,9 @@ def getImageFromTilespecs(alltilespecs, index):
     N, M, img = getImage(alltilespecs[index])
     return img
 
+def randomly_subsample_tilespecs(alltilespecs,numtiles):
+    np.random.shuffle(alltilespecs)
+    return alltilespecs[:numtiles]
 
 class MakeMedian(RenderModule):
     default_schema = MakeMedianParams
@@ -55,6 +58,10 @@ class MakeMedian(RenderModule):
             # used for easy creation of tilespecs for output stack
             firstts.append(tilespecs[0])
             numtiles += len(tilespecs)
+
+        #subsample in the case where the number of tiles is too large
+        if self.args['num_images'] > 0:
+            alltilespecs = randomly_subsample_tilespecs(alltilespecs,self.args['num_images'])
 
         # read images and create stack
         N, M, img0 = getImage(alltilespecs[0])
@@ -101,7 +108,7 @@ class MakeMedian(RenderModule):
         renderapi.stack.set_stack_state(
             self.args['output_stack'], "LOADING", render=self.render)
         renderapi.client.import_tilespecs_parallel(
-            self.args['output_stack'], outtilespecs, 
+            self.args['output_stack'], outtilespecs,
             poolsize=self.args['pool_size'],render=self.render,close_stack=self.args['close_stack'])
         #renderapi.stack.set_stack_state(
         #    self.args['output_stack'], "COMPLETE", render=self.render)
