@@ -157,6 +157,40 @@ def test_register_stacks(render, stack_DAG):
     assert outd['stack_b'] == childstack
 
 
+def test_register_all_stacks(render, stack_DAG):
+    from rendermodules.fusion.register_adjacent_stack import (
+        RegisterSubvolumeModule, example_parameters)
+
+    def registerchildrentest(node):
+        for child in node['children']:
+            parentstack = node['stack']
+            childstack = child['stack']
+            tform = child['transform']
+
+            test_input = dict(example_parameters, **{
+                'render': render.make_kwargs(),
+                'stack_a': parentstack,
+                'stack_b': childstack})
+            rms = RegisterSubvolumeModule(
+                input_data=test_input,
+                args=['--output_json', 'register_stack_out.json'])
+            rms.run()
+
+            with open(rms.args['output_json'], 'r') as f:
+                outd = json.load(f)
+
+            estimated_tform = renderapi.transform.load_transform_json(
+                outd['transform'])
+            tspecs = renderapi.tilespec.get_tile_specs_from_stack(
+                childstack, render=render)
+            assert numpy.allclose(estimated_tform.M, tform.M)
+            assert outd['stack_a'] == parentstack
+            assert outd['stack_b'] == childstack
+
+            self.registerchildrentest(child)
+    registerchildrentest(stack_DAG)
+
+
 def test_fuse_stacks(render, stack_DAG, validstack):
     from rendermodules.fusion.fuse_stacks import (
         FuseStacksModule, example_parameters)
