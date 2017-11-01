@@ -18,8 +18,8 @@ class MakeMedianParams(RenderParameters):
                     description='size of pool for parallel processing (default=20)')
     close_stack = Bool(required=False, default=False,
                        description="whether to close stack or not")
-    percent_subsample = Int (required=False,default=100,
-                             description="Percent of images to randomly subsample to generate median")
+    num_images = Int (required=False,default=-1,
+                             description="Number of images to randomly subsample to generate median")
 
 
 class MultIntensityCorrParams(RenderParameters):

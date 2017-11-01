@@ -32,8 +32,7 @@ def getImageFromTilespecs(alltilespecs, index):
     N, M, img = getImage(alltilespecs[index])
     return img
 
-def randomly_subsample_tilespecs(alltilespecs,percent):
-    numtiles = floor(len(alltilespecs)*percent/100)
+def randomly_subsample_tilespecs(alltilespecs,numtiles):
     np.random.shuffle(alltilespecs)
     return alltilespecs[:numtiles]
 
@@ -61,8 +60,8 @@ class MakeMedian(RenderModule):
             numtiles += len(tilespecs)
 
         #subsample in the case where the number of tiles is too large
-        if self.args['percent_subsample'] < 100:
-            alltilespecs = randomly_subsample_tilespecs(alltilespecs,self.args['percent_subsample'])
+        if self.args['num_images'] > 0:
+            alltilespecs = randomly_subsample_tilespecs(alltilespecs,self.args['num_images'])
 
         # read images and create stack
         N, M, img0 = getImage(alltilespecs[0])
