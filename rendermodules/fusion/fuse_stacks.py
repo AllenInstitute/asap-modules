@@ -111,8 +111,8 @@ class FuseStacksModule(RenderModule):
                      else renderapi.transform.load_transform_json(
                          node['transform']))
         # concatenate edge and input transform -- expected to work for Aff Hom
-        node_tform = node_edge.concatenate(inputtransform)
-        # node_tform = inputtransform.concatenate(node_edge)
+        # node_tform = node_edge.concatenate(inputtransform)
+        node_tform = inputtransform.concatenate(node_edge)
 
         # determine zs which can be rendered uninterpolated (but tformed)
         # TODO maybe there's a better way to handle this
