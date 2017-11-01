@@ -62,7 +62,7 @@ class FuseStacksModule(RenderModule):
         jsonfiles = []
         for z in uninterpolated_zs:
             section_tiles = []
-            tspecs = renderapi.tilespec.get_tile_specs_from_zs(
+            tspecs = renderapi.tilespec.get_tile_specs_from_z(
                 child, z, render=self.render)
             for ts in tspecs:
                 tsc = copy.copy(ts)
