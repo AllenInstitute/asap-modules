@@ -183,9 +183,11 @@ def test_register_all_stacks(render, stack_DAG):
                 outd['transform'])
             tspecs = renderapi.tilespec.get_tile_specs_from_stack(
                 childstack, render=render)
-            assert numpy.allclose(estimated_tform.M, tform.M)
+
             assert outd['stack_a'] == parentstack
             assert outd['stack_b'] == childstack
+
+            assert numpy.allclose(estimated_tform.M, tform.M)
 
             registerchildrentest(child)
     registerchildrentest(stack_DAG)
@@ -255,5 +257,8 @@ def test_fuse_stacks(render, stack_DAG, validstack):
         validcoord = numpy.array([d['world'][:2] for d in wc_valid])
         createdcoord = numpy.array([d['world'][:2] for d in wc_created])
 
+        print "comparing world coordinates for z{}".format(z)
+        print wc_valid[:5]
+        print wc_created[:5]
         assert (numpy.linalg.norm(
             validcoord - createdcoord, axis=1).max() < distance_thres)
