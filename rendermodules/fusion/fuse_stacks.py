@@ -111,7 +111,8 @@ class FuseStacksModule(RenderModule):
                      else renderapi.transform.load_transform_json(
                          node['transform']))
         # concatenate edge and input transform -- expected to work for Aff Hom
-        node_tform = node_edge.concatenate(inputtransform)
+        # node_tform = node_edge.concatenate(inputtransform)
+        node_tform = inputtransform.concatenate(node_edge)
 
         # determine zs which can be rendered uninterpolated (but tformed)
         # TODO maybe there's a better way to handle this
@@ -145,29 +146,6 @@ class FuseStacksModule(RenderModule):
         for jfile in jfiles:
             os.remove(jfile)
 
-        # FIXME I don't think this generates for overlap
-        #   not spanning a whole subvolume
-        # at distal node, generate nonoverlapping zs
-        '''
-        if (create_nonoverlapping_zs and not len(node['children'])):
-            missingzs = set(renderapi.stack.get_z_values_for_stack(
-                node['stack'], render=self.render)).difference(
-                    set(renderapi.stack.get_z_values_for_stack(
-                        self.args['output_stack'], render=self.render)))
-            print "missing zs: {}".format(missingzs)
-            for z in missingzs:
-                self.logger.debug('generating nonoverlapping z {}'.format(z))
-                tspecs = renderapi.tilespec.get_tile_specs_from_z(
-                    node['stack'], z, render=self.render)
-                for ts in tspecs:
-                    ts.tforms.append[node_tform]
-
-                renderapi.stack.set_stack_state(
-                    self.args['output_stack'], 'LOADING', render=self.render)
-                renderapi.client.import_tilespecs_parallel(
-                    self.args['output_stack'], tspecs, close_stack=False,
-                    render=self.render)
-        '''
         # recurse through depth of graph
         for child in node['children']:
             self.fuse_graph(

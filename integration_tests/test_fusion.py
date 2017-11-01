@@ -187,7 +187,7 @@ def test_register_all_stacks(render, stack_DAG):
             assert outd['stack_a'] == parentstack
             assert outd['stack_b'] == childstack
 
-            self.registerchildrentest(child)
+            registerchildrentest(child)
     registerchildrentest(stack_DAG)
 
 
