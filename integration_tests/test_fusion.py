@@ -115,7 +115,7 @@ def stack_DAG(test_tilespecs, render, root_index=2):
         renderapi.stack.delete_stack(nd['stack'], render=render)
 
 
-def get_random_rigid_tform(max_translation_tuple=(100, 200)):
+def get_random_rigid_tform(max_translation_tuple=(10, 10)):
     # random translation
     x, y = numpy.array(max_translation_tuple) * numpy.random.rand(2)
     translate_tform = renderapi.transform.AffineModel(B0=x, B1=y)
