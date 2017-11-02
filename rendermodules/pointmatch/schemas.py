@@ -192,5 +192,3 @@ class PointMatchClientParameters(RenderParameters):
     def validate_options(self, data):
         if data['owner'] is None:
             data['owner'] = data['render']['owner']
-
-class Out
