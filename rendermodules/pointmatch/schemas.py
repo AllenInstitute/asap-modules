@@ -1,10 +1,12 @@
-from argschema.fields import Bool, Float, Int, Nested, Str, InputDir
+from argschema.fields import Bool, Float, Int, Nested, Str, InputDir, InputFile
 from argschema.schemas import DefaultSchema
 import marshmallow as mm
 from marshmallow import ValidationError, validates_schema, post_load
 from ..module.schemas import RenderParameters
 
 
+class TilePairClientOutputParameters(DefaultSchema):
+    tile_pair_file = InputFile(required=True,description="location of json file with tile pair inputs")
 
 class TilePairClientParameters(RenderParameters):
     stack = Str(
@@ -190,3 +192,5 @@ class PointMatchClientParameters(RenderParameters):
     def validate_options(self, data):
         if data['owner'] is None:
             data['owner'] = data['render']['owner']
+
+class Out
