@@ -7,6 +7,8 @@ import numpy as np
 import tifffile
 from ..module.render_module import RenderModule
 from rendermodules.intensity_correction.schemas import MultIntensityCorrParams
+import urllib
+import urlparse
 
 example_input = {
     "render": {
@@ -76,7 +78,9 @@ def getImage(ts):
     """
     d = ts.to_dict()
     mml = ts.ip.get(0)
-    img0 = tifffile.imread(mml['imageUrl'])
+    url = urllib.unquote(urlparse.urlparse(
+        str(mml['imageUrl'])).path)
+    img0 = tifffile.imread(url)
     (N, M) = img0.shape
     return N, M, img0
 

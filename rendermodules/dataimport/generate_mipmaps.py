@@ -34,7 +34,6 @@ def create_mipmap_from_tuple(mipmap_tuple, levels=[1, 2, 3],
                              imgformat='tif', convertTo8bit=True,
                              force_redo=True):
     (filepath, downdir) = mipmap_tuple
-    print mipmap_tuple
     return create_mipmaps(filepath, outputDirectory=downdir,
                           mipmaplevels=levels, convertTo8bit=convertTo8bit,
                           outputformat=imgformat, force_redo=force_redo)
