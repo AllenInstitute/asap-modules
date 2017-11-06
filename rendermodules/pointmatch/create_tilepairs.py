@@ -4,7 +4,7 @@ import os
 import subprocess
 import renderapi
 from ..module.render_module import RenderModule
-from rendermodules.pointmatch.schemas import TilePairClientParameters
+from rendermodules.pointmatch.schemas import TilePairClientParameters, TilePairClientOutputParameters
 
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.pointmatch.create_tilepairs"
@@ -33,15 +33,10 @@ example = {
 
 
 class TilePairClientModule(RenderModule):
-
-    def __init__(self, schema_type=None, *args, **kwargs):
-        if schema_type is None:
-            schema_type = TilePairClientParameters
-        super(TilePairClientModule, self).__init__(
-            schema_type=schema_type, *args, **kwargs)
-
-        self.client_class = 'org.janelia.render.client.TilePairClient'
-        self.client_script_name = 'run_ws_client.sh'
+    default_schema = TilePairClientParameters
+    default_output_schema = TilePairClientOutputParameters
+    client_class = 'org.janelia.render.client.TilePairClient'
+    client_script_name = 'run_ws_client.sh'
 
     @property
     def default_client_script(self):
@@ -90,7 +85,7 @@ class TilePairClientModule(RenderModule):
                         excludeSameLayerNeighbors=self.args['excludeSameLayerNeighbors'],
                         excludeCompletelyObscuredTiles=self.args['excludeCompletelyObscuredTiles'])
 
-
+        self.output({'tile_pair_file':tilepairJsonFile})
         # non-render-python way of calling TilePairClient
         '''
         run_cmd = [
