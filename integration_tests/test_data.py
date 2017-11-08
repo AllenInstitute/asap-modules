@@ -88,3 +88,4 @@ ROUGH_MONTAGE_TILESPECS_JSON = render_json_template(example_env, 'rough_montage_
 # rough alignment test data
 rough_align_test_data_dir = os.path.join(TEST_DATA_ROOT,
                                         'rough_align_test_data')
+MONTAGE_SOLVER_EXECUTABLE = '/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/matlab_compiled/solve_montage_SL'

@@ -149,7 +149,6 @@ class GenerateEMTileSpecsOutput(DefaultSchema):
                 description="stack to which generated tiles were added")
 
 
-
 class MakeMontageScapeSectionStackParameters(RenderParameters):
     montage_stack = mm.fields.Str(
         required=True,
