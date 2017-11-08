@@ -30,6 +30,14 @@ try:
 except OSError as e:
     pass
 
+log_dir = os.environ.get(
+    'LOG_DIR', '/allen/aibs/pipeline/image_processing/volume_assembly/logs/')
+
+try:
+    os.makedirs(log_dir)
+except OSError as e:
+    pass
+
 example_dir = os.path.join(os.path.dirname(__file__), 'test_files')
 example_env = Environment(loader=FileSystemLoader(example_dir))
 
@@ -76,5 +84,8 @@ TILESPECS_NO_LC_JSON = render_json_template(example_env, 'test_noLC.json',
                                             test_data_root=TEST_DATA_ROOT)
 TILESPECS_LC_JSON = render_json_template(example_env, 'test_LC.json',
                                          test_data_root=TEST_DATA_ROOT)
+
+RAW_STACK_INPUT_JSON = render_json_template(example_env, 'raw_tile_specs_for_em_montage.json',
+                                            test_data_root=TEST_DATA_ROOT)
 
 MONTAGE_SOLVER_EXECUTABLE = '/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/matlab_compiled/solve_montage_SL'
