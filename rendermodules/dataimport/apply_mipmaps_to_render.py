@@ -65,6 +65,7 @@ def addMipMapsToRender(render, input_stack, mipmap_dir, imgformat, levels, z):
 
 class AddMipMapsToStack(RenderModule):
     default_schema = AddMipMapsToStackParameters
+    default_output_schema = AddMipMapsToStackOutput
 
     def run(self):
         self.logger.debug('Applying mipmaps to stack')

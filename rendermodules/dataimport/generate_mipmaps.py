@@ -83,6 +83,7 @@ def verify_mipmap_generation(mipmap_args):
 
 class GenerateMipMaps(RenderModule):
     default_schema = GenerateMipMapsParameters
+    default_output_schema = GenerateMipMapsOutput
 
     def run(self):
         self.logger.debug('Mipmap generation module')
