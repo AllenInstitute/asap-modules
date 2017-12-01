@@ -3,7 +3,7 @@ import urllib
 import urlparse
 from rendermodules.dataimport.create_mipmaps import create_mipmaps
 from functools import partial
-from ..module.render_module import RenderModule, RenderParameters, RenderModuleException
+from ..module.render_module import RenderModule, RenderModuleException
 from rendermodules.dataimport.schemas import GenerateMipMapsParameters
 
 if __name__ == "__main__" and __package__ is None:
@@ -118,6 +118,8 @@ class GenerateMipMaps(RenderModule):
                                                   self.args['convert_to_8bit'],
                                                   self.args['force_redo'],
                                                   self.args['pool_size'])
+        self.output({"levels": self.args["levels"],
+                     "output_dir": self.args["output_dir"]})
         else:
             raise RenderModuleException(
                 "method {} not supported".format(self.args['method']))

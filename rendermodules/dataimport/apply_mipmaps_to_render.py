@@ -58,11 +58,9 @@ def addMipMapsToRender(render, input_stack, mipmap_dir, imgformat, levels, z):
             print scUrl
             mm1 = renderapi.tilespec.MipMapLevel(level=i, imageUrl=scUrl)
             ts.ip.update(mm1)
-
-    tilespecPaths.append(renderapi.utils.renderdump_temp(tilespecs))
-    return tilespecPaths
-
-
+    return tilespecs
+    # tilespecPaths.append(renderapi.utils.renderdump_temp(tilespecs))
+    # return tilespecPaths
 
 
 class AddMipMapsToStack(RenderModule):
@@ -97,9 +95,14 @@ class AddMipMapsToStack(RenderModule):
             self.args['mipmap_dir'], self.args['imgformat'],
             self.args['levels'])
 
+
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
-            tilespecPaths = [i for l in pool.map(mypartial, zvalues)
-                             for i in l]
+            tilespecs = [i for l in pool.map(mypartial, zvalues)
+                         for i in l]
+
+        # with renderapi.client.WithPool(self.args['pool_size']) as pool:
+        #     tilespecPaths = [i for l in pool.map(mypartial, zvalues)
+        #                      for i in l]
 
         # add the tile spec to render stack
         try:
@@ -119,9 +122,13 @@ class AddMipMapsToStack(RenderModule):
 
         self.render.run(renderapi.stack.set_stack_state,
                         output_stack, 'LOADING')
-        self.render.run(renderapi.client.import_jsonfiles_parallel,
-                        output_stack, tilespecPaths,
-                        close_stack=self.args['close_stack'])
+        self.render.run(renderapi.client.import_tilespecs_parallel,
+                        output_stack, tilespecs,
+                        poolsize=self.args['pool_size'], close_stack=False)
+        # self.render.run(renderapi.client.import_jsonfiles_parallel,
+        #                 output_stack, tilespecPaths,
+        #                 close_stack=self.args['close_stack'])
+        self.output({"output_stack": output_stack})
 
 
 if __name__ == "__main__":
