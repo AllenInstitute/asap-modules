@@ -1,5 +1,5 @@
 import argschema
-from argschema.fields import DateTime, Nested, InputDir, Str, Int
+from argschema.fields import DateTime, Nested, InputDir, Str, Int, InputFile
 
 
 class Camera(argschema.schemas.DefaultSchema):
@@ -13,13 +13,15 @@ class AcquisitionData(argschema.schemas.DefaultSchema):
     camera = Nested(Camera, required=False)
     microscope = Str(required=False, description="")
     overlap = Int(required=False)
-    acquisition_time = DateTime(required=True)
+    acquisition_time = DateTime(required=True, format="iso")
 
 
 class Section(argschema.schemas.DefaultSchema):
     z_index = Int(required=False, default=True)
     # metadata = Nested(TAOid())
-    specimen = Int(required=True, description="LIMS id of tissue block")
+    specimen = Str(required=True, description="LIMS id of tissue block")
+    # TODO specimen should be integer, but imaging metadata does not conform
+    # specimen = Int(required=True, description="LIMS id of tissue block")
     sample_holder = Str(required=False)
 
 
@@ -32,11 +34,11 @@ class TileSetIngestSchema(argschema.ArgSchema):
 
 
 class EMMontageSetIngestSchema(TileSetIngestSchema):
-    reference_set_id = Str(required=False, default=None)
+    reference_set_id = Str(required=False, default=None, allow_none=True)
 
 
 class ReferenceSetIngestSchema(TileSetIngestSchema):
-    pass
+    manifest_path = InputFile(required=True)
 
 
 example = {
