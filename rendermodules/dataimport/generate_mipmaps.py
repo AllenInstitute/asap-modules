@@ -119,8 +119,7 @@ class GenerateMipMaps(RenderModule):
                                                   self.args['convert_to_8bit'],
                                                   self.args['force_redo'],
                                                   self.args['pool_size'])
-        self.output({"levels": self.args["levels"],
-                     "output_dir": self.args["output_dir"]})
+
         else:
             raise RenderModuleException(
                 "method {} not supported".format(self.args['method']))
@@ -128,6 +127,8 @@ class GenerateMipMaps(RenderModule):
             # missing_files = verify_mipmap_generation(mipmap_args)
             # if not missing_files:
             #     self.logger.error("not all mipmaps have been generated")
+        self.output({"levels": self.args["levels"],
+                     "output_dir": self.args["output_dir"]})
 
 
 if __name__ == "__main__":
