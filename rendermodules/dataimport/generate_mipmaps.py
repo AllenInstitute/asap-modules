@@ -4,7 +4,8 @@ import urlparse
 from rendermodules.dataimport.create_mipmaps import create_mipmaps
 from functools import partial
 from ..module.render_module import RenderModule, RenderModuleException
-from rendermodules.dataimport.schemas import GenerateMipMapsParameters
+from rendermodules.dataimport.schemas import (
+    GenerateMipMapsParameters, GenerateMipMapsOutput)
 
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.dataimport.generate_mipmaps"
