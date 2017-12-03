@@ -5,7 +5,8 @@ from ..module.render_module import RenderModule
 from functools import partial
 import urllib
 import urlparse
-from rendermodules.dataimport.schemas import AddMipMapsToStackParameters
+from rendermodules.dataimport.schemas import (
+    AddMipMapsToStackParameters, AddMipMapsToStackOutput)
 
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.dataimport.apply_mipmaps_to_render"
