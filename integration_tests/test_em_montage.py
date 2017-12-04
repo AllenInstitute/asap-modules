@@ -11,7 +11,7 @@ from rendermodules.pointmatch.create_tilepairs import TilePairClientModule
 from rendermodules.pointmatch.generate_point_matches_spark import PointMatchClientModuleSpark, example as pointmatch_example
 
 logger = renderapi.client.logger
-logger.setlevel(logging.DEBUG)
+logger.setLevel(logging.DEBUG)
 
 render_params['project'] = 'em_montage_test'
 
