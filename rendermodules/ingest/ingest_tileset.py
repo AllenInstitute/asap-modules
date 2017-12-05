@@ -54,7 +54,7 @@ class IngestTileSetModule(argschema.ArgSchemaParser):
     lc_re = '_metadata_.*reference.*.json'
 
     # regex to find manifest file
-    manifest_re = '_trackem_.*.json'
+    manifest_re = '_trackem_.*.txt'
 
     @staticmethod
     def _find_file_matching_re_in_dir(d, match_re):
