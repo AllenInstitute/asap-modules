@@ -17,7 +17,7 @@ class AcquisitionData(argschema.schemas.DefaultSchema):
 
 
 class Section(argschema.schemas.DefaultSchema):
-    z_index = Int(required=False, default=True)
+    z_index = Int(required=False, default=None, allow_none=True)
     # metadata = Nested(TAOid())
     specimen = Str(required=True, description="LIMS id of tissue block")
     # TODO specimen should be integer, but imaging metadata does not conform
@@ -28,14 +28,13 @@ class Section(argschema.schemas.DefaultSchema):
 class TileSetIngestSchema(argschema.ArgSchema):
     storage_directory = InputDir(
         required=True, description="")
-    section = Nested(Section, required=False,
-                     description="")
     acquisition_data = Nested(AcquisitionData, required=False)
 
 
 class EMMontageSetIngestSchema(TileSetIngestSchema):
     reference_set_id = Str(required=False, default=None, allow_none=True)
-
+    section = Nested(Section, required=False,
+                     description="")
 
 class ReferenceSetIngestSchema(TileSetIngestSchema):
     manifest_path = InputFile(required=True)

@@ -45,6 +45,7 @@ class IngestTileSetModule(argschema.ArgSchemaParser):
     app_key = "at_em_imaging_workflow"
     workflow_name = "em_2d_montage"
 
+    microscope_type = "TEMCA"
     timezone = 'America/Los_Angeles'
 
     # regular expression used to find metadata files
@@ -88,17 +89,18 @@ class IngestTileSetModule(argschema.ArgSchemaParser):
         workflow_name = (cls.workflow_name if workflow_name
                          is None else workflow_name)
 
-        celery_ingest.ingest(app_key, workflow_name, body_data, fix_option)
+        return celery_ingest.ingest(
+            app_key, workflow_name, body_data, fix_option)
 
     @classmethod
     def lcsend(cls, body_data, **kwargs):
         cls.validate_body(body_data, ReferenceSetIngestSchema)
-        cls.send(body_data, fix_option=["ReferenceSet"], **kwargs)
+        return cls.send(body_data, fix_option=["ReferenceSet"], **kwargs)
 
     @classmethod
     def montagesend(cls, body_data, **kwargs):
         cls.validate_body(body_data, EMMontageSetIngestSchema)
-        cls.send(body_data, fix_option=["EMMontageSet"], **kwargs)
+        return cls.send(body_data, fix_option=["EMMontageSet"], **kwargs)
 
     @classmethod
     def gen_datetime(cls, timestr, tz=None):
@@ -127,6 +129,7 @@ class IngestTileSetModule(argschema.ArgSchemaParser):
         body = {
             "acquisition_data": {
                 "microscope": md[0]['metadata']['temca_id'],
+                "microscope_type": self.microscope_type,
                 "camera": {
                     "camera_id": md[0]['metadata']['camera_info']['camera_id'],
                     "height": md[0]['metadata']['camera_info']['height'],
@@ -151,9 +154,14 @@ class IngestTileSetModule(argschema.ArgSchemaParser):
                 self.find_manifest_in_dir(self.args['tile_dir'])
                 if self.args.get('manifest_path') is None
                 else self.args['manifest_path'])
-            self.lcsend(body)
+            response = self.lcsend(body)
         else:
-            self.montagesend(body)
+            response = self.montagesend(body)
+
+        self.logger.info("celery ingest returned {}".format(response))
+        # TODO return this or have it set in order to facilitate RefSet
+        self.logger.info("enqueued object: ".format(
+            response['enqueued_object_uid']))
 
 
 if __name__ == "__main__":
