@@ -74,7 +74,7 @@ def outfile_test_and_remove(f, output_fn):
     assert not os.path.isfile(output_fn)
     val = f()
     assert os.path.isfile(output_fn)
-    assert os.remove(output_fn)
+    os.remove(output_fn)
     assert not os.path.isfile(output_fn)
     return val
 
