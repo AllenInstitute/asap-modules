@@ -30,12 +30,11 @@ example = {
 
 
 def addMipMapsToRender(render, input_stack, mipmap_dir, imgformat, levels, z):
-    tilespecPaths = []
+    # tilespecPaths = []
 
     tilespecs = render.run(renderapi.tilespec.get_tile_specs_from_z,
                            input_stack, z)
 
-    print z
     for ts in tilespecs:
         mm1 = ts.ip.mipMapLevels[0]
 
@@ -96,7 +95,6 @@ class AddMipMapsToStack(RenderModule):
             addMipMapsToRender, self.render, self.args['input_stack'],
             self.args['mipmap_dir'], self.args['imgformat'],
             self.args['levels'])
-
 
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
             tilespecs = [i for l in pool.map(mypartial, zvalues)

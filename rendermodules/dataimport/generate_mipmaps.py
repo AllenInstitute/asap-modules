@@ -63,7 +63,8 @@ def make_tilespecs_and_cmds(render, inputStack, output_dir, zvalues, levels,
 
     mypartial = partial(
         create_mipmap_from_tuple, levels=range(1, levels + 1),
-        convertTo8bit=convert_to_8bit, force_redo=force_redo, imgformat=imgformat)
+        convertTo8bit=convert_to_8bit, force_redo=force_redo,
+        imgformat=imgformat)
 
     with renderapi.client.WithPool(pool_size) as pool:
         results = pool.map(mypartial, mipmap_args)
