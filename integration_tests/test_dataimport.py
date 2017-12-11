@@ -9,7 +9,7 @@ import renderapi
 from rendermodules.dataimport import generate_EM_tilespecs_from_metafile
 from rendermodules.dataimport import generate_mipmaps
 from rendermodules.dataimport import apply_mipmaps_to_render
-from test_data import (render_params, 
+from test_data import (render_params,
                        METADATA_FILE, MIPMAP_TILESPECS_JSON, scratch_dir)
 import os
 
@@ -69,6 +69,16 @@ def validate_mipmap_generated(in_ts,out_ts,levels,imgformat='tif'):
         assert w == expected_width // (2 ** lvl)
         assert h == expected_height // (2 ** lvl)
 
+
+def outfile_test_and_remove(f, output_fn):
+    assert not os.path.isfile(output_fn)
+    val = f()
+    assert os.path.isfile(output_fn)
+    os.remove(output_fn)
+    assert not os.path.isfile(output_fn)
+    return val
+
+
 def apply_generated_mipmaps(r, output_stack, generate_params):
     ex = apply_mipmaps_to_render.example
     ex['render'] = r.make_kwargs()
@@ -83,9 +93,12 @@ def apply_generated_mipmaps(r, output_stack, generate_params):
         in renderapi.tilespec.get_tile_specs_from_stack(
             ex['input_stack'], render=r)}
 
-    mod = apply_mipmaps_to_render.AddMipMapsToStack(input_data=ex, args=[])
+    outfn = 'TEST_applymipmapsoutput.json'
+    mod = apply_mipmaps_to_render.AddMipMapsToStack(
+        input_data=ex, args=['--output_json', outfn])
     mod.logger.setLevel(logging.DEBUG)
-    mod.run()
+
+    outfile_test_and_remove(mod.run, outfn)
 
     out_tileIdtotspecs = {
         ts.tileId: ts for ts
@@ -100,7 +113,7 @@ def apply_generated_mipmaps(r, output_stack, generate_params):
 
 @pytest.fixture(scope='module')
 def tspecs_to_mipmap():
-    tilespecs = [renderapi.tilespec.TileSpec(json=d) 
+    tilespecs = [renderapi.tilespec.TileSpec(json=d)
         for d in MIPMAP_TILESPECS_JSON]
     return tilespecs
 
@@ -121,6 +134,7 @@ def input_stack(render,tspecs_to_mipmap):
     yield test_input_stack
     renderapi.stack.delete_stack(test_input_stack, render=render)
 
+
 def addMipMapsToRender_test(render,output_stack,generate_params):
     tmpdir=tempfile.mkdtemp()
     input_stack = generate_params['input_stack']
@@ -129,7 +143,7 @@ def addMipMapsToRender_test(render,output_stack,generate_params):
     zvalues = renderapi.stack.get_z_values_for_stack(input_stack,render=render)
     z = zvalues[0]
 
-    ts_paths=apply_mipmaps_to_render.addMipMapsToRender(render, 
+    ts_paths=apply_mipmaps_to_render.addMipMapsToRender(render,
                                                         input_stack,
                                                         tmpdir,
                                                         imgformat,
@@ -161,8 +175,11 @@ def test_mipmaps(render, input_stack, tspecs_to_mipmap, output_stack=None):
     ex['zend'] = max([ts.z for ts in tspecs_to_mipmap])
     ex['output_dir'] = scratch_dir
 
-    mod = generate_mipmaps.GenerateMipMaps(input_data=ex, args=[])
-    mod.run()
+    outfn = 'TEST_genmipmaps.json'
+    mod = generate_mipmaps.GenerateMipMaps(
+        input_data=ex, args=['--output_json', outfn])
+
+    outfile_test_and_remove(mod.run, outfn)
 
     apply_generated_mipmaps(render, output_stack, ex)
     addMipMapsToRender_test(render, output_stack, ex)
