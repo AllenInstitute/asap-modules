@@ -1,6 +1,7 @@
 
 from marshmallow import ValidationError, validates_schema
-from argschema.fields import InputDir, InputFile, Str, Int, Boolean, InputDir
+import argschema
+from argschema.fields import InputDir, InputFile, Str, Int, Float, Boolean, OutputDir
 from ..module.schemas import RenderParameters
 
 
@@ -8,9 +9,9 @@ class RenderSectionAtScaleParameters(RenderParameters):
     input_stack = Str(
         required=True,
         description='Input stack to make the downsample version of')
-    output_stack = Str(
-        required=True,
-        description='Name of the output downsample stack')
+    #output_stack = Str(
+    #    required=True,
+    #    description='Name of the output downsample stack')
     image_directory = OutputDir(
         required=True,
         description='Directory to save the downsampled sections')
@@ -47,3 +48,8 @@ class RenderSectionAtScaleParameters(RenderParameters):
         default=20,
         missing=20,
         description='number of parallel threads to use')
+
+class RenderSectionAtScaleOutput(argschema.schemas.DefaultSchema):
+    image_directory = InputDir(
+        required=True,
+        description='Directory in which the downsampled section images are saved')
