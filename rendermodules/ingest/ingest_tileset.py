@@ -11,9 +11,11 @@ import datetime
 import pytz
 
 import argschema
+from marshmallow import ValidationError
 
 from rendermodules.ingest.schemas import (
-    EMMontageSetIngestSchema, ReferenceSetIngestSchema)
+    EMMontageSetIngestSchema, ReferenceSetIngestSchema,
+    IngestParams, IngestTileSetParams)
 from rendermodules.module.render_module import RenderModuleException
 
 from workflow_client import celery_ingest
@@ -26,18 +28,6 @@ example_input = {
         "workflow_name": "em_2d_montage"
     }
 }
-
-
-class IngestParams(argschema.schemas.DefaultSchema):
-    app_key = argschema.fields.Str(required=True)
-    workflow_name = argschema.fields.Str(required=True)
-
-
-class IngestTileSetParams(argschema.ArgSchema):
-    tile_dir = argschema.fields.InputDir(required=True)
-    metafile = argschema.fields.InputFile(
-        required=False, allow_none=True, missing=None)
-    ingest_params = argschema.fields.Nested(IngestParams, required=True)
 
 
 class IngestTileSetModule(argschema.ArgSchemaParser):
@@ -83,6 +73,14 @@ class IngestTileSetModule(argschema.ArgSchemaParser):
                 "Invalid schema for {} -- errors: {}".format(schema, v))
         return True
 
+    @staticmethod
+    def dump_body(body, schema):
+        output_json, errors = schema().dump(body)
+        if errors:
+            raise ValidationError("{}".format(errors))
+        else:
+            return output_json
+
     @classmethod
     def send(cls, body_data, app_key=None, workflow_name=None, fix_option=[]):
         app_key = (cls.app_key if app_key is None else app_key)
@@ -94,13 +92,15 @@ class IngestTileSetModule(argschema.ArgSchemaParser):
 
     @classmethod
     def lcsend(cls, body_data, **kwargs):
-        cls.validate_body(body_data, ReferenceSetIngestSchema)
-        return cls.send(body_data, fix_option=["ReferenceSet"], **kwargs)
+        d = cls.dump_body(body_data, ReferenceSetIngestSchema)
+        # cls.validate_body(body_data, ReferenceSetIngestSchema)
+        return cls.send(d, fix_option=["ReferenceSet"], **kwargs)
 
     @classmethod
     def montagesend(cls, body_data, **kwargs):
-        cls.validate_body(body_data, EMMontageSetIngestSchema)
-        return cls.send(body_data, fix_option=["EMMontageSet"], **kwargs)
+        d = cls.dump_body(body_data, EMMontageSetIngestSchema)
+        # cls.validate_body(body_data, EMMontageSetIngestSchema)
+        return cls.send(d, fix_option=["EMMontageSet"], **kwargs)
 
     @classmethod
     def gen_datetime(cls, timestr, tz=None):
@@ -108,7 +108,6 @@ class IngestTileSetModule(argschema.ArgSchemaParser):
         return pytz.timezone(tz).localize(
             datetime.datetime.strptime(timestr, '%Y%m%d%H%M%S'))
 
-    # FIXME just passthrough right now -- see tim's integration
     @classmethod
     def gen_timestring(cls, timestr, **kwargs):
         return cls.gen_datetime(timestr, **kwargs).isoformat()
@@ -137,13 +136,8 @@ class IngestTileSetModule(argschema.ArgSchemaParser):
                     "model": md[0]['metadata']['camera_info']['camera_model']
                 },
                 "overlap": md[0]['metadata']['overlap'],
-                "acquisition_time": self.gen_timestring(
+                "acquisition_time": self.gen_datetime(
                     md[0]['metadata']['roi_creation_time']),
-            },
-            "section": {
-                "z_index": md[0]['metadata']['grid'],  # FIXME based on autoz
-                "specimen": md[0]['metadata']['specimen_id'],  # FIXME not LIMS
-                "sample_holder": md[0]['metadata']['grid']
             },
             "storage_directory": self.args['tile_dir'],
             "metafile": mdfile
@@ -156,12 +150,18 @@ class IngestTileSetModule(argschema.ArgSchemaParser):
                 else self.args['manifest_path'])
             response = self.lcsend(body)
         else:
+            body['section'] = {
+                "z_index": md[0]['metadata']['grid'],  # FIXME based on autoz
+                "specimen": md[0]['metadata']['specimen_id'],  # FIXME not LIMS
+                "sample_holder": md[0]['metadata']['grid']
+            }
             response = self.montagesend(body)
 
         self.logger.info("celery ingest returned {}".format(response))
-        # TODO return this or have it set in order to facilitate RefSet
         self.logger.info("enqueued object: ".format(
             response['enqueued_object_uid']))
+
+        return response
 
 
 if __name__ == "__main__":

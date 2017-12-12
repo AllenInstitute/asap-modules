@@ -36,9 +36,21 @@ class EMMontageSetIngestSchema(TileSetIngestSchema):
     section = Nested(Section, required=False,
                      description="")
 
+
 class ReferenceSetIngestSchema(TileSetIngestSchema):
     manifest_path = InputFile(required=True)
 
+
+class IngestParams(argschema.schemas.DefaultSchema):
+    app_key = Str(required=True)
+    workflow_name = Str(required=True)
+
+
+class IngestTileSetParams(argschema.ArgSchema):
+    tile_dir = InputDir(required=True)
+    metafile = InputFile(
+        required=False, allow_none=True, missing=None)
+    ingest_params = Nested(IngestParams, required=True)
 
 example = {
     "reference_set_id": "DEADBEEF",
