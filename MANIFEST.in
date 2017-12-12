@@ -1,0 +1,2 @@
+recursive-include rendermodules *.bsh
+include LICENSE.txt *requirements.txt README.rst

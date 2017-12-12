@@ -1,10 +1,12 @@
-from PIL import Image
-import argparse
 import os
+from PIL import Image
 from rendermodules.module.render_module import RenderModuleException
+
 
 class CreateMipMapException(RenderModuleException):
     """Exception raised when there is a problem creating a mipmap"""
+    pass
+
 
 def create_mipmaps(inputImage, outputDirectory='.', mipmaplevels=[1, 2, 3],
                    outputformat='tif', convertTo8bit=True, force_redo=True):
@@ -24,12 +26,12 @@ def create_mipmaps(inputImage, outputDirectory='.', mipmaplevels=[1, 2, 3],
         whether to convert the image to 8 bit, dividing each value by 255
     force_redo: boolean
         whether to recreate mip map images if they already exist
-    
+
     Returns
     =======
     list
         list of output images created in order of levels
-    
+
     Raises
     ======
     MipMapException
@@ -59,7 +61,7 @@ def create_mipmaps(inputImage, outputDirectory='.', mipmaplevels=[1, 2, 3],
                                '{basename}.{fmt}'.format(
                                    basename=inputImage.lstrip(os.sep),
                                    fmt=outputformat))
-        makeImage=True
+        makeImage = True
         if os.path.isfile(outpath):
             if not force_redo:
                 makeImage = False
