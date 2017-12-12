@@ -1,8 +1,14 @@
 import marshmallow as mm
-from argschema.fields import InputDir,InputFile, Str, Int, Boolean, InputDir
+from argschema.fields import InputDir, InputFile, Str, Int, Boolean, InputDir
 from ..module.schemas import RenderParameters
-from marshmallow import ValidationError, validates_schema, post_load
+from marshmallow import ValidationError, post_load
 from argschema.schemas import DefaultSchema
+
+
+class GenerateMipMapsOutput(DefaultSchema):
+    levels = Int(required=True)
+    output_dir = Str(required=True)
+
 
 class GenerateMipMapsParameters(RenderParameters):
     input_stack = mm.fields.Str(
@@ -63,6 +69,11 @@ class GenerateMipMapsParameters(RenderParameters):
         }
         exc_fields = excluded_fields[options['method']]
         return cls(exclude=exc_fields).dump(options)
+
+
+class AddMipMapsToStackOutput(DefaultSchema):
+    output_stack = Str(required=True)
+
 
 class AddMipMapsToStackParameters(RenderParameters):
     input_stack = mm.fields.Str(
@@ -143,6 +154,7 @@ class GenerateEMTileSpecsParameters(RenderParameters):
         description=("sectionId to apply to tiles during ingest.  "
                      "If unspecified will default to a string "
                      "representation of the float value of z_index."))
+
 
 class GenerateEMTileSpecsOutput(DefaultSchema):
     stack = Str(required=True,

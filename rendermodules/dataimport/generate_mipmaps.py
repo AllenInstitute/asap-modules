@@ -3,8 +3,9 @@ import urllib
 import urlparse
 from rendermodules.dataimport.create_mipmaps import create_mipmaps
 from functools import partial
-from ..module.render_module import RenderModule, RenderParameters, RenderModuleException
-from rendermodules.dataimport.schemas import GenerateMipMapsParameters
+from ..module.render_module import RenderModule, RenderModuleException
+from rendermodules.dataimport.schemas import (
+    GenerateMipMapsParameters, GenerateMipMapsOutput)
 
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.dataimport.generate_mipmaps"
@@ -62,7 +63,8 @@ def make_tilespecs_and_cmds(render, inputStack, output_dir, zvalues, levels,
 
     mypartial = partial(
         create_mipmap_from_tuple, levels=range(1, levels + 1),
-        convertTo8bit=convert_to_8bit, force_redo=force_redo, imgformat=imgformat)
+        convertTo8bit=convert_to_8bit, force_redo=force_redo,
+        imgformat=imgformat)
 
     with renderapi.client.WithPool(pool_size) as pool:
         results = pool.map(mypartial, mipmap_args)
@@ -83,6 +85,7 @@ def verify_mipmap_generation(mipmap_args):
 
 class GenerateMipMaps(RenderModule):
     default_schema = GenerateMipMapsParameters
+    default_output_schema = GenerateMipMapsOutput
 
     def run(self):
         self.logger.debug('Mipmap generation module')
@@ -118,6 +121,7 @@ class GenerateMipMaps(RenderModule):
                                                   self.args['convert_to_8bit'],
                                                   self.args['force_redo'],
                                                   self.args['pool_size'])
+
         else:
             raise RenderModuleException(
                 "method {} not supported".format(self.args['method']))
@@ -125,6 +129,8 @@ class GenerateMipMaps(RenderModule):
             # missing_files = verify_mipmap_generation(mipmap_args)
             # if not missing_files:
             #     self.logger.error("not all mipmaps have been generated")
+        self.output({"levels": self.args["levels"],
+                     "output_dir": self.args["output_dir"]})
 
 
 if __name__ == "__main__":

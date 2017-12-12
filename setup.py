@@ -29,7 +29,7 @@ with open('requirements.txt', 'r') as f:
     required = f.read().splitlines()
 
 setup(name='render-modules',
-      version='0.1.0',
+      use_scm_version=True,
       description='A set of python modules for doing higher level processing steps used '
                   ' render, developed for processing array tomography and EM images.'
                   'see http://github.com/saalfeldlab/render',
@@ -37,7 +37,8 @@ setup(name='render-modules',
       author_email='forrestc@alleninstitute.org',
       url='https://github.com/AllenInstitute/render-modules/',
       packages=find_packages(),
+      package_data={'':['*.bsh','LICENSE','README.rst','*.md']},
       install_requires=required,
-      setup_requires=['flake8'],
+      setup_requires=['flake8','setuptools_scm'],
       tests_require=test_required,
       cmdclass={'test': PyTest})
