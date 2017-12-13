@@ -4,7 +4,7 @@ import logging
 import renderapi
 import json
 import glob
-from test_data import (RAW_STACK_INPUT_JSON, MONTAGE_SOLVER_EXECUTABLE, log_dir, render_params, test_em_montage_parameters as solver_example)
+from test_data import (RAW_STACK_INPUT_JSON, log_dir, render_params, test_em_montage_parameters as solver_example)
 
 from rendermodules.montage.run_montage_job_for_section import  SolveMontageSectionModule
 from rendermodules.pointmatch.create_tilepairs import TilePairClientModule
