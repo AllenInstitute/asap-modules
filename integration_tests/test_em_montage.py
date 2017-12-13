@@ -105,15 +105,9 @@ def test_run_montage_job_for_section(render, raw_stack, test_point_match_generat
     if output_stack is None:
         output_stack = '{}_Montage'.format(raw_stack)
 
-    scratch_directory = str(tmpdir_factory.mktemp('scratch'))
-    solver_example['render'] = render_params
-    solver_example['source_colledtion']['']
     solver_example['source_collection']['stack'] = raw_stack
     solver_example['target_collection']['stack'] = output_stack
     solver_example['source_point_match_collection']['match_collection'] = test_point_match_generation
-
-    solver_example['temp_dir'] = scratch_directory
-    solver_example['scratch'] = scratch_directory
     solver_example['z_value'] = 1015
 
     mod = SolveMontageSectionModule(input_data=solver_example, args=[])
