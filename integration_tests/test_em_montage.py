@@ -59,7 +59,8 @@ def test_create_montage_tile_pairs(render, raw_stack, tmpdir_factory):
         "minZ": 1015,
         "maxZ": 1015,
         "output_dir": output_directory,
-        "stack": raw_stack
+        "stack": raw_stack,
+        "output_json": "out.json"
     }
 
     mod = TilePairClientModule(input_data=params, args=[])
