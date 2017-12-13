@@ -138,7 +138,8 @@ class SolveMontageSectionModule(RenderModule):
         # one successful completion remove the input json file
         if ret == 0:
             os.remove(tempjson.name)
-
+        else:
+            raise RenderModuleException("solve failed with input_json {}",self.args)
         '''
         if os.path.isfile(self.solver_executable) and os.access(self.solver_executable, os.X_OK):
             cmd_to_qsub = "%s %s"%(self.solver_executable, tempjson.name)
