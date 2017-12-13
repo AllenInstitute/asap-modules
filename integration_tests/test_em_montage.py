@@ -95,7 +95,7 @@ def test_point_match_generation(render, test_create_montage_tile_pairs):
     pointmatch_example['jarfile'] = jarfile
     pointmatch_example['baseDataUrl'] = '{}:{}/render-ws/v1'.format(render_params['host'], render_params['port'])
 
-    mod = PointMatchClientModuleSpark(input_data=pointmatch_example)
+    mod = PointMatchClientModuleSpark(input_data=pointmatch_example,args=[])
     mod.run()
 
     yield pt_match_collection
