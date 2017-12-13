@@ -85,7 +85,8 @@ def test_create_montage_tile_pairs(render, raw_stack, tmpdir_factory):
 @pytest.fixture(scope='module')
 def test_point_match_generation(render, test_create_montage_tile_pairs):
     pt_match_collection = 'montage_align_point_matches'
-    jarfile = glob.glob('/shared/render/render-ws-spark-client/target/render-ws-spark-client*SNAPSHOT-standalone.jar')[0]
+    #jarfile = glob.glob('/shared/render/render-ws-spark-client/target/render-ws-spark-client*SNAPSHOT-standalone.jar')[0]
+    jarfile = os.environ['RENDER_SPARK_JAR']
     pointmatch_example['render'] = render_params
     pointmatch_example['pairJson'] = test_create_montage_tile_pairs
     pointmatch_example['owner'] = render_params['owner']
