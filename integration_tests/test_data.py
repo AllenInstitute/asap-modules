@@ -88,4 +88,17 @@ TILESPECS_LC_JSON = render_json_template(example_env, 'test_LC.json',
 RAW_STACK_INPUT_JSON = render_json_template(example_env, 'raw_tile_specs_for_em_montage.json',
                                             test_data_root=TEST_DATA_ROOT)
 
-MONTAGE_SOLVER_EXECUTABLE = '/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/matlab_compiled/solve_montage_SL'
+MATLAB_SOLVER_PATH = os.environ.get('MATLAB_SOLVER_PATH',
+    '/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/matlab_compiled/')
+MONTAGE_SOLVER_BIN = os.path.join(MATLAB_SOLVER_PATH,'solver_montage_SL')
+
+test_em_montage_parameters = render_json_template(example_env, 
+    'run_montage_job_for_section_template.json',
+    render_host=render_host,
+    render_port=render_port,
+    render_project="montage_test",
+    render_owner = "test",
+    render_client_scripts = client_script_location,
+    em_solver_bin = MONTAGE_SOLVER_BIN,
+    temp_dir= tempfile.mkdtemp(),
+    scratch_dir = tempfile.mkdtemp())
