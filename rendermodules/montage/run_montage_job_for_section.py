@@ -3,7 +3,7 @@ import os
 import subprocess
 import renderapi
 import tempfile
-from ..module.render_module import RenderModule
+from ..module.render_module import RenderModule, RenderModuleException
 from rendermodules.montage.schemas import SolveMontageSectionParameters
 
 
