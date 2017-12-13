@@ -114,8 +114,9 @@ class SolveMontageSectionModule(RenderModule):
         if "MCRROOT" not in os.environ:
             raise ValidationError("MCRROOT not set")
         
-        env = os.environ.get('LD_LIBRARY_PATH')
-        mcrroot = os.environ.get('MCRROOT')
+        env = os.environ.get('LD_LIBRARY_PATH','')
+        os.environ['LD_LIBRARY_PATH']=env
+        mcrroot = os.environ['MCRROOT']
         path1 = os.path.join(mcrroot, 'runtime/glnxa64')
         path2 = os.path.join(mcrroot, 'bin/glnxa64')
         path3 = os.path.join(mcrroot, 'sys/os/glnxa64')
