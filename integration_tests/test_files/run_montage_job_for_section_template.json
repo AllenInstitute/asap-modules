@@ -1,0 +1,62 @@
+{
+    "render": {
+        "host": "http://{{render_host}}",
+        "port": {{render_port}},
+        "owner": "{{render_owner}}",
+        "project": "{{render_project}}",
+        "client_scripts": "{{render_client_scripts}}"
+    },
+    "solver_options": {
+		"min_tiles": 3,
+		"degree": 1,
+		"outlier_lambda": 1000,
+		"solver": "backslash",
+		"min_points": 4,
+		"max_points": 80,
+		"stvec_flag": 0,
+		"conn_comp": 1,
+		"distributed": 0,
+		"lambda_value": 1,
+		"edge_lambda": 0.1,
+		"small_region_lambda": 10,
+		"small_region": 5,
+		"calc_confidence": 1,
+		"translation_fac": 1,
+		"use_peg": 1,
+		"peg_weight": 0.0001,
+		"peg_npoints": 5
+	},
+    "source_collection": {
+		"stack": "mm2_acquire_8bit",
+		"owner": "{{render_owner}}",
+		"project": "{{render_project}}",
+		"service_host": "{{render_host}}:{{render_port}}",
+		"baseURL": "http://{{render_host}}:{{render_port}}/render-ws/v1",
+		"renderbinPath": "{{render_client_scripts}}",
+		"verbose": 0
+	},
+    "target_collection": {
+		"stack": "mm2_acquire_8bit_Montage",
+        "owner": "{{render_owner}}",
+		"project": "{{render_project}}",
+		"service_host": "{{render_host}}:{{render_port}}",
+		"baseURL": "http://{{render_host}}:{{render_port}}/render-ws/v1",
+        "renderbinPath": "{{render_client_scripts}}",
+        "verbose": 0,
+		"initialize": 0,
+		"complete": 1
+	},
+    "source_point_match_collection": {
+		"server": "http://{{render_host}}:{{render_port}}/render-ws/v1",
+		"owner": "{{render_owner}}",
+		"match_collection": "mm2_acquire_8bit_montage"
+	},
+    "z_value": 1049,
+	"filter_point_matches": 1,
+    "solver_executable": "{{em_solver_bin}}",
+	"temp_dir": "{{temp_dir}}",
+	"scratch": "{{scratch_dir}}",
+	"renderer_client": "{{render_client_scripts}}/render.sh",
+	"disableValidation": 1,
+	"verbose": 0
+}
