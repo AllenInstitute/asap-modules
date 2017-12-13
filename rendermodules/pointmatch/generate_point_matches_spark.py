@@ -5,7 +5,7 @@ from argschema.fields import Bool, Float, Int, Nested, Str, InputDir
 from argschema.schemas import DefaultSchema
 import marshmallow as mm
 import renderapi
-from rendermodules.module.render_module import RenderModule
+from rendermodules.module.render_module import RenderModule, RenderModuleException
 from rendermodules.pointmatch.schemas import PointMatchClientParametersSpark
 
 if __name__ == "__main__" and __package__ is None:
@@ -75,7 +75,9 @@ class PointMatchClientModuleSpark(RenderModule):
 
         cmd_to_submit = cmd + sift_params
 
-        os.system(cmd)
+        ret=os.system(cmd)
+        if ret != 0:
+            raise RenderModuleException("PointMatchClientModuleSpark failed with inputs {} ",self.args)
 
 if __name__ == "__main__":
     module = PointMatchClientModuleSpark(input_data=example)
