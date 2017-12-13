@@ -1,4 +1,4 @@
-from argschema.fields import Bool, Float, Int, Nested, Str, InputDir, InputFile
+from argschema.fields import Bool, Float, Int, Nested, Str, InputDir, InputFile, OutputDir
 from argschema.schemas import DefaultSchema
 import marshmallow as mm
 from marshmallow import ValidationError, validates_schema, post_load
@@ -51,7 +51,7 @@ class TilePairClientParameters(RenderParameters):
         default=True,
         missing=True,
         description="Exclude tiles that are completely obscured by reacquired tiles")
-    output_dir = Str(
+    output_dir = OutputDir(
         required=True,
         description="Output directory path to save the tilepair json file")
     memGB = Str(
@@ -77,17 +77,17 @@ class PointMatchClientParametersSpark(RenderParameters):
     masterUrl = Str(
         required=True,
         description="Master URL for spark cluster")
-    sparkhome = Str(
+    sparkhome = InputDir(
         required=True,
         default="/allen/aibs/shared/image_processing/volume_assembly/utils/spark",
         missing="/allen/aibs/shared/image_processing/volume_assembly/utils/spark",
         description="Path to the spark home directory")
-    logdir = Str(
+    logdir = OutputDir(
         required=False,
         default="/allen/aibs/shared/image_processing/volume_assembly/logs/spark_logs",
         missing="/allen/aibs/shared/image_processing/volume_assembly/logs/spark_logs",
         description="Directory to store spark logs")
-    jarfile = Str(
+    jarfile = InputFile(
         required=True,
         description="Full path to the spark point match client jar file")
     className = Str(
@@ -172,7 +172,7 @@ class PointMatchClientParametersSpark(RenderParameters):
             data['baseDataUrl'] = 'http://' + data['render']['host'] + ":" + str(data['render']['port']) + "/render-ws/v1"
 
 class PointMatchClientParametersQsub(RenderParameters):
-    sparkhome = Str(
+    sparkhome = InputDir(
         required=True,
         default="/allen/aibs/shared/image_processing/volume_assembly/utils/spark",
         missing="/allen/aibs/shared/image_processing/volume_assembly/utils/spark",
@@ -195,7 +195,7 @@ class PointMatchClientParametersQsub(RenderParameters):
         default='connectome',
         missing='connectome',
         description='Name of the queue to submit the job')
-    logdir = Str(
+    logdir = OutputDir(
         required=False,
         default="/allen/aibs/shared/image_processing/volume_assembly/logs/spark_logs",
         missing="/allen/aibs/shared/image_processing/volume_assembly/logs/spark_logs",
