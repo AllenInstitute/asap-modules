@@ -4,9 +4,9 @@ import logging
 import renderapi
 import json
 import glob
-from test_data import (RAW_STACK_INPUT_JSON, MONTAGE_SOLVER_EXECUTABLE, log_dir, render_params)
+from test_data import (RAW_STACK_INPUT_JSON, MONTAGE_SOLVER_EXECUTABLE, log_dir, render_params, test_em_montage_parameters as solver_example)
 
-from rendermodules.montage.run_montage_job_for_section import example as solver_example, SolveMontageSectionModule
+from rendermodules.montage.run_montage_job_for_section import  SolveMontageSectionModule
 from rendermodules.pointmatch.create_tilepairs import TilePairClientModule
 from rendermodules.pointmatch.generate_point_matches_spark import PointMatchClientModuleSpark, example as pointmatch_example
 
@@ -107,6 +107,7 @@ def test_run_montage_job_for_section(render, raw_stack, test_point_match_generat
 
     scratch_directory = str(tmpdir_factory.mktemp('scratch'))
     solver_example['render'] = render_params
+    solver_example['source_colledtion']['']
     solver_example['source_collection']['stack'] = raw_stack
     solver_example['target_collection']['stack'] = output_stack
     solver_example['source_point_match_collection']['match_collection'] = test_point_match_generation
