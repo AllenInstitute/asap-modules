@@ -92,7 +92,7 @@ def test_point_match_generation(render, test_create_montage_tile_pairs):
     pointmatch_example['owner'] = render_params['owner']
     pointmatch_example['collection'] = pt_match_collection
     pointmatch_example['sparkhome'] = os.environ['SPARK_HOME']
-    pointmatch_example['masterUrl'] = os.environ['SPARK_MASTER']
+    pointmatch_example['masterUrl'] = "spark://{}:7077".format(os.environ['SPARK_MASTER'])
     pointmatch_example['jarfile'] = jarfile
     pointmatch_example['baseDataUrl'] = '{}:{}/render-ws/v1'.format(render_params['host'], render_params['port'])
     logger.warning("jarfile: {}".format(jarfile))
