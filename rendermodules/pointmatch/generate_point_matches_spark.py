@@ -67,6 +67,7 @@ class PointMatchClientModuleSpark(RenderModule):
         # prepare the spark submit command
         cmd = "{} --master {}".format(sparksubmit, self.args['masterUrl'])
         cmd = cmd + " --executor-memory {}".format(self.args['memory'])
+        cmd = cmd + " --driver-memory {}".format(self.args['driverMemory'])
         cmd = cmd + " --class {} {}".format(self.args['className'], self.args['jarfile'])
         cmd = cmd + " --baseDataUrl {}".format(self.args['baseDataUrl'])
         cmd = cmd + " --owner {}".format(self.args['owner'])

@@ -74,6 +74,12 @@ class PointMatchClientParametersSpark(RenderParameters):
         default='120g',
         missing='120g',
         description="Memory required for spark job")
+    driverMemory = Str(
+        required=False,
+        default='6g',
+        missing='6g',
+        description="memory required for spark driver"
+    )
     masterUrl = Str(
         required=True,
         description="Master URL for spark cluster")
