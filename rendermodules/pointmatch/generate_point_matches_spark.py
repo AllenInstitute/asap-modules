@@ -40,6 +40,25 @@ example = {
     "matchMinNumInliers": 8,
     "matchMaxNumInliers": 200
 }
+def form_sift_params(args):
+    sift_params = " --SIFTFdSize {}".format(args['SIFTfdSize'])
+    sift_params += " --SIFTsteps {}".format(args['SIFTsteps'])
+    sift_params += " --matchMaxEpsilon {}".format(args['matchMaxEpsilon'])
+    sift_params += " --maxFeatureCacheGb {}".format(args['maxFeatureCacheGb'])
+    sift_params += " --SIFTminScale {}".format(args['SIFTminScale'])
+    sift_params += " --SIFTmaxScale {}".format(args['SIFTmaxScale'])
+    sift_params += " --renderScale {}".format(args['renderScale'])
+    sift_params += " --matchRod {}".format(args['matchRod'])
+    sift_params += " --matchMinInlierRatio {}".format(args['matchMinInlierRatio'])
+    sift_params += " --matchMinNumInliers {}".format(args['matchMinNumInliers'])
+    sift_params += " --matchMaxNumInliers {}".format(args['matchMaxNumInliers'])
+    clipWidth = args.get('clipWidth',None)
+    clipHeight = args.get('clipHeight',None)
+    if clipWidth is not None:
+        sift_params += " --clipWidth {}".format(clipWidth)
+    if clipHeight is not None:
+        sift_params += " --clipHeight {}".format(clipHeight)
+    return sift_params
 
 class PointMatchClientModuleSpark(RenderModule):
     def __init__(self, schema_type=None, *args, **kwargs):
@@ -50,24 +69,9 @@ class PointMatchClientModuleSpark(RenderModule):
 
     def run(self):
         # prepare sift parameters
-        sift_params = " --SIFTFdSize {}".format(self.args['SIFTfdSize'])
-        sift_params + sift_params + " --SIFTsteps {}".format(self.args['SIFTsteps'])
-        sift_params = sift_params + " --matchMaxEpsilon {}".format(self.args['matchMaxEpsilon'])
-        sift_params = sift_params + " --maxFeatureCacheGb {}".format(self.args['maxFeatureCacheGb'])
-        sift_params = sift_params + " --SIFTminScale {}".format(self.args['SIFTminScale'])
-        sift_params = sift_params + " --SIFTmaxScale {}".format(self.args['SIFTmaxScale'])
-        sift_params = sift_params + " --renderScale {}".format(self.args['renderScale'])
-        sift_params = sift_params + " --matchRod {}".format(self.args['matchRod'])
-        sift_params = sift_params + " --matchMinInlierRatio {}".format(self.args['matchMinInlierRatio'])
-        sift_params = sift_params + " --matchMinNumInliers {}".format(self.args['matchMinNumInliers'])
-        sift_params = sift_params + " --matchMaxNumInliers {}".format(self.args['matchMaxNumInliers'])
-        clipWidth = self.args.get('clipWidth',None)
-        clipHeight = self.args.get('clipHeight',None)
-        if clipWidth is not None:
-            sift_params += " --clipWidth {}".format(clipWidth)
-        if clipHeight is not None:
-            sift_params += " --clipHeight {}".format(clipHeight)
-    
+        
+        sift_params = form_sift_params(self.args)
+
         sparksubmit = os.path.join(self.args['sparkhome'], 'bin', 'spark-submit')
 
         # prepare the spark submit command
