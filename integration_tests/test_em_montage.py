@@ -94,6 +94,7 @@ def test_point_match_generation(render, test_create_montage_tile_pairs):
     pointmatch_example['sparkhome'] = os.environ['SPARK_HOME']
     pointmatch_example['masterUrl'] = "{}".format(os.environ['SPARK_MASTER_URL'])
     pointmatch_example['jarfile'] = jarfile
+    pointmatch_example['memory']= '4G'
     pointmatch_example['baseDataUrl'] = 'http://{}:{}/render-ws/v1'.format(render_params['host'], render_params['port'])
     logger.warning("jarfile: {}".format(jarfile))
     mod = PointMatchClientModuleSpark(input_data=pointmatch_example,args=[])
