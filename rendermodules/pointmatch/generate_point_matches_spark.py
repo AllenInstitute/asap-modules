@@ -61,7 +61,13 @@ class PointMatchClientModuleSpark(RenderModule):
         sift_params = sift_params + " --matchMinInlierRatio {}".format(self.args['matchMinInlierRatio'])
         sift_params = sift_params + " --matchMinNumInliers {}".format(self.args['matchMinNumInliers'])
         sift_params = sift_params + " --matchMaxNumInliers {}".format(self.args['matchMaxNumInliers'])
-
+        clipWidth = self.args.get('clipWidth',None)
+        clipHeight = self.args.get('clipHeight',None)
+        if clipWidth is not None:
+            sift_params += " --clipWidth {}".format(clipWidth)
+        if clipHeight is not None:
+            sift_params += " --clipHeight {}".format(clipHeight)
+    
         sparksubmit = os.path.join(self.args['sparkhome'], 'bin', 'spark-submit')
 
         # prepare the spark submit command
