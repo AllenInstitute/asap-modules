@@ -95,7 +95,7 @@ def test_point_match_generation(render, test_create_montage_tile_pairs):
     pointmatch_example['masterUrl'] = "{}".format(os.environ['SPARK_MASTER_URL'])
     pointmatch_example['jarfile'] = jarfile
     pointmatch_example['memory']= '2G'
-    pointmatch_example['driverMemory']='8G'
+    pointmatch_example['driverMemory']='10G'
     pointmatch_example['maxFeatureCacheGb'] = 1
     pointmatch_example['baseDataUrl'] = 'http://{}:{}/render-ws/v1'.format(render_params['host'], render_params['port'])
     logger.warning("jarfile: {}".format(jarfile))
