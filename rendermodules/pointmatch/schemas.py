@@ -186,7 +186,7 @@ class CollectionId(mm.Schema):
                 description="name of collection")
 
 class PointMatchClientOutputSchema(mm.Schema):
-    collectionId = Nested(CollectionId
+    collectionId = Nested(CollectionId,
         required= True,
         description= "collection identifying details")
     pairCount = Int(
