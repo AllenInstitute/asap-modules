@@ -68,8 +68,7 @@ class PointMatchClientModuleSpark(RenderModule):
             schema_type=schema_type, *args, **kwargs)
 
     def run(self):
-        # prepare sift parameters
-        
+        # prepare sift parameters     
         sift_params = form_sift_params(self.args)
 
         sparksubmit = os.path.join(self.args['sparkhome'], 'bin', 'spark-submit')
@@ -86,7 +85,7 @@ class PointMatchClientModuleSpark(RenderModule):
 
         cmd_to_submit = cmd + sift_params
 
-        ret=os.system(cmd)
+        ret=os.system(cmd_to_submit)
         if ret != 0:
             raise RenderModuleException("PointMatchClientModuleSpark failed with inputs {} ",self.args)
 
