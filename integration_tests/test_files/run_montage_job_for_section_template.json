@@ -49,9 +49,9 @@
     "source_point_match_collection": {
 		"server": "http://{{render_host}}:{{render_port}}/render-ws/v1",
 		"owner": "{{render_owner}}",
-		"match_collection": "mm2_acquire_8bit_montage"
+		"match_collection": "{{point_match_collection}}"
 	},
-    "z_value": 1049,
+    "z_value": {{montage_z}},
 	"filter_point_matches": 1,
     "solver_executable": "{{em_solver_bin}}",
 	"temp_dir": "{{temp_dir}}",

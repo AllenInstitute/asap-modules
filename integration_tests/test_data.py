@@ -91,8 +91,22 @@ RAW_STACK_INPUT_JSON = render_json_template(example_env, 'raw_tile_specs_for_em_
 MATLAB_SOLVER_PATH = os.environ.get('MATLAB_SOLVER_PATH',
     '/allen/aibs/pipeline/image_processing/volume_assembly/EMAligner/dev/allen_templates')
 MONTAGE_SOLVER_BIN = os.path.join(MATLAB_SOLVER_PATH,'solve_montage_SL')
+RENDER_SPARK_JAR = os.environ['RENDER_SPARK_JAR']
 
 montage_project = "em_montage_test"
+montage_collection = "test_montage_collection"
+montage_z = 1015
+test_pointmatch_parameters = render_json_template(example_env,
+    'point_match_parameters.json',
+    render_host = render_host,
+    render_port = render_port,
+    render_project = montage_project,
+    render_owner = render_test_owner,
+    render_client_scripts = client_script_location,
+    spark_log_dir = tempfile.mkdtemp(),
+    render_spark_jar = RENDER_SPARK_JAR,
+    spark_master_url = os.environ['SPARK_MASTER_URL']
+    point_match_collection = montage_collection )
 test_em_montage_parameters = render_json_template(example_env, 
     'run_montage_job_for_section_template.json',
     render_host = render_host,
@@ -102,4 +116,6 @@ test_em_montage_parameters = render_json_template(example_env,
     render_client_scripts = client_script_location,
     em_solver_bin = MONTAGE_SOLVER_BIN,
     temp_dir= tempfile.mkdtemp(),
-    scratch_dir = tempfile.mkdtemp())
+    scratch_dir = tempfile.mkdtemp(),
+    point_match_collection = montage_collection,
+    montage_z = montage_z)
