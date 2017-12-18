@@ -123,13 +123,13 @@ class SolveMontageSectionModule(RenderModule):
         path4 = os.path.join(mcrroot, 'sys/opengl/lib/glnxa64')
         
         if path1 not in env:
-            os.environ['LD_LIBRARY_PATH'] += os.pathsep + path1
+            os.environ['LD_LIBRARY_PATH'] = path1 + os.pathsep + os.environ['LD_LIBRARY_PATH']
         if path2 not in env:
-            os.environ['LD_LIBRARY_PATH'] += os.pathsep + path2
+            os.environ['LD_LIBRARY_PATH'] = path2 + os.pathsep + os.environ['LD_LIBRARY_PATH']
         if path3 not in env:
-            os.environ['LD_LIBRARY_PATH'] += os.pathsep + path3
+            os.environ['LD_LIBRARY_PATH'] = path3 + os.pathsep + os.environ['LD_LIBRARY_PATH']
         if path4 not in env:
-            os.environ['LD_LIBRARY_PATH'] += os.pathsep + path4
+            os.environ['LD_LIBRARY_PATH'] = path4 + os.pathsep + os.environ['LD_LIBRARY_PATH']
         
             
         cmd = "%s %s"%(self.solver_executable, tempjson.name)
@@ -144,7 +144,7 @@ class SolveMontageSectionModule(RenderModule):
         sectionDataList = renderapi.stack.get_stack_sectionData(self.args['target_collection']['stack'])
         sectionData = next(section for section in sectionDataList if section['z']==self.args['z_value'])
         self.output(sectionData)
-        
+
         '''
         if os.path.isfile(self.solver_executable) and os.access(self.solver_executable, os.X_OK):
             cmd_to_qsub = "%s %s"%(self.solver_executable, tempjson.name)
