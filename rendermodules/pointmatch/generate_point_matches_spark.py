@@ -6,7 +6,7 @@ from argschema.schemas import DefaultSchema
 import marshmallow as mm
 import renderapi
 from rendermodules.module.render_module import RenderModule, RenderModuleException
-from rendermodules.pointmatch.schemas import PointMatchClientParametersSpark
+from rendermodules.pointmatch.schemas import PointMatchClientParametersSpark,PointMatchClientOutputSchema
 
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.pointmatch.generate_point_matches_spark"
@@ -61,6 +61,7 @@ def form_sift_params(args):
     return sift_params
 
 class PointMatchClientModuleSpark(RenderModule):
+    default_output_schema = PointMatchClientOutputSchema
     def __init__(self, schema_type=None, *args, **kwargs):
         if schema_type is None:
             schema_type = PointMatchClientParametersSpark

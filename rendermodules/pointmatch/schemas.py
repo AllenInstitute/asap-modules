@@ -179,8 +179,20 @@ class PointMatchClientParametersSpark(SIFTPointMatchParameters):
         missing="/allen/aibs/shared/image_processing/volume_assembly/utils/spark",
         description="Path to the spark home directory")
  
+class CollectionId(mm.Schema):
+    owner = Str(required=True,
+                description="owner of collection")
+    name = Str(required=True,
+                description="name of collection")
 
-
+class PointMatchClientOutputSchema(mm.Schema):
+    collectionId = Nested(CollectionId
+        required= True,
+        description= "collection identifying details")
+    pairCount = Int(
+        required=True,
+        description = "number of tile pairs in collection")
+        
 class PointMatchClientParametersQsub(SIFTPointMatchParameters):
     sparkhome = InputDir(
         required=True,
