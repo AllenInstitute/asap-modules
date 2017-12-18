@@ -90,7 +90,7 @@ RAW_STACK_INPUT_JSON = render_json_template(example_env, 'raw_tile_specs_for_em_
 
 MATLAB_SOLVER_PATH = os.environ.get('MATLAB_SOLVER_PATH',
     '/allen/aibs/pipeline/image_processing/volume_assembly/EMAligner/dev/allen_templates')
-MONTAGE_SOLVER_BIN = os.path.join(MATLAB_SOLVER_PATH,'solver_montage_SL')
+MONTAGE_SOLVER_BIN = os.path.join(MATLAB_SOLVER_PATH,'solve_montage_SL')
 
 test_em_montage_parameters = render_json_template(example_env, 
     'run_montage_job_for_section_template.json',
