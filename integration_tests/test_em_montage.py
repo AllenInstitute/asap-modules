@@ -4,7 +4,7 @@ import logging
 import renderapi
 import json
 import glob
-from test_data import (RAW_STACK_INPUT_JSON, log_dir, render_params, test_em_montage_parameters as solver_example)
+from test_data import (RAW_STACK_INPUT_JSON, log_dir, render_params, montage_project, test_em_montage_parameters as solver_example)
 
 from rendermodules.montage.run_montage_job_for_section import  SolveMontageSectionModule
 from rendermodules.pointmatch.create_tilepairs import TilePairClientModule
@@ -13,7 +13,8 @@ from rendermodules.pointmatch.generate_point_matches_spark import PointMatchClie
 logger = renderapi.client.logger
 logger.setLevel(logging.DEBUG)
 
-render_params['project'] = 'em_montage_test'
+render_params['project'] = montage_project
+montage_z = 1015
 
 @pytest.fixture(scope='module')
 def render():
@@ -56,8 +57,8 @@ def test_create_montage_tile_pairs(render, raw_stack, tmpdir_factory):
         "excludeCornerNeighbors": "true",
         "excludeSameLayerNeighbors": "false",
         "excludeCompletelyObscuredTiles": "true",
-        "minZ": 1015,
-        "maxZ": 1015,
+        "minZ": montage_z,
+        "maxZ": montage_z,
         "output_dir": output_directory,
         "stack": raw_stack,
         "output_json": "out.json"
@@ -108,14 +109,18 @@ def test_point_match_generation(render, test_create_montage_tile_pairs):
 
     yield pt_match_collection
 
-def test_run_montage_job_for_section(render, raw_stack, test_point_match_generation, tmpdir_factory, output_stack=None):
+def test_run_montage_job_for_section(render, 
+                                     raw_stack, 
+                                     test_point_match_generation, 
+                                     tmpdir_factory, 
+                                     output_stack=None):
     if output_stack is None:
         output_stack = '{}_Montage'.format(raw_stack)
 
     solver_example['source_collection']['stack'] = raw_stack
     solver_example['target_collection']['stack'] = output_stack
     solver_example['source_point_match_collection']['match_collection'] = test_point_match_generation
-    solver_example['z_value'] = 1015
+    solver_example['z_value'] = montage_z
 
     mod = SolveMontageSectionModule(input_data=solver_example, args=[])
     mod.run()

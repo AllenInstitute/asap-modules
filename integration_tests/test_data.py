@@ -92,11 +92,12 @@ MATLAB_SOLVER_PATH = os.environ.get('MATLAB_SOLVER_PATH',
     '/allen/aibs/pipeline/image_processing/volume_assembly/EMAligner/dev/allen_templates')
 MONTAGE_SOLVER_BIN = os.path.join(MATLAB_SOLVER_PATH,'solve_montage_SL')
 
+montage_project = "em_montage_test"
 test_em_montage_parameters = render_json_template(example_env, 
     'run_montage_job_for_section_template.json',
-    render_host=render_host,
-    render_port=render_port,
-    render_project="montage_test",
+    render_host = render_host,
+    render_port = render_port,
+    render_project = montage_project,
     render_owner = render_test_owner,
     render_client_scripts = client_script_location,
     em_solver_bin = MONTAGE_SOLVER_BIN,
