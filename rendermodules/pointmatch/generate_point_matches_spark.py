@@ -90,7 +90,7 @@ class PointMatchClientModuleSpark(RenderModule):
             raise RenderModuleException("PointMatchClientModuleSpark failed with inputs {} ",self.args)
         
         mc=renderapi.pointmatch.get_matchcollections(self.args['owner'],render=self.render)
-        collection = next(m for m in mc if mc['collectionId']['name']==self.args['collection'])
+        collection = next(m for m in mc if m['collectionId']['name']==self.args['collection'])
         self.output(collection)
 
 if __name__ == "__main__":
