@@ -140,6 +140,11 @@ class SolveMontageSectionModule(RenderModule):
             os.remove(tempjson.name)
         else:
             raise RenderModuleException("solve failed with input_json {}",self.args)
+
+        sectionDataList = renderapi.stack.get_stack_sectionData(self.args['target_collection']['stack'])
+        sectionData = next(section for section in sectionDataList if section['z']==self.args['z_value'])
+        self.output(sectionData)
+        
         '''
         if os.path.isfile(self.solver_executable) and os.access(self.solver_executable, os.X_OK):
             cmd_to_qsub = "%s %s"%(self.solver_executable, tempjson.name)
