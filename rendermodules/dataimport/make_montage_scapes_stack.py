@@ -20,19 +20,19 @@ example = {
     "render": {
         "host": "http://em-131fs",
         "port": 8080,
-        "owner": "gayathri",
-        "project": "MM2",
-        "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_20170613/render-ws-java-client/src/main/scripts"
+        "owner": "russelt",
+        "project": "Reflections",
+        "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts"
     },
-    "montage_stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_Montage",
-    "output_stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_DS_Montage",
-    "image_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch/",
+    "montage_stack": "Secs_1015_1099_5_reflections_mml6_montage",
+    "output_stack": "Secs_1015_1099_5_reflections_mml6_ds_montage",
+    "image_directory": "/allen/programs/celltypes/workgroups/em-connectomics/russelt/Dec_MM500_SMART/rough_ds",
     "set_new_z":"False",
     "new_z_start": 1015,
     "imgformat":"png",
     "scale": 0.01,
-    "zstart": 1051,
-    "zend": 1051,
+    "zstart": 1015,
+    "zend": 1519,
     "pool_size": 20
 }
 
@@ -110,20 +110,22 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory, scale,
     d = t.to_dict()
 
     d['mipmapLevels'][0]['imageUrl'] = filename
+    # remove all the mipmap levels that will disrupt the viewing
+    [d['mipmapLevels'].pop(k) for k in list(d['mipmapLevels'].keys()) if k != 0]
     d['minIntensity'] = 0
     d['maxIntensity'] = 255
-    #d['minX'] = sectionbounds['minX']*scale
-    #d['minY'] = sectionbounds['minY']*scale
-    #d['maxX'] = sectionbounds['maxX']*scale
-    #d['maxY'] = sectionbounds['maxY']*scale
-    #im = Image.open(filename)
-    #d['width'] = im.size[0]
-    #d['height'] = im.size[1]
+    d['minX'] = sectionbounds['minX']#*scale
+    d['minY'] = sectionbounds['minY']#*scale
+    d['maxX'] = sectionbounds['maxX']#*scale
+    d['maxY'] = sectionbounds['maxY']#*scale
+    im = Image.open(filename)
+    d['width'] = im.size[0]
+    d['height'] = im.size[1]
 
     # the scale is required by the AT team to view the downsampled section overlayed with the montage section
     # this scale is to be accounted later in the apply_rough_alignment_transform_to_montage script
-    d['width'] = stackbounds['maxX']*scale
-    d['height'] = stackbounds['maxY']*scale
+    #d['width'] = stackbounds['maxX']#*scale
+    #d['height'] = stackbounds['maxY']#*scale
     d['z'] = newz
     v0 = 1.0 / scale
     v1 = 0.0
@@ -146,6 +148,7 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory, scale,
                                     'sections_at_%s'%str(scale),
                                     'tilespecs_%s'%tagstr,
                                     'tilespec_%04d.json'%z)
+    #print(tilespecfilename)
     fp = open(tilespecfilename, 'w')
     json.dump([ts.to_dict() for ts in allts], fp, indent=4)
     fp.close()
