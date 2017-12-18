@@ -105,7 +105,7 @@ test_pointmatch_parameters = render_json_template(example_env,
     render_client_scripts = client_script_location,
     spark_log_dir = tempfile.mkdtemp(),
     render_spark_jar = RENDER_SPARK_JAR,
-    spark_master_url = os.environ['SPARK_MASTER_URL']
+    spark_master_url = os.environ['SPARK_MASTER_URL'],
     point_match_collection = montage_collection )
 test_em_montage_parameters = render_json_template(example_env, 
     'run_montage_job_for_section_template.json',
