@@ -41,7 +41,7 @@ example = {
     "matchMaxNumInliers": 200
 }
 def form_sift_params(args):
-    sift_params = " --SIFTFdSize {}".format(args['SIFTfdSize'])
+    sift_params = " --SIFTfdSize {}".format(args['SIFTfdSize'])
     sift_params += " --SIFTsteps {}".format(args['SIFTsteps'])
     sift_params += " --matchMaxEpsilon {}".format(args['matchMaxEpsilon'])
     sift_params += " --maxFeatureCacheGb {}".format(args['maxFeatureCacheGb'])
