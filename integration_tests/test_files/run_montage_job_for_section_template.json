@@ -55,7 +55,7 @@
 	"filter_point_matches": 1,
     "solver_executable": "{{em_solver_bin}}",
 	"temp_dir": "{{temp_dir}}",
-	"scratch": "{{scratch_dir}}",
+	"dir_scratch": "{{scratch_dir}}",
 	"renderer_client": "{{render_client_scripts}}/render.sh",
 	"disableValidation": 1,
 	"verbose": 0
