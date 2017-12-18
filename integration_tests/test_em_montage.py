@@ -97,6 +97,7 @@ def test_point_match_generation(render, test_create_montage_tile_pairs,tmpdir_fa
     with open(pointmatch_example['output_json'],'r') as fp:
         output_d = json.load(fp)
     assert (output_d['pairCount']>0)
+    assert False
     yield pointmatch_example['collection']
 
 def test_run_montage_job_for_section(render, 
