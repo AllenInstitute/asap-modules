@@ -88,12 +88,15 @@ def test_create_montage_tile_pairs(render, raw_stack, tmpdir_factory):
     yield tilepair_file
 
 @pytest.fixture(scope='module')
-def test_point_match_generation(render, test_create_montage_tile_pairs):
-
+def test_point_match_generation(render, test_create_montage_tile_pairs,tmpdir_factory):
+    output_directory = str(tmpdir_factory.mktemp('output_json'))
+    pointmatch_example['output_json']=os.path.join(output_directory,'output.json')
     pointmatch_example['pairJson'] = test_create_montage_tile_pairs
     mod = PointMatchClientModuleSpark(input_data=pointmatch_example,args=[])
     mod.run()
-
+    with open(pointmatch_example['output_json'],'r') as fp:
+        output_d = json.load(fp)
+    assert (output_d['pairCount']>0)
     yield pointmatch_example['collection']
 
 def test_run_montage_job_for_section(render, 
