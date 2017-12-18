@@ -19,10 +19,9 @@ from rendermodules.pointmatch.generate_point_matches_spark import PointMatchClie
 logger = renderapi.client.logger
 logger.setLevel(logging.DEBUG)
 
-render_params['project'] = montage_project
-
 @pytest.fixture(scope='module')
 def render():
+    render_params['project'] = montage_project
     render = renderapi.connect(**render_params)
     return render
 
