@@ -97,11 +97,10 @@ class SolverParameters(DefaultSchema):
         missing=5,
         description="Number of peg points")
 
-
-class SourceStackParameters(DefaultSchema):
+class BaseStackParameters(DefaultSchema):
     stack = Str(
         required=True,
-        description="Input source stack")
+        description="Stack name")
     owner = Str(
         required=False,
         default=None,
@@ -111,7 +110,7 @@ class SourceStackParameters(DefaultSchema):
         required=False,
         default=None,
         missing=None,
-        description="Project of the source stack")
+        description="Project of the stack")
     service_host = Str(
         required=False,
         default=None,
@@ -133,41 +132,11 @@ class SourceStackParameters(DefaultSchema):
         missing=0,
         description="Verbose output from solver needed?")
 
+class SourceStackParameters(BaseStackParameters):
+    pass
 
-class TargetStackParameters(DefaultSchema):
-    stack = Str(
-        required=True,
-        description="Output montage stack")
-    owner = Str(
-        required=False,
-        default=None,
-        missing=None,
-        description="Owner of the stack (defaults to render clients' owner)")
-    project = Str(
-        required=False,
-        default=None,
-        missing=None,
-        description="Project of the target stack")
-    service_host = Str(
-        required=False,
-        default=None,
-        missing=None,
-        description="url of render service host (without http://)")
-    baseURL = Str(
-        required=False,
-        default=None,
-        missing=None,
-        description="Base Render URL")
-    renderbinPath = InputDir(
-        required=False,
-        default=None,
-        missing=None,
-        description="Path to render's client scripts")
-    verbose = Int(
-        required=False,
-        default=0,
-        missing=0,
-        description="Verbose output from solver needed?")
+
+class TargetStackParameters(BaseStackParameters):
     initialize = Int(
         required=False,
         default=0,
@@ -212,7 +181,7 @@ class SolveMontageSectionParameters(RenderParameters):
         default=0,
         missing=0,
         description="Verbose output from solver needed?")
-    scratch = InputDir(
+    dir_scratch = InputDir(
         required=True,
         default="/allen/aibs/shared/image_processing/volume_assembly/scratch",
         description="Path to scratch directory - can be the same as temp_dir")

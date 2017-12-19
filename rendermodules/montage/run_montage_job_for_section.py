@@ -3,7 +3,7 @@ import os
 import subprocess
 import renderapi
 import tempfile
-from ..module.render_module import RenderModule
+from ..module.render_module import RenderModule, RenderModuleException
 from rendermodules.montage.schemas import SolveMontageSectionParameters
 
 
@@ -69,7 +69,7 @@ example = {
 	"filter_point_matches": 1,
     "solver_executable": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/EM_aligner/matlab_compiled/solve_montage_SL",
 	"temp_dir": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch",
-	"scratch": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch",
+	"dir_scratch": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch",
 	"renderer_client": "/data/nc-em2/gayathrim/renderBin/bin/render.sh",
 	"disableValidation": 1,
 	"verbose": 0
@@ -114,29 +114,30 @@ class SolveMontageSectionModule(RenderModule):
         if "MCRROOT" not in os.environ:
             raise ValidationError("MCRROOT not set")
         
-        env = os.environ.get('LD_LIBRARY_PATH')
-        mcrroot = os.environ.get('MCRROOT')
+        os.environ['LD_LIBRARY_PATH']=''
+        mcrroot = os.environ['MCRROOT']
         path1 = os.path.join(mcrroot, 'runtime/glnxa64')
         path2 = os.path.join(mcrroot, 'bin/glnxa64')
         path3 = os.path.join(mcrroot, 'sys/os/glnxa64')
         path4 = os.path.join(mcrroot, 'sys/opengl/lib/glnxa64')
         
-        if path1 not in env:
-            os.environ['LD_LIBRARY_PATH'] += os.pathsep + path1
-        if path2 not in env:
-            os.environ['LD_LIBRARY_PATH'] += os.pathsep + path2
-        if path3 not in env:
-            os.environ['LD_LIBRARY_PATH'] += os.pathsep + path3
-        if path4 not in env:
-            os.environ['LD_LIBRARY_PATH'] += os.pathsep + path4
-        
-            
+        os.environ['LD_LIBRARY_PATH'] += path1 + os.pathsep
+        os.environ['LD_LIBRARY_PATH'] += path2 + os.pathsep
+        os.environ['LD_LIBRARY_PATH'] += path3 + os.pathsep
+        os.environ['LD_LIBRARY_PATH'] += path4 + os.pathsep
+                
         cmd = "%s %s"%(self.solver_executable, tempjson.name)
         ret = os.system(cmd)
         
         # one successful completion remove the input json file
         if ret == 0:
             os.remove(tempjson.name)
+        else:
+            raise RenderModuleException("solve failed with input_json {}",self.args)
+
+        sectionDataList = renderapi.stack.get_stack_sectionData(self.args['target_collection']['stack'])
+        sectionData = next(section for section in sectionDataList if section['z']==self.args['z_value'])
+        self.output(sectionData)
 
         '''
         if os.path.isfile(self.solver_executable) and os.access(self.solver_executable, os.X_OK):

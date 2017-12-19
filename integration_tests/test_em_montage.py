@@ -4,19 +4,25 @@ import logging
 import renderapi
 import json
 import glob
-from test_data import (RAW_STACK_INPUT_JSON, MONTAGE_SOLVER_EXECUTABLE, log_dir, render_params)
 
-from rendermodules.montage.run_montage_job_for_section import example as solver_example, SolveMontageSectionModule
+from test_data import (RAW_STACK_INPUT_JSON,
+                      log_dir,
+                      render_params,
+                      montage_project,
+                      montage_z,
+                      test_em_montage_parameters as solver_example,
+                      test_pointmatch_parameters as pointmatch_example)
+
+from rendermodules.montage.run_montage_job_for_section import  SolveMontageSectionModule
 from rendermodules.pointmatch.create_tilepairs import TilePairClientModule
-from rendermodules.pointmatch.generate_point_matches_spark import PointMatchClientModuleSpark, example as pointmatch_example
+from rendermodules.pointmatch.generate_point_matches_spark import PointMatchClientModuleSpark
 
 logger = renderapi.client.logger
 logger.setLevel(logging.DEBUG)
 
-render_params['project'] = 'em_montage_test'
-
 @pytest.fixture(scope='module')
 def render():
+    render_params['project'] = montage_project
     render = renderapi.connect(**render_params)
     return render
 
@@ -56,10 +62,11 @@ def test_create_montage_tile_pairs(render, raw_stack, tmpdir_factory):
         "excludeCornerNeighbors": "true",
         "excludeSameLayerNeighbors": "false",
         "excludeCompletelyObscuredTiles": "true",
-        "minZ": 1015,
-        "maxZ": 1015,
+        "minZ": montage_z,
+        "maxZ": montage_z,
         "output_dir": output_directory,
-        "stack": raw_stack
+        "stack": raw_stack,
+        "output_json": "out.json"
     }
 
     mod = TilePairClientModule(input_data=params, args=[])
@@ -82,37 +89,29 @@ def test_create_montage_tile_pairs(render, raw_stack, tmpdir_factory):
     yield tilepair_file
 
 @pytest.fixture(scope='module')
-def test_point_match_generation(render, test_create_montage_tile_pairs):
-    pt_match_collection = 'montage_align_point_matches'
-    jarfile = glob.glob('/shared/render/render-ws-spark-client/target/render-ws-spark-client*SNAPSHOT-standalone.jar')
-
-    pointmatch_example['render'] = render_params
+def test_point_match_generation(render, test_create_montage_tile_pairs,tmpdir_factory):
+    output_directory = str(tmpdir_factory.mktemp('output_json'))
+    pointmatch_example['output_json']=os.path.join(output_directory,'output.json')
     pointmatch_example['pairJson'] = test_create_montage_tile_pairs
-    pointmatch_example['owner'] = render_params['owner']
-    pointmatch_example['collection'] = pt_match_collection
-    pointmatch_example['sparkhome'] = os.environ['SPARK_HOME']
-    pointmatch_example['masterUrl'] = os.environ['MASTER']
-    pointmatch_example['jarfile'] = jarfile
-    pointmatch_example['baseDataUrl'] = '%s:%d/render-ws/v1'.format(render_params['host'], render_params['port'])
-
-    mod = PointMatchClientModuleSpark(input_data=pointmatch_example)
+    mod = PointMatchClientModuleSpark(input_data=pointmatch_example,args=[])
     mod.run()
+    with open(pointmatch_example['output_json'],'r') as fp:
+        output_d = json.load(fp)
+    assert (output_d['pairCount']>0)
+    yield pointmatch_example['collection']
 
-    yield pt_match_collection
-
-def test_run_montage_job_for_section(render, raw_stack, test_point_match_generation, tmpdir_factory, output_stack=None):
+def test_run_montage_job_for_section(render,
+                                     raw_stack,
+                                     test_point_match_generation,
+                                     tmpdir_factory,
+                                     output_stack=None):
     if output_stack is None:
         output_stack = '{}_Montage'.format(raw_stack)
 
-    scratch_directory = str(tmpdir_factory.mktemp('scratch'))
-    solver_example['render'] = render_params
     solver_example['source_collection']['stack'] = raw_stack
     solver_example['target_collection']['stack'] = output_stack
     solver_example['source_point_match_collection']['match_collection'] = test_point_match_generation
-
-    solver_example['temp_dir'] = scratch_directory
-    solver_example['scratch'] = scratch_directory
-    solver_example['z_value'] = 1015
+    solver_example['z_value'] = montage_z
 
     mod = SolveMontageSectionModule(input_data=solver_example, args=[])
     mod.run()
