@@ -15,6 +15,86 @@ if __name__ == "__main__" and __package__ is None:
 example = {
     "render": {
         "host": "http://em-131fs",
+        "port": 8080,
+        "owner": "gayathri",
+        "project": "MM2",
+        "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_20170613/render-ws-java-client/src/main/scripts"
+    },
+    "first_section": 1024,
+	"last_section": 1024,
+	"solver_options": {
+		"degree": 1,
+		"solver": "backslash",
+		"transfac": 1,
+		"lambda": 0.005,
+		"edge_lambda": 0.005,
+		"nbrs": 2,
+		"nbrs_step": 1,
+		"xs_weight": 0,
+		"min_points": 3,
+		"max_points": 80,
+		"filter_point_matches": 1,
+		"outlier_lambda": 1000,
+		"min_tiles": 3,
+        "Width":3840,
+        "Height":3840,
+        "outside_group":0,
+		"pastix": {
+			"ncpus": 8,
+			"parms_fn": "/nrs/flyTEM/khairy/FAFB00v13/matlab_production_scripts/params_file.txt",
+			"split": 1
+		},
+		"matrix_only": 0,
+		"distribute_A": 16,
+		"dir_scratch": "/allen/aibs/pipeline/image_processing/volume_assembly/scratch/solver_scratch",
+		"distributed": 0,
+		"disableValidation": 1,
+		"use_peg": 0,
+		"pmopts": {
+			"NumRandomSamplingsMethod": "Desired confidence",
+			"MaximumRandomSamples": 5000,
+			"DesiredConfidence": 99.9,
+            "Transform":"Affine",
+			"PixelDistanceThreshold": 0.1
+		},
+		"verbose": 1,
+		"debug": 0,
+		"constrain_by_z": 0,
+		"sandwich": 0,
+		"constraint_fac": 1e+15
+	},
+	"source_collection": {
+		"owner": "danielk",
+		"project": "Reflections",
+		"stack": "Secs_1015_1099_5_reflections_mml6",
+		"service_host": "em-131fs:8080",
+		"baseURL": "http://em-131fs:8080/render-ws/v1",
+		"renderbinPath": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts",
+		"verbose": 0
+	},
+	"target_collection": {
+		"owner": "russelt",
+		"project": "Reflections",
+		"stack": "render_modules_test",
+		"service_host": "em-131fs:8080",
+		"baseURL": "http://em-131fs:8080/render-ws/v1",
+		"renderbinPath": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts",
+		"verbose": 0
+	},
+	"source_point_match_collection": {
+		"server": "http://em-131fs:8080/render-ws/v1",
+		"owner": "russelt",
+		"match_collection": "Dec_MM500_t2",
+		"verbose": 0
+	},
+	"verbose": 0,
+    "solver_executable": "/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/allen_templates/em_solver"
+}
+
+'''
+example = {
+    "render": {
+        "host": "http://em-131fs",
         "port": 8998,
         "owner": "gayathri",
         "project": "MM2",
@@ -74,7 +154,7 @@ example = {
 	"disableValidation": 1,
 	"verbose": 0
 }
-
+'''
 
 class SolveMontageSectionModule(RenderModule):
     def __init__(self, schema_type=None, *args, **kwargs):
@@ -113,14 +193,14 @@ class SolveMontageSectionModule(RenderModule):
 
         if "MCRROOT" not in os.environ:
             raise ValidationError("MCRROOT not set")
-        
+
         env = os.environ.get('LD_LIBRARY_PATH')
         mcrroot = os.environ.get('MCRROOT')
         path1 = os.path.join(mcrroot, 'runtime/glnxa64')
         path2 = os.path.join(mcrroot, 'bin/glnxa64')
         path3 = os.path.join(mcrroot, 'sys/os/glnxa64')
         path4 = os.path.join(mcrroot, 'sys/opengl/lib/glnxa64')
-        
+
         if path1 not in env:
             os.environ['LD_LIBRARY_PATH'] += os.pathsep + path1
         if path2 not in env:
@@ -129,11 +209,11 @@ class SolveMontageSectionModule(RenderModule):
             os.environ['LD_LIBRARY_PATH'] += os.pathsep + path3
         if path4 not in env:
             os.environ['LD_LIBRARY_PATH'] += os.pathsep + path4
-        
-            
+
+
         cmd = "%s %s"%(self.solver_executable, tempjson.name)
         ret = os.system(cmd)
-        
+
         # one successful completion remove the input json file
         if ret == 0:
             os.remove(tempjson.name)
