@@ -406,11 +406,11 @@ class SolveMontageSectionParameters(RenderParameters):
     #    required=True,
     #    default="/allen/aibs/shared/image_processing/volume_assembly/scratch",
     #    description="Path to scratch directory - can be the same as temp_dir")
-    renderer_client = Str(
-        required=False,
-        default=None,
-        missing=None,
-        description="Path to render client script render.sh")
+    #renderer_client = Str(
+    #    required=False,
+    #    default=None,
+    #    missing=None,
+    #    description="Path to render client script render.sh")
     solver_options = Nested(
         SolverOptionsParameters,
         required=True,
@@ -434,8 +434,8 @@ class SolveMontageSectionParameters(RenderParameters):
         data['solver_options']['lambda'] = data['solver_options']['lambda_value']
         data['solver_options'].pop('lambda_value', None)
 
-        if data['renderer_client'] is None:
-            data['renderer_client'] = os.path.join(data['render']['client_scripts'], 'render.sh')
+        #if data['renderer_client'] is None:
+        #    data['renderer_client'] = os.path.join(data['render']['client_scripts'], 'render.sh')
 
         if data['source_collection']['owner'] is None:
             data['source_collection']['owner'] = data['render']['owner']
