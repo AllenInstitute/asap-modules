@@ -125,9 +125,7 @@ class SolveMontageSectionModule(RenderModule):
         os.environ['LD_LIBRARY_PATH'] += path2 + os.pathsep
         os.environ['LD_LIBRARY_PATH'] += path3 + os.pathsep
         os.environ['LD_LIBRARY_PATH'] += path4 + os.pathsep
-        
-        self.logger.error("LD_LIBRARY_PATH:{}".format(os.environ['LD_LIBRARY_PATH']))
-        
+                
         cmd = "%s %s"%(self.solver_executable, tempjson.name)
         ret = os.system(cmd)
         
