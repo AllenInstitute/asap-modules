@@ -1,8 +1,187 @@
-from argschema.fields import Bool, Float, Int, Nested, Str, InputDir
+from argschema.fields import Bool, Float, Int, Nested, Str, InputDir, OutputDir
 from argschema.schemas import DefaultSchema
 import marshmallow as mm
 from marshmallow import Schema, validates_schema, post_load
 from ..module.render_module import RenderParameters
+import os
+
+
+class PointMatchFilteringOptions(DefaultSchema):
+    NumRandomSamplingsMethod = Str(
+        required=False,
+        default="Desired confidence",
+        missing="Desired confidence",
+        description="Numerical random sampling method")
+    MaximumRandomSamples = Int(
+        required=False,
+        default=5000,
+        missing=5000,
+        description="Max number of random samples")
+    DesiredConfidence = Float(
+        required=False,
+        default=99.9,
+        missing=99.9,
+        description="Desired confidence value for point match filtering")
+    Transform = Str(
+        required=False,
+        default="Affine",
+        missing="Affine",
+        description="RANSAC model to fit")
+    PixelDistanceThreshold = Float(
+        required=False,
+        default=0.1,
+        missing=0.1,
+        description="Pixel distance threshold")
+
+
+class PastixOptions(DefaultSchema):
+    ncpus = Int(
+        required=False,
+        default=8,
+        missing=8,
+        description="number of cpu cores to be used for solving")
+    parms_fn = Str(
+        required=True,
+        description="pastix parameters in a file")
+    split = Int(
+        required=False,
+        default=1,
+        missing=1,
+        description="split parameter for pastix solver")
+
+
+
+class SolverOptionsParameters(DefaultSchema):
+    degree = Int(
+        required=False,
+        default=1,
+        missing=1,
+        description="Degree of rquired transformation (0 - Rigid, 1 - Affine(default), 2 - Polynomial)")
+    solver = Str(
+        required=False,
+        default="backslash",
+        missing="backslash",
+        description="type of solver to solve the system (default - backslash)")
+    transfac = Int(
+        required=False,
+        default=1,
+        missing=1,
+        description="translation factor")
+    lambda_value = Float(
+        required=False,
+        default=1,
+        missing=1,
+        description="lambda for the solver")
+    edge_lambda = Float(
+        required=False,
+        default=0.1,
+        missing=0.1,
+        description="edge lambda for solver regularization")
+    nbrs = Int(
+        required=False,
+        default=2,
+        missing=2,
+        description="number of neighboring sections to consider (applies for cross section point matches)")
+    nbrs_step = Int(
+        required=False,
+        default=1,
+        missing=1,
+        description="neighbors step")
+    xs_weight = Float(
+        required=True,
+        description="Cross section point match weights")
+    min_points = Int(
+        required=False,
+        default=4,
+        missing=4,
+        description="Minimum number of points correspondences required per tile pair")
+    max_points = Int(
+        required=False,
+        default=80,
+        missing=80,
+        description="Maximum number of point correspondences required per tile pair")
+    filter_point_matches = Int(
+        required=False,
+        default=1,
+        missing=1,
+        description="Filter point matches from collection (default = 1)")
+    outlier_lambda = Int(
+        required=False,
+        default=1000,
+        missing=1000,
+        description="lambda value for outliers")
+    min_tiles = Int(
+        required=False,
+        default=3,
+        missing=3,
+        description="Minimum number of tiles in section")
+    Width = Int(
+        required=True,
+        description="Width of the tiles")
+    Height = Int(
+        required=True,
+        description="Height of the tiles")
+    outside_group = Int(
+        required=False,
+        default=0,
+        missing=0,
+        description="Outside group")
+    matrix_only = Int(
+        required=False,
+        default=0,
+        missing=0,
+        description="matrix only")
+    distribute_A = Int(
+        required=False,
+        default=16,
+        missing=16,
+        description="Distribute A matrix")
+    dir_scratch = OutputDir(
+        required=True,
+        description="Scratch directory")
+    distributed = Int(
+        required=False,
+        default=0,
+        missing=0,
+        description="Distributed parameter of solver")
+    use_peg = Int(
+        required=False,
+        default=0,
+        missing=0,
+        description="Use pegs? (default = 0)")
+    verbose = Int(
+        required=False,
+        default=0,
+        missing=0,
+        description="Verbose output from solver needed?")
+    debug = Int(
+        required=False,
+        default=0,
+        missing=0,
+        description="turn on debug mode (default = 0 - off)")
+    constrain_by_z = Int(
+        required=False,
+        default=0,
+        missing=0,
+        description="Constrain solution by z (default = 0)")
+    sandwich = Int(
+        required=False,
+        default=0,
+        missing=0,
+        description="sandwich factor of solver")
+    constraint_fac = Int(
+        required=False,
+        default=1e15,
+        missing=1e15,
+        description="Contraint factor")
+    pmopts = Nested(
+        PointMatchFilteringOptions,
+        required=True,
+        description="Point match filtering options for solver")
+    pastix = Nested(
+        PastixOptions,
+        required=True,
+        description="Pastix solver options")
 
 
 class SolverParameters(DefaultSchema):
@@ -168,11 +347,11 @@ class TargetStackParameters(DefaultSchema):
         default=0,
         missing=0,
         description="Verbose output from solver needed?")
-    initialize = Int(
-        required=False,
-        default=0,
-        missing=0,
-        description="Do you want to initialize the stack from scratch")
+    #initialize = Int(
+    #    required=False,
+    #    default=0,
+    #    missing=0,
+    #    description="Do you want to initialize the stack from scratch")
 
 
 class PointMatchCollectionParameters(DefaultSchema):
@@ -189,40 +368,51 @@ class PointMatchCollectionParameters(DefaultSchema):
     match_collection = Str(
         required=True,
         description="Montage point match collection")
+    verbose = Int(
+        required=False,
+        default=0,
+        missing=0,
+        description="Verbose output from point match loader needed?")
 
 
 class SolveMontageSectionParameters(RenderParameters):
-    z_value = Int(
+    #z_value = Int(
+    #    required=True,
+    #    description="Z value of section to be montaged")
+    first_section = Int(
         required=True,
-        description="Z value of section to be montaged")
-    filter_point_matches = Int(
-        required=False,
-        default=1,
-        missing=1,
-        description="Do you want to filter point matches? default - 1")
+        description="Z index of the first section")
+    last_section = Int(
+        required=True,
+        description="Z index of the last section")
+    #filter_point_matches = Int(
+    #    required=False,
+    #    default=1,
+    #    missing=1,
+    #    description="Do you want to filter point matches? default - 1")
     solver_executable = Str(
         required=True,
         description="Matlab solver executable with full path")
-    temp_dir = InputDir(
-        required=True,
-        default="/allen/aibs/shared/image_processing/volume_assembly/scratch",
-        description="Path to temporary directory")
+    #temp_dir = InputDir(
+    #    required=True,
+    #    default="/allen/aibs/shared/image_processing/volume_assembly/scratch",
+    #    description="Path to temporary directory")
     verbose = Int(
         required=False,
         default=0,
         missing=0,
         description="Verbose output from solver needed?")
-    scratch = InputDir(
-        required=True,
-        default="/allen/aibs/shared/image_processing/volume_assembly/scratch",
-        description="Path to scratch directory - can be the same as temp_dir")
-    renderer_client = Str(
-        required=False,
-        default=None,
-        missing=None,
-        description="Path to render client script render.sh")
+    #scratch = InputDir(
+    #    required=True,
+    #    default="/allen/aibs/shared/image_processing/volume_assembly/scratch",
+    #    description="Path to scratch directory - can be the same as temp_dir")
+    #renderer_client = Str(
+    #    required=False,
+    #    default=None,
+    #    missing=None,
+    #    description="Path to render client script render.sh")
     solver_options = Nested(
-        SolverParameters,
+        SolverOptionsParameters,
         required=True,
         description="Solver parameters")
     source_collection = Nested(
@@ -244,8 +434,8 @@ class SolveMontageSectionParameters(RenderParameters):
         data['solver_options']['lambda'] = data['solver_options']['lambda_value']
         data['solver_options'].pop('lambda_value', None)
 
-        if data['renderer_client'] is None:
-            data['renderer_client'] = os.path.join(data['render']['client_scripts'], 'render.sh')
+        #if data['renderer_client'] is None:
+        #    data['renderer_client'] = os.path.join(data['render']['client_scripts'], 'render.sh')
 
         if data['source_collection']['owner'] is None:
             data['source_collection']['owner'] = data['render']['owner']
