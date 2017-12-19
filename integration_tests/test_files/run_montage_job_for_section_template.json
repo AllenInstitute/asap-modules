@@ -1,6 +1,6 @@
 {
     "render": {
-      "host": "http://{{render_host}}",
+      "host": "{{render_host}}",
       "port": {{render_port}},
       "owner": "{{render_owner}}",
       "project": "{{render_project}}",
