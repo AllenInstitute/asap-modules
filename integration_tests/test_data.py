@@ -116,7 +116,6 @@ test_em_montage_parameters = render_json_template(example_env,
     render_owner = render_test_owner,
     render_client_scripts = client_script_location,
     em_solver_bin = MONTAGE_SOLVER_BIN,
-    #temp_dir= tempfile.mkdtemp(),
     scratch_dir = tempfile.mkdtemp(),
     point_match_collection = montage_collection,
     montage_z = montage_z)

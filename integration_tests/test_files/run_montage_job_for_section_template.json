@@ -63,7 +63,7 @@
   		"service_host": "{{render_host}}:{{render_port}}",
   		"baseURL": "http://{{render_host}}:{{render_port}}/render-ws/v1",
       "renderbinPath": "{{render_client_scripts}}",
-      "verbose": 0,
+      "verbose": 0
   	},
     "source_point_match_collection": {
   		"server": "http://{{render_host}}:{{render_port}}/render-ws/v1",
