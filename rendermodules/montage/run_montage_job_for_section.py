@@ -217,7 +217,7 @@ class SolveMontageSectionModule(RenderModule):
 
         sectionDataList = renderapi.stack.get_stack_sectionData(self.args['target_collection']['stack'],
             render=self.render)
-        sectionData = next(section for section in sectionDataList if section['firest_section']==self.args['z_value'])
+        sectionData = next(section for section in sectionDataList if section['first_section']==self.args['z_value'])
         self.output(sectionData)
 
         '''
