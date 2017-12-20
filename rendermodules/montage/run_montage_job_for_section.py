@@ -88,7 +88,7 @@ example = {
 		"verbose": 0
 	},
 	"verbose": 0,
-    "solver_executable": "/allen/aibs/pipeline/image_processing/volume_assembly/EMAligner/dev/allen_templates/em_solver"
+    "solver_executable": "/allen/aibs/pipeline/image_processing/volume_assembly/EMAligner/dev/allen_templates/run_em_solver.sh"
 }
 
 '''
@@ -194,19 +194,19 @@ class SolveMontageSectionModule(RenderModule):
         if "MCRROOT" not in os.environ:
             raise ValidationError("MCRROOT not set")
         
-        os.environ['LD_LIBRARY_PATH']=''
-        mcrroot = os.environ['MCRROOT']
-        path1 = os.path.join(mcrroot, 'runtime/glnxa64')
-        path2 = os.path.join(mcrroot, 'bin/glnxa64')
-        path3 = os.path.join(mcrroot, 'sys/os/glnxa64')
-        path4 = os.path.join(mcrroot, 'sys/opengl/lib/glnxa64')
+        # os.environ['LD_LIBRARY_PATH']=''
+        # mcrroot = os.environ['MCRROOT']
+        # path1 = os.path.join(mcrroot, 'runtime/glnxa64')
+        # path2 = os.path.join(mcrroot, 'bin/glnxa64')
+        # path3 = os.path.join(mcrroot, 'sys/os/glnxa64')
+        # path4 = os.path.join(mcrroot, 'sys/opengl/lib/glnxa64')
         
-        os.environ['LD_LIBRARY_PATH'] += path1 + os.pathsep
-        os.environ['LD_LIBRARY_PATH'] += path2 + os.pathsep
-        os.environ['LD_LIBRARY_PATH'] += path3 + os.pathsep
-        os.environ['LD_LIBRARY_PATH'] += path4 + os.pathsep
+        # os.environ['LD_LIBRARY_PATH'] += path1 + os.pathsep
+        # os.environ['LD_LIBRARY_PATH'] += path2 + os.pathsep
+        # os.environ['LD_LIBRARY_PATH'] += path3 + os.pathsep
+        # os.environ['LD_LIBRARY_PATH'] += path4 + os.pathsep
                 
-        cmd = "%s %s"%(self.solver_executable, tempjson.name)
+        cmd = "%s %s %s"%(self.solver_executable, os.environ['MCRROOT'],tempjson.name)
         ret = os.system(cmd)
 
         # one successful completion remove the input json file

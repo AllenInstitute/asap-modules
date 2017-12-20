@@ -91,7 +91,7 @@ RAW_STACK_INPUT_JSON = render_json_template(example_env, 'raw_tile_specs_for_em_
 MATLAB_SOLVER_PATH = os.environ.get('MATLAB_SOLVER_PATH',
     '/allen/aibs/pipeline/image_processing/volume_assembly/EMAligner/dev/allen_templates')
 #MATLAB_SOLVER_PATH='/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/allen_templates/'
-MONTAGE_SOLVER_BIN = os.path.join(MATLAB_SOLVER_PATH,'em_solver')
+MONTAGE_SOLVER_BIN = os.path.join(MATLAB_SOLVER_PATH,'run_em_solver.sh')
 RENDER_SPARK_JAR = os.environ['RENDER_SPARK_JAR']
 SPARK_HOME = os.environ.get('SPARK_HOME','/shared/spark')
 montage_project = "em_montage_test"
