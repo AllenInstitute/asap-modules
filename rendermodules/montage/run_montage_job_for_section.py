@@ -84,7 +84,7 @@ example = {
 	"source_point_match_collection": {
 		"server": "http://ibs-forrestc-ux1:8988/render-ws/v1",
 		"owner": "test",
-		"match_collection": "test_collection",
+		"match_collection": "test_montage_collection",
 		"verbose": 0
 	},
 	"verbose": 0,
