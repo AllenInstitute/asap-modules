@@ -14,7 +14,7 @@ if __name__ == "__main__" and __package__ is None:
 
 example = {
     "render": {
-        "host": "http://ibs-forrestc-ux1",
+        "host": "ibs-forrestc-ux1",
         "port": 8988,
         "owner": "test",
         "project": "em_montage_test",
