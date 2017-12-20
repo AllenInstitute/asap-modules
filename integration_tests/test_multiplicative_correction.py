@@ -11,13 +11,12 @@ from test_data import (MULTIPLICATIVE_INPUT_JSON, multiplicative_correction_exam
 from rendermodules.intensity_correction.calculate_multiplicative_correction import MakeMedian
 from rendermodules.intensity_correction.apply_multiplicative_correction import MultIntensityCorr, getImage, process_tile
 
-render_params['project']='multi_correct_test'
-
 logger = renderapi.client.logger
 logger.setLevel(logging.DEBUG)
 
 @pytest.fixture(scope='module')
 def render():
+    render_params['project']='multi_correct_test'
     render = renderapi.connect(**render_params)
     return render
 

@@ -30,6 +30,14 @@ try:
 except OSError as e:
     pass
 
+log_dir = os.environ.get(
+    'LOG_DIR', '/allen/aibs/pipeline/image_processing/volume_assembly/logs/')
+
+try:
+    os.makedirs(log_dir)
+except OSError as e:
+    pass
+
 example_dir = os.path.join(os.path.dirname(__file__), 'test_files')
 example_env = Environment(loader=FileSystemLoader(example_dir))
 
@@ -77,4 +85,38 @@ TILESPECS_NO_LC_JSON = render_json_template(example_env, 'test_noLC.json',
 TILESPECS_LC_JSON = render_json_template(example_env, 'test_LC.json',
                                          test_data_root=TEST_DATA_ROOT)
 
-MONTAGE_SOLVER_EXECUTABLE = '/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/matlab_compiled/solve_montage_SL'
+RAW_STACK_INPUT_JSON = render_json_template(example_env, 'raw_tile_specs_for_em_montage.json',
+                                            test_data_root=TEST_DATA_ROOT)
+
+MATLAB_SOLVER_PATH = os.environ.get('MATLAB_SOLVER_PATH',
+    '/allen/aibs/pipeline/image_processing/volume_assembly/EMAligner/dev/allen_templates')
+#MATLAB_SOLVER_PATH='/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/allen_templates/'
+MONTAGE_SOLVER_BIN = os.path.join(MATLAB_SOLVER_PATH,'run_em_solver.sh')
+RENDER_SPARK_JAR = os.environ['RENDER_SPARK_JAR']
+SPARK_HOME = os.environ.get('SPARK_HOME','/shared/spark')
+montage_project = "em_montage_test"
+montage_collection = "test_montage_collection"
+montage_z = 1015
+test_pointmatch_parameters = render_json_template(example_env,
+    'point_match_parameters.json',
+    render_host = render_host,
+    render_port = render_port,
+    render_project = montage_project,
+    render_owner = render_test_owner,
+    render_client_scripts = client_script_location,
+    spark_log_dir = tempfile.mkdtemp(),
+    render_spark_jar = RENDER_SPARK_JAR,
+    spark_master_url = os.environ['SPARK_MASTER_URL'],
+    spark_home = SPARK_HOME,
+    point_match_collection = montage_collection )
+test_em_montage_parameters = render_json_template(example_env,
+    'run_montage_job_for_section_template.json',
+    render_host = render_host,
+    render_port = render_port,
+    render_project = montage_project,
+    render_owner = render_test_owner,
+    render_client_scripts = client_script_location,
+    em_solver_bin = MONTAGE_SOLVER_BIN,
+    scratch_dir = tempfile.mkdtemp(),
+    point_match_collection = montage_collection,
+    montage_z = montage_z)

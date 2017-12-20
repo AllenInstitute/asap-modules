@@ -5,8 +5,8 @@ from argschema.fields import Bool, Float, Int, Nested, Str, InputDir
 from argschema.schemas import DefaultSchema
 import marshmallow as mm
 import renderapi
-from rendermodules.module.render_module import RenderModule
-from rendermodules.pointmatch.schemas import PointMatchClientParametersSpark
+from rendermodules.module.render_module import RenderModule, RenderModuleException
+from rendermodules.pointmatch.schemas import PointMatchClientParametersSpark,PointMatchClientOutputSchema
 
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.pointmatch.generate_point_matches_spark"
@@ -40,8 +40,28 @@ example = {
     "matchMinNumInliers": 8,
     "matchMaxNumInliers": 200
 }
+def form_sift_params(args):
+    sift_params = " --SIFTfdSize {}".format(args['SIFTfdSize'])
+    sift_params += " --SIFTsteps {}".format(args['SIFTsteps'])
+    sift_params += " --matchMaxEpsilon {}".format(args['matchMaxEpsilon'])
+    sift_params += " --maxFeatureCacheGb {}".format(args['maxFeatureCacheGb'])
+    sift_params += " --SIFTminScale {}".format(args['SIFTminScale'])
+    sift_params += " --SIFTmaxScale {}".format(args['SIFTmaxScale'])
+    sift_params += " --renderScale {}".format(args['renderScale'])
+    sift_params += " --matchRod {}".format(args['matchRod'])
+    sift_params += " --matchMinInlierRatio {}".format(args['matchMinInlierRatio'])
+    sift_params += " --matchMinNumInliers {}".format(args['matchMinNumInliers'])
+    sift_params += " --matchMaxNumInliers {}".format(args['matchMaxNumInliers'])
+    clipWidth = args.get('clipWidth',None)
+    clipHeight = args.get('clipHeight',None)
+    if clipWidth is not None:
+        sift_params += " --clipWidth {}".format(clipWidth)
+    if clipHeight is not None:
+        sift_params += " --clipHeight {}".format(clipHeight)
+    return sift_params
 
 class PointMatchClientModuleSpark(RenderModule):
+    default_output_schema = PointMatchClientOutputSchema
     def __init__(self, schema_type=None, *args, **kwargs):
         if schema_type is None:
             schema_type = PointMatchClientParametersSpark
@@ -49,24 +69,15 @@ class PointMatchClientModuleSpark(RenderModule):
             schema_type=schema_type, *args, **kwargs)
 
     def run(self):
-        # prepare sift parameters
-        sift_params = " --SIFTFdSize {}".format(self.args['SIFTfdSize'])
-        sift_params + sift_params + " --SIFTsteps {}".format(self.args['SIFTsteps'])
-        sift_params = sift_params + " --matchMaxEpsilon {}".format(self.args['matchMaxEpsilon'])
-        sift_params = sift_params + " --maxFeatureCacheGb {}".format(self.args['maxFeatureCacheGb'])
-        sift_params = sift_params + " --SIFTminScale {}".format(self.args['SIFTminScale'])
-        sift_params = sift_params + " --SIFTmaxScale {}".format(self.args['SIFTmaxScale'])
-        sift_params = sift_params + " --renderScale {}".format(self.args['renderScale'])
-        sift_params = sift_params + " --matchRod {}".format(self.args['matchRod'])
-        sift_params = sift_params + " --matchMinInlierRatio {}".format(self.args['matchMinInlierRatio'])
-        sift_params = sift_params + " --matchMinNumInliers {}".format(self.args['matchMinNumInliers'])
-        sift_params = sift_params + " --matchMaxNumInliers {}".format(self.args['matchMaxNumInliers'])
+        # prepare sift parameters     
+        sift_params = form_sift_params(self.args)
 
         sparksubmit = os.path.join(self.args['sparkhome'], 'bin', 'spark-submit')
 
         # prepare the spark submit command
         cmd = "{} --master {}".format(sparksubmit, self.args['masterUrl'])
         cmd = cmd + " --executor-memory {}".format(self.args['memory'])
+        cmd = cmd + " --driver-memory {}".format(self.args['driverMemory'])
         cmd = cmd + " --class {} {}".format(self.args['className'], self.args['jarfile'])
         cmd = cmd + " --baseDataUrl {}".format(self.args['baseDataUrl'])
         cmd = cmd + " --owner {}".format(self.args['owner'])
@@ -75,7 +86,13 @@ class PointMatchClientModuleSpark(RenderModule):
 
         cmd_to_submit = cmd + sift_params
 
-        os.system(cmd)
+        ret=os.system(cmd_to_submit)
+        if ret != 0:
+            raise RenderModuleException("PointMatchClientModuleSpark failed with inputs {} ",self.args)
+        
+        mc=renderapi.pointmatch.get_matchcollections(self.args['owner'],render=self.render)
+        collection = next(m for m in mc if m['collectionId']['name']==self.args['collection'])
+        self.output(collection)
 
 if __name__ == "__main__":
     module = PointMatchClientModuleSpark(input_data=example)
