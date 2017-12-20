@@ -14,14 +14,14 @@ if __name__ == "__main__" and __package__ is None:
 
 example = {
     "render": {
-        "host": "http://em-131fs",
-        "port": 8080,
-        "owner": "gayathri",
-        "project": "MM2",
-        "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_20170613/render-ws-java-client/src/main/scripts"
+        "host": "http://ibs-forrestc-ux1",
+        "port": 8988,
+        "owner": "test",
+        "project": "em_montage_test",
+        "client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/dev/scripts/"
     },
-    "first_section": 1024,
-	"last_section": 1024,
+    "first_section": 1015,
+	"last_section": 1015,
 	"solver_options": {
 		"degree": 1,
 		"solver": "backslash",
@@ -64,31 +64,31 @@ example = {
 		"constraint_fac": 1e+15
 	},
 	"source_collection": {
-		"owner": "danielk",
-		"project": "Reflections",
-		"stack": "Secs_1015_1099_5_reflections_mml6",
-		"service_host": "em-131fs:8080",
-		"baseURL": "http://em-131fs:8080/render-ws/v1",
-		"renderbinPath": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts",
+		"owner": "test",
+		"project": "em_montage_test",
+		"stack": "input_raw_stack",
+		"service_host": "ibs-forrestc-ux1:8988",
+		"baseURL": "http://ibs-forrestc-ux1:8988/render-ws/v1",
+		"renderbinPath": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/dev/scripts/",
 		"verbose": 0
 	},
 	"target_collection": {
-		"owner": "russelt",
-		"project": "Reflections",
+		"owner": "test",
+		"project": "em_montage_test",
 		"stack": "render_modules_test",
-		"service_host": "em-131fs:8080",
-		"baseURL": "http://em-131fs:8080/render-ws/v1",
-		"renderbinPath": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts",
+		"service_host": "ibs-forrestc-ux1:8988",
+		"baseURL": "http://ibs-forrestc-ux1:8988/render-ws/v1",
+		"renderbinPath": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/dev/scripts/",
 		"verbose": 0
 	},
 	"source_point_match_collection": {
-		"server": "http://em-131fs:8080/render-ws/v1",
-		"owner": "russelt",
-		"match_collection": "Dec_MM500_t2",
+		"server": "http://ibs-forrestc-ux1:8988/render-ws/v1",
+		"owner": "test",
+		"match_collection": "test_collection",
 		"verbose": 0
 	},
 	"verbose": 0,
-    "solver_executable": "/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/allen_templates/em_solver"
+    "solver_executable": "/allen/aibs/pipeline/image_processing/volume_assembly/EMAligner/dev/allen_templates/em_solver"
 }
 
 '''
