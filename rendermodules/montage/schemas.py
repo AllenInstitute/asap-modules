@@ -381,7 +381,7 @@ class SolveMontageSectionParameters(RenderParameters):
     source_collection = Nested(
         SourceStackParameters,
         required=True,
-        description="Input stack parameters")
+        description="Input stack parameters, will be created and deleted after from input_stack")
     target_collection = Nested(
         TargetStackParameters,
         required=True,

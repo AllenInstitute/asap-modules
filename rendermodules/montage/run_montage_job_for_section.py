@@ -167,6 +167,8 @@ class SolveMontageSectionModule(RenderModule):
         # Assigning the solver_executable to a different variable and removing it from args
         self.solver_executable = self.args['solver_executable']
         self.args.pop('solver_executable', None)
+        self.input_stack = self.args['input_stack']
+        self.args.pop('input_stack')
 
     def run(self):
         # generate a temporary json to feed in to the solver
@@ -179,6 +181,13 @@ class SolveMontageSectionModule(RenderModule):
         with open(tempjson.name, 'w') as f:
             json.dump(self.args, f, indent=4)
             f.close()
+
+        renderapi.stack.clone_stack(self.input_stack,
+                                    self.args['source_collection']['stack'],
+                                    zs=self.args['z_value'],
+                                    close_stack=True,
+                                    render=self.render)
+     
 
         # create the command to run
         # this code assumes that matlab environment is setup in the server for the user
