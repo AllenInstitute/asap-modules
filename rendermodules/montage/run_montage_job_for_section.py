@@ -113,7 +113,7 @@ class SolveMontageSectionModule(RenderModule):
             tmp_stack = "{}_z{}".format(self.args['source_collection']['stack'],self.args['first_section'])
             renderapi.stack.clone_stack(self.args['source_collection']['stack'],
                                         tmp_stack,
-                                        zs=self.args['first_section'],
+                                        zs=[self.args['first_section']],
                                         close_stack=True,
                                         render=self.render)
             self.args['source_collection']['stack']=tmp_stack
