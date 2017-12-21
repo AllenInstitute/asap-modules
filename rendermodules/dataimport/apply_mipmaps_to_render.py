@@ -90,20 +90,6 @@ class AddMipMapsToStack(RenderModule):
             self.logger.error('No sections found for stack {}'.format(
                 self.args['input_stack']))
 
-        print zvalues
-        mypartial = partial(
-            addMipMapsToRender, self.render, self.args['input_stack'],
-            self.args['mipmap_dir'], self.args['imgformat'],
-            self.args['levels'])
-
-        with renderapi.client.WithPool(self.args['pool_size']) as pool:
-            tilespecs = [i for l in pool.map(mypartial, zvalues)
-                         for i in l]
-
-        # with renderapi.client.WithPool(self.args['pool_size']) as pool:
-        #     tilespecPaths = [i for l in pool.map(mypartial, zvalues)
-        #                      for i in l]
-
         # add the tile spec to render stack
         try:
             self.args['output_stack']
@@ -120,14 +106,19 @@ class AddMipMapsToStack(RenderModule):
             self.render.run(renderapi.stack.create_stack,
                             output_stack)
 
+        if output_stack != self.args['input_stack']:
+            renderapi.stack.clone_stack(self.args['input_stack'],
+                            output_stack, zs=zvalues, close_stack=False, render=self.render)
+        
+        md = renderapi.stack.get_stack_metadata(self.args['input_stack'], self.render)
+        md.mipmapPathBuilder = {
+            "rootPath": self.args['mipmap_dir'],
+            "numberOfLevels": self.args['level'],
+            "extension": self.args['imgformat']
+            }
+        renderapi.stack.set_stack_metadata(output_stack, md, self.render)
         self.render.run(renderapi.stack.set_stack_state,
                         output_stack, 'LOADING')
-        self.render.run(renderapi.client.import_tilespecs_parallel,
-                        output_stack, tilespecs,
-                        poolsize=self.args['pool_size'], close_stack=False)
-        # self.render.run(renderapi.client.import_jsonfiles_parallel,
-        #                 output_stack, tilespecPaths,
-        #                 close_stack=self.args['close_stack'])
         self.output({"output_stack": output_stack})
 
 
