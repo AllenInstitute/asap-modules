@@ -9,6 +9,7 @@ import renderapi
 import tempfile
 from rendermodules.module.render_module import RenderModule
 from rendermodules.pointmatch.schemas import PointMatchClientParametersQsub
+from .generate_point_matches_spark import form_sift_params
 
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.pointmatch.generate_point_matches_qsub"
@@ -58,17 +59,7 @@ class PointMatchClientModuleQsub(RenderModule):
     def run(self):
 
         # prepare sift parameters
-        sift_params = "--SIFTFdSize {}".format(self.args['SIFTfdSize'])
-        sift_params + sift_params + " --SIFTsteps {}".format(self.args['SIFTsteps'])
-        sift_params = sift_params + " --matchMaxEpsilon {}".format(self.args['matchMaxEpsilon'])
-        sift_params = sift_params + " --maxFeatureCacheGb {}".format(self.args['maxFeatureCacheGb'])
-        sift_params = sift_params + " --SIFTminScale {}".format(self.args['SIFTminScale'])
-        sift_params = sift_params + " --SIFTmaxScale {}".format(self.args['SIFTmaxScale'])
-        sift_params = sift_params + " --renderScale {}".format(self.args['renderScale'])
-        sift_params = sift_params + " --matchRod {}".format(self.args['matchRod'])
-        sift_params = sift_params + " --matchMinInlierRatio {}".format(self.args['matchMinInlierRatio'])
-        sift_params = sift_params + " --matchMinNumInliers {}".format(self.args['matchMinNumInliers'])
-        sift_params = sift_params + " --matchMaxNumInliers {}".format(self.args['matchMaxNumInliers'])
+        sift_params = form_sift_params(self.args)
 
         temppbs = tempfile.NamedTemporaryFile(
                 suffix=".sh",
@@ -78,18 +69,18 @@ class PointMatchClientModuleQsub(RenderModule):
 
         # set the environment variables and the spin_up.pbs in the shell script
         sparkargs = "\" --owner {}".format(self.args['owner'])
-        sparkargs = sparkargs + " --baseDataUrl {}".format(self.args['baseDataUrl'])
-        sparkargs = sparkargs + " --collection {}".format(self.args['collection'])
-        sparkargs = sparkargs + " pairJson {} {}\"".format(self.args['pairJson'], sift_params)
+        sparkargs += " --baseDataUrl {}".format(self.args['baseDataUrl'])
+        sparkargs += " --collection {}".format(self.args['collection'])
+        sparkargs += " pairJson {} {}\"".format(self.args['pairJson'], sift_params)
 
         env = "sparkhome={},".format(self.args['sparkhome'])
-        env = env + "sparkjar={},".format(self.args['jarfile'])
-        env = env + "sparkclass={},".format(self.args['className'])
-        env = env + "sparkargs={}".format(sparkargs)
+        env += "sparkjar={},".format(self.args['jarfile'])
+        env += "sparkclass={},".format(self.args['className'])
+        env += "sparkargs={}".format(sparkargs)
 
         cmd_to_submit = "qsub -l nodes={}:ppn={}".format(self.args['no_nodes'], self.args['ppn'])
-        cmd_to_submit = cmd_to_submit + " -q {} -v logdir={},".format(self.args['queue_name'], self.args['logdir'])
-        cmd_to_submit = cmd_to_submit + "{} {}".format(env, self.args['pbs_template'])
+        cmd_to_submit += " -q {} -v logdir={},".format(self.args['queue_name'], self.args['logdir'])
+        cmd_to_submit += "{} {}".format(env, self.args['pbs_template'])
 
         os.system(cmd_to_submit)
 

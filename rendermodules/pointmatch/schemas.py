@@ -1,4 +1,4 @@
-from argschema.fields import Bool, Float, Int, Nested, Str, InputDir, InputFile
+from argschema.fields import Bool, Float, Int, Nested, Str, InputDir, InputFile, OutputDir
 from argschema.schemas import DefaultSchema
 import marshmallow as mm
 from marshmallow import ValidationError, validates_schema, post_load
@@ -51,7 +51,7 @@ class TilePairClientParameters(RenderParameters):
         default=True,
         missing=True,
         description="Exclude tiles that are completely obscured by reacquired tiles")
-    output_dir = Str(
+    output_dir = OutputDir(
         required=True,
         description="Output directory path to save the tilepair json file")
     memGB = Str(
@@ -66,28 +66,8 @@ class TilePairClientParameters(RenderParameters):
             data['baseStack'] = data['stack']
 
 
-#class SIFTPointMatchClientParameters(DefaultSchema):
 
-
-class PointMatchClientParametersSpark(RenderParameters):
-    memory = Str(
-        required=False,
-        default='120g',
-        missing='120g',
-        description="Memory required for spark job")
-    masterUrl = Str(
-        required=True,
-        description="Master URL for spark cluster")
-    sparkhome = Str(
-        required=True,
-        default="/allen/aibs/shared/image_processing/volume_assembly/utils/spark",
-        missing="/allen/aibs/shared/image_processing/volume_assembly/utils/spark",
-        description="Path to the spark home directory")
-    logdir = Str(
-        required=False,
-        default="/allen/aibs/shared/image_processing/volume_assembly/logs/spark_logs",
-        missing="/allen/aibs/shared/image_processing/volume_assembly/logs/spark_logs",
-        description="Directory to store spark logs")
+class SIFTPointMatchParameters(RenderParameters):
     jarfile = Str(
         required=True,
         description="Full path to the spark point match client jar file")
@@ -164,7 +144,14 @@ class PointMatchClientParametersSpark(RenderParameters):
         required=False,
         default=200,
         description="Maximum number of inliers for match filtering")
-
+    clipWidth = Int(
+        required=False,
+        description = "Number of pixels to clip left right when doing montaging (default no clipping)"
+    )
+    clipHeight = Int(
+        required=False,
+        description= "Number of pixels to clip top/bottom when doing montaging (default no clipping)"
+    )
     @post_load
     def validate_options(self, data):
         if data['owner'] is None:
@@ -172,8 +159,43 @@ class PointMatchClientParametersSpark(RenderParameters):
         if data['baseDataUrl'] is None:
             data['baseDataUrl'] = 'http://' + data['render']['host'] + ":" + str(data['render']['port']) + "/render-ws/v1"
 
-class PointMatchClientParametersQsub(RenderParameters):
-    sparkhome = Str(
+class PointMatchClientParametersSpark(SIFTPointMatchParameters):
+    memory = Str(
+        required=False,
+        default='120g',
+        missing='120g',
+        description="Memory required for spark job")
+    driverMemory = Str(
+        required=False,
+        default='6g',
+        missing='6g',
+        description="memory required for spark driver"
+    )
+    masterUrl = Str(
+        required=True,
+        description="Master URL for spark cluster")
+    sparkhome = InputDir(
+        required=True,
+        default="/allen/aibs/shared/image_processing/volume_assembly/utils/spark",
+        missing="/allen/aibs/shared/image_processing/volume_assembly/utils/spark",
+        description="Path to the spark home directory")
+
+class CollectionId(mm.Schema):
+    owner = Str(required=True,
+                description="owner of collection")
+    name = Str(required=True,
+                description="name of collection")
+
+class PointMatchClientOutputSchema(mm.Schema):
+    collectionId = Nested(CollectionId,
+        required= True,
+        description= "collection identifying details")
+    pairCount = Int(
+        required=True,
+        description = "number of tile pairs in collection")
+
+class PointMatchClientParametersQsub(SIFTPointMatchParameters):
+    sparkhome = InputDir(
         required=True,
         default="/allen/aibs/shared/image_processing/volume_assembly/utils/spark",
         missing="/allen/aibs/shared/image_processing/volume_assembly/utils/spark",
@@ -196,93 +218,3 @@ class PointMatchClientParametersQsub(RenderParameters):
         default='connectome',
         missing='connectome',
         description='Name of the queue to submit the job')
-    logdir = Str(
-        required=False,
-        default="/allen/aibs/shared/image_processing/volume_assembly/logs/spark_logs",
-        missing="/allen/aibs/shared/image_processing/volume_assembly/logs/spark_logs",
-        description="Directory to store spark logs")
-    jarfile = Str(
-        required=True,
-        description="Full path to the spark point match client jar file")
-    className = Str(
-        required=True,
-        description="Class name of java class")
-    owner = Str(
-        required=False,
-        default=None,
-        missing=None,
-        description="Point match collection owner")
-    collection = Str(
-        required=True,
-        description="Name of point match collection to save point matches")
-    baseDataUrl = Str(
-        required=False,
-        default=None,
-        missing=None,
-        description="Base data URL of render")
-    pairJson = Str(
-        required=True,
-        description="Full path to the input tile pair json file")
-    SIFTfdSize = Int(
-        required=False,
-        default=8,
-        missing=8,
-        description="SIFT feature descriptor size: how many samples per row and column")
-    SIFTsteps = Int(
-        required=False,
-        default=3,
-        missing=3,
-        description="SIFT steps per scale octave")
-    matchMaxEpsilon = Float(
-        required=False,
-        default=20.0,
-        missing=20.0,
-        description="Minimal allowed transfer error for match filtering")
-    maxFeatureCacheGb = Int(
-        required=False,
-        default=15,
-        missing=15,
-        description="Maximum memory (in Gb) for caching SIFT features")
-    SIFTminScale = Float(
-        required=False,
-        default=0.38,
-        missing=0.38,
-        description="SIFT minimum scale: minSize * minScale < size < maxSize * maxScale")
-    SIFTmaxScale = Float(
-        required=False,
-        default=0.82,
-        missing=0.82,
-        description="SIFT maximum scale: minSize * minScale < size < maxSize * maxScale")
-    renderScale = Float(
-        required=False,
-        default=0.3,
-        missing=0.3,
-        description="Render canvases at this scale")
-    matchRod = Float(
-        required=False,
-        default=0.92,
-        missing=0.92,
-        description="Ratio of distances for matches")
-    matchMinInlierRatio = Float(
-        required=False,
-        default=0.0,
-        missing=0.0,
-        description="Minimal ratio of inliers to candidates for match filtering")
-    matchMinNumInliers = Int(
-        required=False,
-        default=8,
-        missing=8,
-        description="Minimal absolute number of inliers for match filtering")
-    matchMaxNumInliers = Int(
-        required=False,
-        default=200,
-        description="Maximum number of inliers for match filtering")
-
-
-    @post_load
-    def validate_options(self, data):
-        if data['owner'] is None:
-            data['owner'] = data['render']['owner']
-
-        if data['baseDataUrl'] is None:
-            data['baseDataUrl'] = 'http://' + data['render']['host'] + ":" + str(data['render']['port']) + "/render-ws/v1"
