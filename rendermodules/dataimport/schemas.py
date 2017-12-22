@@ -50,6 +50,11 @@ class GenerateMipMapsParameters(RenderParameters):
     z = mm.fields.Int(
         required=False,
         description='z-index in the stack')
+    PIL_filter = Str(required=False, default='NEAREST',
+                     validator=mm.validate.OneOf([
+                         'NEAREST', 'BOX', 'BILINEAR',
+                         'HAMMING', 'BICUBIC', 'LANCZOS']),
+                    description=('filter to be used in PIL resize'))
 
     @post_load
     def validate_zvalues(self, data):

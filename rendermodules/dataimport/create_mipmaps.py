@@ -3,13 +3,24 @@ from PIL import Image
 from rendermodules.module.render_module import RenderModuleException
 
 
+PIL_filters = {
+    "NEAREST": Image.NEAREST,
+    "BOX": Image.BOX,
+    "BILINEAR": Image.BILINEAR,
+    "HAMMING": Image.HAMMING,
+    "BICUBIC": Image.BICUBIC,
+    "LANCZOS": Image.LANCZOS
+    }
+
+
 class CreateMipMapException(RenderModuleException):
     """Exception raised when there is a problem creating a mipmap"""
     pass
 
 
 def create_mipmaps(inputImage, outputDirectory='.', mipmaplevels=[1, 2, 3],
-                   outputformat='tif', convertTo8bit=True, force_redo=True):
+                   outputformat='tif', convertTo8bit=True, force_redo=True,
+                   ds_filter="NEAREST"):
     """function to create downsampled images from an input image
 
     Parameters
@@ -26,6 +37,8 @@ def create_mipmaps(inputImage, outputDirectory='.', mipmaplevels=[1, 2, 3],
         whether to convert the image to 8 bit, dividing each value by 255
     force_redo: boolean
         whether to recreate mip map images if they already exist
+    ds_filter: str
+        string corresponding to PIL downsample mode
 
     Returns
     =======
@@ -47,7 +60,7 @@ def create_mipmaps(inputImage, outputDirectory='.', mipmaplevels=[1, 2, 3],
 
     for level in mipmaplevels:
         newsize = tuple(map(lambda x: x/(2**level), origsize))
-        dwnImage = im.resize(newsize)
+        dwnImage = im.resize(newsize, resample=PIL_filters[ds_filter])
 
         outdir = os.path.join(outputDirectory, str(level),
                               os.path.dirname(inputImage[1:]))
