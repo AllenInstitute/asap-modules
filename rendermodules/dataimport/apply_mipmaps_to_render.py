@@ -36,9 +36,10 @@ def addMipMapsToRender(render, input_stack, mipmap_dir, imgformat, levels, z):
                            input_stack, z)
 
     for ts in tilespecs:
-        mm1 = ts.ip.mipMapLevels[0]
-
-        oldUrl = mm1.imageUrl
+        # mm1 = ts.ip.mipMapLevels[0]
+        #oldUrl = mm1.imageUrl
+        mm1 = ts.ip.get(0)
+        oldUrl = mm1['imageUrl']
         filepath = urllib.unquote(urlparse.urlparse(str(oldUrl)).path)
         # filepath = str(oldUrl).lstrip('file:/')
         # filepath = filepath.replace("%20", " ")
