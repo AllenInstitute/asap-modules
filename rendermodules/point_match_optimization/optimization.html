@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<head>
+<title>Point Match Optimization Results</title>
+</head>
+<body>
+  {% for rs in return_struct %}
+    <ol>
+    {% for item in rs['zipped'] %}
+      <li>{{ item[0] }}: {{ item[1] }}</li>
+    {% endfor %}
+    </ol>
+    <a href="{{ rs['tilepair_url'] }}">Tilepair URL</a>
+    <br><br>
+    <img src="{{ rs['match_img_filename'] }}", width="1600",height="800">
+    <br>
+  {% endfor %}
+</body>
+</html>
