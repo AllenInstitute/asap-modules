@@ -147,7 +147,9 @@ class SolveMontageSectionModule(RenderModule):
         if self.args.get('output_json',None) is not None:
             sectionDataList = renderapi.stack.get_stack_sectionData(self.args['target_collection']['stack'],
                 render=self.render)
-            sectionData = [section for section in sectionDataList if (section['z']>=self.args['first_section']) and (section['z'<=self.args['last_section'])]
+            sectionData = [section for section in sectionDataList \
+                if (section['z']>=self.args['first_section']) \
+                and (section['z']<=self.args['last_section'])]
             self.output(sectionData)
         
         #if you made a tmp stack destroy it
