@@ -62,6 +62,10 @@ class SolverOptionsParameters(DefaultSchema):
         default="backslash",
         missing="backslash",
         description="type of solver to solve the system (default - backslash)")
+    close_stack = Bool(
+        required=False,
+        default=False,
+        description="whether the solver should close the stack after uploading results")
     transfac = Int(
         required=False,
         default=1,
