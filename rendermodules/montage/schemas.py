@@ -391,7 +391,7 @@ class SolveMontageSectionParameters(RenderParameters):
         if data['source_collection']['service_host'] is None:
             data['source_collection']['service_host'] = data['render']['host'][7:] + ":" + str(data['render']['port'])
         if data['source_collection']['baseURL'] is None:
-            data['source_collection']['baseURL'] = data['render']['host'] + ":" + str(data['render']['port']) + '/render-ws/v1'
+            data['source_collection']['baseURL'] = "http://{}:{}/render-ws/v1".format(data['render']['host'],data['render']['port']) 
         if data['source_collection']['renderbinPath'] is None:
             data['source_collection']['renderbinPath'] = data['render']['client_scripts']
 
@@ -402,7 +402,7 @@ class SolveMontageSectionParameters(RenderParameters):
         if data['target_collection']['service_host'] is None:
             data['target_collection']['service_host'] = data['render']['host'][7:] + ":" + str(data['render']['port'])
         if data['target_collection']['baseURL'] is None:
-            data['target_collection']['baseURL'] = data['render']['host'] + ":" + str(data['render']['port']) + '/render-ws/v1'
+            data['target_collection']['baseURL'] = "http://{}:{}/render-ws/v1".format(data['render']['host'],data['render']['port']) 
         if data['target_collection']['renderbinPath'] is None:
             data['target_collection']['renderbinPath'] = data['render']['client_scripts']
 
