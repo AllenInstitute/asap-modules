@@ -5,7 +5,7 @@ import renderapi
 import tempfile
 from ..module.render_module import RenderModule, RenderModuleException
 from rendermodules.montage.schemas import SolveMontageSectionParameters
-
+import time
 
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.montage.run_montage_job_for_section"
@@ -104,17 +104,25 @@ class SolveMontageSectionModule(RenderModule):
         self.args.pop('solver_executable', None)
         self.clone_section_stack = self.args['clone_section_stack']
         self.args.pop('clone_section_stack')
-        if self.clone_section_stack:
-            if (self.args['first_section']!=self.args['last_section']):
-                raise ValidationError("first section and last section not equal")
+        # if self.clone_section_stack:
+        #     if (self.args['first_section']!=self.args['last_section']):
+        #         raise ValidationError("first section and last section not equal")
 
     def run(self):
-
+        if "MCRROOT" not in os.environ:
+            raise ValidationError("MCRROOT not set")
         if self.clone_section_stack:
-            tmp_stack = "{}_z{}".format(self.args['source_collection']['stack'],self.args['first_section'])
+            tmp_stack = "{}_z{}-{}_{}".format(self.args['source_collection']['stack'],
+                                           self.args['first_section'],
+                                           self.args['last_section'],
+                                           time.strftime("%m%d%y_%H%M%S"))
+            zvalues = renderapi.stack.get_z_values_for_stack(self.args['source_collection']['stack'],render=self.render)
+            zs = [z for z in zvalues if \
+                if (z>=self.args['first_section']) \
+                and (z<=self.args['last_section'])]]
             renderapi.stack.clone_stack(self.args['source_collection']['stack'],
                                         tmp_stack,
-                                        zs=[self.args['first_section']],
+                                        zs=zs,
                                         close_stack=True,
                                         render=self.render)
             self.args['source_collection']['stack']=tmp_stack
@@ -129,9 +137,6 @@ class SolveMontageSectionModule(RenderModule):
         with open(tempjson.name, 'w') as f:
             json.dump(self.args, f, indent=4)
             f.close()
-
-        if "MCRROOT" not in os.environ:
-            raise ValidationError("MCRROOT not set")
         
         #assumes that solver_executable is the shell script that sets the LD_LIBRARY path and calls the executable
         cmd = "%s %s %s"%(self.solver_executable, os.environ['MCRROOT'],tempjson.name)
