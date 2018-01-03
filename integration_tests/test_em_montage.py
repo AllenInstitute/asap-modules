@@ -143,19 +143,3 @@ def test_fail_montage_job_for_section(render,
     with pytest.raises(RenderModuleException):
         mod = SolveMontageSectionModule(input_data=solver_example, args=[])
         mod.run()
-
-def test_fail_montage_job_output(render,
-                                     raw_stack,
-                                     test_point_match_generation,
-                                     tmpdir_factory,
-                                     output_stack=None):
-    if output_stack is None:
-        output_stack = '{}_Montage'.format(raw_stack)
-    output_directory = str(tmpdir_factory.mktemp('output_json'))
-    solver_example['source_collection']['stack'] = raw_stack
-    solver_example['target_collection']['stack'] = output_stack
-    solver_example['source_point_match_collection']['match_collection'] = test_point_match_generation
-    solver_example['z_value'] = montage_z
-    with pytest.raises(RenderModuleException):
-        mod = SolveMontageSectionModule(input_data=solver_example, args=[])
-        mod.run()
