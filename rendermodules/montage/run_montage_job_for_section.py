@@ -149,9 +149,11 @@ class SolveMontageSectionModule(RenderModule):
             raise RenderModuleException("solve failed with input_json {}",self.args)
 
         #return the section data as the output_json if it was given
-        if self.args.get('output_json',None) is not None:
+        try:
             d={'zs':zs}
             self.output(d)
+        except:
+            pass
         
         #if you made a tmp stack destroy it
         if self.clone_section_stack:
