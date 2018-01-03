@@ -118,7 +118,7 @@ class SolveMontageSectionModule(RenderModule):
                                            time.strftime("%m%d%y_%H%M%S"))
             zvalues = renderapi.stack.get_z_values_for_stack(self.args['source_collection']['stack'],render=self.render)
             zs = [z for z in zvalues if \
-                if (z>=self.args['first_section']) \
+                (z>=self.args['first_section']) \
                 and (z<=self.args['last_section'])]]
             renderapi.stack.clone_stack(self.args['source_collection']['stack'],
                                         tmp_stack,
