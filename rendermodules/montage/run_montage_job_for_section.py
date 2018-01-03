@@ -148,7 +148,7 @@ class SolveMontageSectionModule(RenderModule):
         else:
             raise RenderModuleException("solve failed with input_json {}",self.args)
 
-        #return the section data as the output_json if it was given
+        #try to return the z's solved in the output json
         try:
             d={'zs':zs}
             self.output(d)
