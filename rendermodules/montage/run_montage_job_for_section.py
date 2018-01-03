@@ -153,7 +153,7 @@ class SolveMontageSectionModule(RenderModule):
             d={'zs':zs}
             self.output(d)
         except:
-            pass
+            raise RenderModuleException("unable to output json {}",d)
         
         #if you made a tmp stack destroy it
         if self.clone_section_stack:
