@@ -104,8 +104,9 @@ class SolveMontageSectionModule(RenderModule):
         self.args.pop('solver_executable', None)
         self.clone_section_stack = self.args['clone_section_stack']
         self.args.pop('clone_section_stack')
-        if (self.args['first_section']!=self.args['last_section']):
-            raise ValidationError("first section and last section not equal")
+        if self.clone_section_stack:
+            if (self.args['first_section']!=self.args['last_section']):
+                raise ValidationError("first section and last section not equal")
 
     def run(self):
 
@@ -146,7 +147,7 @@ class SolveMontageSectionModule(RenderModule):
         if self.args.get('output_json',None) is not None:
             sectionDataList = renderapi.stack.get_stack_sectionData(self.args['target_collection']['stack'],
                 render=self.render)
-            sectionData = next(section for section in sectionDataList if section['z']==self.args['first_section'])
+            sectionData = [section for section in sectionDataList if (section['z']>=self.args['first_section']) and (section['z'<=self.args['last_section'])]
             self.output(sectionData)
         
         #if you made a tmp stack destroy it
