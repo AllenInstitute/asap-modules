@@ -10,7 +10,7 @@
     "masterUrl":"{{spark_master_url}}",
     "logdir": "{{spark_log_dir}}",
     "jarfile": "{{render_spark_jar}}",
-    "spark_files":["{{spark_logging_properties}}#log4.properties"],
+    "spark_files":["{{spark_logging_properties}}"],
     "spark_conf":{
         "spark.driver.extra.JavaOptions":"-Dlog4j.configuration=file:{{spark_logging_properties}}"
         },
