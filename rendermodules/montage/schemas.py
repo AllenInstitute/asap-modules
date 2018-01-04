@@ -62,6 +62,10 @@ class SolverOptionsParameters(DefaultSchema):
         default="backslash",
         missing="backslash",
         description="type of solver to solve the system (default - backslash)")
+    close_stack = Bool(
+        required=False,
+        default=False,
+        description="whether the solver should close the stack after uploading results")
     transfac = Int(
         required=False,
         default=1,
@@ -276,11 +280,10 @@ class SolverParameters(DefaultSchema):
         missing=5,
         description="Number of peg points")
 
-
-class SourceStackParameters(DefaultSchema):
+class BaseStackParameters(DefaultSchema):
     stack = Str(
         required=True,
-        description="Input source stack")
+        description="Stack name")
     owner = Str(
         required=False,
         default=None,
@@ -290,7 +293,7 @@ class SourceStackParameters(DefaultSchema):
         required=False,
         default=None,
         missing=None,
-        description="Project of the source stack")
+        description="Project of the stack")
     service_host = Str(
         required=False,
         default=None,
@@ -312,47 +315,11 @@ class SourceStackParameters(DefaultSchema):
         missing=0,
         description="Verbose output from solver needed?")
 
+class SourceStackParameters(BaseStackParameters):
+    pass
 
-class TargetStackParameters(DefaultSchema):
-    stack = Str(
-        required=True,
-        description="Output montage stack")
-    owner = Str(
-        required=False,
-        default=None,
-        missing=None,
-        description="Owner of the stack (defaults to render clients' owner)")
-    project = Str(
-        required=False,
-        default=None,
-        missing=None,
-        description="Project of the target stack")
-    service_host = Str(
-        required=False,
-        default=None,
-        missing=None,
-        description="url of render service host (without http://)")
-    baseURL = Str(
-        required=False,
-        default=None,
-        missing=None,
-        description="Base Render URL")
-    renderbinPath = InputDir(
-        required=False,
-        default=None,
-        missing=None,
-        description="Path to render's client scripts")
-    verbose = Int(
-        required=False,
-        default=0,
-        missing=0,
-        description="Verbose output from solver needed?")
-    #initialize = Int(
-    #    required=False,
-    #    default=0,
-    #    missing=0,
-    #    description="Do you want to initialize the stack from scratch")
-
+class TargetStackParameters(BaseStackParameters):
+    pass
 
 class PointMatchCollectionParameters(DefaultSchema):
     server = Str(
@@ -376,41 +343,24 @@ class PointMatchCollectionParameters(DefaultSchema):
 
 
 class SolveMontageSectionParameters(RenderParameters):
-    #z_value = Int(
-    #    required=True,
-    #    description="Z value of section to be montaged")
     first_section = Int(
         required=True,
         description="Z index of the first section")
     last_section = Int(
         required=True,
         description="Z index of the last section")
-    #filter_point_matches = Int(
-    #    required=False,
-    #    default=1,
-    #    missing=1,
-    #    description="Do you want to filter point matches? default - 1")
+    clone_section_stack = Bool(
+        required=False,
+        default=True,
+        description="Whether to clone out a temporary single section stack from source_collection stack")
     solver_executable = Str(
         required=True,
         description="Matlab solver executable with full path")
-    #temp_dir = InputDir(
-    #    required=True,
-    #    default="/allen/aibs/shared/image_processing/volume_assembly/scratch",
-    #    description="Path to temporary directory")
     verbose = Int(
         required=False,
         default=0,
         missing=0,
         description="Verbose output from solver needed?")
-    #scratch = InputDir(
-    #    required=True,
-    #    default="/allen/aibs/shared/image_processing/volume_assembly/scratch",
-    #    description="Path to scratch directory - can be the same as temp_dir")
-    #renderer_client = Str(
-    #    required=False,
-    #    default=None,
-    #    missing=None,
-    #    description="Path to render client script render.sh")
     solver_options = Nested(
         SolverOptionsParameters,
         required=True,
@@ -418,7 +368,7 @@ class SolveMontageSectionParameters(RenderParameters):
     source_collection = Nested(
         SourceStackParameters,
         required=True,
-        description="Input stack parameters")
+        description="Input stack parameters, will be created and deleted after from input_stack")
     target_collection = Nested(
         TargetStackParameters,
         required=True,
@@ -434,9 +384,6 @@ class SolveMontageSectionParameters(RenderParameters):
         data['solver_options']['lambda'] = data['solver_options']['lambda_value']
         data['solver_options'].pop('lambda_value', None)
 
-        #if data['renderer_client'] is None:
-        #    data['renderer_client'] = os.path.join(data['render']['client_scripts'], 'render.sh')
-
         if data['source_collection']['owner'] is None:
             data['source_collection']['owner'] = data['render']['owner']
         if data['source_collection']['project'] is None:
@@ -444,7 +391,7 @@ class SolveMontageSectionParameters(RenderParameters):
         if data['source_collection']['service_host'] is None:
             data['source_collection']['service_host'] = data['render']['host'][7:] + ":" + str(data['render']['port'])
         if data['source_collection']['baseURL'] is None:
-            data['source_collection']['baseURL'] = data['render']['host'] + ":" + str(data['render']['port']) + '/render-ws/v1'
+            data['source_collection']['baseURL'] = "http://{}:{}/render-ws/v1".format(data['render']['host'],data['render']['port']) 
         if data['source_collection']['renderbinPath'] is None:
             data['source_collection']['renderbinPath'] = data['render']['client_scripts']
 
@@ -455,7 +402,7 @@ class SolveMontageSectionParameters(RenderParameters):
         if data['target_collection']['service_host'] is None:
             data['target_collection']['service_host'] = data['render']['host'][7:] + ":" + str(data['render']['port'])
         if data['target_collection']['baseURL'] is None:
-            data['target_collection']['baseURL'] = data['render']['host'] + ":" + str(data['render']['port']) + '/render-ws/v1'
+            data['target_collection']['baseURL'] = "http://{}:{}/render-ws/v1".format(data['render']['host'],data['render']['port']) 
         if data['target_collection']['renderbinPath'] is None:
             data['target_collection']['renderbinPath'] = data['render']['client_scripts']
 

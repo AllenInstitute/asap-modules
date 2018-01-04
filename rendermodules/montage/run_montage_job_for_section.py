@@ -3,9 +3,9 @@ import os
 import subprocess
 import renderapi
 import tempfile
-from ..module.render_module import RenderModule
+from ..module.render_module import RenderModule, RenderModuleException
 from rendermodules.montage.schemas import SolveMontageSectionParameters
-
+import time
 
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.montage.run_montage_job_for_section"
@@ -14,11 +14,11 @@ if __name__ == "__main__" and __package__ is None:
 
 example = {
     "render": {
-        "host": "http://ibs-forrestc-ux1",
+        "host": "ibs-forrestc-ux1",
         "port": 8988,
         "owner": "test",
         "project": "em_montage_test",
-        "client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/dev/scripts"
+        "client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/dev/scripts/"
     },
     "first_section": 1015,
 	"last_section": 1015,
@@ -69,8 +69,8 @@ example = {
 		"stack": "input_raw_stack",
 		"service_host": "ibs-forrestc-ux1:8988",
 		"baseURL": "http://ibs-forrestc-ux1:8988/render-ws/v1",
-		"renderbinPath": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/dev/scripts",
-		"verbose": 1
+		"renderbinPath": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/dev/scripts/",
+		"verbose": 0
 	},
 	"target_collection": {
 		"owner": "test",
@@ -78,163 +78,18 @@ example = {
 		"stack": "render_modules_test",
 		"service_host": "ibs-forrestc-ux1:8988",
 		"baseURL": "http://ibs-forrestc-ux1:8988/render-ws/v1",
-		"renderbinPath": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/dev/scripts",
-		"verbose": 1
+		"renderbinPath": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/dev/scripts/",
+		"verbose": 0
 	},
 	"source_point_match_collection": {
 		"server": "http://ibs-forrestc-ux1:8988/render-ws/v1",
 		"owner": "test",
 		"match_collection": "test_montage_collection",
-		"verbose": 1
-	},
-	"verbose": 1,
-    "solver_executable": "/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/allen_templates/em_solver"
-}
-
-'''
-example = {
-    "render": {
-        "host": "http://em-131fs",
-        "port": 8080,
-        "owner": "gayathri",
-        "project": "MM2",
-        "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_20170613/render-ws-java-client/src/main/scripts"
-    },
-    "first_section": 1024,
-	"last_section": 1024,
-	"solver_options": {
-		"degree": 1,
-		"solver": "backslash",
-		"transfac": 1,
-		"lambda": 0.005,
-		"edge_lambda": 0.005,
-		"nbrs": 2,
-		"nbrs_step": 1,
-		"xs_weight": 0,
-		"min_points": 3,
-		"max_points": 80,
-		"filter_point_matches": 1,
-		"outlier_lambda": 1000,
-		"min_tiles": 3,
-        "Width":3840,
-        "Height":3840,
-        "outside_group":0,
-		"pastix": {
-			"ncpus": 8,
-			"parms_fn": "/nrs/flyTEM/khairy/FAFB00v13/matlab_production_scripts/params_file.txt",
-			"split": 1
-		},
-		"matrix_only": 0,
-		"distribute_A": 16,
-		"dir_scratch": "/allen/aibs/pipeline/image_processing/volume_assembly/scratch/solver_scratch",
-		"distributed": 0,
-		"disableValidation": 1,
-		"use_peg": 0,
-		"pmopts": {
-			"NumRandomSamplingsMethod": "Desired confidence",
-			"MaximumRandomSamples": 5000,
-			"DesiredConfidence": 99.9,
-            "Transform":"Affine",
-			"PixelDistanceThreshold": 0.1
-		},
-		"verbose": 1,
-		"debug": 0,
-		"constrain_by_z": 0,
-		"sandwich": 0,
-		"constraint_fac": 1e+15
-	},
-	"source_collection": {
-		"owner": "danielk",
-		"project": "Reflections",
-		"stack": "Secs_1015_1099_5_reflections_mml6",
-		"service_host": "em-131fs:8080",
-		"baseURL": "http://em-131fs:8080/render-ws/v1",
-		"renderbinPath": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts",
-		"verbose": 0
-	},
-	"target_collection": {
-		"owner": "russelt",
-		"project": "Reflections",
-		"stack": "render_modules_test",
-		"service_host": "em-131fs:8080",
-		"baseURL": "http://em-131fs:8080/render-ws/v1",
-		"renderbinPath": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts",
-		"verbose": 0
-	},
-	"source_point_match_collection": {
-		"server": "http://em-131fs:8080/render-ws/v1",
-		"owner": "russelt",
-		"match_collection": "Dec_MM500_t2",
 		"verbose": 0
 	},
 	"verbose": 0,
-    "solver_executable": "/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/allen_templates/em_solver"
+    "solver_executable": "/allen/aibs/pipeline/image_processing/volume_assembly/EMAligner/dev/allen_templates/run_em_solver.sh"
 }
-'''
-'''
-example = {
-    "render": {
-        "host": "http://em-131fs",
-        "port": 8998,
-        "owner": "gayathri",
-        "project": "MM2",
-        "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_20170613/render-ws-java-client/src/main/scripts"
-    },
-    "solver_options": {
-		"min_tiles": 3,
-		"degree": 1,
-		"outlier_lambda": 1000,
-		"solver": "backslash",
-		"min_points": 4,
-		"max_points": 80,
-		"stvec_flag": 0,
-		"conn_comp": 1,
-		"distributed": 0,
-		"lambda_value": 1,
-		"edge_lambda": 0.1,
-		"small_region_lambda": 10,
-		"small_region": 5,
-		"calc_confidence": 1,
-		"translation_fac": 1,
-		"use_peg": 1,
-		"peg_weight": 0.0001,
-		"peg_npoints": 5
-	},
-    "source_collection": {
-		"stack": "mm2_acquire_8bit",
-		"owner": "gayathri",
-		"project": "MM2",
-		"service_host": "em-131fs:8998",
-		"baseURL": "http://em-131fs:8998/render-ws/v1",
-		"renderbinPath": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_20170613/render-ws-java-client/src/main/scripts",
-		"verbose": 0
-	},
-    "target_collection": {
-		"stack": "mm2_acquire_8bit_Montage",
-        "owner": "gayathri",
-		"project": "MM2",
-		"service_host": "em-131fs:8998",
-		"baseURL": "http://em-131fs:8998/render-ws/v1",
-		"renderbinPath": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_20170613/render-ws-java-client/src/main/scripts",
-		"verbose": 0,
-		"initialize": 0,
-		"complete": 1
-	},
-    "source_point_match_collection": {
-		"server": "http://em-131fs:8998/render-ws/v1",
-		"owner": "gayathri_MM2",
-		"match_collection": "mm2_acquire_8bit_montage"
-	},
-    "z_value": 1049,
-	"filter_point_matches": 1,
-    "solver_executable": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/EM_aligner/matlab_compiled/solve_montage_SL",
-	"temp_dir": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch",
-	"scratch": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch",
-	"renderer_client": "/data/nc-em2/gayathrim/renderBin/bin/render.sh",
-	"disableValidation": 1,
-	"verbose": 0
-}
-'''
 
 class SolveMontageSectionModule(RenderModule):
     def __init__(self, schema_type=None, *args, **kwargs):
@@ -247,8 +102,31 @@ class SolveMontageSectionModule(RenderModule):
         # Assigning the solver_executable to a different variable and removing it from args
         self.solver_executable = self.args['solver_executable']
         self.args.pop('solver_executable', None)
+        self.clone_section_stack = self.args['clone_section_stack']
+        self.args.pop('clone_section_stack')
+        # if self.clone_section_stack:
+        #     if (self.args['first_section']!=self.args['last_section']):
+        #         raise ValidationError("first section and last section not equal")
 
     def run(self):
+        if "MCRROOT" not in os.environ:
+            raise ValidationError("MCRROOT not set")
+        if self.clone_section_stack:
+            tmp_stack = "{}_zs{}_ze{}_t{}".format(self.args['source_collection']['stack'],
+                                           self.args['first_section'],
+                                           self.args['last_section'],
+                                           time.strftime("%m%d%y_%H%M%S"))
+            zvalues = renderapi.stack.get_z_values_for_stack(self.args['source_collection']['stack'],render=self.render)
+            zs = [z for z in zvalues if \
+                (z>=self.args['first_section']) \
+                and (z<=self.args['last_section'])]
+            renderapi.stack.clone_stack(self.args['source_collection']['stack'],
+                                        tmp_stack,
+                                        zs=zs,
+                                        close_stack=True,
+                                        render=self.render)
+            self.args['source_collection']['stack']=tmp_stack
+
         # generate a temporary json to feed in to the solver
         tempjson = tempfile.NamedTemporaryFile(
             suffix=".json",
@@ -259,70 +137,28 @@ class SolveMontageSectionModule(RenderModule):
         with open(tempjson.name, 'w') as f:
             json.dump(self.args, f, indent=4)
             f.close()
-
-        # create the command to run
-        # this code assumes that matlab environment is setup in the server for the user
-        # add this to your profile
-        # Note that MCRROOT is the matlab compiler runtime's root folder
-        '''
-            LD_LIBRARY_PATH=.:${MCRROOT}/runtime/glnxa64 ;
-            LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MCRROOT}/bin/glnxa64 ;
-            LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MCRROOT}/sys/os/glnxa64;
-            LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MCRROOT}/sys/opengl/lib/glnxa64;
-        '''
-
-        if "MCRROOT" not in os.environ:
-            raise ValidationError("MCRROOT not set")
-
-        env = os.environ.get('LD_LIBRARY_PATH')
-        mcrroot = os.environ.get('MCRROOT')
-        path1 = os.path.join(mcrroot, 'runtime/glnxa64')
-        path2 = os.path.join(mcrroot, 'bin/glnxa64')
-        path3 = os.path.join(mcrroot, 'sys/os/glnxa64')
-        path4 = os.path.join(mcrroot, 'sys/opengl/lib/glnxa64')
-
-        if path1 not in env:
-            os.environ['LD_LIBRARY_PATH'] += os.pathsep + path1
-        if path2 not in env:
-            os.environ['LD_LIBRARY_PATH'] += os.pathsep + path2
-        if path3 not in env:
-            os.environ['LD_LIBRARY_PATH'] += os.pathsep + path3
-        if path4 not in env:
-            os.environ['LD_LIBRARY_PATH'] += os.pathsep + path4
-
-
-        cmd = "%s %s"%(self.solver_executable, tempjson.name)
+        
+        #assumes that solver_executable is the shell script that sets the LD_LIBRARY path and calls the executable
+        cmd = "%s %s %s"%(self.solver_executable, os.environ['MCRROOT'],tempjson.name)
         ret = os.system(cmd)
 
         # one successful completion remove the input json file
         if ret == 0:
             os.remove(tempjson.name)
+        else:
+            raise RenderModuleException("solve failed with input_json {}",self.args)
 
-        '''
-        if os.path.isfile(self.solver_executable) and os.access(self.solver_executable, os.X_OK):
-            cmd_to_qsub = "%s %s"%(self.solver_executable, tempjson.name)
-
-            #generate pbs file
-            temppbs = tempfile.NamedTemporaryFile(
-                suffix=".pbs",
-                mode="w",
-                delete=False)
-            temppbs.close()
-
-            with open(temppbs.name, 'w') as f:
-                f.write('#PBS -l mem=60g\n')
-                f.write('#PBS -l walltime=00:30:00\n')
-                f.write('#PBS -l ncpus=1\n')
-                f.write('#PBS -N Montage\n')
-                f.write('#PBS -r n\n')
-                f.write('#PBS -m n\n')
-                f.write('#PBS -q emconnectome\n')
-                f.write('%s\n'%(cmd_to_qsub))
-            f.close()
-
-            qsub_cmd = 'qsub %s'%(temppbs.name)
-            subprocess.call(qsub_cmd)
-        '''
+        #try to return the z's solved in the output json
+        try:
+            d={'zs':zs}
+            self.output(d)
+        except:
+            raise RenderModuleException("unable to output json {}",d)
+        
+        #if you made a tmp stack destroy it
+        if self.clone_section_stack:
+            renderapi.stack.delete_stack(tmp_stack,render=self.render)
+       
 
 if __name__ == "__main__":
     mod = SolveMontageSectionModule(input_data=example)

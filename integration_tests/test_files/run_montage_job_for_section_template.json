@@ -1,0 +1,66 @@
+{
+    "render": {
+      "host": "{{render_host}}",
+      "port": {{render_port}},
+      "owner": "{{render_owner}}",
+      "project": "{{render_project}}",
+      "client_scripts": "{{render_client_scripts}}"
+    },
+    "solver_options": {
+  		"degree": 1,
+  		"solver": "backslash",
+  		"transfac": 1,
+  		"lambda": 0.005,
+  		"edge_lambda": 0.005,
+  		"nbrs": 2,
+  		"nbrs_step": 1,
+  		"xs_weight": 0,
+  		"min_points": 3,
+  		"max_points": 80,
+  		"filter_point_matches": 1,
+  		"outlier_lambda": 1000,
+  		"min_tiles": 3,
+      "Width":3840,
+      "Height":3840,
+      "outside_group":0,
+  		"pastix": {
+  			"ncpus": 8,
+  			"parms_fn": "/nrs/flyTEM/khairy/FAFB00v13/matlab_production_scripts/params_file.txt",
+  			"split": 1
+  		},
+  		"matrix_only": 0,
+  		"distribute_A": 16,
+  		"dir_scratch": "{{scratch_dir}}",
+  		"distributed": 0,
+  		"disableValidation": 1,
+  		"use_peg": 0,
+  		"pmopts": {
+  			"NumRandomSamplingsMethod": "Desired confidence",
+  			"MaximumRandomSamples": 5000,
+  			"DesiredConfidence": 99.9,
+        "Transform":"Affine",
+  			"PixelDistanceThreshold": 0.1
+  		},
+  		"verbose": 1,
+  		"debug": 0,
+  		"constrain_by_z": 0,
+  		"sandwich": 0,
+  		"constraint_fac": 1e+15
+  	},
+    "source_collection": {
+  		"stack": "mm2_acquire_8bit",
+  		"verbose": 0
+  	},
+    "target_collection": {
+  		"stack": "mm2_acquire_8bit_Montage",
+      "verbose": 0
+  	},
+    "source_point_match_collection": {
+  		"match_collection": "{{point_match_collection}}",
+      "verbose": 0
+  	},
+  "solver_executable": "{{em_solver_bin}}",
+  "first_section": {{montage_z}},
+  "last_section": {{montage_z}},
+	"verbose": 0
+}
