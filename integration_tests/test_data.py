@@ -97,6 +97,7 @@ SPARK_HOME = os.environ.get('SPARK_HOME','/shared/spark')
 montage_project = "em_montage_test"
 montage_collection = "test_montage_collection"
 montage_z = 1015
+log4propertiesfile = "/allen/aibs/pipeline/image_processing/volume_assembly/utils/spark/conf/log4j.properties.template" 
 test_pointmatch_parameters = render_json_template(example_env,
     'point_match_parameters.json',
     render_host = render_host,
@@ -108,7 +109,8 @@ test_pointmatch_parameters = render_json_template(example_env,
     render_spark_jar = RENDER_SPARK_JAR,
     spark_master_url = os.environ['SPARK_MASTER_URL'],
     spark_home = SPARK_HOME,
-    point_match_collection = montage_collection )
+    point_match_collection = montage_collection,
+    spark_logging_properties = log4propertiesfile)
 test_em_montage_parameters = render_json_template(example_env,
     'run_montage_job_for_section_template.json',
     render_host = render_host,
