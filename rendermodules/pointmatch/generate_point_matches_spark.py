@@ -78,17 +78,18 @@ class PointMatchClientModuleSpark(RenderModule):
         cmd = "{} --master {}".format(sparksubmit, self.args['masterUrl'])
         cmd = cmd + " --executor-memory {}".format(self.args['memory'])
         cmd = cmd + " --driver-memory {}".format(self.args['driverMemory'])
-        cmd = cmd + " --class {} {}".format(self.args['className'], self.args['jarfile'])
-        cmd = cmd + " --baseDataUrl {}".format(self.args['baseDataUrl'])
-        cmd = cmd + " --owner {}".format(self.args['owner'])
-        cmd = cmd + " --collection {}".format(self.args['collection'])
-        cmd = cmd + " --pairJson {}".format(self.args['pairJson'])
         if self.args.get('spark_files',None) is not None:
             for spark_file in self.args['spark_files']:
                 cmd = cmd + " --files {}".format(spark_file)
         if self.args.get('spark_conf',None) is not None:       
             for key,value in  self.args['spark_conf'].items():
                 cmd = cmd + " --conf {}='{}'".format(key,value)
+        cmd = cmd + " --class {} {}".format(self.args['className'], self.args['jarfile'])
+        cmd = cmd + " --baseDataUrl {}".format(self.args['baseDataUrl'])
+        cmd = cmd + " --owner {}".format(self.args['owner'])
+        cmd = cmd + " --collection {}".format(self.args['collection'])
+        cmd = cmd + " --pairJson {}".format(self.args['pairJson'])
+ 
 
         cmd_to_submit = cmd + sift_params
 
