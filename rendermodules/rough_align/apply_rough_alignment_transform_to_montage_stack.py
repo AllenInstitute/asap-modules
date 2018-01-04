@@ -19,20 +19,20 @@ example = {
     "render": {
         "host": "http://em-131fs",
         "port": 8080,
-        "owner": "gayathri",
-        "project": "MM2",
+        "owner": "russelt",
+        "project": "Reflections",
         "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts"
     },
-    "montage_stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_Montage_rev1039",
-    "prealigned_stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_Montage_rev1039",
-    "lowres_stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_DS_Rough",
-    "output_stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_Rough_Test_New",
+    "montage_stack": "Secs_1015_1099_5_reflections_mml6_montage",
+    "prealigned_stack": "Secs_1015_1099_5_reflections_mml6_montage",
+    "lowres_stack": "Secs_1015_1099_5_reflections_mml6_ds_rough_rigid",
+    "output_stack": "Secs_1015_1099_5_reflections_mml6_rough_rigid",
     "tilespec_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch/rough/jsonFiles",
     "set_new_z": "False",
     "consolidate_trasnforms": "True",
-    "minZ": 1034,
-    "maxZ": 1040,
-    "scale": 0.05,
+    "minZ": 1015,
+    "maxZ": 1020,
+    "scale": 1,
     "pool_size": 20
 }
 
@@ -96,6 +96,7 @@ def apply_rough_alignment(render, input_stack, prealigned_stack, lowres_stack, o
         # get the lowres stack rough alignment transformation
         tforms = lowres_ts[0].tforms
         d = tforms[-1].to_dict()
+        #print(d['dataString'])
         dsList = d['dataString'].split()
         v0 = float(dsList[0])*scale
         v1 = float(dsList[1])*scale
@@ -150,6 +151,7 @@ def apply_rough_alignment(render, input_stack, prealigned_stack, lowres_stack, o
             allts.append(d1)
 
         tilespecfilename = os.path.join(output_dir,'tilespec_%04d.json'%newz)
+        print(tilespecfilename)
         fp = open(tilespecfilename,'w')
         json.dump([ts for ts in allts], fp, indent=4)
         fp.close()

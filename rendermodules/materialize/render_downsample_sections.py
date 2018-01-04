@@ -17,14 +17,14 @@ example = {
         "port": 8080,
         "owner": "russelt",
         "project": "Reflections",
-        "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_20170613/render-ws-java-client/src/main/scripts"
+        "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts"
     },
-    "input_stack": "Secs_1015_1099_5_reflections_mml6_montage",
+    "input_stack": "Secs_1015_1099_5_reflections_mml6_rough_rigid",
     "image_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch",
     "imgformat":"png",
     "scale": 0.01,
-    "minZ": 1047,
-    "maxZ": 1047
+    "minZ": 1016,
+    "maxZ": 1020
 }
 
 

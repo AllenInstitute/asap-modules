@@ -25,14 +25,14 @@ example = {
         "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts"
     },
     "montage_stack": "Secs_1015_1099_5_reflections_mml6_montage",
-    "output_stack": "Secs_1015_1099_5_reflections_mml6_ds_montage",
-    "image_directory": "/allen/programs/celltypes/workgroups/em-connectomics/russelt/Dec_MM500_SMART/rough_ds",
+    "output_stack": "Secs_1015_1099_5_reflections_mml6_ds_montage_scaled",
+    "image_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch",
     "set_new_z":"False",
     "new_z_start": 1015,
     "imgformat":"png",
     "scale": 0.01,
     "zstart": 1015,
-    "zend": 1519,
+    "zend": 1020,
     "pool_size": 20
 }
 
