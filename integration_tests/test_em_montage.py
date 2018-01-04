@@ -16,7 +16,7 @@ from test_data import (RAW_STACK_INPUT_JSON,
 from rendermodules.montage.run_montage_job_for_section import  SolveMontageSectionModule
 from rendermodules.pointmatch.create_tilepairs import TilePairClientModule
 from rendermodules.pointmatch.generate_point_matches_spark import PointMatchClientModuleSpark
-
+from rendermodules.module.render_module import RenderModuleException
 logger = renderapi.client.logger
 logger.setLevel(logging.DEBUG)
 
@@ -126,3 +126,20 @@ def test_run_montage_job_for_section(render,
     # check the number of tiles in the montage
     tilespecs = renderapi.tilespec.get_tile_specs_from_z(output_stack, solver_example['z_value'], render=render)
     assert len(tilespecs) == 4
+
+def test_fail_montage_job_for_section(render,
+                                     raw_stack,
+                                     test_point_match_generation,
+                                     tmpdir_factory,
+                                     output_stack=None):
+    if output_stack is None:
+        output_stack = '{}_Montage'.format(raw_stack)
+    output_directory = str(tmpdir_factory.mktemp('output_json'))
+    solver_example['output_json']=os.path.join(output_directory,'output.json')
+    solver_example['source_collection']['stack'] = raw_stack
+    solver_example['target_collection']['stack'] = output_stack
+    solver_example['source_point_match_collection']['match_collection'] = 'notacollection'
+    solver_example['z_value'] = montage_z
+    with pytest.raises(RenderModuleException):
+        mod = SolveMontageSectionModule(input_data=solver_example, args=[])
+        mod.run()
