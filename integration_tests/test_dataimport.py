@@ -86,7 +86,7 @@ def apply_generated_mipmaps(r, output_stack, generate_params,z=None):
     ex['input_stack'] = generate_params['input_stack']
     ex['output_stack'] = output_stack
     ex['mipmap_dir'] = generate_params['output_dir']
-    zvalues = renderapi.stack.get_z_values_for_stack(ex['input_stack'],render=render)
+    zvalues = renderapi.stack.get_z_values_for_stack(ex['input_stack'],render=r)
     if z is not None:
         ex['z']=z
         ex.pop('zstart',None)
