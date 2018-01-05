@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 import renderapi
-from ..module.render_module import RenderModule
+from ..module.render_module import RenderModule, RenderModuleException
 from functools import partial
 import urllib
 import urlparse
@@ -75,22 +75,20 @@ class AddMipMapsToStack(RenderModule):
             renderapi.stack.get_z_values_for_stack, self.args['input_stack'])
 
         try:
-            self.args['zstart'] and self.args['zend']
             zvalues1 = range(self.args['zstart'], self.args['zend']+1)
             zvalues = list(set(zvalues1).intersection(set(zvalues))) # extract only those z's that exist in the input stack
         except NameError:
             try:
-                self.args['z']
                 if self.args['z'] in zvalues:
                     zvalues = [self.args['z']]
             except NameError:
-                self.logger.error('No z value given for mipmap generation')
+                raise RenderModuleException('No z value given for mipmap generation')
 
         if len(zvalues) == 0:
             self.logger.error('No sections found for stack {}'.format(
                 self.args['input_stack']))
 
-        print zvalues
+        self.logger.debug("{}".format(zvalues))
         mypartial = partial(
             addMipMapsToRender, self.render, self.args['input_stack'],
             self.args['mipmap_dir'], self.args['imgformat'],
@@ -99,16 +97,6 @@ class AddMipMapsToStack(RenderModule):
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
             tilespecs = [i for l in pool.map(mypartial, zvalues)
                          for i in l]
-
-        # with renderapi.client.WithPool(self.args['pool_size']) as pool:
-        #     tilespecPaths = [i for l in pool.map(mypartial, zvalues)
-        #                      for i in l]
-
-        # add the tile spec to render stack
-        try:
-            self.args['output_stack']
-        except NameError:
-            self.logger.error("Need an output stack name for adding mipmaps")
 
         output_stack = (self.args['input_stack'] if
                         self.args['output_stack'] is None

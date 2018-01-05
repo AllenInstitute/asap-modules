@@ -80,7 +80,7 @@ class AddMipMapsToStackParameters(RenderParameters):
         required=True,
         description='stack for which the mipmaps are to be generated')
     output_stack = mm.fields.Str(
-        required=False, default=None, allow_none=True,
+        required=True, 
         description='the output stack name. Leave to overwrite input stack')
     mipmap_dir = InputDir(
         required=True,
