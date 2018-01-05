@@ -223,7 +223,7 @@ class PointMatchClientParametersQsub(SIFTPointMatchParameters):
         default='connectome',
         missing='connectome',
         description='Name of the queue to submit the job')
-    log_dir = OutputDir(
+    logdir = OutputDir(
         required=True,
         description="location to set logging for qsub command"
     )
