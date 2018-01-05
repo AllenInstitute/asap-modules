@@ -40,6 +40,29 @@ example = {
     "matchMinNumInliers": 8,
     "matchMaxNumInliers": 200
 }
+def add_arg(l,argname,args):
+    value = args.get(argname,None)
+    if value is not None:
+        l+=["--{}".format(argname),args[argname]]
+
+def form_sift_params_list(args):
+    sift_params = []
+
+    add_arg(sift_params,'SIFTfdSize',args)
+    add_arg(sift_params,'SIFTsteps',args)
+    add_arg(sift_params,'matchMaxEpsilon',args)
+    add_arg(sift_params,'maxFeatureCacheGb',args)
+    add_arg(sift_params,'SIFTminScale',args)
+    add_arg(sift_params,'SIFTmaxScale',args)
+    add_arg(sift_params,'renderScale',args)
+    add_arg(sift_params,'matchRod',args)
+    add_arg(sift_params,'matchMinInlierRatio',args)
+    add_arg(sift_params,'matchMinNumInliers',args)
+    add_arg(sift_params,'matchMaxNumInliers',args)
+    add_arg(sift_params,'clipWidth',args)
+    add_arg(sift_params,'clipHeight',args)
+    return sift_params
+
 def form_sift_params(args):
     sift_params = " --SIFTfdSize {}".format(args['SIFTfdSize'])
     sift_params += " --SIFTsteps {}".format(args['SIFTsteps'])
@@ -70,31 +93,31 @@ class PointMatchClientModuleSpark(RenderModule):
 
     def run(self):
         # prepare sift parameters     
-        sift_params = form_sift_params(self.args)
+        sift_params = form_sift_params_list(self.args)
 
         sparksubmit = os.path.join(self.args['sparkhome'], 'bin', 'spark-submit')
 
         # prepare the spark submit command
-        cmd = "{} --master {}".format(sparksubmit, self.args['masterUrl'])
-        cmd = cmd + " --executor-memory {}".format(self.args['memory'])
-        cmd = cmd + " --driver-memory {}".format(self.args['driverMemory'])
+        cmd = [sparksubmit,"--master", self.args['masterUrl']]
+        cmd += ["--executor-memory",self.args['memory']]
+        cmd += ["--driver-memory",self.args['driverMemory']]
         if self.args.get('spark_files',None) is not None:
             for spark_file in self.args['spark_files']:
-                cmd = cmd + " --files {}".format(spark_file)
+                cmd += ["--files",spark_file]
         if self.args.get('spark_conf',None) is not None:       
             for key,value in  self.args['spark_conf'].items():
-                cmd = cmd + " --conf {}='{}'".format(key,value)
-        cmd = cmd + " --class {} {}".format(self.args['className'], self.args['jarfile'])
-        cmd = cmd + " --baseDataUrl {}".format(self.args['baseDataUrl'])
-        cmd = cmd + " --owner {}".format(self.args['owner'])
-        cmd = cmd + " --collection {}".format(self.args['collection'])
-        cmd = cmd + " --pairJson {}".format(self.args['pairJson'])
+                cmd+= ["--conf","{}='{}'".format(key,value)]
+        cmd += ["--class",self.args['className'],self.args['jarfile']]
+        add_arg(cmd,'baseDataUrl',self.args)
+        add_arg(cmd,'owner',self.args)
+        add_arg(cmd,'collection',self.args)
+        add_arg(cmd,'pairJson',self.args)
  
-
         cmd_to_submit = cmd + sift_params
 
-        ret=os.system(cmd_to_submit)
-        if ret != 0:
+        try:
+            subprocess.check_call(cmd_to_submit)
+        except subprocess.CalledProcessError as e:
             raise RenderModuleException("PointMatchClientModuleSpark failed with inputs {} ",self.args)
         
         mc=renderapi.pointmatch.get_matchcollections(self.args['owner'],render=self.render)
