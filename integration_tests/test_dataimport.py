@@ -200,7 +200,7 @@ def test_mipmaps(render, input_stack, tspecs_to_mipmap, output_stack=None):
 
     addMipMapsToRender_test(render, ex)
 
-def test_make_mipmaps_single_z(render, input_stack, tspecs_to_mipmap, output_stack=None):
+def test_make_mipmaps_single_z(render, input_stack, tspecs_to_mipmap, tmpdir,output_stack=None):
     assert isinstance(render, renderapi.render.RenderClient)
     output_stack = ('{}OUTSINGLEZ'.format(input_stack) if output_stack
                     is None else output_stack)
@@ -222,7 +222,7 @@ def test_make_mipmaps_single_z(render, input_stack, tspecs_to_mipmap, output_sta
 
 def test_make_mipmaps_fail_empty_stack(render,tmpdir):
     ex = generate_mipmaps.example
-    renderapi.stack.create_stack('empty_stack')
+    renderapi.stack.create_stack('empty_stack',render=render)
     ex['render'] = render.make_kwargs()
     ex['input_stack'] = 'empty_stack'
     ex['z'] = 0
