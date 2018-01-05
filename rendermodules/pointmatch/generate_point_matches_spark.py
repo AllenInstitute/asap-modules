@@ -43,7 +43,7 @@ example = {
 def add_arg(l,argname,args):
     value = args.get(argname,None)
     if value is not None:
-        l+=["--{}".format(argname),args[argname]]
+        l+=["--{}".format(argname),"{}".format(args[argname])]
 
 def form_sift_params_list(args):
     sift_params = []
