@@ -63,26 +63,6 @@ def form_sift_params_list(args):
     add_arg(sift_params,'clipHeight',args)
     return sift_params
 
-def form_sift_params(args):
-    sift_params = " --SIFTfdSize {}".format(args['SIFTfdSize'])
-    sift_params += " --SIFTsteps {}".format(args['SIFTsteps'])
-    sift_params += " --matchMaxEpsilon {}".format(args['matchMaxEpsilon'])
-    sift_params += " --maxFeatureCacheGb {}".format(args['maxFeatureCacheGb'])
-    sift_params += " --SIFTminScale {}".format(args['SIFTminScale'])
-    sift_params += " --SIFTmaxScale {}".format(args['SIFTmaxScale'])
-    sift_params += " --renderScale {}".format(args['renderScale'])
-    sift_params += " --matchRod {}".format(args['matchRod'])
-    sift_params += " --matchMinInlierRatio {}".format(args['matchMinInlierRatio'])
-    sift_params += " --matchMinNumInliers {}".format(args['matchMinNumInliers'])
-    sift_params += " --matchMaxNumInliers {}".format(args['matchMaxNumInliers'])
-    clipWidth = args.get('clipWidth',None)
-    clipHeight = args.get('clipHeight',None)
-    if clipWidth is not None:
-        sift_params += " --clipWidth {}".format(clipWidth)
-    if clipHeight is not None:
-        sift_params += " --clipHeight {}".format(clipHeight)
-    return sift_params
-
 class PointMatchClientModuleSpark(RenderModule):
     default_output_schema = PointMatchClientOutputSchema
     def __init__(self, schema_type=None, *args, **kwargs):
