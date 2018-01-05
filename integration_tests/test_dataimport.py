@@ -204,6 +204,8 @@ def test_make_mipmaps_single_z(render, input_stack, tspecs_to_mipmap, tmpdir,out
     ex['render'] = render.make_kwargs()
     ex['input_stack'] = input_stack
     ex['z'] = min([ts.z for ts in tspecs_to_mipmap])
+    ex.pop('zstart',None)
+    ex.pop('zend',None)
     ex['output_dir'] = scratch_dir
 
     outfn = str(tmpdir.join('TESTSINGLE_genmipmaps.json'))
@@ -221,6 +223,8 @@ def test_make_mipmaps_fail_empty_stack(render,tmpdir):
     ex['render'] = render.make_kwargs()
     ex['input_stack'] = 'empty_stack'
     ex['z'] = 0
+    ex.pop('zstart',None)
+    ex.pop('zend',None)
     ex['output_dir'] = scratch_dir
     outfn = str(tmpdir.join('TESTFAIL_genmipmaps.json'))
     with pytest.raises(RenderModuleException):
@@ -232,6 +236,9 @@ def test_make_mipmaps_fail_no_z(render,input_stack,tmpdir):
     ex['render'] = render.make_kwargs()
     ex['input_stack'] = input_stack
     ex['output_dir'] = scratch_dir
+    ex.pop('zstart',None)
+    ex.pop('zend',None)
+    ex.pop('z',None)
     outfn = str(tmpdir.join('TESTFAIL_genmipmaps.json'))
     with pytest.raises(mm.ValidationError):
         mod = generate_mipmaps.GenerateMipMaps(
