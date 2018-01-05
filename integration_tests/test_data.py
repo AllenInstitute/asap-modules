@@ -116,7 +116,7 @@ test_pointmatch_parameters = render_json_template(example_env,
     point_match_collection = montage_collection,
     spark_logging_properties = log4propertiesfile)
 
-test_pointmatch_parameters = render_json_template(example_env,
+test_pointmatch_parameters_qsub = render_json_template(example_env,
     'point_match_parameters_qsub.json',
     render_host = render_host,
     render_port = render_port,

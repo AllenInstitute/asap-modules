@@ -12,7 +12,8 @@ from test_data import (RAW_STACK_INPUT_JSON,
                       montage_project,
                       montage_z,
                       test_em_montage_parameters as solver_example,
-                      test_pointmatch_parameters as pointmatch_example)
+                      test_pointmatch_parameters as pointmatch_example,
+                      test_pointmatch_parameters_qsub as pointmatch_example_qsub)
 
 from rendermodules.montage.run_montage_job_for_section import  SolveMontageSectionModule
 from rendermodules.pointmatch.create_tilepairs import TilePairClientModule
@@ -113,9 +114,9 @@ def mock_suprocess_qsub_call(cmd):
 def test_point_match_generation_qsub(render, test_create_montage_tile_pairs, tmpdir_factory):
     output_directory = str(tmpdir_factory.mktemp('output_json'))
 
-    pointmatch_example['output_json']=os.path.join(output_directory,'output.json')
-    pointmatch_example['pairJson'] = test_create_montage_tile_pairs
-    mod = PointMatchClientModuleQsub(input_data=pointmatch_example,args=[])
+    pointmatch_example_qsub['output_json']=os.path.join(output_directory,'output.json')
+    pointmatch_example_qsub['pairJson'] = test_create_montage_tile_pairs
+    mod = PointMatchClientModuleQsub(input_data=pointmatch_example_qsub,args=[])
     with pytest.raises(MockSubprocessException):
         mod.run()
 
