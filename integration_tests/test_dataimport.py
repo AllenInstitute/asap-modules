@@ -146,7 +146,6 @@ def input_stack(render,tspecs_to_mipmap):
 
 
 def addMipMapsToRender_test(render,generate_params):
-    tmpdir=tempfile.mkdtemp()
     input_stack = generate_params['input_stack']
     imgformat=generate_params['imgformat']
     levels=generate_params['levels']
@@ -155,7 +154,7 @@ def addMipMapsToRender_test(render,generate_params):
 
     out_tilespecs=apply_mipmaps_to_render.addMipMapsToRender(render,
                                                         input_stack,
-                                                        tmpdir,
+                                                        generate_params['output_dir'],
                                                         imgformat,
                                                         levels,
                                                         z)
