@@ -202,10 +202,10 @@ class PointMatchClientOutputSchema(mm.Schema):
 class PointMatchClientParametersQsub(SIFTPointMatchParameters):
     sparkhome = InputDir(
         required=True,
-        default="/allen/aibs/shared/image_processing/volume_assembly/utils/spark",
-        missing="/allen/aibs/shared/image_processing/volume_assembly/utils/spark",
+        default="/allen/aibs/pipeline/image_processing/volume_assembly/utils/spark",
+        missing="/allen/aibs/pipeline/image_processing/volume_assembly/utils/spark",
         description="Path to the spark home directory")
-    pbs_template = Str(
+    pbs_template = InputFile(
         required=True,
         description="pbs template to wrap spark job")
     no_nodes = Int(

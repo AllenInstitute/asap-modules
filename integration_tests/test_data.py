@@ -97,7 +97,11 @@ SPARK_HOME = os.environ.get('SPARK_HOME','/shared/spark')
 montage_project = "em_montage_test"
 montage_collection = "test_montage_collection"
 montage_z = 1015
-log4propertiesfile = "/allen/aibs/pipeline/image_processing/volume_assembly/utils/spark/conf/log4j.properties.template" 
+log4propertiesfile = os.environ.get("SPARK_LOG_PROPERTIES",
+    "/allen/aibs/pipeline/image_processing/volume_assembly/utils/spark/conf/log4j.properties.template") 
+pbs_template=os.environ.get("PBS_TEMPLATE",
+    "/allen/aibs/pipeline/image_processing/volume_assembly/utils/code/spark_submit/spinup_spark.pbs")
+
 test_pointmatch_parameters = render_json_template(example_env,
     'point_match_parameters.json',
     render_host = render_host,
@@ -111,6 +115,21 @@ test_pointmatch_parameters = render_json_template(example_env,
     spark_home = SPARK_HOME,
     point_match_collection = montage_collection,
     spark_logging_properties = log4propertiesfile)
+
+test_pointmatch_parameters = render_json_template(example_env,
+    'point_match_parameters_qsub.json',
+    render_host = render_host,
+    render_port = render_port,
+    render_project = montage_project,
+    render_owner = render_test_owner,
+    render_client_scripts = client_script_location,
+    spark_log_dir = tempfile.mkdtemp(),
+    render_spark_jar = RENDER_SPARK_JAR,
+    spark_home = SPARK_HOME,
+    point_match_collection = montage_collection,
+    spark_logging_properties = log4propertiesfile,
+    pbs_template=pbs_template)
+
 test_em_montage_parameters = render_json_template(example_env,
     'run_montage_job_for_section_template.json',
     render_host = render_host,

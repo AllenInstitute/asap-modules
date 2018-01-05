@@ -1,0 +1,33 @@
+{
+    "render": {
+        "host": "{{render_host}}",
+        "port": {{render_port}},
+        "owner": "{{render_owner}}",
+        "project": "{{render_project}}",
+        "client_scripts": "{{render_client_scripts}}"
+    },
+    "no_nodes": 30,
+    "ppn": 30,
+    "queue_name": "emconnectome",
+    "pbs_template":"{{pbs_template}}",
+    "sparkhome": "{{spark_home}}",
+    "logdir": "{{spark_log_dir}}",
+    "jarfile": "{{render_spark_jar}}",
+    "className":"org.janelia.render.client.spark.SIFTPointMatchClient",
+    "collection": "{{point_match_collection}}",
+    "spark_files":["{{spark_logging_properties}}"],
+    "spark_conf":{
+        "spark.driver.extra.JavaOptions":"-Dlog4j.configuration=file:{{spark_logging_properties}}"
+        },
+    "SIFTfdSize": 8,
+    "SIFTsteps": 3,
+    "matchMaxEpsilon": 20.0,
+    "maxFeatureCacheGb": 15,
+    "SIFTminScale": 0.38,
+    "SIFTmaxScale": 0.82,
+    "renderScale": 0.3,
+    "matchRod": 0.9,
+    "matchMinInlierRatio": 0.0,
+    "matchMinNumInliers": 8,
+    "matchMaxNumInliers": 200
+}
