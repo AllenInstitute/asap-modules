@@ -153,7 +153,7 @@ def addMipMapsToRender_test(render,generate_params):
     zvalues = renderapi.stack.get_z_values_for_stack(input_stack,render=render)
     z = zvalues[0]
 
-    ts_paths=apply_mipmaps_to_render.addMipMapsToRender(render,
+    out_tilespecs=apply_mipmaps_to_render.addMipMapsToRender(render,
                                                         input_stack,
                                                         tmpdir,
                                                         imgformat,
@@ -163,11 +163,6 @@ def addMipMapsToRender_test(render,generate_params):
         ts.tileId: ts for ts
         in renderapi.tilespec.get_tile_specs_from_z(
             input_stack,z, render=render)}
-
-    out_tilespecs = []
-    for ts_path in ts_paths:
-        with open(ts_path,'r') as fp:
-            out_tilespecs.append(TileSpend(json=json.load(fp)))
 
     out_tileIdtotspecs = {
         ts.tileId: ts for ts
