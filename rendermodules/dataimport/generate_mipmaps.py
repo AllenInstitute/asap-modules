@@ -98,11 +98,11 @@ class GenerateMipMaps(RenderModule):
             zvalues1 = range(self.args['zstart'], self.args['zend'] + 1)
             # extract only those z's that exist in the input stack
             zvalues = list(set(zvalues1).intersection(set(zvalues)))
-        except NameError:
+        except KeyError:
             try:
                 if self.args['z'] in zvalues:
                     zvalues = [self.args['z']]
-            except NameError:
+            except KeyError:
                 raise RenderModuleException('No z value given for mipmap generation')
 
         if len(zvalues) == 0:
