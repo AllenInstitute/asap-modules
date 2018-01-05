@@ -86,17 +86,16 @@ def apply_generated_mipmaps(r, output_stack, generate_params,z=None):
     ex['input_stack'] = generate_params['input_stack']
     ex['output_stack'] = output_stack
     ex['mipmap_dir'] = generate_params['output_dir']
+    zvalues = renderapi.stack.get_z_values_for_stack(ex['input_stack'],render=render)
     if z is not None:
         ex['z']=z
         ex.pop('zstart',None)
         ex.pop('zend',None)
-        zapplied = range(z,z+1)
+        zapplied = [z]
     else:
         ex['zstart'] = generate_params['zstart']
         ex['zend'] = generate_params['zend']
-        zapplied = range(ex['zstart'],ex['zend'])
-
-    zvalues = renderapi.stack.get_z_values_for_stack(ex['input_stack'],render=render)
+        zapplied = [z for z in zvalues if z>=ex['zstart'] and z<=ex['zend']]
 
     outfn = 'TEST_applymipmapsoutput.json'
     mod = apply_mipmaps_to_render.AddMipMapsToStack(
@@ -106,22 +105,21 @@ def apply_generated_mipmaps(r, output_stack, generate_params,z=None):
     outfile_test_and_remove(mod.run, outfn)
 
     for zout in zapplied:
-        if zout in zvalues:
-            in_tileIdtotspecs = {
-                ts.tileId: ts for ts
-                in renderapi.tilespec.get_tile_specs_from_z(
-                    ex['input_stack'], zout, render=r)}
+        in_tileIdtotspecs = {
+            ts.tileId: ts for ts
+            in renderapi.tilespec.get_tile_specs_from_z(
+                ex['input_stack'], zout, render=r)}
 
-            out_tileIdtotspecs = {
-                ts.tileId: ts for ts
-                in renderapi.tilespec.get_tile_specs_from_z(
-                    ex['output_stack'], zout, render=r)}
+        out_tileIdtotspecs = {
+            ts.tileId: ts for ts
+            in renderapi.tilespec.get_tile_specs_from_z(
+                ex['output_stack'], zout, render=r)}
 
-            # make sure all tileIds match
-            assert not (in_tileIdtotspecs.viewkeys() ^ out_tileIdtotspecs.viewkeys())
-            for tId, out_ts in out_tileIdtotspecs.iteritems():
-                in_ts = in_tileIdtotspecs[tId]
-                validate_mipmap_generated(in_ts,out_ts,ex['levels'])
+        # make sure all tileIds match
+        assert not (in_tileIdtotspecs.viewkeys() ^ out_tileIdtotspecs.viewkeys())
+        for tId, out_ts in out_tileIdtotspecs.iteritems():
+            in_ts = in_tileIdtotspecs[tId]
+            validate_mipmap_generated(in_ts,out_ts,ex['levels'])
 
 @pytest.fixture(scope='module')
 def tspecs_to_mipmap():
