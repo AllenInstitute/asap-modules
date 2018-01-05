@@ -102,18 +102,22 @@ def test_point_match_generation(render, test_create_montage_tile_pairs,tmpdir_fa
     assert (output_d['pairCount']>0)
     yield pointmatch_example['collection']
 
+class MockSubprocessException(Exception):
+    pass
+
 def mock_suprocess_qsub_call(cmd):
     print(cmd)
-    raise subprocess.CalledProcessError('fake call failed')
+    raise MockSubprocessException('fake subprocess call')
 
-@mock.patch('subprocess.check_call', side_effect=mocked_requests_get)
+@mock.patch('subprocess.check_call', side_effect=mock_suprocess_qsub_call)
 def test_point_match_generation_qsub(render, test_create_montage_tile_pairs, tmpdir_factory):
     output_directory = str(tmpdir_factory.mktemp('output_json'))
 
     pointmatch_example['output_json']=os.path.join(output_directory,'output.json')
     pointmatch_example['pairJson'] = test_create_montage_tile_pairs
     mod = PointMatchClientModuleQsub(input_data=pointmatch_example,args=[])
-    mod.run()
+    with pytest.raises(MockSubprocessException):
+        mod.run()
 
 
 def test_run_montage_job_for_section(render,
