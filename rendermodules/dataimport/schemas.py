@@ -54,9 +54,9 @@ class GenerateMipMapsParameters(RenderParameters):
     @post_load
     def validate_zvalues(self, data):
         if 'zstart' not in data.keys() or 'zend' not in data.keys():
-            if 'zvalue' not in data.keys():
+            if 'z' not in data.keys():
                 raise ValidationError('Need a z value')
-        if 'zvalue' not in data.keys():
+        if 'z' not in data.keys():
             if 'zstart' not in data.keys() or 'zend' not in data.keys():
                 raise ValidationError('Need a z range')
 

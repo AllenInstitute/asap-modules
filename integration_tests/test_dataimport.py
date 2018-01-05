@@ -191,9 +191,10 @@ def test_mipmaps(render, input_stack, tspecs_to_mipmap, output_stack=None):
     outfile_test_and_remove(mod.run, outfn)
 
     apply_generated_mipmaps(render, output_stack, ex)
+    addMipMapsToRender_test(render, ex)
     renderapi.stack.delete_stack(output_stack, render=render)
 
-    addMipMapsToRender_test(render, ex)
+    
 
 def test_make_mipmaps_single_z(render, input_stack, tspecs_to_mipmap, tmpdir,output_stack=None):
     assert isinstance(render, renderapi.render.RenderClient)
