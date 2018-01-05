@@ -112,7 +112,10 @@ class AddMipMapsToStackParameters(RenderParameters):
     def validate_zvalues(self, data):
         if 'zstart' not in data.keys() or 'zend' not in data.keys():
             if 'z' not in data.keys():
-                raise ValidationError('Need a z value, or zstart and zend')
+                raise ValidationError('Need a z value or a z range')
+        if 'z' not in data.keys():
+            if 'zstart' not in data.keys() or 'zend' not in data.keys():
+                raise ValidationError('Need a z range or z value')
 
 
 class GenerateEMTileSpecsParameters(RenderParameters):
