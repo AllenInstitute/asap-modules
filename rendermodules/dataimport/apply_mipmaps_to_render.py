@@ -77,11 +77,11 @@ class AddMipMapsToStack(RenderModule):
         try:
             zvalues1 = range(self.args['zstart'], self.args['zend']+1)
             zvalues = list(set(zvalues1).intersection(set(zvalues))) # extract only those z's that exist in the input stack
-        except NameError:
+        except KeyError:
             try:
                 if self.args['z'] in zvalues:
                     zvalues = [self.args['z']]
-            except NameError:
+            except KeyError:
                 raise RenderModuleException('No z value given for mipmap generation')
 
         if len(zvalues) == 0:
