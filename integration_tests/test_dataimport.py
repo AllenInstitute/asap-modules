@@ -6,6 +6,8 @@ import tempfile
 import logging
 from PIL import Image
 import renderapi
+from rendermodules.module.render_module import RenderModuleException
+import marshmallow as mm
 from rendermodules.dataimport import generate_EM_tilespecs_from_metafile
 from rendermodules.dataimport import generate_mipmaps
 from rendermodules.dataimport import apply_mipmaps_to_render
@@ -197,10 +199,51 @@ def test_mipmaps(render, input_stack, tspecs_to_mipmap, output_stack=None):
 
     apply_generated_mipmaps(render, output_stack, ex)
     renderapi.stack.delete_stack(output_stack, render=render)
-    apply_generated_mipmaps(render, output_stack, ex,z=ex['zstart'])
-    renderapi.stack.delete_stack(output_stack, render=render)
 
     addMipMapsToRender_test(render, ex)
+
+def test_make_mipmaps_single_z(render, input_stack, tspecs_to_mipmap, output_stack=None):
+    assert isinstance(render, renderapi.render.RenderClient)
+    output_stack = ('{}OUTSINGLEZ'.format(input_stack) if output_stack
+                    is None else output_stack)
+
+    ex = generate_mipmaps.example
+    ex['render'] = render.make_kwargs()
+    ex['input_stack'] = input_stack
+    ex['z'] = min([ts.z for ts in tspecs_to_mipmap])
+    ex['output_dir'] = scratch_dir
+
+    outfn = str(tmpdir.join('TESTSINGLE_genmipmaps.json'))
+    mod = generate_mipmaps.GenerateMipMaps(
+        input_data=ex, args=['--output_json', outfn])
+
+    outfile_test_and_remove(mod.run, outfn)
+
+    apply_generated_mipmaps(render, output_stack, ex, z=ex['z'])
+    renderapi.stack.delete_stack(output_stack, render=render)
+
+def test_make_mipmaps_fail_empty_stack(render,tmpdir):
+    ex = generate_mipmaps.example
+    renderapi.stack.create_stack('empty_stack')
+    ex['render'] = render.make_kwargs()
+    ex['input_stack'] = 'empty_stack'
+    ex['z'] = 0
+    ex['output_dir'] = scratch_dir
+    outfn = str(tmpdir.join('TESTFAIL_genmipmaps.json'))
+    with pytest.raises(RenderModuleException):
+        mod = generate_mipmaps.GenerateMipMaps(
+        input_data=ex, args=['--output_json', outfn])
+
+def test_make_mipmaps_fail_no_z(render,tmpdir):
+    ex = generate_mipmaps.example
+    renderapi.stack.create_stack('empty_stack')
+    ex['render'] = render.make_kwargs()
+    ex['input_stack'] = 'empty_stack'
+    ex['output_dir'] = scratch_dir
+    outfn = str(tmpdir.join('TESTFAIL_genmipmaps.json'))
+    with pytest.raises(mm.ValidationError):
+        mod = generate_mipmaps.GenerateMipMaps(
+        input_data=ex, args=['--output_json', outfn])
 
 def test_create_mipmap_from_tuple(tspecs_to_mipmap,tmpdir):
     ts = tspecs_to_mipmap[0]

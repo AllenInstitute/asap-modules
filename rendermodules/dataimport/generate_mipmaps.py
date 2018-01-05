@@ -103,10 +103,10 @@ class GenerateMipMaps(RenderModule):
                 if self.args['z'] in zvalues:
                     zvalues = [self.args['z']]
             except NameError:
-                self.logger.error('No z value given for mipmap generation')
+                raise RenderModuleException('No z value given for mipmap generation')
 
         if len(zvalues) == 0:
-            self.logger.error('No sections found for stack {}'.format(
+            raise RenderModuleException('No sections found for stack {}'.format(
                 self.args['input_stack']))
 
         self.logger.debug("Creating mipmaps...")
