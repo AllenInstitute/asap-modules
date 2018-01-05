@@ -1,79 +1,141 @@
-from argschema.fields import Bool, Float, Int, Nested, Str, InputDir
+from argschema.fields import Bool, Float, Int, Nested, Str, InputDir, OutputDir, OptionList
 from argschema.schemas import DefaultSchema
+from rendermodules.module.render_module import RenderParameters
+from marshmallow import fields
 
 
-class PointMatchOptimizationParameters(DefaultSchema):
-    baseCanvasUrl = Str(
+class url_options(DefaultSchema):
+    normalizeForMatching = Bool(
+        required=False,
+        default=True,
+        missing=True,
+        description='normalize for matching')
+    renderWithFilter = Bool(
+        required=False,
+        default=True,
+        missing=True,
+        description='Render with Filter')
+    renderWithoutMask = Bool(
+        required=False,
+        default=True,
+        missing=True,
+        description='Render without mask')
+
+class SIFT_options(DefaultSchema):
+    SIFTfdSize = fields.List(
+        fields.Int,
+        required=False,
+        many=True,
+        default=[89],
+        missing=[89],
+        description='SIFT feature descriptor size: how many samples per row and column')
+    SIFTmaxScale = fields.List(
+        fields.Float,
+        required=False,
+        many=True,
+        default=[0.85],
+        missing=[0.85],
+        description='SIFT maximum scale: minSize * minScale < size < maxSize * maxScale')
+    SIFTminScale = fields.List(
+        fields.Float,
+        required=False,
+        many=True,
+        default=[0.5],
+        missing=[0.5],
+        description='SIFT minimum scale: minSize * minScale < size < maxSize * maxScale')
+    SIFTsteps = fields.List(
+        fields.Int,
+        required=False,
+        many=True,
+        default=[3],
+        missing=[3],
+        description='SIFT steps per scale octave')
+    matchIterations = fields.List(
+        fields.Int,
+        required=False,
+        default=[1000],
+        missing=[1000],
+        description='Match filter iterations')
+    matchMaxEpsilon = fields.List(
+        fields.Float,
+        required=False,
+        many=True,
+        default=[20.0],
+        missing=[20.0],
+        description='Minimal allowed transfer error for match filtering')
+    matchMaxNumInliers = fields.List(
+        fields.Int,
+        required=False,
+        default=[200],
+        missing=[200],
+        description='Maximum number of inliers for match filtering')
+    matchMaxTrust = fields.List(
+        fields.Float,
+        required=False,
+        many=True,
+        default=[3.0],
+        missing=[3.0],
+        description='Reject match candidates with a cost larger than maxTrust * median cost')
+    matchMinInlierRatio = fields.List(
+        fields.Float,
+        required=False,
+        many=True,
+        default=[0.0],
+        missing=[0.0],
+        description='Minimal ratio of inliers to candidates for match filtering')
+    matchMinNumInliers = fields.List(
+        fields.Int,
+        required=False,
+        default=[8],
+        missing=[8],
+        description='Minimal absolute number of inliers for match filtering')
+    matchModelType = fields.List(
+        fields.String,
+        required=False,
+        default=['AFFINE'],
+        missing=['AFFINE'],
+        description='Type of model for match filtering Possible Values: [TRANSLATION, RIGID, SIMILARITY, AFFINE]')
+    matchRod = fields.List(
+        fields.Float,
+        required=False,
+        many=True,
+        default=[0.92],
+        missing=[0.92],
+        description='Ratio of distances for matches')
+    renderScale = fields.List(
+        fields.Float,
+        required=False,
+        many=True,
+        default=[0.35],
+        missing=[0.35],
+        description='Render canvases at this scale')
+
+class PointMatchOptimizationParameters(RenderParameters):
+    stack = Str(
         required=True,
-        description="Base URL for canvas data (e.g. http://host[:port]/render-ws/v1/owner/gayathri/project/MM2/stack/mm2_acquire_8bit_reimage/tile)")
-    pId = Str(
+        description='Name of the stack containing the tile pair')
+    tile_stack = Str(
+        required=False,
+        default=None,
+        description='Name of the stack that will hold these two tiles')
+    tileId1 = Str(
         required=True,
-        description="Identifier for P canvas")
-    qId = Str(
+        description='tileId of the first tile in the tile pair')
+    tileId2 = Str(
         required=True,
-        description="Identifier for Q canvas")
-    renderScaleStep = Float(
+        description='tileId of the second tile in the tile pair')
+    fillWithNoise = Bool(
         required=False,
-        default=0.1,
-        missing=0.1,
-        description="Amount to adjust render scale for each iteration during optimization")
-    minFeatureCount = Int(
-        required=False,
-        default=3000,
-        missing=3000,
-        description="Minimum number of features for optimal render scale")
-    maxFeatureCount = Int(
-        required=False,
-        default=6000,
-        missing=6000,
-        description="Maximum number of features for optimal render scale")
-    SIFTfdSize = Int(
-        required=False,
-        default=8,
-        missing=8,
-        description="SIFT feature descriptor size: how many sample per row and column")
-    SIFTsteps = Int(
-        required=False,
-        default=2,
-        missing=2,
-        description="SIFT steps per scale octave")
-    matchModelType = Str(
-        required=False,
-        default="AFFINE",
-        missing="AFFINE",
-        description="Type of model for match filtering")
-    matchIterations = Int(
-        required=False,
-        default=1000,
-        missing=1000,
-        description="Match filter iterations")
-    matchMaxEpsilon = Float(
-        required=False,
-        default=20.0,
-        missing=20.0,
-        description="Minimal allowed transfer error for match filtering")
-    matchMinInlierRatio = Float(
-        required=False,
-        default=0.0,
-        missing=0.0,
-        description="Minimal ratio of inliers to candidates for match filtering")
-    matchMinNumInliers = Int(
+        default=False,
+        missing=False,
+        description='Fill each canvas image with noise before rendering to improve point match derivation')
+    pool_size = Int(
         required=False,
         default=10,
         missing=10,
-        description="Minimal absolute number of inliers for match filtering")
-    matchMaxTrust = Float(
-        required=False,
-        default=3.0,
-        missing=3.0,
-        description="Reject match candidates with a cost larger than maxTrust * media cost")
-    matchMaxNumInliers = Int(
-        required=False,
-        default=200,
-        missing=200,
-        descripton="Maximum number of inliers for match filtering")
-    matchRodStep = Float(
-        required=False,
-        default=0.05,
-        missing=0.05,
-        description="AMount to adjust ratio of distances for each iteration during optimization")
+        description='Pool size for parallel processing')
+    SIFT_options = Nested(SIFT_options, required=True)
+    outputDirectory = OutputDir(
+        required=True,
+        description='Parent directory in which subdirectories will be created to store images and point-match results from SIFT')
+    url_options = Nested(url_options, required=True)

@@ -12,11 +12,10 @@ from numbers import Number
 from functools import partial
 from marshmallow import Schema, fields
 from jinja2 import FileSystemLoader, Environment
-from argschema.schemas import DefaultSchema
-from rendermodules.module.schemas import RenderParameters
 from rendermodules.module.render_module import RenderModule
-from argschema.fields import Int, Float, String, Boolean, OutputDir, Nested
+from rendermodules.point_match_optimization.schemas import PointMatchOptimizationParameters
 
+'''
 ex = {
     "render": {
         "host": "http://em-131fs",
@@ -44,6 +43,7 @@ ex = {
         "renderWithoutMask": "true"
     }
 }
+'''
 
 ex = {
     "render": {
@@ -169,7 +169,7 @@ def draw_matches(im1, im2, ptmatches, scale, color=None):
         cv2.line(new_img, end1, end2, c, thickness)
         cv2.circle(new_img, end1, r, c, thickness)
         cv2.circle(new_img, end2, r, c, thickness)
-    
+
     tempfilename = tempfile.NamedTemporaryFile(prefix='matches_', suffix='.png', dir=os.path.dirname(im1), delete=False)
     tempfilename.close()
 
@@ -215,7 +215,7 @@ def compute_point_matches(render, stack, tile1, tile2, pGroupId, qGroupId, outpu
         argvs += ['--%s'%(param), value]
         outdir += "_%s_%s"%(param, str(value))
         collection_name += '_%s'%(str(value).replace('.', 'D'))
-    
+
     outdir = os.path.join(output_dir, outdir)
 
 
@@ -234,14 +234,14 @@ def compute_point_matches(render, stack, tile1, tile2, pGroupId, qGroupId, outpu
                                         memGB='2G')
 
     # create the image showing the matched features and add it to an html file
-    match_img_filename = get_tile_pair_matched_image(render, 
-                                                    stack, 
-                                                    tile1, 
-                                                    tile2, 
-                                                    pGroupId, 
-                                                    qGroupId, 
-                                                    outdir, 
-                                                    render.DEFAULT_KWARGS['owner'], 
+    match_img_filename = get_tile_pair_matched_image(render,
+                                                    stack,
+                                                    tile1,
+                                                    tile2,
+                                                    pGroupId,
+                                                    qGroupId,
+                                                    outdir,
+                                                    render.DEFAULT_KWARGS['owner'],
                                                     collection_name,
                                                     renderScale)
 
@@ -268,143 +268,6 @@ def compute_point_matches(render, stack, tile1, tile2, pGroupId, qGroupId, outpu
     return return_struct
 
 
-
-class url_options(DefaultSchema):
-    normalizeForMatching = Boolean(
-        required=False,
-        default=True,
-        missing=True,
-        description='normalize for matching')
-    renderWithFilter = Boolean(
-        required=False,
-        default=True,
-        missing=True,
-        description='Render with Filter')
-    renderWithoutMask = Boolean(
-        required=False,
-        default=True,
-        missing=True,
-        description='Render without mask')
-
-class SIFT_options(DefaultSchema):
-    SIFTfdSize = fields.List(
-        fields.Int,
-        required=False,
-        many=True,
-        default=[89],
-        missing=[89],
-        description='SIFT feature descriptor size: how many samples per row and column')
-    SIFTmaxScale = fields.List(
-        fields.Float,
-        required=False,
-        many=True,
-        default=[0.85],
-        missing=[0.85],
-        description='SIFT maximum scale: minSize * minScale < size < maxSize * maxScale')
-    SIFTminScale = fields.List(
-        fields.Float,
-        required=False,
-        many=True,
-        default=[0.5],
-        missing=[0.5],
-        description='SIFT minimum scale: minSize * minScale < size < maxSize * maxScale')
-    SIFTsteps = fields.List(
-        fields.Int,
-        required=False,
-        many=True,
-        default=[3],
-        missing=[3],
-        description='SIFT steps per scale octave')
-    matchIterations = fields.List(
-        fields.Int,
-        required=False,
-        default=[1000],
-        missing=[1000],
-        description='Match filter iterations')
-    matchMaxEpsilon = fields.List(
-        fields.Float,
-        required=False,
-        many=True,
-        default=[20.0],
-        missing=[20.0],
-        description='Minimal allowed transfer error for match filtering')
-    matchMaxNumInliers = fields.List(
-        fields.Int,
-        required=False,
-        default=[200],
-        missing=[200],
-        description='Maximum number of inliers for match filtering')
-    matchMaxTrust = fields.List(
-        fields.Float,
-        required=False,
-        many=True,
-        default=[3.0],
-        missing=[3.0],
-        description='Reject match candidates with a cost larger than maxTrust * median cost')
-    matchMinInlierRatio = fields.List(
-        fields.Float,
-        required=False,
-        many=True,
-        default=[0.0],
-        missing=[0.0],
-        description='Minimal ratio of inliers to candidates for match filtering')
-    matchMinNumInliers = fields.List(
-        fields.Int,
-        required=False,
-        default=[8],
-        missing=[8],
-        description='Minimal absolute number of inliers for match filtering')
-    matchModelType = fields.List(
-        fields.String,
-        required=False,
-        default=['AFFINE'],
-        missing=['AFFINE'],
-        description='Type of model for match filtering Possible Values: [TRANSLATION, RIGID, SIMILARITY, AFFINE]')
-    matchRod = fields.List(
-        fields.Float,
-        required=False,
-        many=True,
-        default=[0.92],
-        missing=[0.92],
-        description='Ratio of distances for matches')
-    renderScale = fields.List(
-        fields.Float,
-        required=False,
-        many=True,
-        default=[0.35],
-        missing=[0.35],
-        description='Render canvases at this scale')
-
-class PointMatchOptimizationParameters(RenderParameters):
-    stack = String(
-        required=True,
-        description='Name of the stack containing the tile pair')
-    tile_stack = String(
-        required=True,
-        description='Name of the stack that will hold these two tiles')
-    tileId1 = String(
-        required=True,
-        description='tileId of the first tile in the tile pair')
-    tileId2 = String(
-        required=True,
-        description='tileId of the second tile in the tile pair')
-    fillWithNoise = Boolean(
-        required=False,
-        default=False,
-        missing=False,
-        description='Fill each canvas image with noise before rendering to improve point match derivation')
-    pool_size = Int(
-        required=False,
-        default=10,
-        missing=10,
-        description='Pool size for parallel processing')
-    SIFT_options = Nested(SIFT_options, required=True)
-    outputDirectory = OutputDir(
-        required=True,
-        description='Parent directory in which subdirectories will be created to store images and point-match results from SIFT')
-    url_options = Nested(url_options, required=True)
-
-
 class PointMatchOptimizationModule(RenderModule):
     def __init__(self, schema_type=None, *args, **kwargs):
         if schema_type is None:
@@ -424,6 +287,11 @@ class PointMatchOptimizationModule(RenderModule):
         qGroupId = ts2.layout.sectionId
 
         # create the tile stack
+        if self.args['tile_stack'] is None:
+            tile_stack = "pmopt_{}_t{}".format(self.args['stack'],
+                                                time.strftime("%m%d%y_%H%M%S"))
+            self.args['tile_stack'] = tile_stack
+
         renderapi.stack.create_stack(self.args['tile_stack'], render=self.render)
         renderapi.client.import_tilespecs(self.args['tile_stack'], ts, render=self.render)
         renderapi.stack.set_stack_state(self.args['tile_stack'], 'COMPLETE', render=self.render)
@@ -442,18 +310,6 @@ class PointMatchOptimizationModule(RenderModule):
                             self.args['url_options'],
                             keys)
 
-        #for op in options:
-        #    return_struct = compute_point_matches(self.render,
-        #                        self.args['tile_stack'],
-        #                        self.args['tileId1'],
-        #                        self.args['tileId2'],
-        #                        pGroupId,
-        #                        qGroupId,
-        #                        self.args['outputDirectory'],
-        #                        self.args['fillWithNoise'],
-        #                        self.args['url_options'],
-        #                        keys,
-        #                        op)
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
             return_struct = pool.map(mypartial, options)
 
@@ -467,7 +323,7 @@ class PointMatchOptimizationModule(RenderModule):
         ff.close()
         print(tempfilename.name)
         #self.output({"output_json": tempfilename.name})
-        
+
 if __name__=="__main__":
     mod = PointMatchOptimizationModule(input_data=ex)
     mod.run()
