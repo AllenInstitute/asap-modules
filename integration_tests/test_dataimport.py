@@ -232,11 +232,10 @@ def test_make_mipmaps_fail_empty_stack(render,tmpdir):
         mod = generate_mipmaps.GenerateMipMaps(
         input_data=ex, args=['--output_json', outfn])
 
-def test_make_mipmaps_fail_no_z(render,tmpdir):
+def test_make_mipmaps_fail_no_z(render,input_stack,tmpdir):
     ex = generate_mipmaps.example
-    renderapi.stack.create_stack('empty_stack')
     ex['render'] = render.make_kwargs()
-    ex['input_stack'] = 'empty_stack'
+    ex['input_stack'] = input_stack
     ex['output_dir'] = scratch_dir
     outfn = str(tmpdir.join('TESTFAIL_genmipmaps.json'))
     with pytest.raises(mm.ValidationError):
