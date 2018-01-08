@@ -4,18 +4,21 @@ import logging
 import renderapi
 import json
 import glob
-
+import subprocess
+import mock
 from test_data import (RAW_STACK_INPUT_JSON,
                       log_dir,
                       render_params,
                       montage_project,
                       montage_z,
                       test_em_montage_parameters as solver_example,
-                      test_pointmatch_parameters as pointmatch_example)
+                      test_pointmatch_parameters as pointmatch_example,
+                      test_pointmatch_parameters_qsub as pointmatch_example_qsub)
 
 from rendermodules.montage.run_montage_job_for_section import  SolveMontageSectionModule
 from rendermodules.pointmatch.create_tilepairs import TilePairClientModule
 from rendermodules.pointmatch.generate_point_matches_spark import PointMatchClientModuleSpark
+from rendermodules.pointmatch.generate_point_matches_qsub import PointMatchClientModuleQsub
 from rendermodules.module.render_module import RenderModuleException
 logger = renderapi.client.logger
 logger.setLevel(logging.DEBUG)
@@ -99,6 +102,24 @@ def test_point_match_generation(render, test_create_montage_tile_pairs,tmpdir_fa
         output_d = json.load(fp)
     assert (output_d['pairCount']>0)
     yield pointmatch_example['collection']
+
+class MockSubprocessException(Exception):
+    pass
+
+def mock_suprocess_qsub_call(cmd):
+    print(cmd)
+    raise MockSubprocessException('fake subprocess call')
+
+@mock.patch('subprocess.check_call', side_effect=mock_suprocess_qsub_call)
+def test_point_match_generation_qsub(render, test_create_montage_tile_pairs, tmpdir_factory):
+    output_directory = str(tmpdir_factory.mktemp('output_json'))
+
+    pointmatch_example_qsub['output_json']=os.path.join(output_directory,'output.json')
+    pointmatch_example_qsub['pairJson'] = test_create_montage_tile_pairs
+    mod = PointMatchClientModuleQsub(input_data=pointmatch_example_qsub,args=[])
+    with pytest.raises(MockSubprocessException):
+        mod.run()
+
 
 def test_run_montage_job_for_section(render,
                                      raw_stack,

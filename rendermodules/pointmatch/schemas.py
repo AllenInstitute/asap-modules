@@ -1,4 +1,4 @@
-from argschema.fields import Bool, Float, Int, Nested, Str, InputDir, InputFile, OutputDir
+from argschema.fields import Bool, Float, Int, Nested, Str, InputDir, InputFile, OutputDir, List, Dict
 from argschema.schemas import DefaultSchema
 import marshmallow as mm
 from marshmallow import ValidationError, validates_schema, post_load
@@ -178,7 +178,13 @@ class PointMatchClientParametersSpark(SIFTPointMatchParameters):
         default="/allen/aibs/shared/image_processing/volume_assembly/utils/spark",
         missing="/allen/aibs/shared/image_processing/volume_assembly/utils/spark",
         description="Path to the spark home directory")
- 
+    spark_files = List( Str,
+        required=False,
+        description = "list of spark files to add to the spark submit command")
+    spark_conf = Dict(
+        required=False,
+        description= "dictionary of key value pairs to add to spark_submit as --conf key=value")
+
 class CollectionId(mm.Schema):
     owner = Str(required=True,
                 description="owner of collection")
@@ -196,10 +202,10 @@ class PointMatchClientOutputSchema(mm.Schema):
 class PointMatchClientParametersQsub(SIFTPointMatchParameters):
     sparkhome = InputDir(
         required=True,
-        default="/allen/aibs/shared/image_processing/volume_assembly/utils/spark",
-        missing="/allen/aibs/shared/image_processing/volume_assembly/utils/spark",
+        default="/allen/aibs/pipeline/image_processing/volume_assembly/utils/spark",
+        missing="/allen/aibs/pipeline/image_processing/volume_assembly/utils/spark",
         description="Path to the spark home directory")
-    pbs_template = Str(
+    pbs_template = InputFile(
         required=True,
         description="pbs template to wrap spark job")
     no_nodes = Int(
@@ -217,4 +223,7 @@ class PointMatchClientParametersQsub(SIFTPointMatchParameters):
         default='connectome',
         missing='connectome',
         description='Name of the queue to submit the job')
-  
+    logdir = OutputDir(
+        required=True,
+        description="location to set logging for qsub command"
+    )
