@@ -190,9 +190,9 @@ def test_mipmaps(render, input_stack, tspecs_to_mipmap, output_stack=None):
     outfile_test_and_remove(mod.run, outfn)
 
     apply_generated_mipmaps(render, output_stack, ex)
-    addMipMapsToRender_test(render, ex)
-    renderapi.stack.delete_stack(output_stack, render=render)
 
+    renderapi.stack.delete_stack(output_stack, render=render)
+    addMipMapsToRender_test(render, ex)
     
 
 def test_make_mipmaps_single_z(render, input_stack, tspecs_to_mipmap, tmpdir,output_stack=None):
@@ -213,10 +213,16 @@ def test_make_mipmaps_single_z(render, input_stack, tspecs_to_mipmap, tmpdir,out
         input_data=ex, args=['--output_json', outfn])
 
     outfile_test_and_remove(mod.run, outfn)
-
     apply_generated_mipmaps(render, output_stack, ex, z=ex['z'])
     renderapi.stack.delete_stack(output_stack, render=render)
 
+    ex['z']=ex['z']-1
+    with pytest.raises(RenderModuleException):
+        outfn = str(tmpdir.join('TESTSINGLE_genmipmaps_fail.json'))
+        mod = generate_mipmaps.GenerateMipMaps(
+            input_data=ex, args=['--output_json', outfn])
+        mod.run()
+        
 def test_make_mipmaps_fail_no_z(render,input_stack,tmpdir):
     ex = generate_mipmaps.example
     ex['render'] = render.make_kwargs()
