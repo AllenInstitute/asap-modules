@@ -1,4 +1,4 @@
-from argschema.fields import Bool, Float, Int, Nested, Str, InputDir, OutputDir, OptionList
+from argschema.fields import Bool, Float, Int, Nested, Str, InputDir, OutputDir, List
 from argschema.schemas import DefaultSchema
 from rendermodules.module.render_module import RenderParameters
 from marshmallow import fields
@@ -22,87 +22,87 @@ class url_options(DefaultSchema):
         description='Render without mask')
 
 class SIFT_options(DefaultSchema):
-    SIFTfdSize = fields.List(
+    SIFTfdSize = List(
         fields.Int,
         required=False,
         many=True,
         default=[89],
         missing=[89],
         description='SIFT feature descriptor size: how many samples per row and column')
-    SIFTmaxScale = fields.List(
+    SIFTmaxScale = List(
         fields.Float,
         required=False,
         many=True,
         default=[0.85],
         missing=[0.85],
         description='SIFT maximum scale: minSize * minScale < size < maxSize * maxScale')
-    SIFTminScale = fields.List(
+    SIFTminScale = List(
         fields.Float,
         required=False,
         many=True,
         default=[0.5],
         missing=[0.5],
         description='SIFT minimum scale: minSize * minScale < size < maxSize * maxScale')
-    SIFTsteps = fields.List(
+    SIFTsteps = List(
         fields.Int,
         required=False,
         many=True,
         default=[3],
         missing=[3],
         description='SIFT steps per scale octave')
-    matchIterations = fields.List(
+    matchIterations = List(
         fields.Int,
         required=False,
         default=[1000],
         missing=[1000],
         description='Match filter iterations')
-    matchMaxEpsilon = fields.List(
+    matchMaxEpsilon = List(
         fields.Float,
         required=False,
         many=True,
         default=[20.0],
         missing=[20.0],
         description='Minimal allowed transfer error for match filtering')
-    matchMaxNumInliers = fields.List(
+    matchMaxNumInliers = List(
         fields.Int,
         required=False,
-        default=[200],
-        missing=[200],
+        default=[500],
+        missing=[500],
         description='Maximum number of inliers for match filtering')
-    matchMaxTrust = fields.List(
+    matchMaxTrust = List(
         fields.Float,
         required=False,
         many=True,
         default=[3.0],
         missing=[3.0],
         description='Reject match candidates with a cost larger than maxTrust * median cost')
-    matchMinInlierRatio = fields.List(
+    matchMinInlierRatio = List(
         fields.Float,
         required=False,
         many=True,
         default=[0.0],
         missing=[0.0],
         description='Minimal ratio of inliers to candidates for match filtering')
-    matchMinNumInliers = fields.List(
+    matchMinNumInliers = List(
         fields.Int,
         required=False,
         default=[8],
         missing=[8],
         description='Minimal absolute number of inliers for match filtering')
-    matchModelType = fields.List(
+    matchModelType = List(
         fields.String,
         required=False,
         default=['AFFINE'],
         missing=['AFFINE'],
         description='Type of model for match filtering Possible Values: [TRANSLATION, RIGID, SIMILARITY, AFFINE]')
-    matchRod = fields.List(
+    matchRod = List(
         fields.Float,
         required=False,
         many=True,
         default=[0.92],
         missing=[0.92],
         description='Ratio of distances for matches')
-    renderScale = fields.List(
+    renderScale = List(
         fields.Float,
         required=False,
         many=True,
