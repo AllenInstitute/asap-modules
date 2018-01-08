@@ -107,7 +107,7 @@ class GenerateMipMaps(RenderModule):
             except KeyError:
                 raise RenderModuleException('No z value given for mipmap generation')           
         if not zvalues:
-            raise RenderModuleException('No sections found for stack {} for specified zs".format(
+            raise RenderModuleException("No sections found for stack {} for specified zs".format(
                 self.args['input_stack']))
         
         self.logger.debug("Creating mipmaps...")
