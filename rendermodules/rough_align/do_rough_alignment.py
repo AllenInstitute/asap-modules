@@ -18,22 +18,33 @@ example = {
         "host": "http://em-131fs",
         "port": 8080,
         "owner": "gayathri",
-        "project": "MM2",
+        "project": "Tests",
+        "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts"
+    },
+    
+}
+
+example = {
+    "render": {
+        "host": "http://em-131fs",
+        "port": 8080,
+        "owner": "gayathri",
+        "project": "Tests",
         "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts"
     },
     "input_lowres_stack": {
-        "stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_DS_Montage",
+        "stack": "Secs_1015_1099_5_reflections_ds_montage",
         "owner": "gayathri",
-        "project": "MM2"
+        "project": "Tests"
     },
     "output_lowres_stack": {
-        "stack": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_DS_Rough_Scaled",
+        "stack": "Secs_1015_1099_5_reflections_ds_rough",
         "owner": "gayathri",
-        "project": "MM2"
+        "project": "Tests"
     },
     "point_match_collection": {
         "owner": "gayathri_MM2",
-        "match_collection": "mm2_acquire_8bit_reimage_postVOXA_TEMCA2_Rough",
+        "match_collection": "Secs_1015_1099_5_reflections_rough_test_pm",
         "scale": 1.0
     },
     "solver_options": {
@@ -62,9 +73,9 @@ example = {
         "verbose": 0,
         "debug": 0
     },
-    "solver_executable":"/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/matlab_compiled/do_rough_alignment",
-    "minz": 1021,
-    "maxz": 1100
+    "solver_executable":"/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/allen_templates/do_rough_alignment",
+    "minz": 1015,
+    "maxz": 1020
 }
 
 '''
@@ -117,7 +128,7 @@ example = {
         "verbose": 1,
         "debug": 0
     },
-    "solver_executable":"/allen/aibs/shared/image_processing/volume_assembly/EM_aligner/matlab_compiled/do_rough_alignment",
+    "solver_executable":"/allen/aibs/shared/image_processing/volume_assembly/EM_aligner/allen_templates/do_rough_alignment",
     "minz": 0,
     "maxz": 15
 }

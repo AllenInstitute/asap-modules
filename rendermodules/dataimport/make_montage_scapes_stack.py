@@ -20,12 +20,12 @@ example = {
     "render": {
         "host": "http://em-131fs",
         "port": 8080,
-        "owner": "russelt",
-        "project": "Reflections",
+        "owner": "gayathri",
+        "project": "Tests",
         "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts"
     },
-    "montage_stack": "Secs_1015_1099_5_reflections_mml6_montage",
-    "output_stack": "Secs_1015_1099_5_reflections_mml6_ds_montage_scaled",
+    "montage_stack": "Secs_1015_1099_5_reflections_montage",
+    "output_stack": "Secs_1015_1099_5_reflections_ds_montage",
     "image_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch",
     "set_new_z":"False",
     "new_z_start": 1015,
@@ -62,6 +62,7 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory, scale,
     z = Z[0]
     newz = Z[1]
 
+    print(z)
     # create tilespecdir path
     #tilespecdir = os.path.join(image_directory, project, input_stack, 'sections_at_%s'%str(scale), 'tilespecs_%s'%tagstr)
     #if not os.path.exists(tilespecdir):
@@ -109,9 +110,10 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory, scale,
     t = tilespecs[0]
     d = t.to_dict()
 
-    d['mipmapLevels'][0]['imageUrl'] = filename
-    # remove all the mipmap levels that will disrupt the viewing
-    [d['mipmapLevels'].pop(k) for k in list(d['mipmapLevels'].keys()) if k != 0]
+    levels = d['mipmapLevels'].keys()
+    d['mipmapLevels'][levels[0]]['imageUrl'] = filename
+    # remove all the mipmap levels that will disrupt the NDViz viewing
+    [d['mipmapLevels'].pop(k) for k in list(d['mipmapLevels'].keys()) if k != levels[0]]
     d['minIntensity'] = 0
     d['maxIntensity'] = 255
     d['minX'] = sectionbounds['minX']#*scale
