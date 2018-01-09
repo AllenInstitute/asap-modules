@@ -110,10 +110,12 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory, scale,
     t = tilespecs[0]
     d = t.to_dict()
 
-    levels = d['mipmapLevels'].keys()
-    d['mipmapLevels'][levels[0]]['imageUrl'] = filename
+    # EM_aligner expects the level 0 to be filled regardless of other level mipmaps
+    d['mipmapLevels'][0] = {}
+    d['mipmapLevels'][0]['imageUrl'] = filename
+
     # remove all the mipmap levels that will disrupt the NDViz viewing
-    [d['mipmapLevels'].pop(k) for k in list(d['mipmapLevels'].keys()) if k != levels[0]]
+    [d['mipmapLevels'].pop(k) for k in list(d['mipmapLevels'].keys()) if k != 0]
     d['minIntensity'] = 0
     d['maxIntensity'] = 255
     d['minX'] = sectionbounds['minX']#*scale

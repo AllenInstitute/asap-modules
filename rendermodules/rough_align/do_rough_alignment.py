@@ -1,8 +1,9 @@
 import json
 import os
 import renderapi
-from ..module.render_module import RenderModule
-from rendermodules.rough_align.schemas import SolveRoughAlignmentParameters
+import subprocess
+from ..module.render_module import RenderModule, RenderModuleException
+from rendermodules.montage.schemas import SolveMontageSectionParameters
 from marshmallow import ValidationError
 from functools import partial
 import numpy as np
@@ -21,124 +22,84 @@ example = {
         "project": "Tests",
         "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts"
     },
-    
+    "first_section": 1015,
+	"last_section": 1020,
+    "solver_options": {
+		"degree": 1,
+		"solver": "backslash",
+		"transfac": 1e-15,
+		"lambda": 100.0,
+		"edge_lambda": 100.0,
+		"nbrs": 5,
+		"nbrs_step": 1,
+		"xs_weight": 1,
+		"min_points": 3,
+		"max_points": 800,
+		"filter_point_matches": 1,
+		"outlier_lambda": 100,
+		"min_tiles": 2,
+        "Width":3840,
+        "Height":3840,
+        "outside_group":0,
+        "close_stack":"True",
+		"pastix": {
+			"ncpus": 8,
+			"parms_fn": "/nrs/flyTEM/khairy/FAFB00v13/matlab_production_scripts/params_file.txt",
+			"split": 1
+		},
+		"matrix_only": 0,
+		"distribute_A": 16,
+		"dir_scratch": "/allen/aibs/pipeline/image_processing/volume_assembly/scratch/solver_scratch",
+		"distributed": 0,
+		"disableValidation": 1,
+		"use_peg": 0,
+		"pmopts": {
+			"NumRandomSamplingsMethod": "Desired confidence",
+			"MaximumRandomSamples": 5000,
+			"DesiredConfidence": 99.9,
+            "Transform":"AFFINE",
+			"PixelDistanceThreshold": 0.1
+		},
+		"verbose": 1,
+		"debug": 0,
+		"constrain_by_z": 0,
+		"sandwich": 0,
+		"constraint_fac": 1e+15
+	},
+    "source_collection": {
+		"owner": "gayathri",
+		"project": "Tests",
+		"stack": "Secs_1015_1099_5_reflections_ds_montage",
+		"service_host": "em-131fs:8080",
+		"baseURL": "http://em-131fs:8080/render-ws/v1",
+		"renderbinPath": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts",
+		"verbose": 0
+	},
+	"target_collection": {
+		"owner": "gayathri",
+		"project": "Tests",
+		"stack": "Secs_1015_1099_5_reflections_ds_rough_affine",
+		"service_host": "em-131fs:8080",
+		"baseURL": "http://em-131fs:8080/render-ws/v1",
+		"renderbinPath": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts",
+		"verbose": 0
+	},
+	"source_point_match_collection": {
+		"server": "http://em-131fs:8080/render-ws/v1",
+		"owner": "gayathri_MM2",
+		"match_collection": "Secs_1015_1099_5_reflections_rough_test_pm",
+		"verbose": 0
+	},
+	"verbose": 0,
+    "solver_executable": "/allen/aibs/pipeline/image_processing/volume_assembly/EMAligner/dev/allen_templates/run_em_solver.sh"
 }
 
-example = {
-    "render": {
-        "host": "http://em-131fs",
-        "port": 8080,
-        "owner": "gayathri",
-        "project": "Tests",
-        "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts"
-    },
-    "input_lowres_stack": {
-        "stack": "Secs_1015_1099_5_reflections_ds_montage",
-        "owner": "gayathri",
-        "project": "Tests"
-    },
-    "output_lowres_stack": {
-        "stack": "Secs_1015_1099_5_reflections_ds_rough",
-        "owner": "gayathri",
-        "project": "Tests"
-    },
-    "point_match_collection": {
-        "owner": "gayathri_MM2",
-        "match_collection": "Secs_1015_1099_5_reflections_rough_test_pm",
-        "scale": 1.0
-    },
-    "solver_options": {
-        "min_tiles": 20,
-        "degree": 1,
-        "outlier_lambda": 100,
-        "solver": "backslash",
-        "matrix_only": 0,
-        "distribute_A": 1,
-        "dir_scratch": "/allen/aibs/pipeline/image_processing/volume_assembly/scratch",
-        "min_points": 20,
-        "max_points": 100,
-        "nbrs": 3,
-        "xs_weight": 1,
-        "stvec_flag": 1,
-        "distributed": 0,
-        "lambda_value": 1000,
-        "edge_lambda": 1000,
-        "use_peg": 0,
-        "complete": 1,
-        "disableValidation": 1,
-        "apply_scaling": 1,
-        "scale_fac": 1.0,
-        "translation_only": 0,
-        "translate_to_origin": 1,
-        "verbose": 0,
-        "debug": 0
-    },
-    "solver_executable":"/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/allen_templates/do_rough_alignment",
-    "minz": 1015,
-    "maxz": 1020
-}
-
-'''
-example = {
-    "render": {
-        "host": "http://ibs-forrestc-ux1",
-        "port": 8080,
-        "owner": "1_ribbon_expts",
-        "project": "M335503_RIC4_Ai139_LRW",
-        "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_20170613/render-ws-java-client/src/main/scripts"
-    },
-    "input_lowres_stack": {
-        "stack": "TESTGAYATHRI_DownsampledDAPI",
-        "owner": "1_ribbon_expts",
-        "project": "M335503_RIC4_Ai139_LRW"
-    },
-    "output_lowres_stack": {
-        "stack": "TESTGAYATHRI_Stitched_DAPI_1_Lowres_RoughAligned",
-        "owner": "1_ribbon_expts",
-        "project": "M335503_RIC4_Ai139_LRW"
-    },
-    "point_match_collection": {
-        "owner": "1_ribbon_expts",
-        "match_collection": "M335503_RIC4_Ai139_LRW_DAPI_1_lowres_round1",
-        "scale": 1.0
-    },
-    "solver_options": {
-        "min_tiles": 5,
-        "degree": 1,
-        "outlier_lambda": 100,
-        "solver": "backslash",
-        "matrix_only": 0,
-        "distribute_A": 1,
-        "dir_scratch": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch",
-        "min_points": 20,
-        "max_points": 100,
-        "nbrs": 10,
-        "xs_weight": 0.5,
-        "stvec_flag": 1,
-        "distributed": 0,
-        "lambda_value": 1000,
-        "edge_lambda": 1000,
-        "use_peg": 0,
-        "complete": 1,
-        "disableValidation": 1,
-        "apply_scaling": 1,
-        "scale_fac": 20.0,
-        "translation_only": 0,
-        "translate_to_origin": 1,
-        "verbose": 1,
-        "debug": 0
-    },
-    "solver_executable":"/allen/aibs/shared/image_processing/volume_assembly/EM_aligner/allen_templates/do_rough_alignment",
-    "minz": 0,
-    "maxz": 15
-}
-'''
 
 
 class SolveRoughAlignmentModule(RenderModule):
     def __init__(self, schema_type=None, *args, **kwargs):
         if schema_type is None:
-            schema_type = SolveRoughAlignmentParameters
+            schema_type = SolveMontageSectionParameters
         super(SolveRoughAlignmentModule, self).__init__(
             schema_type=schema_type,
             *args,
@@ -150,6 +111,9 @@ class SolveRoughAlignmentModule(RenderModule):
         self.args.pop('solver_executable', None)
 
     def run(self):
+        if "MCRROOT" not in os.environ:
+            raise ValidationError("MCRROOT not set")
+
         # generate a temporary json to feed in to the solver
         tempjson = tempfile.NamedTemporaryFile(
             suffix=".json",
@@ -161,39 +125,16 @@ class SolveRoughAlignmentModule(RenderModule):
             json.dump(self.args, f, indent=4)
             f.close()
 
-        # create the command to run
-        # this code assumes that matlab environment is setup in the server for the user
-        # add this to your profile
-        # Note that MCRROOT is the matlab compiler runtime's root folder
-        '''
-            LD_LIBRARY_PATH=.:${MCRROOT}/runtime/glnxa64 ;
-            LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MCRROOT}/bin/glnxa64 ;
-            LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MCRROOT}/sys/os/glnxa64;
-            LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MCRROOT}/sys/opengl/lib/glnxa64;
-        '''
+        #assumes that solver_executable is the shell script that sets the LD_LIBRARY path and calls the executable
+        cmd = "%s %s %s"%(self.solver_executable, os.environ['MCRROOT'],tempjson.name)
+        ret = os.system(cmd)
 
-        if "MCRROOT" not in os.environ:
-            raise ValidationError("MCRROOT not set")
+        # one successful completion remove the input json file
+        if ret == 0:
+            os.remove(tempjson.name)
+        else:
+            raise RenderModuleException("solve failed with input_json {}",self.args)
 
-        env = os.environ.get('LD_LIBRARY_PATH')
-        mcrroot = os.environ.get('MCRROOT')
-        path1 = os.path.join(mcrroot, 'runtime/glnxa64')
-        path2 = os.path.join(mcrroot, 'bin/glnxa64')
-        path3 = os.path.join(mcrroot, 'sys/os/glnxa64')
-        path4 = os.path.join(mcrroot, 'sys/opengl/lib/glnxa64')
-
-        if path1 not in env:
-            os.environ['LD_LIBRARY_PATH'] += os.pathsep + path1
-        if path2 not in env:
-            os.environ['LD_LIBRARY_PATH'] += os.pathsep + path2
-        if path3 not in env:
-            os.environ['LD_LIBRARY_PATH'] += os.pathsep + path3
-        if path4 not in env:
-            os.environ['LD_LIBRARY_PATH'] += os.pathsep + path4
-
-
-        cmd = "%s %s"%(self.solver_executable, tempjson.name)
-        os.system(cmd)
 
         '''
         if os.path.isfile(self.solver_executable) and os.access(self.solver_executable, os.X_OK):
