@@ -91,8 +91,8 @@ def test_create_montage_tile_pairs(render, raw_stack, tmpdir_factory):
     assert(len(npairs) == 4)
     yield tilepair_file
 
-def test_create_montage_tile_pairs_no_z(render, raw_stack, tmpdir_factory):
-    output_directory = str(tmpdir_factory.mktemp('Montage'))
+def test_create_montage_tile_pairs_no_z(render, raw_stack, tmpdir):
+    output_directory = str(tmpdir.join('Montage'))
     params = {
         "render": render_params,
         "zNeighborDistance": 0,
@@ -122,7 +122,6 @@ def test_create_montage_tile_pairs_no_z(render, raw_stack, tmpdir_factory):
         js = json.load(f)
     npairs = js['neighborPairs']
     assert(len(npairs) == 4)
-    yield tilepair_file
 
 
 @pytest.fixture(scope='module')
