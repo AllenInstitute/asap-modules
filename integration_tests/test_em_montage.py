@@ -88,8 +88,42 @@ def test_create_montage_tile_pairs(render, raw_stack, tmpdir_factory):
     with open(tilepair_file, 'r') as f:
         js = json.load(f)
     npairs = js['neighborPairs']
-    assert(len(npairs) > 0)
+    assert(len(npairs) == 4)
     yield tilepair_file
+
+def test_create_montage_tile_pairs_no_z(render, raw_stack, tmpdir_factory):
+    output_directory = str(tmpdir_factory.mktemp('Montage'))
+    params = {
+        "render": render_params,
+        "zNeighborDistance": 0,
+        "xyNeighborFactor": 0.9,
+        "excludeCornerNeighbors": "true",
+        "excludeSameLayerNeighbors": "false",
+        "excludeCompletelyObscuredTiles": "true",
+        "output_dir": output_directory,
+        "stack": raw_stack,
+        "output_json": "out.json"
+    }
+
+    mod = TilePairClientModule(input_data=params, args=[])
+    mod.run()
+
+    # check if the file has been created
+    tilepair_file = "tile_pairs_{}_z_{}_to_{}_dist_{}.json".format(
+                        raw_stack,
+                        params['minZ'],
+                        params['maxZ'],
+                        params['zNeighborDistance'])
+    tilepair_file = os.path.join(output_directory, tilepair_file)
+
+    assert(os.path.exists(tilepair_file) and os.path.getsize(tilepair_file) > 0)
+
+    with open(tilepair_file, 'r') as f:
+        js = json.load(f)
+    npairs = js['neighborPairs']
+    assert(len(npairs) == 4)
+    yield tilepair_file
+
 
 @pytest.fixture(scope='module')
 def test_point_match_generation(render, test_create_montage_tile_pairs,tmpdir_factory):
