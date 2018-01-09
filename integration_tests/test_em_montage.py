@@ -76,12 +76,9 @@ def test_create_montage_tile_pairs(render, raw_stack, tmpdir_factory):
     mod.run()
 
     # check if the file has been created
-    tilepair_file = "tile_pairs_{}_z_{}_to_{}_dist_{}.json".format(
-                        raw_stack,
-                        params['minZ'],
-                        params['maxZ'],
-                        params['zNeighborDistance'])
-    tilepair_file = os.path.join(output_directory, tilepair_file)
+    with open(params['output_json'],'r') as fp:
+        out_d = json.load(fp)
+    tilepair_file = out_d['tile_pair_file']
 
     assert(os.path.exists(tilepair_file) and os.path.getsize(tilepair_file) > 0)
 
@@ -109,12 +106,9 @@ def test_create_montage_tile_pairs_no_z(render, raw_stack, tmpdir):
     mod.run()
 
     # check if the file has been created
-    tilepair_file = "tile_pairs_{}_z_{}_to_{}_dist_{}.json".format(
-                        raw_stack,
-                        params['minZ'],
-                        params['maxZ'],
-                        params['zNeighborDistance'])
-    tilepair_file = os.path.join(output_directory, tilepair_file)
+    with open(params['output_json'],'r') as fp:
+        out_d = json.load(fp)
+    tilepair_file = out_d['tile_pair_file']
 
     assert(os.path.exists(tilepair_file) and os.path.getsize(tilepair_file) > 0)
 
