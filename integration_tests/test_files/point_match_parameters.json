@@ -15,8 +15,6 @@
         "spark.driver.extra.JavaOptions":"-Dlog4j.configuration=file:{{spark_logging_properties}}"
         },
     "className":"org.janelia.render.client.spark.SIFTPointMatchClient",
-    "baseDataUrl":"http://{{render_host}}:{{render_port}}/render-ws/v1",
-    "owner": "{{render_owner}}",
     "collection": "{{point_match_collection}}",
     "pairJson": "",
     "SIFTfdSize": 8,
