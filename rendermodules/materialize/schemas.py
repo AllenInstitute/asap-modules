@@ -2,7 +2,7 @@
 from marshmallow import ValidationError, validates_schema
 import argschema
 from argschema.fields import InputDir, InputFile, Str, Int, Float, Boolean, OutputDir
-from ..module.schemas import RenderParameters
+from rendermodules.module.schemas import RenderParameters
 
 
 class RenderSectionAtScaleParameters(RenderParameters):
@@ -53,3 +53,6 @@ class RenderSectionAtScaleOutput(argschema.schemas.DefaultSchema):
     image_directory = InputDir(
         required=True,
         description='Directory in which the downsampled section images are saved')
+    temp_stack = Str(
+        required=True,
+        description='The temp stack that was used to generate the downsampled sections')

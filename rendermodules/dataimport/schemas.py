@@ -207,3 +207,24 @@ class MakeMontageScapeSectionStackParameters(RenderParameters):
             raise ValidationError('new Z start cannot be zero')
         elif not data['set_new_z']:
             data['new_z_start'] = data['zstart']
+
+
+class CloneStackWithNoMipmapsOutput(DefaultSchema):
+    output_stack = Str(required=True)
+
+
+class CloneStackWithNoMipmapsParameters(RenderParameters):
+    input_stack = Str(
+        required=True,
+        description='Stack that needs to be cloned')
+    output_stack = Str(
+        required=True,
+        description='Output stack that has mipmaps removed')
+    level_to_retain = Int(
+        required=True,
+        description='Mipmap level to be retained from the input stack')
+    pool_size = Int(
+        required=False,
+        default=10,
+        missing=10,
+        description="Number of parallel pool size")
