@@ -77,7 +77,7 @@ class RenderSectionAtScale(RenderModule):
             zvalues = list(zvalues[(zvalues >= self.args['minZ']) & (zvalues <= self.args['maxZ'])])
 
         if len(zvalues) == 0:
-            self.logger.error('No valid zvalues found in stack for given range {} - {}'.format(self.args['minZ'], self.arfs['maxZ']))
+            self.logger.error('No valid zvalues found in stack for given range {} - {}'.format(self.args['minZ'], self.args['maxZ']))
 
         self.args['temp_stack'] = self.args['input_stack']
 
