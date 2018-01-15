@@ -6,14 +6,6 @@ class RenderModuleException(Exception):
     """Base Exception class for render module"""
     pass
 
-# this is deprecated and unnecessary now, leaving it in to minimize rewrite
-class ArgSchemaModule(argschema.ArgSchemaParser):
-    def __init__(self, *args, **kwargs):
-        super(ArgSchemaModule, self).__init__(
-            *args, **kwargs)
-        self.logger.warning("DEPRECATED: please just use \
-            argschema.ArgSchemaParser which has this functionality")
-
 class RenderModule(argschema.ArgSchemaParser):
     default_schema = RenderParameters
 
