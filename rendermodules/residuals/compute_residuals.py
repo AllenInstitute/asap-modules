@@ -11,7 +11,7 @@ from shapely.geometry import Polygon
 
 
 def compute_residuals_within_group(render, stack, matchCollectionOwner, matchCollection, z, min_points=1):
-    print(z)
+    #print(z)
     # get the sectionID which is the group ID in point match collection
     groupId = render.run(renderapi.stack.get_sectionId_for_z, stack, z)
 

@@ -152,3 +152,13 @@ test_em_montage_parameters = render_json_template(example_env,
     scratch_dir = tempfile.mkdtemp(),
     point_match_collection = montage_collection,
     montage_z = montage_z)
+
+# EM Montage QC data
+PRESTITCHED_STACK_INPUT_JSON = render_json_template(example_env, 'em_montage_qc_pre_tilespecs.json',
+                                                    test_data_root=TEST_DATA_ROOT)
+
+POSTSTITCHED_STACK_INPUT_JSON = render_json_template(example_env, 'em_montage_qc_post_tilespecs.json',
+                                                    test_data_root=TEST_DATA_ROOT)
+
+MONTAGE_QC_POINT_MATCH_JSON = render_json_template(example_env, 'em_montage_qc_point_matches.json')
+
