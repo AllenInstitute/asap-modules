@@ -28,18 +28,18 @@ class DetectMontageDefectsParameters(RenderParameters):
         description='end z index of section')
     residual_threshold = Int(
         required=False,
-        default=6,
-        missing=6,
+        default=4,
+        missing=4,
         description='threshold value to filter residuals for detecting seams (default = 4)')
     neighbors_distance = Int(
         required=False,
-        default=60,
-        missing=60,
+        default=80,
+        missing=80,
         description='distance in pixels to look for neighboring points in seam detection (default = 60)')
     min_cluster_size = Int(
         required=False,
-        default=7,
-        missing=7,
+        default=12,
+        missing=12,
         description='minimum number of point matches required in each cluster for taking it into account for seam detection (default = 7)')
     plot_sections = Bool(
         required=False,
