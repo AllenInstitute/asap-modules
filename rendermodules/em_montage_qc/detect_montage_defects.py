@@ -202,7 +202,7 @@ def detect_stitching_mistakes(render, prestitched_stack, poststitched_stack, mat
 
     disconnected_tiles = []
     gap_tiles = []
-    
+    seam_centroids = []
 
     with renderapi.client.WithPool(pool_size) as pool:
         disconnected_tiles = pool.map(mypartial1, zvalues)
