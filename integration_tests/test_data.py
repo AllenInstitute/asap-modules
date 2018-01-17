@@ -89,9 +89,6 @@ TILESPECS_NO_LC_JSON = render_json_template(example_env, 'test_noLC.json',
 TILESPECS_LC_JSON = render_json_template(example_env, 'test_LC.json',
                                          test_data_root=TEST_DATA_ROOT)
 
-ROUGH_MONTAGE_TILESPECS_JSON = render_json_template(example_env, 'rough_montage_tilespecs.json',
-                                                    test_data_root=TEST_DATA_ROOT)
-
 
 # rough alignment test data
 rough_align_test_data_dir = os.path.join(TEST_DATA_ROOT,
