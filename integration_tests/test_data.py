@@ -159,3 +159,5 @@ POSTSTITCHED_STACK_INPUT_JSON = render_json_template(example_env, 'em_montage_qc
 
 MONTAGE_QC_POINT_MATCH_JSON = render_json_template(example_env, 'em_montage_qc_point_matches.json')
 
+montage_qc_project = "em_montage_qc_test"
+

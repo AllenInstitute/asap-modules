@@ -9,7 +9,9 @@ import mock
 
 from test_data import (PRESTITCHED_STACK_INPUT_JSON,
                        POSTSTITCHED_STACK_INPUT_JSON,
-                       MONTAGE_QC_POINT_MATCH_JSON)
+                       MONTAGE_QC_POINT_MATCH_JSON,
+                       render_params,
+                       montage_qc_project)
 
 from rendermodules.em_montage_qc.detect_montage_defects import DetectMontageDefectsModule
 from rendermodules.module.render_module import RenderModuleException
