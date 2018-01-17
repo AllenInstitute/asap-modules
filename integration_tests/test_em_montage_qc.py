@@ -135,15 +135,15 @@ def test_detect_montage_defects(render,
 
     # check if the output json exists and out_html exists
     assert(os.path.exists(ex['output_json'] and os.path.isfile(ex['output_json'])))
-    assert(os.path.exists(ex['out_html']) and os.path.isfile(ex['out_html']))
 
     # read the output json
     with open(ex['output_json'], 'r') as f:
         data = json.load(f)
     f.close()
 
+    assert(os.path.exists(data['output_html']) and os.path.isfile(ex['output_html']))
+
     assert(len(data['seam_sections']) > 0)
-    assert(data['output_html'] == ex['out_html'])
     assert(len(data['hole_sections']) > 0)
     assert(len(data['seam_centroids']) > 0)
     assert(len(data['gap_sections']) == 0)
