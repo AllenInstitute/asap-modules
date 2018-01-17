@@ -13,37 +13,8 @@ from functools import partial
 from marshmallow import Schema, fields
 from jinja2 import FileSystemLoader, Environment
 from rendermodules.module.render_module import RenderModule
-from rendermodules.point_match_optimization.schemas import PointMatchOptimizationParameters
+from rendermodules.point_match_optimization.schemas import PointMatchOptimizationParameters, PointMatchOptimizationParametersOutput
 
-'''
-ex = {
-    "render": {
-        "host": "http://em-131fs",
-        "port": 8080,
-        "owner": "gayathri",
-        "project": "MM2",
-        "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts"
-    },
-    "SIFT_options": {
-        "SIFTfdSize": [81, 82, 83],
-        "SIFTmaxScale": [0.5, 0.6, 0.7],
-        "SIFTminScale": [0.1, 0.2, 0.3],
-        "SIFTsteps": [3],
-        "fillWithNoise": "false",
-        "renderScale": [0.35, 0.4, 0.45]
-    },
-    "outputDirectory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch",
-    "tile_stack": "point_match_optimization_test",
-    "stack": "mm2_acquire_8bit_reimage",
-    "tileId1": "20170830120417214_295434_5LC_0064_01_redo_001050_0_16_12.1050.0",
-    "tileId2": "20170830120445578_295434_5LC_0064_01_redo_001050_0_16_13.1050.0",
-    "url_options":{
-        "normalizeForMatching": "true",
-        "renderWithFilter": "true",
-        "renderWithoutMask": "true"
-    }
-}
-'''
 
 ex = {
     "render": {
@@ -332,8 +303,7 @@ class PointMatchOptimizationModule(RenderModule):
         ff = open(tempfilename.name, "w")
         ff.write(m)
         ff.close()
-        print(tempfilename.name)
-        #self.output({"output_json": tempfilename.name})
+        self.output({"output_html": tempfilename.name})
 
 if __name__=="__main__":
     mod = PointMatchOptimizationModule(input_data=ex)

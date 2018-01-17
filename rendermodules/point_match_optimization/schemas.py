@@ -139,3 +139,9 @@ class PointMatchOptimizationParameters(RenderParameters):
         required=True,
         description='Parent directory in which subdirectories will be created to store images and point-match results from SIFT')
     url_options = Nested(url_options, required=True)
+
+class PointMatchOptimizationParametersOutput(DefaultSchema):
+    output_html = Str(
+        required=True,
+        description='Output html file that shows all the tilepair plot and results')
+        
