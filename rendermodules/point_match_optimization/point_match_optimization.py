@@ -56,12 +56,12 @@ ex = {
     "SIFT_options": {
         "SIFTfdSize": [8],
         "SIFTmaxScale": [0.82],
-        "SIFTminScale": [0.2],
-        "SIFTsteps": [3, 4],
+        "SIFTminScale": [0.28],
+        "SIFTsteps": [3],
         "fillWithNoise": "false",
-        "renderScale": [0.35]
+        "renderScale": [0.1, 0.35]
     },
-    "outputDirectory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch",
+    "outputDirectory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch/pmopts",
     "tile_stack": "point_match_optimization_test",
     "stack": "mm2_acquire_8bit_reimage",
     "tileId1": "20170830120417214_295434_5LC_0064_01_redo_001050_0_16_12.1050.0",
@@ -150,25 +150,26 @@ def draw_matches(im1, im2, ptmatches, scale, color=None):
     if color:
         c = color
 
-    ps = np.column_stack(ptmatches[0]['matches']['p'])
-    qs = np.column_stack(ptmatches[0]['matches']['q'])
+    if (len(ptmatches) > 0):
+        ps = np.column_stack(ptmatches[0]['matches']['p'])
+        qs = np.column_stack(ptmatches[0]['matches']['q'])
 
-    #fig, ax = plt.subplots(1)
-    #ax.imshow(new_img)
+        #fig, ax = plt.subplots(1)
+        #ax.imshow(new_img)
 
-    for p, q in zip(ps, qs):
-        # generate random color for RGB and grayscale images as needed
-        if not color:
-            c = np.random.randint(0,255,3) #if len(img1.shape) == 3 else np.random.randint(0,255)
-        end1 = tuple(([int(pi*scale) for pi in p]))
-        end2 = tuple(([int(qi*scale) for qi in q]))
-        ad =  [img1.shape[1], 0]
-        end2 = tuple([a+b for a,b in zip(end2, ad)])
+        for p, q in zip(ps, qs):
+            # generate random color for RGB and grayscale images as needed
+            if not color:
+                c = np.random.randint(0,255,3) #if len(img1.shape) == 3 else np.random.randint(0,255)
+            end1 = tuple(([int(pi*scale) for pi in p]))
+            end2 = tuple(([int(qi*scale) for qi in q]))
+            ad =  [img1.shape[1], 0]
+            end2 = tuple([a+b for a,b in zip(end2, ad)])
 
-        #ax.plot([end1[0], end2[0]], [end1[1], end2[1]], '-')
-        cv2.line(new_img, end1, end2, c, thickness)
-        cv2.circle(new_img, end1, r, c, thickness)
-        cv2.circle(new_img, end2, r, c, thickness)
+            #ax.plot([end1[0], end2[0]], [end1[1], end2[1]], '-')
+            cv2.line(new_img, end1, end2, c, thickness)
+            cv2.circle(new_img, end1, r, c, thickness)
+            cv2.circle(new_img, end2, r, c, thickness)
 
     tempfilename = tempfile.NamedTemporaryFile(prefix='matches_', suffix='.png', dir=os.path.dirname(im1), delete=False)
     tempfilename.close()
@@ -188,17 +189,25 @@ def get_tile_pair_matched_image(render, stack, tileId1, tileId2, pGroupId, qGrou
     im1 = os.path.join(outdir, im1)
     im2 = os.path.join(outdir, im2)
 
-
-    ptmatches = renderapi.pointmatch.get_matches_from_tile_to_tile(matchCollection,
-                                                                pGroupId,
-                                                                tileId1,
-                                                                qGroupId,
-                                                                tileId2,
-                                                                owner=matchCollectionOwner,
-                                                                render=render)
+    # check if the point match collection exists
+    collections = renderapi.pointmatch.get_matchcollections(owner=matchCollectionOwner, 
+                                                            render=render)
+    ptmatches = []
+    if (matchCollection in collections):
+        ptmatches = renderapi.pointmatch.get_matches_from_tile_to_tile(matchCollection,
+                                                                    pGroupId,
+                                                                    tileId1,
+                                                                    qGroupId,
+                                                                    tileId2,
+                                                                    owner=matchCollectionOwner,
+                                                                    render=render)
+    
+    ptmatch_count = 0
+    if (len(ptmatches) > 0):
+        ptmatch_count = len(ptmatches[0]['matches']['p'][0])
 
     match_img_filename = draw_matches(im1, im2, ptmatches, renderScale)
-    return match_img_filename
+    return match_img_filename, ptmatch_count
 
 
 def compute_point_matches(render, stack, tile1, tile2, pGroupId, qGroupId, output_dir, fillWithNoise, url_options, option_keys, options):
@@ -206,17 +215,18 @@ def compute_point_matches(render, stack, tile1, tile2, pGroupId, qGroupId, outpu
     canvas_urls = get_canvas_url(render.DEFAULT_KWARGS, stack, tile1, tile2, url_options)
 
     argvs  = []
-    outdir = 'pmopt'
+    #outdir = 'pmopt'
     collection_name = 'pms'
     renderScale = 0.1
     for param, value in zip(option_keys, options):
         if param == "renderScale":
             renderScale = value
         argvs += ['--%s'%(param), value]
-        outdir += "_%s_%s"%(param, str(value))
+        #outdir += "_%s_%s"%(param, str(value))
         collection_name += '_%s'%(str(value).replace('.', 'D'))
 
-    outdir = os.path.join(output_dir, outdir)
+    #outdir = os.path.join(output_dir, outdir)
+    outdir = output_dir
 
 
     baseDataUrl = renderapi.render.format_baseurl(render.DEFAULT_KWARGS['host'], render.DEFAULT_KWARGS['port'])
@@ -227,14 +237,14 @@ def compute_point_matches(render, stack, tile1, tile2, pGroupId, qGroupId, outpu
     argvs += ['--debugDirectory', outdir]
     argvs += ['', canvas_urls]
 
-    #print(baseDataUrl)
+    # run the point match client
     renderapi.client.call_run_ws_client('org.janelia.render.client.PointMatchClient',
                                         add_args=argvs,
                                         renderclient=render,
                                         memGB='2G')
 
     # create the image showing the matched features and add it to an html file
-    match_img_filename = get_tile_pair_matched_image(render,
+    match_img_filename, ptmatch_count = get_tile_pair_matched_image(render,
                                                     stack,
                                                     tile1,
                                                     tile2,
@@ -263,6 +273,7 @@ def compute_point_matches(render, stack, tile1, tile2, pGroupId, qGroupId, outpu
     return_struct['keys'] = option_keys
     return_struct['zipped'] = zip(option_keys, options)
     return_struct['match_img_filename'] = match_img_filename
+    return_struct['ptmatch_count'] = ptmatch_count
     return_struct['tilepair_url'] = tilepair_base_url
     return_struct['outdir'] = outdir
     return return_struct
