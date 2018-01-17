@@ -1,9 +1,9 @@
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib as mpl
-from matplotlib.collections import PatchCollection
-from matplotlib.patches import Polygon
-import matplotlib.cm as cm
+#import matplotlib.pyplot as plt
+#import matplotlib as mpl
+#from matplotlib.collections import PatchCollection
+#from matplotlib.patches import Polygon
+#import matplotlib.cm as cm
 import tempfile
 import renderapi
 from functools import partial

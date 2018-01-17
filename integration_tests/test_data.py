@@ -47,9 +47,9 @@ TEST_DATA_ROOT = os.environ.get(
 FIJI_PATH = os.environ.get(
     'FIJI_PATH', '/allen/aibs/pipeline/image_processing/volume_assembly/Fiji.app')
 
-ROUGH_SOLVER_EXECUTABLE = os.environ.get(
-    'ROUGH_SOLVER_EXECUTABLE',
-    '/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/matlab_compiled/do_rough_alignment')
+#ROUGH_SOLVER_EXECUTABLE = os.environ.get(
+#    'ROUGH_SOLVER_EXECUTABLE',
+#    '/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/matlab_compiled/do_rough_alignment')
 
 
 def render_json_template(env, template_file, **kwargs):
@@ -88,9 +88,6 @@ TILESPECS_NO_LC_JSON = render_json_template(example_env, 'test_noLC.json',
                                             test_data_root=TEST_DATA_ROOT)
 TILESPECS_LC_JSON = render_json_template(example_env, 'test_LC.json',
                                          test_data_root=TEST_DATA_ROOT)
-
-ROUGH_MONTAGE_TILESPECS_JSON = render_json_template(example_env, 'rough_montage_tilespecs.json',
-                                                    test_data_root=TEST_DATA_ROOT)
 
 
 # rough alignment test data
