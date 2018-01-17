@@ -215,7 +215,7 @@ def detect_stitching_mistakes(render, prestitched_stack, poststitched_stack, mat
     return disconnected_tiles, gap_tiles, seam_centroids
 
 
-class DetectMontageDefects(RenderModule):
+class DetectMontageDefectsModule(RenderModule):
     def __init__(self, schema_type=None, *args, **kwargs):
         if schema_type is None:
             schema_type = DetectMontageDefectsParameters

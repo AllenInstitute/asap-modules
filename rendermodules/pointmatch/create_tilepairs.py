@@ -37,33 +37,18 @@ class TilePairClientModule(RenderModule):
     client_class = 'org.janelia.render.client.TilePairClient'
     client_script_name = 'run_ws_client.sh'
 
-    @property
-    def default_client_script(self):
-        basecmd = os.path.join(
-                        self.args['render']['client_scripts'],
-                        self.client_script_name)
-        if not os.path.isfile(basecmd):
-            raise TilePairClientException(
-                'client script {} does not exist'.format(basecmd))
-        elif not os.access(basecmd, os.X_OK):
-            raise TilePairClientException(
-                'client script {} is not executable'.format(basecmd))
-        return basecmd
-
     def run(self):
-        basecmd = self.default_client_script
-
-        baseDataUrl = "%s:%d/render-ws/v1"%(self.args['render']['host'], self.args['render']['port'])
-
         zvalues = self.render.run(
             renderapi.stack.get_z_values_for_stack, self.args['stack'])
 
         if self.args['minZ'] is not None:
             self.args['minZ'] = self.args['minZ'] if self.args['minZ'] > min(zvalues) else min(zvalues)
-        elif self.args['maxZ'] is not None:
-            self.args['maxZ'] = self.args['maxZ'] if self.args['maxZ'] < max(zvalues) else max(zvalues)
         else:
             self.args['minZ'] = min(zvalues)
+            
+        if self.args['maxZ'] is not None:
+            self.args['maxZ'] = self.args['maxZ'] if self.args['maxZ'] < max(zvalues) else max(zvalues)
+        else: 
             self.args['maxZ'] = max(zvalues)
 
         tilepairJsonFile = "tile_pairs_%s_z_%d_to_%d_dist_%d.json"%(self.args['stack'], self.args['minZ'], self.args['maxZ'], self.args['zNeighborDistance'])
@@ -85,31 +70,7 @@ class TilePairClientModule(RenderModule):
                         excludeCompletelyObscuredTiles=self.args['excludeCompletelyObscuredTiles'])
 
         self.output({'tile_pair_file':tilepairJsonFile})
-        # non-render-python way of calling TilePairClient
-        '''
-        run_cmd = [
-                    basecmd,
-                    self.args['memGB'],
-                    self.client_class,
-                    "--baseDataUrl {}".format(baseDataUrl),
-                    "--owner {}".format(self.args['render']['owner']),
-                    "--project {}".format(self.args['render']['project']),
-                    "--baseOwner {}".format(self.args['render']['owner']),
-                    "--baseProject {}".format(self.args['render']['project']),
-                    "--baseStack {}".format(self.args['baseStack']),
-                    "--stack {}".format(self.args['stack']),
-                    "--minZ {}".format(self.args['minZ']),
-                    "--maxZ {}".format(self.args['maxZ']),
-                    "--xyNeighborFactor {}".format(self.args['xyNeighborFactor']),
-                    "--zNeighborDistance {}".format(self.args['zNeighborDistance']),
-                    "--excludeCornerNeighbors {}".format(self.args['excludeCornerNeighbors']),
-                    "--excludeSameLayerNeighbors {}".format(self.args['excludeSameLayerNeighbors']),
-                    "--excludeCompletelyObscuredTiles {}".format(self.args['excludeCompletelyObscuredTiles']),
-                    "--toJson {}".format(tilepairJsonFile)
-                    ]
-
-        subprocess.call(run_cmd)
-        '''
+        
 
 if __name__ == "__main__":
     module = TilePairClientModule(input_data=example)
