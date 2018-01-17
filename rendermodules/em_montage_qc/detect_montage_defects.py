@@ -1,7 +1,6 @@
 from functools import partial
 from rtree import index as rindex
 from scipy.spatial import KDTree
-import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 import renderapi
@@ -91,17 +90,14 @@ def detect_seams(render, stack, match_collection, match_owner, z, residual_thres
 
     # find the clusters that have more than specified number of nodes
     centroids = []
-    #fig, ax = plt.subplots()
     for s in Gc:
         if len(s.nodes()) > min_cluster_size:
             pts = new_pts[s.nodes(),:]
             # get the centroid of these points that give the approximate location of the seam
             x_pts = pts[:,0]
             y_pts = pts[:,1]
-            #ax.scatter(x_pts, y_pts, color=np.random.rand(3,1))
             centroids.append([np.sum(x_pts)/len(pts), np.sum(y_pts)/len(pts)])
     
-    #plt.show()
     return centroids
 
 def detect_disconnected_tiles(render, prestitched_stack, poststitched_stack, z):

@@ -6,3 +6,6 @@ pathos
 tifffile
 pathlib
 scipy
+rtree
+networkx
+bokeh
