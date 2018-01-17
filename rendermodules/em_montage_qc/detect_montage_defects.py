@@ -22,9 +22,9 @@ example = {
     "poststitched_stack": "2_sections_near_crack_fine_lam_1e3_omitted",
     "match_collection_owner": "danielk",
     "match_collection": "NewPMS_combined_with_montage",
-    "plot_sections":"False",
+    "plot_sections":"True",
     "minZ": 1028,
-    "maxZ": 1028,
+    "maxZ": 1029,
     "pool_size": 20
 }
 
@@ -219,7 +219,7 @@ class DetectMontageDefectsModule(RenderModule):
     def __init__(self, schema_type=None, *args, **kwargs):
         if schema_type is None:
             schema_type = DetectMontageDefectsParameters
-        super(DetectMontageDefects, self).__init__(
+        super(DetectMontageDefectsModule, self).__init__(
             schema_type=schema_type, *args, **kwargs)
         
         default_output_schema = DetectMontageDefectsParametersOutput
@@ -251,10 +251,11 @@ class DetectMontageDefectsModule(RenderModule):
         
         combinedz = holes + gaps + seams
 
+        self.args['output_html'] = self.args['out_html']
         if len(combinedz) > 0:
             if self.args['plot_sections']:
                 self.args['output_html'] = plot_section_maps(self.render, self.args['poststitched_stack'], combinedz, out_html=self.args['output_html'])
-                print(self.args['output_html'])
+                #print(self.args['output_html'])
         
         self.output({'output_html':self.args['output_html'], 
                      'hole_sections': holes,
@@ -265,5 +266,5 @@ class DetectMontageDefectsModule(RenderModule):
             
 
 if __name__ == "__main__":
-    mod = DetectMontageDefects(input_data=example)
+    mod = DetectMontageDefectsModule(input_data=example)
     mod.run()
