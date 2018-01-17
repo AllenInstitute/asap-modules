@@ -46,7 +46,7 @@ class DetectMontageDefectsParameters(RenderParameters):
         default=False,
         missing=False,
         description="Do you want to plot the sections with defects (holes or gaps)?. Will plot Bokeh plots in a html file")
-    out_html = InputDir(
+    out_html_dir = InputDir(
         required=False,
         default=None,
         missing=None,

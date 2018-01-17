@@ -247,7 +247,7 @@ class DetectMontageDefectsModule(RenderModule):
         
         combinedz = holes + gaps + seams
 
-        self.args['output_html'] = self.args['out_html']
+        self.args['output_html'] = self.args['out_html_dir']
         if len(combinedz) > 0:
             if self.args['plot_sections']:
                 self.args['output_html'] = plot_section_maps(self.render, self.args['poststitched_stack'], combinedz, out_html=self.args['output_html'])

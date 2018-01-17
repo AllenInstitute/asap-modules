@@ -124,7 +124,7 @@ def test_detect_montage_defects(render,
     ex['minZ'] = 1028
     ex['maxZ'] = 1029
     ex['plot_sections'] = 'True'
-    ex['out_html'] = os.path.join(output_directory, 'plot.html')
+    ex['out_html_dir'] = output_directory
     ex['residual_threshold'] = 4
     ex['neighbors_distance'] = 60
     ex['min_cluster_size'] = 12
