@@ -47,9 +47,9 @@ TEST_DATA_ROOT = os.environ.get(
 FIJI_PATH = os.environ.get(
     'FIJI_PATH', '/allen/aibs/pipeline/image_processing/volume_assembly/Fiji.app')
 
-ROUGH_SOLVER_EXECUTABLE = os.environ.get(
-    'ROUGH_SOLVER_EXECUTABLE',
-    '/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/matlab_compiled/do_rough_alignment')
+#ROUGH_SOLVER_EXECUTABLE = os.environ.get(
+#    'ROUGH_SOLVER_EXECUTABLE',
+#    '/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/matlab_compiled/do_rough_alignment')
 
 
 def render_json_template(env, template_file, **kwargs):

@@ -179,15 +179,12 @@ class PointMatchClientParametersSpark(SIFTPointMatchParameters):
         default="/allen/aibs/shared/image_processing/volume_assembly/utils/spark",
         missing="/allen/aibs/shared/image_processing/volume_assembly/utils/spark",
         description="Path to the spark home directory")
-<<<<<<< HEAD
-=======
     spark_files = List( Str,
         required=False,
         description = "list of spark files to add to the spark submit command")
     spark_conf = Dict(
         required=False,
         description= "dictionary of key value pairs to add to spark_submit as --conf key=value")
->>>>>>> 05c6443608ddccb70f9f8b11a895b72607ea5531
 
 class CollectionId(mm.Schema):
     owner = Str(required=True,
@@ -227,10 +224,7 @@ class PointMatchClientParametersQsub(SIFTPointMatchParameters):
         default='connectome',
         missing='connectome',
         description='Name of the queue to submit the job')
-<<<<<<< HEAD
-=======
     logdir = OutputDir(
         required=True,
         description="location to set logging for qsub command"
     )
->>>>>>> 05c6443608ddccb70f9f8b11a895b72607ea5531
