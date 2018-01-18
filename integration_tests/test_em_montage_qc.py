@@ -120,7 +120,6 @@ def test_detect_montage_defects(render,
     ex['render'] = render_params
     ex['prestitched_stack'] = prestitched_stack
     ex['poststitched_stack'] = poststitched_stack
-    ex['match_collection_owner'] = 'None'
     ex['match_collection'] = point_match_collection
     ex['minZ'] = 1028
     ex['maxZ'] = 1029

@@ -61,6 +61,7 @@ class DetectMontageDefectsParameters(RenderParameters):
     def add_match_collection_owner(self, data):
         if data['match_collection_owner'] is None:
             data['match_colelction_owner'] = data['render']['owner']
+            
 
 class DetectMontageDefectsParametersOutput(argschema.schemas.DefaultSchema):
     output_html = Str(
