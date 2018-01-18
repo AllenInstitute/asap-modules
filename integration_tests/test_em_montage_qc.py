@@ -13,7 +13,7 @@ from test_data import (PRESTITCHED_STACK_INPUT_JSON,
                        render_params,
                        montage_qc_project)
 
-from rendermodules.em_montage_qc.detect_montage_defects import DetectMontageDefectsModule
+from rendermodules.em_montage_qc.detect_montage_defects import DetectMontageDefectsModule, detect_seams, detect_disconnected_tiles, detect_stitching_gaps 
 from rendermodules.module.render_module import RenderModuleException
 from rendermodules.em_montage_qc import detect_montage_defects
 
