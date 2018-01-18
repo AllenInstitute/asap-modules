@@ -152,7 +152,7 @@ def test_detect_montage_defects(render,
     assert(len(data['gap_sections']) == 1)
 
     detect_seams(render,
-                 ex['poststitched_stack'])
+                 ex['poststitched_stack'],
                  ex['match_collection'],
                  mod.args['match_collection_owner'],
                  1028,
