@@ -13,7 +13,10 @@ from test_data import (PRESTITCHED_STACK_INPUT_JSON,
                        render_params,
                        montage_qc_project)
 
-from rendermodules.em_montage_qc.detect_montage_defects import DetectMontageDefectsModule
+from rendermodules.em_montage_qc.detect_montage_defects import (DetectMontageDefectsModule,
+                                                                detect_seams,
+                                                                detect_disconnected_tiles,
+                                                                detect_stitching_gaps)
 from rendermodules.module.render_module import RenderModuleException
 from rendermodules.em_montage_qc import detect_montage_defects
 
@@ -147,6 +150,25 @@ def test_detect_montage_defects(render,
     assert(len(data['hole_sections']) > 0)
     assert(len(data['seam_centroids']) > 0)
     assert(len(data['gap_sections']) == 1)
+
+    detect_seams(render,
+                 ex['poststitched_stack'])
+                 ex['match_collection'],
+                 mod.args['match_collection_owner'],
+                 1028,
+                 residual_threshold=ex['residual_threshold'],
+                 distance=ex['neighbors_distance'],
+                 min_cluster_size=ex['min_cluster_size'])
+    
+    detect_disconnected_tiles(render,
+                              ex['prestitched_stack'],
+                              ex['poststitched_stack'],
+                              1028)
+    
+    detect_stitching_gaps(render,
+                          ex['prestitched_stack'],
+                          ex['poststitched_stack'],
+                          1028)
 
     
     
