@@ -151,7 +151,7 @@ def test_detect_montage_defects(render,
     detect_seams(render,
                  ex['poststitched_stack'],
                  ex['match_collection'],
-                 self.args['match_owner'],
+                 self.args['match_collection_owner'],
                  1028,
                  residual_threshold=ex['residual_threshold'],
                  distance=ex['neighbors_distance'],
@@ -161,7 +161,7 @@ def test_detect_montage_defects(render,
                               ex['prestitched_stack'],
                               ex['poststitched_stack'],
                               1028)
-                              
+
     detect_stitching_gaps(render,
                           ex['prestitched_stack'],
                           ex['poststitched_stack'],
