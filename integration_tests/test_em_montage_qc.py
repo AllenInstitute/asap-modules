@@ -134,7 +134,7 @@ def test_detect_montage_defects(render,
     mod.run()
 
     # check if the output json exists and out_html exists
-    assert(os.path.exists(ex['output_json'] and os.path.isfile(ex['output_json'])))
+    assert(os.path.exists(ex['output_json']) and os.path.isfile(ex['output_json']))
 
     # read the output json
     with open(ex['output_json'], 'r') as f:
