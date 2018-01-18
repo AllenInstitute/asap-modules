@@ -124,11 +124,6 @@ class PointMatchOptimizationParameters(RenderParameters):
     tileId2 = Str(
         required=True,
         description='tileId of the second tile in the tile pair')
-    fillWithNoise = Bool(
-        required=False,
-        default=False,
-        missing=False,
-        description='Fill each canvas image with noise before rendering to improve point match derivation')
     pool_size = Int(
         required=False,
         default=10,
@@ -139,6 +134,9 @@ class PointMatchOptimizationParameters(RenderParameters):
         required=True,
         description='Parent directory in which subdirectories will be created to store images and point-match results from SIFT')
     url_options = Nested(url_options, required=True)
+
+ 
+
 
 class PointMatchOptimizationParametersOutput(DefaultSchema):
     output_html = Str(

@@ -29,7 +29,6 @@ ex = {
         "SIFTmaxScale": [0.82],
         "SIFTminScale": [0.28],
         "SIFTsteps": [3],
-        "fillWithNoise": "false",
         "renderScale": [0.1, 0.35]
     },
     "outputDirectory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch/pmopts",
@@ -80,7 +79,7 @@ def get_parameter_sets_and_strings(SIFT_options):
     new_options = {}
     all_parameter_list = []
     for key in SIFT_options:
-        if ~isinstance(SIFT_options[key], list):
+        if (~isinstance(SIFT_options[key], list)):
             new_options[key] = list(SIFT_options[key])
         else:
             new_options[key] = SIFT_options[key]
@@ -181,7 +180,7 @@ def get_tile_pair_matched_image(render, stack, tileId1, tileId2, pGroupId, qGrou
     return match_img_filename, ptmatch_count
 
 
-def compute_point_matches(render, stack, tile1, tile2, pGroupId, qGroupId, output_dir, fillWithNoise, url_options, option_keys, options):
+def compute_point_matches(render, stack, tile1, tile2, pGroupId, qGroupId, output_dir, url_options, option_keys, options):
     # get canvas urls
     canvas_urls = get_canvas_url(render.DEFAULT_KWARGS, stack, tile1, tile2, url_options)
 
@@ -192,7 +191,10 @@ def compute_point_matches(render, stack, tile1, tile2, pGroupId, qGroupId, outpu
     for param, value in zip(option_keys, options):
         if param == "renderScale":
             renderScale = value
-        argvs += ['--%s'%(param), value]
+        if type(value) is str:
+            argvs += ['--%s'%(param), '"%s"'%value]
+        else:
+            argvs += ['--%s'%(param), value]
         #outdir += "_%s_%s"%(param, str(value))
         collection_name += '_%s'%(str(value).replace('.', 'D'))
 
@@ -288,7 +290,6 @@ class PointMatchOptimizationModule(RenderModule):
                             pGroupId,
                             qGroupId,
                             self.args['outputDirectory'],
-                            self.args['fillWithNoise'],
                             self.args['url_options'],
                             keys)
 
