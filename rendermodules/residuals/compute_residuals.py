@@ -7,7 +7,6 @@ import json
 import itertools as it
 from functools import partial
 import pathos.multiprocessing as mp
-from shapely.geometry import Polygon
 
 
 def compute_residuals_within_group(render, stack, matchCollectionOwner, matchCollection, z, min_points=1):
