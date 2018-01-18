@@ -70,13 +70,18 @@ def plot_bokeh_section_maps(tile_data, out_html):
     save(p)
 
 
-def plot_section_maps(render, stack, zvalues, out_html=None, pool_size=5):
-    if out_html is None:
+def plot_section_maps(render, stack, zvalues, out_html_dir=None, pool_size=5):
+    if out_html_dir is None:
         tempf = tempfile.NamedTemporaryFile(suffix=".html",
                                             delete=False,
                                             mode='w')
         tempf.close()
-        out_html = tempf.name
+        out_html_dir = tempf.name
+    else:
+        out_html_dir = tempfile.NamedTemporaryFile(suffix=".html",
+                                                   delete=False,
+                                                   mode='w',
+                                                   dir=out_html_dir)
 
     # Get the tileIds and tile bounds for each z
     mypartial = partial(get_tile_ids_and_tile_boundaries, render, stack)
@@ -86,5 +91,5 @@ def plot_section_maps(render, stack, zvalues, out_html=None, pool_size=5):
     #for z in zvalues:
     #    tile_data = get_tile_ids_and_tile_boundaries(render, stack, z)
 
-    plot_bokeh_section_maps(tile_data, out_html)
-    return out_html
+    plot_bokeh_section_maps(tile_data, out_html_dir.name)
+    return out_html_dir.name

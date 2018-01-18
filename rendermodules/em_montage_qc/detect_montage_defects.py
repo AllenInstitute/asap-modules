@@ -20,6 +20,7 @@ example = {
     "prestitched_stack": "2_sections_near_crack_fine_lam_1e3",
     "poststitched_stack": "2_sections_near_crack_fine_lam_1e3_omitted",
     "match_collection": "NewPMS_combined_with_montage",
+    "out_html_dir":"/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch",
     "plot_sections":"True",
     "minZ": 1028,
     "maxZ": 1029,
@@ -249,7 +250,7 @@ class DetectMontageDefectsModule(RenderModule):
         self.args['output_html'] = self.args['out_html_dir']
         if len(combinedz) > 0:
             if self.args['plot_sections']:
-                self.args['output_html'] = plot_section_maps(self.render, self.args['poststitched_stack'], combinedz, out_html=self.args['output_html'])
+                self.args['output_html'] = plot_section_maps(self.render, self.args['poststitched_stack'], combinedz, out_html_dir=self.args['output_html'])
                 #print(self.args['output_html'])
         
         self.output({'output_html':self.args['output_html'], 
