@@ -146,7 +146,7 @@ def test_detect_montage_defects(render,
     assert(len(data['seam_sections']) > 0)
     assert(len(data['hole_sections']) > 0)
     assert(len(data['seam_centroids']) > 0)
-    assert(len(data['gap_sections']) == 0)
+    assert(len(data['gap_sections']) == 1)
 
     
     
