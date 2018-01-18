@@ -117,6 +117,7 @@ def test_detect_montage_defects(render,
     output_directory = str(tmpdir_factory.mktemp('montage_qc_output'))
     
     ex = detect_montage_defects.example
+    ex['render'] = render_params
     ex['prestitched_stack'] = prestitched_stack
     ex['poststitched_stack'] = poststitched_stack
     ex['match_collection_owner'] = 'None'
