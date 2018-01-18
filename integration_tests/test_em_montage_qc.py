@@ -141,7 +141,7 @@ def test_detect_montage_defects(render,
         data = json.load(f)
     f.close()
 
-    assert(os.path.exists(data['output_html']) and os.path.isfile(ex['output_html']))
+    assert(os.path.exists(data['output_html']) and os.path.isfile(data['output_html']))
 
     assert(len(data['seam_sections']) > 0)
     assert(len(data['hole_sections']) > 0)
