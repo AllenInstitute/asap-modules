@@ -60,7 +60,7 @@ class DetectMontageDefectsParameters(RenderParameters):
     @post_load
     def add_match_collection_owner(self, data):
         if data['match_collection_owner'] is None:
-            data['match_colelction_owner'] = data['render']['owner']
+            data['match_collection_owner'] = data['render']['owner']
             
 
 class DetectMontageDefectsParametersOutput(argschema.schemas.DefaultSchema):
@@ -68,19 +68,28 @@ class DetectMontageDefectsParametersOutput(argschema.schemas.DefaultSchema):
         required=False,
         default=None,
         description='Output html file with Bokeh plots showing holes and stitching gaps')
+    qc_passed_sections = argschema.fields.List(
+        argschema.fields.Int,
+        required=True,
+        description='List of sections that passed QC')
     hole_sections = argschema.fields.List(
-        argschema.fields.Int(), 
+        argschema.fields.Int, 
         required=True, 
         description='List of z values which failed QC and has holes')
     gap_sections = argschema.fields.List(
-        argschema.fields.Int(),
+        argschema.fields.Int,
         required=True,
         description='List of z values which have stitching gaps')
     seam_sections = argschema.fields.List(
-        argschema.fields.Int(),
+        argschema.fields.Int,
         required=True,
         description='List of z values which have seams detected')
-    seam_centroids = argschema.fields.List(
-        argschema.fields.List(argschema.fields.Float()),
-        required=False,
-        description='List of (x,y) positions of seams for each section')
+    seam_centroids = argschema.fields.NumpyArray(
+        dtype='object', 
+        required=True,
+        description='An array of (x,y) positions of seams for each section with seams')
+
+    #seam_centroids = argschema.fields.List(
+    #    argschema.fields.List(argschema.fields.Float),
+    #    required=False,
+    #    description='List of (x,y) positions of seams for each section')

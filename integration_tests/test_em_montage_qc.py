@@ -16,6 +16,7 @@ from test_data import (PRESTITCHED_STACK_INPUT_JSON,
 from rendermodules.em_montage_qc.detect_montage_defects import DetectMontageDefectsModule, detect_seams, detect_disconnected_tiles, detect_stitching_gaps 
 from rendermodules.module.render_module import RenderModuleException
 from rendermodules.em_montage_qc import detect_montage_defects
+from rendermodules.em_montage_qc import plots
 
 logger = renderapi.client.logger
 logger.setLevel(logging.DEBUG)
@@ -25,6 +26,11 @@ def render():
     render_params['project'] = montage_qc_project
     render = renderapi.connect(**render_params)
     return render
+
+@pytest.fixture(scope='module')
+def get_z():
+    z = 1028
+    return z
 
 @pytest.fixture(scope='module')
 def prestitched_stack_from_json():
@@ -109,6 +115,22 @@ def point_match_collection(render, point_matches_from_json):
     yield test_point_match_collection
     # need to delete this collection but no api call exists in renderapi
 
+@pytest.fixture(scope='module')
+def test_tile_ids(render, poststitched_stack, get_z):
+    tilespecs = render.run(renderapi.tilespec.get_tile_specs_from_z, poststitched_stack, get_z)
+
+    tile_ids = []
+    for ts in tilespecs:
+        tile_ids.append(ts.tileId)
+
+    tile_data = plots.get_tile_ids_and_tile_boundaries(render, poststitched_stack, get_z)
+
+    new_ids = tile_data['tile_ids']
+
+    for tile in nw_ids:
+        assert(tile in tile_ids)
+    
+
 def test_detect_montage_defects(render,
                                 prestitched_stack,
                                 poststitched_stack,
@@ -126,7 +148,7 @@ def test_detect_montage_defects(render,
     ex['plot_sections'] = 'True'
     ex['out_html_dir'] = output_directory
     ex['residual_threshold'] = 4
-    ex['neighbors_distance'] = 60
+    ex['neighbors_distance'] = 80
     ex['min_cluster_size'] = 12
     ex['output_json'] = os.path.join(output_directory, 'output.json')
 
@@ -144,28 +166,40 @@ def test_detect_montage_defects(render,
     assert(os.path.exists(data['output_html']) and os.path.isfile(data['output_html']))
 
     assert(len(data['seam_sections']) > 0)
-    assert(len(data['hole_sections']) > 0)
+    assert(len(data['hole_sections']) == 1)
     assert(len(data['seam_centroids']) > 0)
+    assert(len(data['qc_passed_sections']) == 0)
+
+    for s in data['seam_centroids']:
+        assert(len(s) > 0)
+    
     assert(len(data['gap_sections']) == 1)
 
-    detect_seams(render,
-                 ex['poststitched_stack'],
-                 ex['match_collection'],
-                 mod.args['match_collection_owner'],
-                 1028,
-                 residual_threshold=ex['residual_threshold'],
-                 distance=ex['neighbors_distance'],
-                 min_cluster_size=ex['min_cluster_size'])
-
-    detect_disconnected_tiles(render,  
-                              ex['prestitched_stack'],
-                              ex['poststitched_stack'],
-                              1028)
-
-    detect_stitching_gaps(render,
-                          ex['prestitched_stack'],
-                          ex['poststitched_stack'],
-                          1028)
+    centroids = detect_seams(render,
+                             ex['poststitched_stack'],
+                             ex['match_collection'],
+                             mod.args['match_collection_owner'],
+                             1028,
+                             residual_threshold=ex['residual_threshold'],
+                             distance=ex['neighbors_distance'],
+                             min_cluster_size=ex['min_cluster_size'])
     
-    
+    assert(len(centroids) > 0)
 
+    disconnected = detect_disconnected_tiles(render,  
+                                             ex['prestitched_stack'],
+                                             ex['poststitched_stack'],
+                                             1029)
+                                            
+    assert(len(disconnected ) > 0)
+
+    gaps = detect_stitching_gaps(render,
+                                 ex['prestitched_stack'],
+                                 ex['poststitched_stack'],
+                                 1029)
+    
+    assert(len(gaps) > 0)
+    
+    out_html = plots.plot_section_maps(render, poststitched_stack, [1028])
+
+    assert(os.path.exists(out_html) and os.path.isfile(out_html) and os.path.getsize(out_html) > 0)

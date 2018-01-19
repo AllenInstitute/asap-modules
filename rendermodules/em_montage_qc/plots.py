@@ -72,11 +72,10 @@ def plot_bokeh_section_maps(tile_data, out_html):
 
 def plot_section_maps(render, stack, zvalues, out_html_dir=None, pool_size=5):
     if out_html_dir is None:
-        tempf = tempfile.NamedTemporaryFile(suffix=".html",
+        out_html_dir = tempfile.NamedTemporaryFile(suffix=".html",
                                             delete=False,
                                             mode='w')
-        tempf.close()
-        out_html_dir = tempf.name
+        out_html_dir.close()
     else:
         out_html_dir = tempfile.NamedTemporaryFile(suffix=".html",
                                                    delete=False,

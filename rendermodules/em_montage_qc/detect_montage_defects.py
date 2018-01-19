@@ -6,7 +6,7 @@ import numpy as np
 import renderapi
 from rendermodules.residuals import compute_residuals as cr
 from rendermodules.em_montage_qc.schemas import DetectMontageDefectsParameters, DetectMontageDefectsParametersOutput
-from ..module.render_module import RenderModule
+from ..module.render_module import RenderModule, RenderModuleException
 from rendermodules.em_montage_qc.plots import plot_section_maps
 
 example = {
@@ -212,13 +212,8 @@ def detect_stitching_mistakes(render, prestitched_stack, poststitched_stack, mat
 
 
 class DetectMontageDefectsModule(RenderModule):
-    def __init__(self, schema_type=None, *args, **kwargs):
-        if schema_type is None:
-            schema_type = DetectMontageDefectsParameters
-        super(DetectMontageDefectsModule, self).__init__(
-            schema_type=schema_type, *args, **kwargs)
-        
-        default_output_schema = DetectMontageDefectsParametersOutput
+    default_output_schema = DetectMontageDefectsParametersOutput
+    default_schema = DetectMontageDefectsParameters    
 
     def run(self):
         zvalues1 = self.render.run(renderapi.stack.get_z_values_for_stack,
@@ -227,8 +222,8 @@ class DetectMontageDefectsModule(RenderModule):
         zvalues = list(set(zvalues1).intersection(set(zrange)))
 
         if len(zvalues) == 0:
-            self.logger.error('No valid zvalues found in stack for given range {} - {}'.format(self.args['minZ'], self.args['maxZ']))
-
+            raise RenderModuleException('No valid zvalues found in stack for given range {} - {}'.format(self.args['minZ'], self.args['maxZ']))
+            
         disconnected_tiles, gap_tiles, seam_centroids = detect_stitching_mistakes(
                                                             self.render,
                                                             self.args['prestitched_stack'],
@@ -241,23 +236,38 @@ class DetectMontageDefectsModule(RenderModule):
                                                             zvalues,
                                                             pool_size=self.args['pool_size'])
 
-        holes = [z for (z, dt) in zip(zvalues, disconnected_tiles) if len(dt) > 0]
-        gaps = [z for (z, gt) in zip(zvalues, gap_tiles) if len(gt) > 0]
-        seams = [z for (z,sm) in zip(zvalues, seam_centroids) if len(sm) > 0]
-        
-        combinedz = holes + gaps + seams
+        #holes = [z for (z, dt) in zip(zvalues, disconnected_tiles) if len(dt) > 0]
+        #gaps = [z for (z, gt) in zip(zvalues, gap_tiles) if len(gt) > 0]
+        #seams = [z for (z,sm) in zip(zvalues, seam_centroids) if len(sm) > 0]
 
+        # find the indices of sections having holes
+        hole_indices = [i for i, dt in enumerate(disconnected_tiles) if len(dt) > 0]
+        gaps_indices = [i for i, gt in enumerate(gap_tiles) if len(gt) > 0]
+        seams_indices = [i for i, sm in enumerate(seam_centroids) if len(sm) > 0]
+
+        holes = [zvalues[i] for i in hole_indices]
+        gaps = [zvalues[i] for i in gaps_indices]
+        seams = [zvalues[i] for i in seams_indices]
+
+        combinedz = holes + gaps + seams
+        
+        qc_passed_sections = set(zvalues) - set(combinedz)
+        centroids = [seam_centroids[i] for i in seams_indices]
+
+        
+        
         self.args['output_html'] = self.args['out_html_dir']
         if len(combinedz) > 0:
             if self.args['plot_sections']:
                 self.args['output_html'] = plot_section_maps(self.render, self.args['poststitched_stack'], combinedz, out_html_dir=self.args['output_html'])
                 #print(self.args['output_html'])
         
-        self.output({'output_html':self.args['output_html'], 
+        self.output({'output_html':self.args['output_html'],
+                     'qc_passed_sections': qc_passed_sections, 
                      'hole_sections': holes,
                      'gap_sections':gaps,
                      'seam_sections':seams,
-                     'seam_centroids':seam_centroids})
+                     'seam_centroids':np.array(centroids)})
 
             
 
