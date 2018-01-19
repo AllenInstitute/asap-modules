@@ -2,10 +2,7 @@ import os
 import pytest
 import logging
 import renderapi
-import tempfile
 import json
-import subprocess
-import mock
 
 from test_data import (PRESTITCHED_STACK_INPUT_JSON,
                        POSTSTITCHED_STACK_INPUT_JSON,
@@ -203,3 +200,31 @@ def test_detect_montage_defects(render,
     out_html = plots.plot_section_maps(render, poststitched_stack, [1028])
 
     assert(os.path.exists(out_html) and os.path.isfile(out_html) and os.path.getsize(out_html) > 0)
+
+    tile_id_pos_d=plots.get_tile_ids_and_tile_boundaries(render,ex['poststitched_stack'],1029)
+    
+
+def test_detect_montage_defects_fail(render,
+                                prestitched_stack,
+                                poststitched_stack,
+                                point_match_collection,
+                                tmpdir_factory):
+    output_directory = str(tmpdir_factory.mktemp('montage_qc_output'))
+    
+    ex = detect_montage_defects.example
+    ex['render'] = render_params
+    ex['prestitched_stack'] = prestitched_stack
+    ex['poststitched_stack'] = poststitched_stack
+    ex['match_collection'] = point_match_collection
+    ex['minZ'] = 1000
+    ex['maxZ'] = 1001
+    ex['plot_sections'] = 'True'
+    ex['out_html_dir'] = output_directory
+    ex['residual_threshold'] = 4
+    ex['neighbors_distance'] = 80
+    ex['min_cluster_size'] = 12
+    ex['output_json'] = os.path.join(output_directory, 'output.json')
+
+    mod = DetectMontageDefectsModule(input_data=ex, args=[])
+    with pytest.raises(RenderModuleException):
+        mod.run()
