@@ -2,10 +2,7 @@ import os
 import pytest
 import logging
 import renderapi
-import tempfile
 import json
-import subprocess
-import mock
 
 from test_data import (PRESTITCHED_STACK_INPUT_JSON,
                        POSTSTITCHED_STACK_INPUT_JSON,
@@ -202,3 +199,29 @@ def test_detect_montage_defects(render,
     for tile in new_ids:
         assert(tile in tile_ids)
     
+
+
+def test_detect_montage_defects_fail(render,
+                                prestitched_stack,
+                                poststitched_stack,
+                                point_match_collection,
+                                tmpdir_factory):
+    output_directory = str(tmpdir_factory.mktemp('montage_qc_output'))
+    
+    ex = detect_montage_defects.example
+    ex['render'] = render_params
+    ex['prestitched_stack'] = prestitched_stack
+    ex['poststitched_stack'] = poststitched_stack
+    ex['match_collection'] = point_match_collection
+    ex['minZ'] = 1000
+    ex['maxZ'] = 1001
+    ex['plot_sections'] = 'True'
+    ex['out_html_dir'] = output_directory
+    ex['residual_threshold'] = 4
+    ex['neighbors_distance'] = 80
+    ex['min_cluster_size'] = 12
+    ex['output_json'] = os.path.join(output_directory, 'output.json')
+
+    mod = DetectMontageDefectsModule(input_data=ex, args=[])
+    with pytest.raises(RenderModuleException):
+        mod.run()
