@@ -146,26 +146,36 @@ def test_detect_montage_defects(render,
     assert(len(data['seam_sections']) > 0)
     assert(len(data['hole_sections']) > 0)
     assert(len(data['seam_centroids']) > 0)
+
+    for s in data['seam_centroids']:
+        assert(len(s) > 0)
+    
     assert(len(data['gap_sections']) == 1)
 
-    detect_seams(render,
-                 ex['poststitched_stack'],
-                 ex['match_collection'],
-                 mod.args['match_collection_owner'],
-                 1028,
-                 residual_threshold=ex['residual_threshold'],
-                 distance=ex['neighbors_distance'],
-                 min_cluster_size=ex['min_cluster_size'])
+    centroids = detect_seams(render,
+                             ex['poststitched_stack'],
+                             ex['match_collection'],
+                             mod.args['match_collection_owner'],
+                             1028,
+                             residual_threshold=ex['residual_threshold'],
+                             distance=ex['neighbors_distance'],
+                             min_cluster_size=ex['min_cluster_size'])
+    
+    assert(len(centroids) > 0)
 
-    detect_disconnected_tiles(render,  
-                              ex['prestitched_stack'],
-                              ex['poststitched_stack'],
-                              1028)
+    disconnected = detect_disconnected_tiles(render,  
+                                             ex['prestitched_stack'],
+                                             ex['poststitched_stack'],
+                                             1029)
+                                            
+    assert(len(disconnected ) > 0)
 
-    detect_stitching_gaps(render,
-                          ex['prestitched_stack'],
-                          ex['poststitched_stack'],
-                          1028)
+    gaps = detect_stitching_gaps(render,
+                                 ex['prestitched_stack'],
+                                 ex['poststitched_stack'],
+                                 1029)
+    
+    assert(len(gaps) > 0)
     
     
 

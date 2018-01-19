@@ -6,7 +6,7 @@ import numpy as np
 import renderapi
 from rendermodules.residuals import compute_residuals as cr
 from rendermodules.em_montage_qc.schemas import DetectMontageDefectsParameters, DetectMontageDefectsParametersOutput
-from ..module.render_module import RenderModule
+from ..module.render_module import RenderModule, RenderModuleException
 from rendermodules.em_montage_qc.plots import plot_section_maps
 
 example = {
@@ -212,13 +212,8 @@ def detect_stitching_mistakes(render, prestitched_stack, poststitched_stack, mat
 
 
 class DetectMontageDefectsModule(RenderModule):
-    def __init__(self, schema_type=None, *args, **kwargs):
-        if schema_type is None:
-            schema_type = DetectMontageDefectsParameters
-        super(DetectMontageDefectsModule, self).__init__(
-            schema_type=schema_type, *args, **kwargs)
-        
-        default_output_schema = DetectMontageDefectsParametersOutput
+    default_output_schema = DetectMontageDefectsParametersOutput
+    default_schema = DetectMontageDefectsParameters    
 
     def run(self):
         zvalues1 = self.render.run(renderapi.stack.get_z_values_for_stack,
@@ -227,8 +222,8 @@ class DetectMontageDefectsModule(RenderModule):
         zvalues = list(set(zvalues1).intersection(set(zrange)))
 
         if len(zvalues) == 0:
-            self.logger.error('No valid zvalues found in stack for given range {} - {}'.format(self.args['minZ'], self.args['maxZ']))
-
+            raise RenderModuleException('No valid zvalues found in stack for given range {} - {}'.format(self.args['minZ'], self.args['maxZ']))
+            
         disconnected_tiles, gap_tiles, seam_centroids = detect_stitching_mistakes(
                                                             self.render,
                                                             self.args['prestitched_stack'],
