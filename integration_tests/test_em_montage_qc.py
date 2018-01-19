@@ -126,7 +126,7 @@ def test_tile_ids(render, poststitched_stack, get_z):
 
     new_ids = tile_data['tile_ids']
 
-    for tile in nw_ids:
+    for tile in new_ids:
         assert(tile in tile_ids)
     
 
