@@ -115,7 +115,6 @@ def point_match_collection(render, point_matches_from_json):
     yield test_point_match_collection
     # need to delete this collection but no api call exists in renderapi
 
-@pytest.fixture(scope='module')
 def test_tile_ids(render, poststitched_stack, get_z):
     tilespecs = render.run(renderapi.tilespec.get_tile_specs_from_z, poststitched_stack, get_z)
 
