@@ -236,23 +236,38 @@ class DetectMontageDefectsModule(RenderModule):
                                                             zvalues,
                                                             pool_size=self.args['pool_size'])
 
-        holes = [z for (z, dt) in zip(zvalues, disconnected_tiles) if len(dt) > 0]
-        gaps = [z for (z, gt) in zip(zvalues, gap_tiles) if len(gt) > 0]
-        seams = [z for (z,sm) in zip(zvalues, seam_centroids) if len(sm) > 0]
-        
-        combinedz = holes + gaps + seams
+        #holes = [z for (z, dt) in zip(zvalues, disconnected_tiles) if len(dt) > 0]
+        #gaps = [z for (z, gt) in zip(zvalues, gap_tiles) if len(gt) > 0]
+        #seams = [z for (z,sm) in zip(zvalues, seam_centroids) if len(sm) > 0]
 
+        # find the indices of sections having holes
+        hole_indices = [i for i, dt in enumerate(disconnected_tiles) if len(dt) > 0]
+        gaps_indices = [i for i, gt in enumerate(gap_tiles) if len(gt) > 0]
+        seams_indices = [i for i, sm in enumerate(seam_centroids) if len(sm) > 0]
+
+        holes = [zvalues[i] for i in hole_indices]
+        gaps = [zvalues[i] for i in gaps_indices]
+        seams = [zvalues[i] for i in seams_indices]
+
+        combinedz = holes + gaps + seams
+        
+        qc_passed_sections = set(zvalues) - set(combinedz)
+        centroids = [seam_centroids[i] for i in seams_indices]
+
+        
+        
         self.args['output_html'] = self.args['out_html_dir']
         if len(combinedz) > 0:
             if self.args['plot_sections']:
                 self.args['output_html'] = plot_section_maps(self.render, self.args['poststitched_stack'], combinedz, out_html_dir=self.args['output_html'])
                 #print(self.args['output_html'])
         
-        self.output({'output_html':self.args['output_html'], 
+        self.output({'output_html':self.args['output_html'],
+                     'qc_passed_sections': qc_passed_sections, 
                      'hole_sections': holes,
                      'gap_sections':gaps,
                      'seam_sections':seams,
-                     'seam_centroids':seam_centroids})
+                     'seam_centroids':np.array(centroids)})
 
             
 

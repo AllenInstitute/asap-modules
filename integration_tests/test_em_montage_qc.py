@@ -126,7 +126,7 @@ def test_detect_montage_defects(render,
     ex['plot_sections'] = 'True'
     ex['out_html_dir'] = output_directory
     ex['residual_threshold'] = 4
-    ex['neighbors_distance'] = 60
+    ex['neighbors_distance'] = 80
     ex['min_cluster_size'] = 12
     ex['output_json'] = os.path.join(output_directory, 'output.json')
 
@@ -144,8 +144,9 @@ def test_detect_montage_defects(render,
     assert(os.path.exists(data['output_html']) and os.path.isfile(data['output_html']))
 
     assert(len(data['seam_sections']) > 0)
-    assert(len(data['hole_sections']) > 0)
+    assert(len(data['hole_sections']) == 1)
     assert(len(data['seam_centroids']) > 0)
+    assert(len(data['qc_passed_sections']) == 0)
 
     for s in data['seam_centroids']:
         assert(len(s) > 0)

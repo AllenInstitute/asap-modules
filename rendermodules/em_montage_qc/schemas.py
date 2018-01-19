@@ -68,6 +68,10 @@ class DetectMontageDefectsParametersOutput(argschema.schemas.DefaultSchema):
         required=False,
         default=None,
         description='Output html file with Bokeh plots showing holes and stitching gaps')
+    qc_passed_sections = argschema.fields.List(
+        argschema.fields.Int,
+        required=True,
+        description='List of sections that passed QC')
     hole_sections = argschema.fields.List(
         argschema.fields.Int, 
         required=True, 
@@ -80,7 +84,12 @@ class DetectMontageDefectsParametersOutput(argschema.schemas.DefaultSchema):
         argschema.fields.Int,
         required=True,
         description='List of z values which have seams detected')
-    seam_centroids = argschema.fields.List(
-        argschema.fields.List(argschema.fields.Float),
-        required=False,
-        description='List of (x,y) positions of seams for each section')
+    seam_centroids = argschema.fields.NumpyArray(
+        dtype='object', 
+        required=True,
+        description='An array of (x,y) positions of seams for each section with seams')
+
+    #seam_centroids = argschema.fields.List(
+    #    argschema.fields.List(argschema.fields.Float),
+    #    required=False,
+    #    description='List of (x,y) positions of seams for each section')
