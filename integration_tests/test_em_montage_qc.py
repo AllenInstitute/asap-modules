@@ -16,6 +16,7 @@ from test_data import (PRESTITCHED_STACK_INPUT_JSON,
 from rendermodules.em_montage_qc.detect_montage_defects import DetectMontageDefectsModule, detect_seams, detect_disconnected_tiles, detect_stitching_gaps 
 from rendermodules.module.render_module import RenderModuleException
 from rendermodules.em_montage_qc import detect_montage_defects
+from rendermodules.em_montage_qc import plots
 
 logger = renderapi.client.logger
 logger.setLevel(logging.DEBUG)
@@ -178,5 +179,7 @@ def test_detect_montage_defects(render,
     
     assert(len(gaps) > 0)
     
-    
+    out_html = plots.plot_section_maps(render, poststitched_stack, [1028])
+
+    assert(os.path.exists(out_html) and os.path.isfile(out_html) and os.path.getsize(out_html) > 0)
 
