@@ -24,10 +24,10 @@ def render():
     render = renderapi.connect(**render_params)
     return render
 
-@pytest.fixture(scope='module')
-def get_z():
-    z = 1028
-    return z
+#@pytest.fixture(scope='module')
+#def get_z():
+#    z = 1028
+#    return z
 
 @pytest.fixture(scope='module')
 def prestitched_stack_from_json():
@@ -112,21 +112,6 @@ def point_match_collection(render, point_matches_from_json):
     yield test_point_match_collection
     # need to delete this collection but no api call exists in renderapi
 
-@pytest.fixture(scope='module')
-def test_tile_ids(render, poststitched_stack, get_z):
-    tilespecs = render.run(renderapi.tilespec.get_tile_specs_from_z, poststitched_stack, get_z)
-
-    tile_ids = []
-    for ts in tilespecs:
-        tile_ids.append(ts.tileId)
-
-    tile_data = plots.get_tile_ids_and_tile_boundaries(render, poststitched_stack, get_z)
-
-    new_ids = tile_data['tile_ids']
-
-    for tile in nw_ids:
-        assert(tile in tile_ids)
-    
 
 def test_detect_montage_defects(render,
                                 prestitched_stack,
@@ -201,8 +186,20 @@ def test_detect_montage_defects(render,
 
     assert(os.path.exists(out_html) and os.path.isfile(out_html) and os.path.getsize(out_html) > 0)
 
-    tile_id_pos_d=plots.get_tile_ids_and_tile_boundaries(render,ex['poststitched_stack'],1029)
+    tilespecs = render.run(renderapi.tilespec.get_tile_specs_from_z, poststitched_stack, 1028)
+
+    tile_ids = []
+    for ts in tilespecs:
+        tile_ids.append(ts.tileId)
+
+    tile_data = plots.get_tile_ids_and_tile_boundaries(render, poststitched_stack, 1028)
+
+    new_ids = tile_data['tile_ids']
+
+    for tile in new_ids:
+        assert(tile in tile_ids)
     
+
 
 def test_detect_montage_defects_fail(render,
                                 prestitched_stack,
