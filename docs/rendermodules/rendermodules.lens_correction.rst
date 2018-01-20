@@ -20,6 +20,14 @@ rendermodules\.lens\_correction\.lens\_correction module
     :undoc-members:
     :show-inheritance:
 
+rendermodules\.lens\_correction\.schemas module
+-----------------------------------------------
+
+.. automodule:: rendermodules.lens_correction.schemas
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 Module contents
 ---------------
