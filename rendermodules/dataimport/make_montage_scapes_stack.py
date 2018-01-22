@@ -1,19 +1,12 @@
-import json
-import os
-import renderapi
-from ..module.render_module import RenderModule
-from rendermodules.dataimport.schemas import MakeMontageScapeSectionStackParameters
-import argschema
-import marshmallow as mm
 from functools import partial
-import numpy as np
-import time
-from PIL import Image
 import glob
+import os
+import json
+from PIL import Image
+import renderapi
+from rendermodules.dataimport.schemas import MakeMontageScapeSectionStackParameters, MakeMontageScapeSectionStackOutput
+from ..module.render_module import RenderModule, RenderModuleException
 
-
-if __name__ == "__main__" and __package__ is None:
-    __package__ = "rendermodules.dataimport.make_montage_scapes_stack"
 
 
 example = {
@@ -62,18 +55,11 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory, scale,
     z = Z[0]
     newz = Z[1]
 
-    print(z)
-    # create tilespecdir path
-    #tilespecdir = os.path.join(image_directory, project, input_stack, 'sections_at_%s'%str(scale), 'tilespecs_%s'%tagstr)
-    #if not os.path.exists(tilespecdir):
-    #    os.makedirs(tilespecdir)
-
     # create the full path to the images
     # directory structure as per Render's RenderSectionClient output
     [q,r] = divmod(z,1000)
     s = int(r/100)
 
-    #directory = os.path.join(image_directory, stack, "sections_at_%s"%str(scale), "%03d"%q, "%d"%s)
     filename = os.path.join(image_directory,
                             project,
                             input_stack,
@@ -83,29 +69,34 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory, scale,
                             '%s.0.%s'%(str(z),imgformat))
 
     # get stack bounds to set the image width and height
-    stackbounds = render.run(
-                    renderapi.stack.get_stack_bounds,
-                    input_stack)
+    #stackbounds = render.run(
+    #                renderapi.stack.get_stack_bounds,
+    #                input_stack)
 
 
     # This is really a slow way of generating the downsample sections
     # need to submit the job in a cluster
     if not os.path.isfile(filename):
         print "Montage scape does not exist for %d. Creating one now..."%z
-        render.run(renderapi.client.renderSectionClient, input_stack, image_directory, [z], scale=str(scale), format=imgformat, doFilter=True, fillWithNoise=False)
+        render.run(renderapi.client.renderSectionClient, 
+                   input_stack, 
+                   image_directory, 
+                   [z], 
+                   scale=str(scale), 
+                   format=imgformat, 
+                   doFilter=True, 
+                   fillWithNoise=False)
 
     # get section bounds
-    sectionbounds = render.run(
-                        renderapi.stack.get_bounds_from_z,
-                        input_stack,
-                        z)
+    sectionbounds = render.run(renderapi.stack.get_bounds_from_z,
+                               input_stack,
+                               z)
 
 
     # generate tilespec for this z
-    tilespecs = render.run(
-                    renderapi.tilespec.get_tile_specs_from_z,
-                    input_stack,
-                    z)
+    tilespecs = render.run(renderapi.tilespec.get_tile_specs_from_z,
+                           input_stack,
+                           z)
 
     t = tilespecs[0]
     d = t.to_dict()
@@ -152,7 +143,7 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory, scale,
                                     'sections_at_%s'%str(scale),
                                     'tilespecs_%s'%tagstr,
                                     'tilespec_%04d.json'%z)
-    #print(tilespecfilename)
+    
     fp = open(tilespecfilename, 'w')
     json.dump([ts.to_dict() for ts in allts], fp, indent=4)
     fp.close()
@@ -161,12 +152,9 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory, scale,
 
 
 class MakeMontageScapeSectionStack(RenderModule):
-    def __init__(self, schema_type=None, *args, **kwargs):
-        if schema_type is None:
-            schema_type = MakeMontageScapeSectionStackParameters
-        super(MakeMontageScapeSectionStack, self).__init__(
-            schema_type=schema_type, *args, **kwargs)
-
+    default_schema = MakeMontageScapeSectionStackParameters
+    default_output_schema = MakeMontageScapeSectionStackOutput
+    
     def run(self):
         self.logger.debug('Montage scape stack generation module')
 
@@ -177,9 +165,8 @@ class MakeMontageScapeSectionStack(RenderModule):
         zvalues1 = range(self.args['zstart'], self.args['zend']+1)
         zvalues = list(set(zvalues1).intersection(set(zvalues)))
 
-        if len(zvalues) == 0:
-            self.logger.error('No sections found for stack {}'.format(
-                self.args['montage_stack']))
+        if not zvalues:
+            raise RenderModuleException('No sections found for stack {}'.format(self.args['montage_stack']))
 
         # generate tuple of old and new Zs
         # setting a new z range does not check whether the range overlaps with existing sections/chunks in the output stack
@@ -199,7 +186,12 @@ class MakeMontageScapeSectionStack(RenderModule):
         #f.write("%d"%len(zvalues))
         #f.close()
 
-        tilespecdir = os.path.join(self.args['image_directory'], self.args['render']['project'], self.args['montage_stack'], 'sections_at_%s'%str(self.args['scale']), 'tilespecs_%s'%tagstr)
+        tilespecdir = os.path.join(self.args['image_directory'], 
+                                   self.args['render']['project'], 
+                                   self.args['montage_stack'], 
+                                   'sections_at_%s'%str(self.args['scale']), 
+                                   'tilespecs_%s'%tagstr)
+        
         if not os.path.exists(tilespecdir):
             os.makedirs(tilespecdir)
 
@@ -219,40 +211,40 @@ class MakeMontageScapeSectionStack(RenderModule):
             pool.map(mypartial, Z)
 
         # get all the output tilespec json files
-        t = os.path.join(self.args['image_directory'],
+        tspath = os.path.join(self.args['image_directory'],
                          self.args['render']['project'],
                          self.args['montage_stack'],
                          'sections_at_%s'%str(self.args['scale']),
                          'tilespecs_%s'%tagstr)
 
-        jsonfiles = glob.glob("%s/*.json"%t)
+        jsonfiles = glob.glob("%s/*.json"%tspath)
+
+        if not jsonfiles:
+            raise RenderModuleException('No tilespecs json files were generated')
 
         # create the stack if it doesn't exist
         if self.args['output_stack'] not in self.render.run(renderapi.render.get_stacks_by_owner_project):
             # stack does not exist
-            self.render.run(
-                renderapi.stack.create_stack,
-                self.args['output_stack'],
-                cycleNumber=5,
-                cycleStepNumber=1,
-                stackResolutionX = 1,
-                stackResolutionY = 1)
+            self.render.run(renderapi.stack.create_stack,
+                            self.args['output_stack'],
+                            cycleNumber=5,
+                            cycleStepNumber=1,
+                            stackResolutionX = 1,
+                            stackResolutionY = 1)
 
         # import tilespecs to render
-        self.render.run(
-            renderapi.client.import_jsonfiles_parallel,
-            self.args['output_stack'],
-            jsonfiles)
+        self.render.run(renderapi.client.import_jsonfiles_parallel,
+                        self.args['output_stack'],
+                        jsonfiles)
 
         # set stack state to complete
-        self.render.run(
-            renderapi.stack.set_stack_state,
-            self.args['output_stack'],
-            state='COMPLETE')
+        self.render.run(renderapi.stack.set_stack_state,
+                        self.args['output_stack'],
+                        state='COMPLETE')
+
+        self.output({'output_stack': self.args['output_stack']})
 
 
 if __name__ == "__main__":
     mod = MakeMontageScapeSectionStack(input_data=example)
-    #mod = MakeMontageScapeSectionStack(schema_type=MakeMontageScapeSectionStackParameters)
-
     mod.run()

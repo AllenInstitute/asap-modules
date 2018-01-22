@@ -9,9 +9,6 @@ class RenderSectionAtScaleParameters(RenderParameters):
     input_stack = Str(
         required=True,
         description='Input stack to make the downsample version of')
-    #output_stack = Str(
-    #    required=True,
-    #    description='Name of the output downsample stack')
     image_directory = OutputDir(
         required=True,
         description='Directory to save the downsampled sections')

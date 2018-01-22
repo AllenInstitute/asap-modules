@@ -4,8 +4,10 @@ import pytest
 import logging
 import renderapi
 import json
+import glob
 from test_data import (ROUGH_MONTAGE_TILESPECS_JSON, render_params)
 
+from rendermodules.materialize.render_downsample_sections import RenderSectionAtScale
 from rendermodules.dataimport.make_montage_scapes_stack import MakeMontageScapeSectionStack
 from rendermodules.pointmatch.create_tilepairs import TilePairClientModule
 from rendermodules.rough_align.do_rough_alignment import SolveRoughAlignmentModule, example
@@ -23,20 +25,25 @@ def render():
     render = renderapi.connect(**render_params)
     return render
 
+
 @pytest.fixture(scope='module')
 def tspecs_from_json():
     tilespecs = [renderapi.tilespec.TileSpec(json=d)
-        for d in ROUGH_ALIGN_INPUT_JSON]
+        for d in ROUGH_MONTAGE_TILESPECS_JSON]
     return tilespecs
+
 
 # A stack with multiple sections montaged
 @pytest.fixture(scope='module')
 def montage_stack(render,tspecs_from_json):
     test_montage_stack = 'input_montage_stack'
     renderapi.stack.create_stack(test_montage_stack, render=render)
-    renderapi.client.import_tilespecs(
-        stack, tspecs_from_json, render=render)
-    renderapi.stack.set_stack_state(test_montage_stack, 'COMPLETE', render=render)
+    renderapi.client.import_tilespecs(test_montage_stack, 
+                                      tspecs_from_json, 
+                                      render=render)
+    renderapi.stack.set_stack_state(test_montage_stack, 
+                                    'COMPLETE', 
+                                    render=render)
 
     # assure stack is built correctly
     assert len({tspec.tileId for tspec
@@ -46,15 +53,41 @@ def montage_stack(render,tspecs_from_json):
     yield test_montage_stack
     renderapi.stack.delete_stack(test_montage_stack, render=render)
 
+
 @pytest.fixture(scope='module')
-def test_montage_scape_stack(render, montage_stack):
-    image_directory = os.path.join(rough_align_test_data_dir, 'montage_scapes')
+def downsample_sections_dir(montage_stack, tmpdir_factory):
+    image_directory = str(tmpdir_factory.mktemp('Rough_Align'))
+    ex = {
+        "render": render_params,
+        "input_stack": montage_stack,
+        "image_directory": image_directory,
+        "imgformat": "png",
+        "scale": 0.01,
+        "minZ": 1015,
+        "maxZ": 1017
+    }
+
+    mod = RenderSectionAtScale(input_data=ex, args=[])
+    mod.run()
+    out_dir = os.path.join(image_directory, render_params['project'], montage_stack, 'sections_at_0.01/001/0')
+    assert(os.path.exists(out_dir))
+    
+    files = glob.glob(os.path.join(out_dir, '*.png'))
+    for f in files:
+        img = os.path.join(out_dir, f)
+        assert(os.path.exists(img) and os.path.isfile(img) and os.path.getsize(img) > 0)
+    yield image_directory
+    
+
+
+@pytest.fixture(scope='module')
+def test_montage_scape_stack(render, montage_stack, downsample_sections_dir):
     output_stack = '{}OUT'.format(montage_stack)
     params = {
         "render": render_params,
         "montage_stack": montage_stack,
         "output_stack": output_stack,
-        "image_directory": image_directory,
+        "image_directory": downsample_sections_dir,
         "imgformat": "png",
         "scale":0.01,
         "zstart": 1015,
@@ -64,20 +97,22 @@ def test_montage_scape_stack(render, montage_stack):
     mod = MakeMontageScapeSectionStack(input_data=params, args=[])
     mod.run()
 
-    assert len(zend-zstart+1) == len(renderapi.stack.get_z_values_for_stack(
+    assert len(params['zend']-params['zstart']+1) == len(renderapi.stack.get_z_values_for_stack(
                                         output_stack, render=render))
-    assert len({range(zstart, zend+1)}.symmetric_difference(
+    assert len({range(params['zstart'], params['zend']+1)}.symmetric_difference(
                                         renderapi.stack.get_z_values_for_stack(
                                             output_stack, render=render))) == 0
     yield output_stack
     renderapi.stack.delete_stack(test_montage_scape_stack, render=render)
+
 
 @pytest.fixture(scope='module')
 def test_create_rough_tile_pairs(render, test_montage_scape_stack, tmpdir_factory):
     output_directory = str(tmpdir_factory.mktemp('Rough_Align'))
     params = {
         "render": render_params,
-        "zNeighborDistance": 5,
+        "stack": test_montage_scape_stack,
+        "zNeighborDistance": 2,
         "xyNeighborFactor": 0.9,
         "excludeCornerNeighbors": "true",
         "excludeSameLayerNeighbors": "true",

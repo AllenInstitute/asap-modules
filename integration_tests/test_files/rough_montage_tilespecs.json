@@ -21,7 +21,7 @@
 	  "maxIntensity": 255,
 	  "mipmapLevels": {
 		"0": {
-		  "imageUrl": "file:{{test_data_root}}/rough_align_test_data/montage_tiles/20170502151225125_295434_5LC_0064_01_001015_0_95_3.tif"
+		  "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502151225125_295434_5LC_0064_01_001015_0_95_3.tif"
 		}
 	  },
 	  "transforms": {
@@ -62,7 +62,7 @@
 	  "maxIntensity": 255,
 	  "mipmapLevels": {
 		"0": {
-		  "imageUrl": "file:{{test_data_root}}/rough_align_test_data/montage_tiles/20170502151159770_295434_5LC_0064_01_001015_0_95_2.tif"
+		  "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502151159770_295434_5LC_0064_01_001015_0_95_2.tif"
 		}
 	  },
 	  "transforms": {
@@ -103,7 +103,7 @@
 	  "maxIntensity": 255,
 	  "mipmapLevels": {
 		"0": {
-		  "imageUrl": "file:{{test_data_root}}/rough_align_test_data/montage_tiles/20170502151224809_295434_5LC_0064_01_001015_0_94_3.tif"
+		  "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502151224809_295434_5LC_0064_01_001015_0_94_3.tif"
 		}
 	  },
 	  "transforms": {
@@ -144,7 +144,7 @@
 	  "maxIntensity": 255,
 	  "mipmapLevels": {
 		"0": {
-		  "imageUrl": "file:{{test_data_root}}/rough_align_test_data/montage_tiles/20170502151159480_295434_5LC_0064_01_001015_0_94_2.tif"
+		  "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502151159480_295434_5LC_0064_01_001015_0_94_2.tif"
 		}
 	  },
 	  "transforms": {
@@ -185,7 +185,7 @@
 	  "maxIntensity": 255,
 	  "mipmapLevels": {
 		"0": {
-		  "imageUrl": "file:{{test_data_root}}/rough_align_test_data/montage_tiles/20170502160019520_295434_5LC_0064_01_001016_0_95_3.tif"
+		  "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502160019520_295434_5LC_0064_01_001016_0_95_3.tif"
 		}
 	  },
 	  "transforms": {
@@ -226,7 +226,7 @@
 	  "maxIntensity": 255,
 	  "mipmapLevels": {
 		"0": {
-		  "imageUrl": "file:{{test_data_root}}/rough_align_test_data/montage_tiles/20170502155958801_295434_5LC_0064_01_001016_0_95_2.tif"
+		  "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502155958801_295434_5LC_0064_01_001016_0_95_2.tif"
 		}
 	  },
 	  "transforms": {
@@ -267,7 +267,7 @@
 	  "maxIntensity": 255,
 	  "mipmapLevels": {
 		"0": {
-		  "imageUrl": "file:{{test_data_root}}/rough_align_test_data/montage_tiles/20170502155958485_295434_5LC_0064_01_001016_0_94_2.tif"
+		  "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502155958485_295434_5LC_0064_01_001016_0_94_2.tif"
 		}
 	  },
 	  "transforms": {
@@ -308,7 +308,7 @@
 	  "maxIntensity": 255,
 	  "mipmapLevels": {
 		"0": {
-		  "imageUrl": "file:{{test_data_root}}/rough_align_test_data/montage_tiles/20170502160019216_295434_5LC_0064_01_001016_0_94_3.tif"
+		  "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502160019216_295434_5LC_0064_01_001016_0_94_3.tif"
 		}
 	  },
 	  "transforms": {
@@ -349,7 +349,7 @@
 	  "maxIntensity": 255,
 	  "mipmapLevels": {
 		"0": {
-		  "imageUrl": "file:{{test_data_root}}/rough_align_test_data/montage_tiles/20170502164835327_295434_5LC_0064_01_001017_0_95_3.tif"
+		  "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502164835327_295434_5LC_0064_01_001017_0_95_3.tif"
 		}
 	  },
 	  "transforms": {
@@ -390,7 +390,7 @@
 	  "maxIntensity": 255,
 	  "mipmapLevels": {
 		"0": {
-		  "imageUrl": "file:{{test_data_root}}/rough_align_test_data/montage_tiles/20170502164814998_295434_5LC_0064_01_001017_0_95_2.tif"
+		  "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502164814998_295434_5LC_0064_01_001017_0_95_2.tif"
 		}
 	  },
 	  "transforms": {
@@ -431,7 +431,7 @@
 	  "maxIntensity": 255,
 	  "mipmapLevels": {
 		"0": {
-		  "imageUrl": "file:{{test_data_root}}/rough_align_test_data/montage_tiles/20170502164835070_295434_5LC_0064_01_001017_0_94_3.tif"
+		  "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502164835070_295434_5LC_0064_01_001017_0_94_3.tif"
 		}
 	  },
 	  "transforms": {

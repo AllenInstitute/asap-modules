@@ -157,40 +157,40 @@ class GenerateEMTileSpecsOutput(DefaultSchema):
 
 
 class MakeMontageScapeSectionStackParameters(RenderParameters):
-    montage_stack = mm.fields.Str(
+    montage_stack = Str(
         required=True,
         metadata={'description':'stack to make a downsample version of'})
-    output_stack = mm.fields.Str(
+    output_stack = Str(
         required=True,
         metadata={'description':'output stack name'})
     image_directory = InputDir(
         required=True,
         metadata={'description':'directory that stores the montage scapes'})
-    set_new_z = mm.fields.Boolean(
+    set_new_z = Boolean(
         required=False,
         default=False,
         missing=False,
         metadata={'description':'set to assign new z values starting from 0 (default - False)'})
-    new_z_start = mm.fields.Int(
+    new_z_start = Int(
         required=False,
         default=0,
         missing=0,
         metadata={'description':'new starting z index'})
-    imgformat = mm.fields.Str(
+    imgformat = Str(
         required=False,
         default='tif',
         missing='tif',
         metadata={'description':'image format of the montage scapes (default - tif)'})
-    scale = mm.fields.Float(
+    scale = Float(
         required=True,
         metadata={'description':'scale of montage scapes'})
-    zstart = mm.fields.Int(
+    zstart = Int(
         required=True,
         metadata={'description':'min z value'})
-    zend = mm.fields.Int(
+    zend = Int(
         required=True,
         metadata={'description':'max z value'})
-    pool_size = mm.fields.Int(
+    pool_size = Int(
         require=False,
         default=20,
         missing=20,
@@ -204,22 +204,7 @@ class MakeMontageScapeSectionStackParameters(RenderParameters):
             data['new_z_start'] = data['zstart']
 
 
-class CloneStackWithNoMipmapsOutput(DefaultSchema):
-    output_stack = Str(required=True)
-
-
-class CloneStackWithNoMipmapsParameters(RenderParameters):
-    input_stack = Str(
-        required=True,
-        description='Stack that needs to be cloned')
+class MakeMontageScapeSectionStackOutput(DefaultSchema):
     output_stack = Str(
         required=True,
-        description='Output stack that has mipmaps removed')
-    level_to_retain = Int(
-        required=True,
-        description='Mipmap level to be retained from the input stack')
-    pool_size = Int(
-        required=False,
-        default=10,
-        missing=10,
-        description="Number of parallel pool size")
+        description='Name of the downsampled sections stack')

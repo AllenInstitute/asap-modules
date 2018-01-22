@@ -1,17 +1,12 @@
-import os
-import renderapi
-from ..module.render_module import RenderModule
 from functools import partial
-import glob
 import random
 import time
+import json
 import numpy as np
+import renderapi
+import tempfile
 from rendermodules.materialize.schemas import RenderSectionAtScaleParameters, RenderSectionAtScaleOutput
-from rendermodules.dataimport.clone_stack_with_no_mipmaps import create_tilespecs_without_mipmaps
-
-
-if __name__ == "__main__" and __package__ is None:
-    __package__ = "rendermodules.materialize.render_downsample_sections"
+from ..module.render_module import RenderModule, RenderModuleException
 
 
 example = {
@@ -22,23 +17,20 @@ example = {
         "project": "Reflections",
         "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts"
     },
-    "input_stack": "Secs_1015_1099_5_reflections_mml6_montage_1015",
+    "input_stack": "Secs_1015_1099_5_reflections_mml6_montage",
     "image_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch",
     "imgformat":"png",
     "scale": 0.01,
-    "minZ": 1148,
-    "maxZ": 1148
+    "minZ": 1015,
+    "maxZ": 1016
 }
 
 def check_stack_for_mipmaps(render, input_stack, zvalues):
     # this function checks for the mipmaplevels for the first section in the stack
     # Assumes that all the sections in the stack has mipmaps stored if the first section has mipmaps
-    # Instead of reading all the tilespecs randomly pick a z and read its tilespecs for mipmap levels
-
-    #zvalues = render.run(renderapi.stack.get_z_values_for_stack,
-    #                        input_stack)
-
-    z = random.choice(zvalues)
+    
+    #z = random.choice(zvalues)
+    z = zvalues [0]
     tilespecs = render.run(renderapi.tilespec.get_tile_specs_from_z,
                             input_stack,
                             z)
@@ -50,44 +42,56 @@ def check_stack_for_mipmaps(render, input_stack, zvalues):
 
     return False
 
+def create_tilespecs_without_mipmaps(render, montage_stack, level, z):
+    ts = render.run(renderapi.tilespec.get_tile_specs_from_z, montage_stack, z)
+    tilespecs = []
+    for t in ts:
+        m = t.to_dict()
+        m['mipmapLevels'] = dict(m['mipmapLevels'])
+        [m['mipmapLevels'].pop(k, 0) for k in m['mipmapLevels'].keys() if k != level]
+        tilespecs.append(m)
+    tempjson = tempfile.NamedTemporaryFile(suffix=".json", mode='w', delete=True)
+    tempjson.close()
+    with open(tempjson.name, 'w') as f:
+        json.dump(tilespecs, f, indent=4)
+        f.close()
+    return tempjson.name
 
 
 class RenderSectionAtScale(RenderModule):
-    #def __init__(self, schema_type=None, *args, **kwargs):
-    #    if schema_type is None:
-    #        schema_type = RenderSectionAtScaleParameters
-    #    super(RenderSectionAtScale, self).__init__(
-    #        schema_type=schema_type, *args, **kwargs)
     default_schema = RenderSectionAtScaleParameters
     default_output_schema = RenderSectionAtScaleOutput
 
     def run(self):
 
-        zvalues = self.render.run(
+        zvalues1 = self.render.run(
             renderapi.stack.get_z_values_for_stack,
             self.args['input_stack'])
 
         if self.args['minZ'] == -1 or self.args['maxZ'] == -1:
-            self.args['minZ'] = min(zvalues)
-            self.args['maxZ'] = max(zvalues)
+            self.args['minZ'] = min(zvalues1)
+            self.args['maxZ'] = max(zvalues1)
         elif self.args['minZ'] > self.args['maxZ']:
-            self.logger.error('Invalid Z range: {} > {}'.format(self.args['minZ'], self.args['maxZ']))
-        else:
-            zvalues = np.array(zvalues)
-            zvalues = list(zvalues[(zvalues >= self.args['minZ']) & (zvalues <= self.args['maxZ'])])
+            raise RenderModuleException('Invalid Z range: {} > {}'.format(self.args['minZ'], self.args['maxZ']))
+        
+        zvalues1 = np.array(zvalues1)
+        zrange = range(self.args['minZ'], self.args['maxZ'])
+        zvalues = list(set(zvalues1).intersection(set(zrange)))
 
-        if len(zvalues) == 0:
-            self.logger.error('No valid zvalues found in stack for given range {} - {}'.format(self.args['minZ'], self.args['maxZ']))
+        if not zvalues:
+            raise RenderModuleException('No valid zvalues found in stack for given range {} - {}'.format(self.args['minZ'], self.args['maxZ']))
 
         self.args['temp_stack'] = self.args['input_stack']
 
         #intz = [int(z) for z in zvalues]
 
+        stack_has_mipmaps = check_stack_for_mipmaps(self.render, self.args['input_stack'], zvalues)
+
         # check if there are mipmaps in this stack
-        if check_stack_for_mipmaps(self.render, self.args['input_stack'], zvalues):
+        if stack_has_mipmaps:
+            print("stack has mipmaps")
             # clone the input stack to a temporary one with level 1 mipmap alone
-            temp_no_mipmap_stack = "{}_no_mml_t{}".format(self.args['input_stack'],
-                                           time.strftime("%m%d%y_%H%M%S"))
+            temp_no_mipmap_stack = "{}_no_mml_t{}".format(self.args['input_stack'], time.strftime("%m%d%y_%H%M%S"))
 
             # set level of mipmap to retain as 1 (level 1)
             level = 1
@@ -112,6 +116,7 @@ class RenderSectionAtScale(RenderModule):
                         state='LOADING')
 
             # import json files into temp_no_mipmap_stack
+            # this also sets the stack's state to COMPLETE
             self.render.run(renderapi.client.import_jsonfiles_parallel,
                         self.args['temp_stack'],
                         jsonfiles,
