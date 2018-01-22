@@ -66,6 +66,7 @@ class TilePairClientParameters(RenderParameters):
             data['baseStack'] = data['stack']
 
 
+
 class SIFTPointMatchParameters(RenderParameters):
     jarfile = Str(
         required=True,
@@ -198,7 +199,7 @@ class PointMatchClientOutputSchema(mm.Schema):
     pairCount = Int(
         required=True,
         description = "number of tile pairs in collection")
-        
+
 class PointMatchClientParametersQsub(SIFTPointMatchParameters):
     sparkhome = InputDir(
         required=True,

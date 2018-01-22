@@ -21,7 +21,6 @@ example = {
     "minZ":1015,
     "maxZ":1022,
     "zNeighborDistance":0,
-    "baseStack":"mm2_acquire_8bit_reimage",
     "stack":"mm2_acquire_8bit_reimage",
     "xyNeighborFactor": 0.9,
     "excludeCornerNeighbors":"true",

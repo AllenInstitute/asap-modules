@@ -154,3 +154,4 @@ class GenerateEMTileSpecsParameters(RenderParameters):
 class GenerateEMTileSpecsOutput(DefaultSchema):
     stack = Str(required=True,
                 description="stack to which generated tiles were added")
+

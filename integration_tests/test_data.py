@@ -47,6 +47,10 @@ TEST_DATA_ROOT = os.environ.get(
 FIJI_PATH = os.environ.get(
     'FIJI_PATH', '/allen/aibs/pipeline/image_processing/volume_assembly/Fiji.app')
 
+#ROUGH_SOLVER_EXECUTABLE = os.environ.get(
+#    'ROUGH_SOLVER_EXECUTABLE',
+#    '/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/matlab_compiled/do_rough_alignment')
+
 
 def render_json_template(env, template_file, **kwargs):
     template = env.get_template(template_file)
@@ -85,6 +89,10 @@ TILESPECS_NO_LC_JSON = render_json_template(example_env, 'test_noLC.json',
 TILESPECS_LC_JSON = render_json_template(example_env, 'test_LC.json',
                                          test_data_root=TEST_DATA_ROOT)
 
+
+# rough alignment test data
+rough_align_test_data_dir = os.path.join(TEST_DATA_ROOT,
+                                        'rough_align_test_data')
 RAW_STACK_INPUT_JSON = render_json_template(example_env, 'raw_tile_specs_for_em_montage.json',
                                             test_data_root=TEST_DATA_ROOT)
 
@@ -141,3 +149,15 @@ test_em_montage_parameters = render_json_template(example_env,
     scratch_dir = tempfile.mkdtemp(),
     point_match_collection = montage_collection,
     montage_z = montage_z)
+
+# EM Montage QC data
+PRESTITCHED_STACK_INPUT_JSON = render_json_template(example_env, 'em_montage_qc_pre_tilespecs.json',
+                                                    test_data_root=TEST_DATA_ROOT)
+
+POSTSTITCHED_STACK_INPUT_JSON = render_json_template(example_env, 'em_montage_qc_post_tilespecs.json',
+                                                    test_data_root=TEST_DATA_ROOT)
+
+MONTAGE_QC_POINT_MATCH_JSON = render_json_template(example_env, 'em_montage_qc_point_matches.json')
+
+montage_qc_project = "em_montage_qc_test"
+
