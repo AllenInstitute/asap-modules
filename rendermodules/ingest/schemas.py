@@ -1,5 +1,5 @@
 import argschema
-from argschema.fields import DateTime, Nested, InputDir, Str, Int, InputFile
+from argschema.fields import DateTime, Nested, InputDir, Str, Float, Int, InputFile
 
 
 class Camera(argschema.schemas.DefaultSchema):
@@ -12,7 +12,8 @@ class Camera(argschema.schemas.DefaultSchema):
 class AcquisitionData(argschema.schemas.DefaultSchema):
     camera = Nested(Camera, required=False)
     microscope = Str(required=False, description="")
-    overlap = Int(required=False)
+    microscope_type = Str(required=False, description="")
+    overlap = Float(required=False)
     acquisition_time = DateTime(required=True, format="iso")
 
 
@@ -29,6 +30,8 @@ class TileSetIngestSchema(argschema.ArgSchema):
     storage_directory = InputDir(
         required=True, description="")
     acquisition_data = Nested(AcquisitionData, required=False)
+    metafile = InputFile(required=False, default=None,
+                         allow_none=True, description="")
 
 
 class EMMontageSetIngestSchema(TileSetIngestSchema):
@@ -51,11 +54,14 @@ class IngestTileSetParams(argschema.ArgSchema):
     metafile = InputFile(
         required=False, allow_none=True, missing=None)
     ingest_params = Nested(IngestParams, required=True)
+    reference_set_id = Str(required=False, allow_none=True, missing=None)
+
 
 example = {
     "reference_set_id": "DEADBEEF",
     "acquisition_data": {
         "microscope": "temca2",
+        "microscope_type": "TEMCA",
         "camera": {
             "camera_id": "4450428",
             "height": 3840,

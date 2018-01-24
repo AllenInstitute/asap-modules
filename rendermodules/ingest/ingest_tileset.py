@@ -15,7 +15,7 @@ from marshmallow import ValidationError
 
 from rendermodules.ingest.schemas import (
     EMMontageSetIngestSchema, ReferenceSetIngestSchema,
-    IngestParams, IngestTileSetParams)
+    IngestTileSetParams)
 from rendermodules.module.render_module import RenderModuleException
 
 from workflow_client import celery_ingest
@@ -26,7 +26,8 @@ example_input = {
     "ingest_params": {
         "app_key": "at_em_imaging_workflow",
         "workflow_name": "em_2d_montage"
-    }
+    },
+    "reference_set_id": None
 }
 
 
@@ -124,20 +125,24 @@ class IngestTileSetModule(argschema.ArgSchemaParser):
         with open(mdfile, 'r') as f:
             md = json.load(f)
 
-        # TODO make work with reference set id
+        # useful for calling later, but probably belongs somewhere else
+        self.acquisition_time = self.gen_datetime(
+            md[0]['metadata']['roi_creation_time'])
+        self.microscope = md[0]['metadata']['temca_id']
+        self.camera = md[0]['metadata']['camera_info']['camera_id']
+
         body = {
             "acquisition_data": {
-                "microscope": md[0]['metadata']['temca_id'],
+                "microscope": self.microscope,
                 "microscope_type": self.microscope_type,
                 "camera": {
-                    "camera_id": md[0]['metadata']['camera_info']['camera_id'],
+                    "camera_id": self.camera,
                     "height": md[0]['metadata']['camera_info']['height'],
                     "width": md[0]['metadata']['camera_info']['width'],
                     "model": md[0]['metadata']['camera_info']['camera_model']
                 },
                 "overlap": md[0]['metadata']['overlap'],
-                "acquisition_time": self.gen_datetime(
-                    md[0]['metadata']['roi_creation_time']),
+                "acquisition_time": self.acquisition_time,
             },
             "storage_directory": self.args['tile_dir'],
             "metafile": mdfile
@@ -155,6 +160,7 @@ class IngestTileSetModule(argschema.ArgSchemaParser):
                 "specimen": md[0]['metadata']['specimen_id'],  # FIXME not LIMS
                 "sample_holder": md[0]['metadata']['grid']
             }
+            body['reference_set_id'] = self.args.get('reference_set_id')
             response = self.montagesend(body)
 
         self.logger.info("celery ingest returned {}".format(response))
