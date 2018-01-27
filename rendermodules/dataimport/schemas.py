@@ -1,5 +1,5 @@
 import marshmallow as mm
-from argschema.fields import InputDir, InputFile, Str, Int, Boolean, InputDir
+from argschema.fields import InputDir, InputFile, Str, Int, Boolean, InputDir, Float
 from ..module.schemas import RenderParameters
 from marshmallow import ValidationError, post_load
 from argschema.schemas import DefaultSchema

@@ -2,12 +2,12 @@ import json
 import os
 import renderapi
 import subprocess
-from ..module.render_module import RenderModule, RenderModuleException
-from rendermodules.montage.schemas import SolveMontageSectionParameters
 from marshmallow import ValidationError
 from functools import partial
 import numpy as np
 import tempfile
+from ..module.render_module import RenderModule, RenderModuleException
+from rendermodules.montage.schemas import SolveMontageSectionParameters
 
 
 if __name__ == "__main__" and __package__ is None:
@@ -22,8 +22,8 @@ example = {
         "project": "Tests",
         "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts"
     },
-    "first_section": 1015,
-	"last_section": 1020,
+    "first_section": 1019,
+	"last_section": 1023,
     "solver_options": {
 		"degree": 1,
 		"solver": "backslash",
@@ -69,25 +69,23 @@ example = {
     "source_collection": {
 		"owner": "gayathri",
 		"project": "Tests",
-		"stack": "Secs_1015_1099_5_reflections_ds_montage",
+		"stack": "rough_test_downsample_montage_stack",
 		"service_host": "em-131fs:8080",
 		"baseURL": "http://em-131fs:8080/render-ws/v1",
-		"renderbinPath": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts",
 		"verbose": 0
 	},
 	"target_collection": {
 		"owner": "gayathri",
 		"project": "Tests",
-		"stack": "Secs_1015_1099_5_reflections_ds_rough_affine",
+		"stack": "rough_test_downsample_rough_stack",
 		"service_host": "em-131fs:8080",
 		"baseURL": "http://em-131fs:8080/render-ws/v1",
-		"renderbinPath": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts",
 		"verbose": 0
 	},
 	"source_point_match_collection": {
 		"server": "http://em-131fs:8080/render-ws/v1",
 		"owner": "gayathri_MM2",
-		"match_collection": "Secs_1015_1099_5_reflections_rough_test_pm",
+		"match_collection": "rough_test",
 		"verbose": 0
 	},
 	"verbose": 0,
@@ -114,6 +112,16 @@ class SolveRoughAlignmentModule(RenderModule):
         if "MCRROOT" not in os.environ:
             raise ValidationError("MCRROOT not set")
 
+        if self.args['first_section'] >= self.args['last_section']:
+            raise RenderModuleException("First section z cannot be greater or equal to last section z")
+
+        zvalues = renderapi.stack.get_z_values_for_stack(self.args['source_collection']['stack'], 
+                                                         render=self.render)
+        self.args['first_section'] = min(zvalues) if self.args['first_section'] > min(zvalues) else self.args['first_section']
+        self.args['last_section'] = max(zvalues) if self.args['last_section'] > max(zvalues) else self.args['last_section']
+        
+        
+
         # generate a temporary json to feed in to the solver
         tempjson = tempfile.NamedTemporaryFile(
             suffix=".json",
@@ -129,38 +137,18 @@ class SolveRoughAlignmentModule(RenderModule):
         cmd = "%s %s %s"%(self.solver_executable, os.environ['MCRROOT'],tempjson.name)
         ret = os.system(cmd)
 
-        # one successful completion remove the input json file
+        # on successful completion remove the input json file
         if ret == 0:
             os.remove(tempjson.name)
         else:
             raise RenderModuleException("solve failed with input_json {}",self.args)
 
+        try:
+            d = {'minz':self.args['first_section'], 'maxz':self.args['last_section']}
+            self.output(d)
+        except:
+            raise RenderModuleException("unable to output json {}",d)
 
-        '''
-        if os.path.isfile(self.solver_executable) and os.access(self.solver_executable, os.X_OK):
-            cmd_to_qsub = "%s %s"%(self.solver_executable, tempjson.name)
-
-        #generate pbs file
-            temppbs = tempfile.NamedTemporaryFile(
-                suffix=".pbs",
-                mode="w",
-                delete=False)
-            temppbs.close()
-
-            with open(temppbs.name, 'w') as f:
-                f.write('#PBS -l mem=60g\n')
-                f.write('#PBS -l walltime=00:00:20\n')
-                f.write('#PBS -l ncpus=1\n')
-                f.write('#PBS -N Montage\n')
-                f.write('#PBS -r n\n')
-                f.write('#PBS -m n\n')
-                f.write('#PBS -q emconnectome\n')
-                f.write('%s\n'%(cmd_to_qsub))
-            f.close()
-
-            qsub_cmd = 'qsub %s'%(temppbs.name)
-            subprocess.call(qsub_cmd)
-        '''
 
 if __name__ == "__main__":
     mod = SolveRoughAlignmentModule(input_data=example)

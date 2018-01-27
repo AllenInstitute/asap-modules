@@ -17,15 +17,15 @@ example = {
         "project": "Tests",
         "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts"
     },
-    "montage_stack": "Secs_1015_1099_5_reflections_montage",
-    "output_stack": "Secs_1015_1099_5_reflections_ds_montage",
+    "montage_stack": "rough_test_montage_stack",
+    "output_stack": "rough_test_downsample_montage_stack",
     "image_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch",
     "set_new_z":"False",
-    "new_z_start": 1015,
+    "new_z_start": 1020,
     "imgformat":"png",
-    "scale": 0.01,
-    "zstart": 1015,
-    "zend": 1020,
+    "scale": 0.1,
+    "zstart": 1020,
+    "zend": 1022,
     "pool_size": 20
 }
 
@@ -92,6 +92,8 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory, scale,
                                input_stack,
                                z)
 
+    stackbounds = render.run(renderapi.stack.get_stack_bounds,
+                             input_stack)
 
     # generate tilespec for this z
     tilespecs = render.run(renderapi.tilespec.get_tile_specs_from_z,
@@ -109,18 +111,18 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory, scale,
     [d['mipmapLevels'].pop(k) for k in list(d['mipmapLevels'].keys()) if k != 0]
     d['minIntensity'] = 0
     d['maxIntensity'] = 255
-    d['minX'] = sectionbounds['minX']#*scale
-    d['minY'] = sectionbounds['minY']#*scale
-    d['maxX'] = sectionbounds['maxX']#*scale
-    d['maxY'] = sectionbounds['maxY']#*scale
+    d['minX'] = sectionbounds['minX']/scale
+    d['minY'] = sectionbounds['minY']/scale
+    d['maxX'] = sectionbounds['maxX']/scale
+    d['maxY'] = sectionbounds['maxY']/scale
     im = Image.open(filename)
     d['width'] = im.size[0]
     d['height'] = im.size[1]
 
     # the scale is required by the AT team to view the downsampled section overlayed with the montage section
     # this scale is to be accounted later in the apply_rough_alignment_transform_to_montage script
-    #d['width'] = stackbounds['maxX']#*scale
-    #d['height'] = stackbounds['maxY']#*scale
+    #d['width'] = stackbounds['maxX']/scale
+    #d['height'] = stackbounds['maxY']/scale
     d['z'] = newz
     v0 = 1.0 / scale
     v1 = 0.0

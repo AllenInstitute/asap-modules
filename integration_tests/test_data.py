@@ -89,19 +89,13 @@ TILESPECS_NO_LC_JSON = render_json_template(example_env, 'test_noLC.json',
 TILESPECS_LC_JSON = render_json_template(example_env, 'test_LC.json',
                                          test_data_root=TEST_DATA_ROOT)
 
-ROUGH_MONTAGE_TILESPECS_JSON = render_json_template(example_env, 'rough_montage_tilespecs.json',
-                                                    test_data_root=TEST_DATA_ROOT)
 
-
-# rough alignment test data
-rough_align_test_data_dir = os.path.join(TEST_DATA_ROOT,
-                                        'rough_align_test_data')
 RAW_STACK_INPUT_JSON = render_json_template(example_env, 'raw_tile_specs_for_em_montage.json',
                                             test_data_root=TEST_DATA_ROOT)
 
 MATLAB_SOLVER_PATH = os.environ.get('MATLAB_SOLVER_PATH',
     '/allen/aibs/pipeline/image_processing/volume_assembly/EMAligner/dev/allen_templates')
-#MATLAB_SOLVER_PATH='/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/allen_templates/'
+
 MONTAGE_SOLVER_BIN = os.path.join(MATLAB_SOLVER_PATH,'run_em_solver.sh')
 RENDER_SPARK_JAR = os.environ['RENDER_SPARK_JAR']
 SPARK_HOME = os.environ.get('SPARK_HOME','/shared/spark')
@@ -152,3 +146,42 @@ test_em_montage_parameters = render_json_template(example_env,
     scratch_dir = tempfile.mkdtemp(),
     point_match_collection = montage_collection,
     montage_z = montage_z)
+
+# rough alignment parameters' data
+ROUGH_MONTAGE_TILESPECS_JSON = render_json_template(example_env, 'rough_align_montage_tilespecs.json',
+                                                    test_data_root=TEST_DATA_ROOT)
+
+ROUGH_POINT_MATCH_COLLECTION = render_json_template(example_env, 'rough_align_point_matches.json')
+
+rough_project = "rough_align_test"
+
+'''
+test_rough_pointmatch_parameters = render_json_template(example_env,
+    'point_match_parameters.json',
+    render_host = render_host,
+    render_port = render_port,
+    render_project = rough_project,
+    render_owner = render_test_owner,
+    render_client_scripts = client_script_location,
+    spark_log_dir = tempfile.mkdtemp(),
+    render_spark_jar = RENDER_SPARK_JAR,
+    spark_master_url = os.environ['SPARK_MASTER_URL'],
+    spark_home = SPARK_HOME,
+    point_match_collecttion = rough_collection,
+    spark_logging_properties = log4propertiesfile)
+'''
+
+test_rough_parameters = render_json_template(example_env,
+    'run_rough_job_for_chunk_template.json',
+    render_host = render_host,
+    render_port = render_port,
+    render_project = rough_project,
+    render_owner = render_test_owner,
+    render_client_scripts = client_script_location,
+    em_solver_bin = MONTAGE_SOLVER_BIN,
+    scratch_dir = tempfile.mkdtemp(),
+    firstz = 1020,
+    lastz = 1022
+    )
+
+

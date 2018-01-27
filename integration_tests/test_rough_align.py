@@ -5,11 +5,16 @@ import logging
 import renderapi
 import json
 import glob
-from test_data import (ROUGH_MONTAGE_TILESPECS_JSON, render_params)
+from test_data import (ROUGH_MONTAGE_TILESPECS_JSON,
+                       ROUGH_POINT_MATCH_COLLECTION,
+                       render_params,
+                       test_rough_parameters as solver_example,
+                       test_rough_pointmatch_parameters as pointmatch_example)
 
 from rendermodules.materialize.render_downsample_sections import RenderSectionAtScale
 from rendermodules.dataimport.make_montage_scapes_stack import MakeMontageScapeSectionStack
 from rendermodules.pointmatch.create_tilepairs import TilePairClientModule
+from rendermodules.pointmatch.generate_point_matches_spark import PointMatchClientModuleSpark
 from rendermodules.rough_align.do_rough_alignment import SolveRoughAlignmentModule, example
 from rendermodules.rough_align.apply_rough_alignment_transform_to_montage_stack import ApplyRoughAlignmentTransform, example as ex1
 
@@ -55,30 +60,35 @@ def montage_stack(render,tspecs_from_json):
 
 
 @pytest.fixture(scope='module')
+def point_matches_from_json():
+    point_matches = [d for d in ROUGH_POINT_MATCH_COLLECTION]
+    return point_matches
+
+
+@pytest.fixture(scope='module')
 def downsample_sections_dir(montage_stack, tmpdir_factory):
-    image_directory = str(tmpdir_factory.mktemp('Rough_Align'))
+    image_directory = str(tmpdir_factory.mktemp('rough_align'))
     ex = {
         "render": render_params,
         "input_stack": montage_stack,
         "image_directory": image_directory,
         "imgformat": "png",
-        "scale": 0.01,
-        "minZ": 1015,
-        "maxZ": 1017
+        "scale": 0.1,
+        "minZ": 1020,
+        "maxZ": 1022
     }
 
     mod = RenderSectionAtScale(input_data=ex, args=[])
     mod.run()
-    out_dir = os.path.join(image_directory, render_params['project'], montage_stack, 'sections_at_0.01/001/0')
+    out_dir = os.path.join(image_directory, render_params['project'], montage_stack, 'sections_at_0.1/001/0')
     assert(os.path.exists(out_dir))
     
     files = glob.glob(os.path.join(out_dir, '*.png'))
-    for f in files:
-        img = os.path.join(out_dir, f)
+    for fil in files:
+        img = os.path.join(out_dir, fil)
         assert(os.path.exists(img) and os.path.isfile(img) and os.path.getsize(img) > 0)
     yield image_directory
     
-
 
 @pytest.fixture(scope='module')
 def test_montage_scape_stack(render, montage_stack, downsample_sections_dir):
@@ -89,9 +99,9 @@ def test_montage_scape_stack(render, montage_stack, downsample_sections_dir):
         "output_stack": output_stack,
         "image_directory": downsample_sections_dir,
         "imgformat": "png",
-        "scale":0.01,
-        "zstart": 1015,
-        "zend": 1017
+        "scale":0.1,
+        "zstart": 1020,
+        "zend": 1022
     }
 
     mod = MakeMontageScapeSectionStack(input_data=params, args=[])
@@ -106,6 +116,21 @@ def test_montage_scape_stack(render, montage_stack, downsample_sections_dir):
     renderapi.stack.delete_stack(test_montage_scape_stack, render=render)
 
 
+@pytest.fixture(scope='module')
+def point_match_collection(render, point_matches_from_json):
+    test_point_match_collection = 'point_match_collection'
+    renderapi.pointmatch.import_matches(test_point_match_collection,
+                                        point_matches_from_json,
+                                        render=render)
+    
+    # check if point matches have been imported properly
+    groupIds = render.run(renderapi.pointmatch.get_match_groupIds, test_point_match_collection)
+    assert(len(groupIds) == 3)
+    yield test_point_match_collection
+
+
+
+'''
 @pytest.fixture(scope='module')
 def test_create_rough_tile_pairs(render, test_montage_scape_stack, tmpdir_factory):
     output_directory = str(tmpdir_factory.mktemp('Rough_Align'))
@@ -142,35 +167,38 @@ def test_create_rough_tile_pairs(render, test_montage_scape_stack, tmpdir_factor
     yield tilepair_file
 
 @pytest.fixture(scope='module')
-def test_point_match_generation(render, test_create_rough_tile_pairs):
-    pt_match_collection = 'rough_align_point_matches'
+def test_point_match_generation(render, test_create_rough_tile_pairs, tmpdir_factory):
+    output_directory = str(tmpdir_factory.mktemp('output_json'))
+    pointmatch_example['output_json']=os.path.join(output_directory,'output.json')
+    pointmatch_example['pairJson'] = test_create_rough_tile_pairs
+    pointmatch_example['renderScale'] = 1.0
+    pointmatch_example['SIFTmaxScale'] = 1.0
+    pointmatch_example['SIFTminScale'] = 0.2
+    
+    mod = PointMatchClientModuleSpark(input_data=pointmatch_example,args=[])
+    mod.run()
+    
+    with open(pointmatch_example['output_json'],'r') as fp:
+        output_d = json.load(fp)
+    
+    assert (output_d['pairCount']>0)
+    yield pointmatch_example['collection']
 
-    yield pt_match_collection
+'''
 
 @pytest.fixture(scope='module')
-def test_do_rough_alignment(render, test_montage_scape_stack, test_point_match_generation, tmpdir_factory, output_lowres_stack=None):
+def test_do_rough_alignment(render, test_montage_scape_stack, point_match_collection, tmpdir_factory, output_lowres_stack=None):
     if output_lowres_stack == None:
         output_lowres_stack = '{}_DS_Rough'.format(test_montage_scape_stack)
 
-    scratch_directory = str(tmpdir_factory.mktemp('scratch'))
-    example['render'] = render_params
-    example['input_lowres_stack']['stack'] = test_montage_scape_stack
-    example['input_lowres_stack']['owner'] = render_params['owner']
-    example['input_lowres_stack']['project'] = render_params['project']
+    output_directory = str(tmpdir_factory.mktemp('output_json'))
+    solver_example['output_json']=os.path.join(output_directory,'output.json')
 
-    example['output_lowres_stack']['stack'] = output_lowres_stack
-    example['output_lowres_stack']['owner'] = render_params['owner']
-    example['output_lowres_stack']['project'] = render_params['project']
+    solver_example['source_collection']['stack'] = test_montage_scape_stack
+    solver_example['target_collection']['stack'] = output_lowres_stack
+    solver_example['source_point_match_collection']['match_collection'] = point_match_collection
 
-    example['point_match_collection']['owner'] = render_params['owner']
-    example['point_match_collection']['match_collection'] = test_point_match_generation
-    example['point_match_collection']['scale'] = 1.0
-
-    example['solver_options']['dir_scratch'] = scratch_directory
-    example['solver_executable'] = ROUGH_SOLVER_EXECUTABLE
-    example['minz'] = 1015
-    example['maxz'] = 1017
-
+       
     mod = SolveRoughAlignmentModule(input_data=example, args=[])
     mod.run()
 
@@ -195,8 +223,8 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
     ex1['lowres_stack'] = test_do_rough_alignment
     ex1['output_stack'] = '{}_Rough'.format(montage_stack)
     ex1['tilespec_directory'] = str(tmpdir_factory.mktemp('scratch'))
-    ex1['minZ'] = 1015
-    ex1['maxZ'] = 1017
+    ex1['minZ'] = 1020
+    ex1['maxZ'] = 1022
     ex1['scale'] = 0.05
 
     mod = ApplyRoughAlignmentTransform(input_data=ex1, args=[])

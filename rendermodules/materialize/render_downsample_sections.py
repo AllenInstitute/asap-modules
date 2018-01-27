@@ -25,6 +25,22 @@ example = {
     "maxZ": 1016
 }
 
+example = {
+    "render": {
+        "host": "http://em-131fs",
+        "port": 8080,
+        "owner": "gayathri",
+        "project": "Tests",
+        "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts"
+    },
+    "input_stack": "rough_test_montage_stack",
+    "image_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch",
+    "imgformat":"png",
+    "scale": 0.1,
+    "minZ": 1020,
+    "maxZ": 1022
+}
+
 def check_stack_for_mipmaps(render, input_stack, zvalues):
     # this function checks for the mipmaplevels for the first section in the stack
     # Assumes that all the sections in the stack has mipmaps stored if the first section has mipmaps
@@ -75,7 +91,7 @@ class RenderSectionAtScale(RenderModule):
             raise RenderModuleException('Invalid Z range: {} > {}'.format(self.args['minZ'], self.args['maxZ']))
         
         zvalues1 = np.array(zvalues1)
-        zrange = range(self.args['minZ'], self.args['maxZ'])
+        zrange = range(self.args['minZ'], self.args['maxZ']+1)
         zvalues = list(set(zvalues1).intersection(set(zrange)))
 
         if not zvalues:

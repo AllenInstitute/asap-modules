@@ -19,20 +19,20 @@ example = {
     "render": {
         "host": "http://em-131fs",
         "port": 8080,
-        "owner": "russelt",
-        "project": "Reflections",
+        "owner": "gayathri",
+        "project": "Tests",
         "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts"
     },
-    "montage_stack": "Secs_1015_1099_5_reflections_mml6_montage",
-    "prealigned_stack": "Secs_1015_1099_5_reflections_mml6_montage",
-    "lowres_stack": "Secs_1015_1099_5_reflections_mml6_ds_rough_rigid",
-    "output_stack": "Secs_1015_1099_5_reflections_mml6_rough_rigid",
+    "montage_stack": "rough_test_montage_stack",
+    "prealigned_stack": "rough_test_montage_stack",
+    "lowres_stack": "rough_test_downsample_rough_stack",
+    "output_stack": "rough_test_rough_stack",
     "tilespec_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch/rough/jsonFiles",
     "set_new_z": "False",
     "consolidate_trasnforms": "True",
-    "minZ": 1015,
-    "maxZ": 1020,
-    "scale": 1,
+    "minZ": 1020,
+    "maxZ": 1022,
+    "scale": 0.1,
     "pool_size": 20
 }
 
@@ -73,8 +73,6 @@ def consolidate_transforms(tforms, verbose=False, makePolyDegree=0):
     return new_tform_list
 
 
-
-
 def apply_rough_alignment(render, input_stack, prealigned_stack, lowres_stack, output_dir, scale, Z):
     z = Z[0]
     newz = Z[1]
@@ -96,7 +94,7 @@ def apply_rough_alignment(render, input_stack, prealigned_stack, lowres_stack, o
         # get the lowres stack rough alignment transformation
         tforms = lowres_ts[0].tforms
         d = tforms[-1].to_dict()
-        #print(d['dataString'])
+        
         dsList = d['dataString'].split()
         v0 = float(dsList[0])*scale
         v1 = float(dsList[1])*scale
@@ -114,11 +112,12 @@ def apply_rough_alignment(render, input_stack, prealigned_stack, lowres_stack, o
                             renderapi.stack.get_bounds_from_z,
                             prealigned_stack,
                             z)
-        tx =  int(stackbounds['minX']) - int(prestackbounds['minX'])
-        ty =  int(stackbounds['minY']) - int(prestackbounds['minY'])
+        tx =  -int(stackbounds['minX']) #- int(prestackbounds['minX'])
+        ty =  -int(stackbounds['minY']) #- int(prestackbounds['minY'])
+        
         tforms1 = highres_ts.tforms
         d = tforms1[-1].to_dict()
-        #print d
+        
         dsList = d['dataString'].split()
         v0 = 1.0
         v1 = 0.0
@@ -128,13 +127,13 @@ def apply_rough_alignment(render, input_stack, prealigned_stack, lowres_stack, o
         v5 = ty
         d['dataString'] = "%f %f %f %f %s %s"%(v0,v1,v2,v3,v4,v5)
         tforms1[-1].from_dict(d)
+        
         # delete the lens correction transform
         if len(tforms1) > 1:
             del tforms1[0]
 
         ftform = tforms1 + tforms
-        #newt = consolidate_transforms(ftform)
-
+        
         allts = []
         highres_ts1 = render.run(
                             renderapi.tilespec.get_tile_specs_from_z,
@@ -144,6 +143,7 @@ def apply_rough_alignment(render, input_stack, prealigned_stack, lowres_stack, o
         for t in highres_ts1:
             for f in ftform:
                 t.tforms.append(f)
+            print(t.tforms[1:])
             newt = consolidate_transforms(t.tforms)
             t.tforms = newt
             d1 = t.to_dict()
@@ -151,7 +151,6 @@ def apply_rough_alignment(render, input_stack, prealigned_stack, lowres_stack, o
             allts.append(d1)
 
         tilespecfilename = os.path.join(output_dir,'tilespec_%04d.json'%newz)
-        print(tilespecfilename)
         fp = open(tilespecfilename,'w')
         json.dump([ts for ts in allts], fp, indent=4)
         fp.close()

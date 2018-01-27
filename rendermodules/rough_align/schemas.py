@@ -87,6 +87,7 @@ class LowresStackParameters(DefaultSchema):
         default=0,
         description="Want the output to be verbose?")
 
+
 class OutputLowresStackParameters(DefaultSchema):
     stack = Str(
         required=True,
@@ -117,6 +118,7 @@ class OutputLowresStackParameters(DefaultSchema):
         missing=0,
         description="Want the output to be verbose?")
 
+
 class PointMatchCollectionParameters(DefaultSchema):
     owner = Str(
         required=True,
@@ -129,14 +131,35 @@ class PointMatchCollectionParameters(DefaultSchema):
         default=None,
         missing=None,
         description="baseURL of the Render service holding the point match collection")
-    scale = Float(
-        required=True,
-        description="Scale at which the point matches were generated (different from the scale of the downsample section images)")
     verbose = Int(
         required=False,
         default=0,
         missing=0,
         description="Verbose output flag")
+
+
+class PointMatchParameters(DefaultSchema):
+    NumRandomSamplingsMethod = Str(
+        required=False,
+        default="Desired confidence",
+        missing="Desired confidence",
+        description='Numerical Random sampling method')
+    MaximumRandomSamples = Int(
+        required=False,
+        default=5000,
+        missing=5000,
+        description='Maximum number of random samples')
+    DesiredConfidence = Float(
+        required=False,
+        default=99.9,
+        missing=99.9,
+        description='Desired confidence level')
+    PixelDistanceThreshold = Float(
+        required=False,
+        default=0.1,
+        missing=0.1,
+        description='Pixel distance threshold for filtering')
+
 
 class PastixParameters(DefaultSchema):
     ncpus = Int(
@@ -161,24 +184,76 @@ class PastixParameters(DefaultSchema):
 class SolverParameters(DefaultSchema):
     # NOTE: Khaled's EM_aligner needs some of the boolean variables as Integers
     # Hence providing the input as Integers
-    min_tiles = Int(
-        required=False,
-        default=20,
-        missing=20,
-        description="minimum number of tiles")
     degree = Int(
         required=True,
         default=1,
         description="Degree of transformation 1 - affine, 2 - second order polynomial, maximum is 3")
-    outlier_lambda = Float(
-        required=True,
-        default=100,
-        description="Outlier lambda - large numbers result in fewer tiles excluded")
     solver = Str(
         required=False,
         default='backslash',
         missing='backslash',
         description="Solver type - default is backslash")
+    transfac = Float(
+        required=False,
+        default=1e-15,
+        missing=1e-15,
+        description='Translational factor')
+    lambda_value = Float(
+        required=True,
+        description="regularization parameter")
+    edge_lambda = Float(
+        required=True,
+        description="edge lambda regularization parameter")
+    nbrs = Int(
+        required=False,
+        default=3,
+        missing=3,
+        description="No. of neighbors")
+    nbrs_step = Int(
+        required=False,
+        default=1,
+        missing=1,
+        description="Step value to increment the # of neighbors")
+    xs_weight = Float(
+        required=True,
+        description="Weight ratio for cross section point matches")
+    min_points = Int(
+        required=True,
+        default=8,
+        description="Minimum no. of point matches per tile pair defaults to 8")
+    max_points = Int(
+        required=True,
+        default=100,
+        description="Maximum no. of point matches")
+    filter_point_matches = Int(
+        required=False,
+        default=1,
+        missing=1,
+        description='set to a value 1 if point matches must be filtered')
+    outlier_lambda = Float(
+        required=True,
+        default=100,
+        description="Outlier lambda - large numbers result in fewer tiles excluded")
+    min_tiles = Int(
+        required=False,
+        default=2,
+        missing=2,
+        description="minimum number of tiles")
+    Width = Int(
+        required=False,
+        default=3840,
+        missing=3840,
+        description='Width of the tiles (default = 3840)')
+    Height = Int(
+        required=False,
+        default=3840,
+        missing=3840,
+        description='Height of the tiles (default= 3840)')
+    outside_group = Int(
+        required=False,
+        default=0,
+        missing=0,
+        description='Outside group parameter (default = 0)')
     matrix_only = Int(
         required=False,
         default=0,
@@ -192,38 +267,16 @@ class SolverParameters(DefaultSchema):
     dir_scratch = InputDir(
         required=True,
         description="Scratch directory")
-    min_points = Int(
-        required=True,
-        default=8,
-        description="Minimum no. of point matches per tile pair defaults to 8")
-    max_points = Int(
-        required=True,
-        default=100,
-        description="Maximum no. of point matches")
-    nbrs = Int(
-        required=True,
-        default=4,
-        missing=4,
-        description="No. of neighbors")
-    xs_weight = Float(
-        required=True,
-        description="Weight ratio for cross section point matches")
-    stvec_flag = Int(
-        required=False,
-        default=1,
-        missing=1,
-        description="0 - regularization against rigid model (i.e. starting value is not supplied by rc)")
     distributed = Int(
         required=False,
         default=0,
         missing=0,
         description="distributed or not?")
-    lambda_value = Float(
-        required=True,
-        description="regularization parameter")
-    edge_lambda = Float(
-        required=True,
-        description="edge lambda regularization parameter")
+    disableValidation = Int(
+        required=False,
+        default=1,
+        missing=1,
+        description="Disable validation while ingesting tiles?")
     use_peg = Int(
         required=False,
         default=0,
@@ -234,26 +287,6 @@ class SolverParameters(DefaultSchema):
         default=0,
         missing=0,
         description="Set stack state to complete after processing?")
-    disableValidation = Int(
-        required=False,
-        default=1,
-        missing=1,
-        description="Disable validation while ingesting tiles?")
-    apply_scaling = Int(
-        required=False,
-        default=1,
-        missing=1,
-        description="Apply scaling?")
-    translation_only = Int(
-        required=False,
-        default=1,
-        missing=1,
-        description="Translation only parameter")
-    translate_to_origin = Int(
-        required=False,
-        default=1,
-        missing=1,
-        description="Translate sections to origin")
     verbose = Int(
         required=False,
         default=0,
@@ -264,6 +297,25 @@ class SolverParameters(DefaultSchema):
         default=0,
         missing=0,
         description="Debug mode?")
+    constrain_by_z = Int(
+        required=False,
+        default=0,
+        missing=0,
+        description='Contrain by z')
+    sandwich = Int(
+        required=False,
+        default=0,
+        missing=0,
+        description='Sandwich parameter for solver')
+    constraint_fac = Float(
+        required=False,
+        default=1e+15,
+        missing=1e+15,
+        description='Constraint factor')
+    pmopts = Nested(
+        PointMatchParameters,
+        required=True,
+        description='Point match filtering parameters')
     pastix = Nested(
         PastixParameters,
         required=False,
@@ -271,28 +323,35 @@ class SolverParameters(DefaultSchema):
         missing=None,
         description="Pastix parameters if solving using Pastix")
 
+
 class SolveRoughAlignmentParameters(RenderParameters):
-    minz = Int(
+    first_section = Int(
         required=True,
         description="Min Z value")
-    maxz = Int(
+    last_section = Int(
         required=True,
         description="Max Z value")
-    input_lowres_stack = Nested(
+    verbose = Int(
+        required=False,
+        default=0,
+        missing=0,
+        description='Is verbose output required')
+    source_collection = Nested(
         LowresStackParameters,
         required=True)
-    output_lowres_stack = Nested(
+    target_collection = Nested(
         OutputLowresStackParameters,
         required=True)
     solver_options = Nested(
         SolverParameters,
         required=True)
-    point_match_collection = Nested(
+    source_point_match_collection = Nested(
         PointMatchCollectionParameters,
         required=True)
     solver_executable = Str(
         required=True,
         description="Rough alignment solver executable file with full path")
+    
 
     @post_load
     def add_missing_values(self, data):
@@ -302,32 +361,32 @@ class SolveRoughAlignmentParameters(RenderParameters):
         if data['solver_options']['pastix'] is None:
             data['solver_options'].pop('pastix', None)
 
-        if data['input_lowres_stack']['owner'] is None:
-            data['input_lowres_stack']['owner'] = data['render']['owner']
-        if data['input_lowres_stack']['project'] is None:
-            data['input_lowres_stack']['project'] = data['render']['project']
-        if data['input_lowres_stack']['service_host'] is None:
-            data['input_lowres_stack']['service_host'] = data['render']['host'][7:] + ":" + str(data['render']['port'])
-        if data['input_lowres_stack']['baseURL'] is None:
-            data['input_lowres_stack']['baseURL'] = data['render']['host'] + ":" + str(data['render']['port']) + '/render-ws/v1'
-        if data['input_lowres_stack']['renderbinPath'] is None:
-            data['input_lowres_stack']['renderbinPath'] = data['render']['client_scripts']
+        if data['source_collection']['owner'] is None:
+            data['source_collection']['owner'] = data['render']['owner']
+        if data['source_collection']['project'] is None:
+            data['source_collection']['project'] = data['render']['project']
+        if data['source_collection']['service_host'] is None:
+            data['source_collection']['service_host'] = data['render']['host'][7:] + ":" + str(data['render']['port'])
+        if data['source_collection']['baseURL'] is None:
+            data['source_collection']['baseURL'] = data['render']['host'] + ":" + str(data['render']['port']) + '/render-ws/v1'
+        if data['source_collection']['renderbinPath'] is None:
+            data['source_collection']['renderbinPath'] = data['render']['client_scripts']
 
-        if data['output_lowres_stack']['owner'] is None:
-            data['output_lowres_stack']['owner'] = data['render']['owner']
-        if data['output_lowres_stack']['project'] is None:
-            data['output_lowres_stack']['project'] = data['render']['project']
-        if data['output_lowres_stack']['service_host'] is None:
-            data['output_lowres_stack']['service_host'] = data['render']['host'][7:] + ":" + str(data['render']['port'])
-        if data['output_lowres_stack']['baseURL'] is None:
-            data['output_lowres_stack']['baseURL'] = data['render']['host'] + ":" + str(data['render']['port']) + '/render-ws/v1'
-        if data['output_lowres_stack']['renderbinPath'] is None:
-            data['output_lowres_stack']['renderbinPath'] = data['render']['client_scripts']
+        if data['target_collection']['owner'] is None:
+            data['target_collection']['owner'] = data['render']['owner']
+        if data['target_collection']['project'] is None:
+            data['target_collection']['project'] = data['render']['project']
+        if data['target_collection']['service_host'] is None:
+            data['target_collection']['service_host'] = data['render']['host'][7:] + ":" + str(data['render']['port'])
+        if data['target_collection']['baseURL'] is None:
+            data['target_collection']['baseURL'] = data['render']['host'] + ":" + str(data['render']['port']) + '/render-ws/v1'
+        if data['target_collection']['renderbinPath'] is None:
+            data['target_collection']['renderbinPath'] = data['render']['client_scripts']
 
-        if data['point_match_collection']['server'] is None:
-            data['point_match_collection']['server'] = data['input_lowres_stack']['baseURL']
-        if data['point_match_collection']['owner'] is None:
-            data['point_match_collection']['owner'] = data['render']['owner']
+        if data['source_point_match_collection']['server'] is None:
+            data['source_point_match_collection']['server'] = data['source_collection']['baseURL']
+        if data['source_point_match_collection']['owner'] is None:
+            data['source_point_match_collection']['owner'] = data['render']['owner']
 
         # if solver is "pastix" then data['solver_options']['pastix'] is required
         if data['solver_options']['solver'] is "pastix":
