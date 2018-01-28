@@ -8,15 +8,12 @@ import glob
 from test_data import (ROUGH_MONTAGE_TILESPECS_JSON,
                        ROUGH_POINT_MATCH_COLLECTION,
                        render_params,
-                       test_rough_parameters as solver_example,
-                       test_rough_pointmatch_parameters as pointmatch_example)
+                       test_rough_parameters as solver_example)
 
 from rendermodules.materialize.render_downsample_sections import RenderSectionAtScale
 from rendermodules.dataimport.make_montage_scapes_stack import MakeMontageScapeSectionStack
-from rendermodules.pointmatch.create_tilepairs import TilePairClientModule
-from rendermodules.pointmatch.generate_point_matches_spark import PointMatchClientModuleSpark
-from rendermodules.rough_align.do_rough_alignment import SolveRoughAlignmentModule, example
-from rendermodules.rough_align.apply_rough_alignment_transform_to_montage_stack import ApplyRoughAlignmentTransform, example as ex1
+from rendermodules.rough_align.do_rough_alignment import SolveRoughAlignmentModule
+from rendermodules.rough_align.apply_rough_alignment_to_montages import ApplyRoughAlignmentTransform, example as ex1
 
 
 logger = renderapi.client.logger
@@ -199,16 +196,16 @@ def test_do_rough_alignment(render, test_montage_scape_stack, point_match_collec
     solver_example['source_point_match_collection']['match_collection'] = point_match_collection
 
        
-    mod = SolveRoughAlignmentModule(input_data=example, args=[])
+    mod = SolveRoughAlignmentModule(input_data=solver_example, args=[])
     mod.run()
 
-    zend = example['maxz']
-    zstart = example['minz']
+    zend = solver_example['maxz']
+    zstart = solver_example['minz']
     assert len(zend-zstart+1) == len(renderapi.stack.get_z_values_for_stack(
                                         output_lowres_stack, render=render))
     assert len({range(zstart, zend+1)}.symmetric_difference(
                                         renderapi.stack.get_z_values_for_stack(
-                                            output_stack, render=render))) == 0
+                                            output_lowres_stack, render=render))) == 0
 
     yield output_lowres_stack
     renderapi.stack.delete_stack(output_lowres_stack, render=render)
@@ -220,12 +217,13 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
     else:
         ex1['prealigned_stack'] = prealigned_stack
 
+    ex1['render'] = render_params
     ex1['lowres_stack'] = test_do_rough_alignment
     ex1['output_stack'] = '{}_Rough'.format(montage_stack)
     ex1['tilespec_directory'] = str(tmpdir_factory.mktemp('scratch'))
     ex1['minZ'] = 1020
     ex1['maxZ'] = 1022
-    ex1['scale'] = 0.05
+    ex1['scale'] = 0.1
 
     mod = ApplyRoughAlignmentTransform(input_data=ex1, args=[])
     mod.run()
