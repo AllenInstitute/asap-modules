@@ -16,7 +16,6 @@ from marshmallow import ValidationError
 from rendermodules.ingest.schemas import (
     EMMontageSetIngestSchema, ReferenceSetIngestSchema,
     IngestTileSetParams)
-from rendermodules.module.render_module import RenderModuleException
 
 from workflow_client import celery_ingest
 
@@ -67,14 +66,6 @@ class IngestTileSetModule(argschema.ArgSchemaParser):
         return bool(re.match(cls.lc_re, os.path.basename(fn)))
 
     @staticmethod
-    def validate_body(body, schema):
-        v = schema().validate(body)
-        if v:
-            raise RenderModuleException(
-                "Invalid schema for {} -- errors: {}".format(schema, v))
-        return True
-
-    @staticmethod
     def dump_body(body, schema):
         output_json, errors = schema().dump(body)
         if errors:
@@ -94,13 +85,11 @@ class IngestTileSetModule(argschema.ArgSchemaParser):
     @classmethod
     def lcsend(cls, body_data, **kwargs):
         d = cls.dump_body(body_data, ReferenceSetIngestSchema)
-        # cls.validate_body(body_data, ReferenceSetIngestSchema)
         return cls.send(d, fix_option=["ReferenceSet"], **kwargs)
 
     @classmethod
     def montagesend(cls, body_data, **kwargs):
         d = cls.dump_body(body_data, EMMontageSetIngestSchema)
-        # cls.validate_body(body_data, EMMontageSetIngestSchema)
         return cls.send(d, fix_option=["EMMontageSet"], **kwargs)
 
     @classmethod
