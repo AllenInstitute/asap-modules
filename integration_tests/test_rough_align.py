@@ -119,9 +119,25 @@ def montage_scape_stack(render, montage_stack, downsample_sections_dir):
     yield output_stack
     renderapi.stack.delete_stack(test_montage_scape_stack, render=render)
 
+@pytest.fixture(scope='module')
+def point_match_collection(render, point_matches_from_json):
+    point_match_collection = 'point_match_collection'
+    renderapi.pointmatch.import_matches(point_match_collection,
+                                        point_matches_from_json,
+                                        render=render)
+    
+    # check if point matches have been imported properly
+    groupIds = render.run(renderapi.pointmatch.get_match_groupIds, point_match_collection)
+    assert(len(groupIds) == 3)
+    yield point_match_collection
+
     
 def test_montage_scape_stack(render, montage_scape_stack):
     zvalues = render.run(renderapi.stack.get_z_values_for_stack, montage_stack)
     zs = [1020, 1021, 1022]
     assert(set(zvalues)==set(zs)) 
+    
+def test_point_match_collection(render, point_match_collection):
+    groupIds = render.run(renderapi.pointmatch.get_match_groupIds, point_match_collection)
+    assert(len(groupIds) == 3)
     
