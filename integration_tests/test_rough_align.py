@@ -78,7 +78,7 @@ def downsample_sections_dir(montage_stack, tmpdir_factory):
     mod = RenderSectionAtScale(input_data=ex, args=[])
     mod.run()
 
-    out_dir = os.path.join(image_directory, render.DEFAULT_PROJECT, montage_stack, 'sections_at_0.1/001/0')
+    out_dir = os.path.join(image_directory, render_params['project'], montage_stack, 'sections_at_0.1/001/0')
     assert(os.path.exists(out_dir))
     
     files = glob.glob(os.path.join(out_dir, '*.png'))
