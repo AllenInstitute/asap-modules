@@ -144,7 +144,7 @@ class RenderSectionAtScale(RenderModule):
                         self.args['temp_stack'],
                         self.args['image_directory'],
                         zvalues,
-                        scale=str(self.args['scale']),
+                        scale=self.args['scale'],
                         format=self.args['imgformat'],
                         doFilter=self.args['doFilter'],
                         fillWithNoise=self.args['fillWithNoise'])
