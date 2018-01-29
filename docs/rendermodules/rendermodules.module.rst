@@ -12,6 +12,14 @@ rendermodules\.module\.render\_module module
     :undoc-members:
     :show-inheritance:
 
+rendermodules\.module\.schemas module
+-------------------------------------
+
+.. automodule:: rendermodules.module.schemas
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 rendermodules\.module\.template\_module module
 ----------------------------------------------
 
