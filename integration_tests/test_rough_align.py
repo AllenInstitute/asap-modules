@@ -90,7 +90,7 @@ def downsample_sections_dir(montage_stack, tmpdir_factory):
 
 
 @pytest.fixture(scope='module')
-def point_matches_from_json():
+def rough_point_matches_from_json():
     point_matches = [d for d in ROUGH_POINT_MATCH_COLLECTION]
     return point_matches
 
@@ -120,16 +120,43 @@ def montage_scape_stack(render, montage_stack, downsample_sections_dir):
     renderapi.stack.delete_stack(test_montage_scape_stack, render=render)
 
 @pytest.fixture(scope='module')
-def point_match_collection(render, point_matches_from_json):
-    point_match_collection = 'point_match_collection'
+def rough_point_match_collection(render, point_matches_from_json):
+    pt_match_collection = 'rough_point_match_collection'
     renderapi.pointmatch.import_matches(point_match_collection,
                                         point_matches_from_json,
                                         render=render)
     
     # check if point matches have been imported properly
-    groupIds = render.run(renderapi.pointmatch.get_match_groupIds, point_match_collection)
+    groupIds = render.run(renderapi.pointmatch.get_match_groupIds, pt_match_collection)
     assert(len(groupIds) == 3)
-    yield point_match_collection
+    yield pt_match_collection
+
+@pytest.fixture(scope='module')
+def test_do_rough_alignment(render, montage_scape_stack, rough_point_match_collection, tmpdir_factory, output_lowres_stack=None):
+    if output_lowres_stack == None:
+        output_lowres_stack = '{}_DS_Rough'.format(montage_scape_stack)
+
+    output_directory = str(tmpdir_factory.mktemp('output_json'))
+    solver_example['output_json']=os.path.join(output_directory,'output.json')
+
+    solver_example['source_collection']['stack'] = montage_scape_stack
+    solver_example['target_collection']['stack'] = output_lowres_stack
+    solver_example['source_point_match_collection']['match_collection'] = rough_point_match_collection
+
+       
+    mod = SolveRoughAlignmentModule(input_data=solver_example, args=[])
+    mod.run()
+
+    zend = solver_example['maxz']
+    zstart = solver_example['minz']
+    assert len(zend-zstart+1) == len(renderapi.stack.get_z_values_for_stack(
+                                        output_lowres_stack, render=render))
+    assert len({range(zstart, zend+1)}.symmetric_difference(
+                                        renderapi.stack.get_z_values_for_stack(
+                                            output_lowres_stack, render=render))) == 0
+
+    yield output_lowres_stack
+    renderapi.stack.delete_stack(output_lowres_stack, render=render)
 
     
 def test_montage_scape_stack(render, montage_scape_stack):
@@ -137,7 +164,7 @@ def test_montage_scape_stack(render, montage_scape_stack):
     zs = [1020, 1021, 1022]
     assert(set(zvalues)==set(zs)) 
     
-def test_point_match_collection(render, point_match_collection):
-    groupIds = render.run(renderapi.pointmatch.get_match_groupIds, point_match_collection)
+def test_point_match_collection(render, rough_point_match_collection):
+    groupIds = render.run(renderapi.pointmatch.get_match_groupIds, rough_point_match_collection)
     assert(len(groupIds) == 3)
-    
+
