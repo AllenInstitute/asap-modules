@@ -51,8 +51,10 @@ def montage_stack(render,tspecs_from_json):
                 in tspecs_from_json}.symmetric_difference(set(
                     renderapi.stack.get_stack_tileIds(
                         test_montage_stack, render=render)))) == 0
+    
     yield test_montage_stack
-    renderapi.stack.delete_stack(test_montage_stack, render=render)
+    #renderapi.stack.delete_stack(test_montage_stack, render=render)
+
 
 
 @pytest.fixture(scope='module')
@@ -60,3 +62,9 @@ def point_matches_from_json():
     point_matches = [d for d in ROUGH_POINT_MATCH_COLLECTION]
     return point_matches
 
+
+def test_montage_stack(render, montage_stack):
+    zvalues = render.run(renderapi.stack.get_z_values_for_stack,
+                          test_montage_stack)
+    zs = [1020, 1021, 1022]
+    assert(set(zvalues) == set(zs))
