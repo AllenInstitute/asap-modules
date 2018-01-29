@@ -694,7 +694,7 @@
         "z": 1021.0, 
         "mipmapLevels": {
             "0": {
-                "imageUrl": "file:/allen/programs/celltypes/production/wijem/prod7/Wij_Set_594561483/594089217_594561483/20170502203330417_295434_5LC_0064_01_001021_0_47_55.tif"
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502203330417_295434_5LC_0064_01_001021_0_47_55.tif"
             }
         }, 
         "transforms": {
@@ -736,7 +736,7 @@
         "z": 1021.0, 
         "mipmapLevels": {
             "0": {
-                "imageUrl": "file:/allen/programs/celltypes/production/wijem/prod7/Wij_Set_594561483/594089217_594561483/20170502203330716_295434_5LC_0064_01_001021_0_48_55.tif"
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502203330716_295434_5LC_0064_01_001021_0_48_55.tif"
             }
         }, 
         "transforms": {
@@ -778,7 +778,7 @@
         "z": 1021.0, 
         "mipmapLevels": {
             "0": {
-                "imageUrl": "file:/allen/programs/celltypes/production/wijem/prod7/Wij_Set_594561483/594089217_594561483/20170502203331000_295434_5LC_0064_01_001021_0_49_55.tif"
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502203331000_295434_5LC_0064_01_001021_0_49_55.tif"
             }
         }, 
         "transforms": {
@@ -820,7 +820,7 @@
         "z": 1021.0, 
         "mipmapLevels": {
             "0": {
-                "imageUrl": "file:/allen/programs/celltypes/production/wijem/prod7/Wij_Set_594561483/594089217_594561483/20170502203358594_295434_5LC_0064_01_001021_0_47_56.tif"
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502203358594_295434_5LC_0064_01_001021_0_47_56.tif"
             }
         }, 
         "transforms": {
@@ -862,7 +862,7 @@
         "z": 1021.0, 
         "mipmapLevels": {
             "0": {
-                "imageUrl": "file:/allen/programs/celltypes/production/wijem/prod7/Wij_Set_594561483/594089217_594561483/20170502203358875_295434_5LC_0064_01_001021_0_48_56.tif"
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502203358875_295434_5LC_0064_01_001021_0_48_56.tif"
             }
         }, 
         "transforms": {
@@ -904,7 +904,7 @@
         "z": 1021.0, 
         "mipmapLevels": {
             "0": {
-                "imageUrl": "file:/allen/programs/celltypes/production/wijem/prod7/Wij_Set_594561483/594089217_594561483/20170502203359178_295434_5LC_0064_01_001021_0_49_56.tif"
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502203359178_295434_5LC_0064_01_001021_0_49_56.tif"
             }
         }, 
         "transforms": {
@@ -946,7 +946,7 @@
         "z": 1021.0, 
         "mipmapLevels": {
             "0": {
-                "imageUrl": "file:/allen/programs/celltypes/production/wijem/prod7/Wij_Set_594561483/594089217_594561483/20170502203427057_295434_5LC_0064_01_001021_0_47_57.tif"
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502203427057_295434_5LC_0064_01_001021_0_47_57.tif"
             }
         }, 
         "transforms": {
@@ -988,7 +988,7 @@
         "z": 1021.0, 
         "mipmapLevels": {
             "0": {
-                "imageUrl": "file:/allen/programs/celltypes/production/wijem/prod7/Wij_Set_594561483/594089217_594561483/20170502203427302_295434_5LC_0064_01_001021_0_48_57.tif"
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502203427302_295434_5LC_0064_01_001021_0_48_57.tif"
             }
         }, 
         "transforms": {
@@ -1030,7 +1030,7 @@
         "z": 1021.0, 
         "mipmapLevels": {
             "0": {
-                "imageUrl": "file:/allen/programs/celltypes/production/wijem/prod7/Wij_Set_594561483/594089217_594561483/20170502203427589_295434_5LC_0064_01_001021_0_49_57.tif"
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502203427589_295434_5LC_0064_01_001021_0_49_57.tif"
             }
         }, 
         "transforms": {
@@ -1072,7 +1072,7 @@
         "z": 1021.0, 
         "mipmapLevels": {
             "0": {
-                "imageUrl": "file:/allen/programs/celltypes/production/wijem/prod7/Wij_Set_594561483/594089217_594561483/20170502203455404_295434_5LC_0064_01_001021_0_47_58.tif"
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502203455404_295434_5LC_0064_01_001021_0_47_58.tif"
             }
         }, 
         "transforms": {
@@ -1114,7 +1114,7 @@
         "z": 1021.0, 
         "mipmapLevels": {
             "0": {
-                "imageUrl": "file:/allen/programs/celltypes/production/wijem/prod7/Wij_Set_594561483/594089217_594561483/20170502203455696_295434_5LC_0064_01_001021_0_48_58.tif"
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502203455696_295434_5LC_0064_01_001021_0_48_58.tif"
             }
         }, 
         "transforms": {
@@ -1156,7 +1156,7 @@
         "z": 1021.0, 
         "mipmapLevels": {
             "0": {
-                "imageUrl": "file:/allen/programs/celltypes/production/wijem/prod7/Wij_Set_594561483/594089217_594561483/20170502203455986_295434_5LC_0064_01_001021_0_49_58.tif"
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502203455986_295434_5LC_0064_01_001021_0_49_58.tif"
             }
         }, 
         "transforms": {
@@ -1198,7 +1198,7 @@
         "z": 1022.0, 
         "mipmapLevels": {
             "0": {
-                "imageUrl": "file:/allen/programs/celltypes/production/wijem/prod7/Wij_Set_594561487/594089217_594561487/20170502212103073_295434_5LC_0064_01_001022_0_46_54.tif"
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502212103073_295434_5LC_0064_01_001022_0_46_54.tif"
             }
         }, 
         "transforms": {
@@ -1240,7 +1240,7 @@
         "z": 1022.0, 
         "mipmapLevels": {
             "0": {
-                "imageUrl": "file:/allen/programs/celltypes/production/wijem/prod7/Wij_Set_594561487/594089217_594561487/20170502212103368_295434_5LC_0064_01_001022_0_47_54.tif"
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502212103368_295434_5LC_0064_01_001022_0_47_54.tif"
             }
         }, 
         "transforms": {
@@ -1282,7 +1282,7 @@
         "z": 1022.0, 
         "mipmapLevels": {
             "0": {
-                "imageUrl": "file:/allen/programs/celltypes/production/wijem/prod7/Wij_Set_594561487/594089217_594561487/20170502212103646_295434_5LC_0064_01_001022_0_48_54.tif"
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502212103646_295434_5LC_0064_01_001022_0_48_54.tif"
             }
         }, 
         "transforms": {
@@ -1324,7 +1324,7 @@
         "z": 1022.0, 
         "mipmapLevels": {
             "0": {
-                "imageUrl": "file:/allen/programs/celltypes/production/wijem/prod7/Wij_Set_594561487/594089217_594561487/20170502212131263_295434_5LC_0064_01_001022_0_46_55.tif"
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502212131263_295434_5LC_0064_01_001022_0_46_55.tif"
             }
         }, 
         "transforms": {
@@ -1366,7 +1366,7 @@
         "z": 1022.0, 
         "mipmapLevels": {
             "0": {
-                "imageUrl": "file:/allen/programs/celltypes/production/wijem/prod7/Wij_Set_594561487/594089217_594561487/20170502212131555_295434_5LC_0064_01_001022_0_47_55.tif"
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502212131555_295434_5LC_0064_01_001022_0_47_55.tif"
             }
         }, 
         "transforms": {
@@ -1408,7 +1408,7 @@
         "z": 1022.0, 
         "mipmapLevels": {
             "0": {
-                "imageUrl": "file:/allen/programs/celltypes/production/wijem/prod7/Wij_Set_594561487/594089217_594561487/20170502212131825_295434_5LC_0064_01_001022_0_48_55.tif"
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502212131825_295434_5LC_0064_01_001022_0_48_55.tif"
             }
         }, 
         "transforms": {
@@ -1450,7 +1450,7 @@
         "z": 1022.0, 
         "mipmapLevels": {
             "0": {
-                "imageUrl": "file:/allen/programs/celltypes/production/wijem/prod7/Wij_Set_594561487/594089217_594561487/20170502212159222_295434_5LC_0064_01_001022_0_46_56.tif"
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502212159222_295434_5LC_0064_01_001022_0_46_56.tif"
             }
         }, 
         "transforms": {
@@ -1492,7 +1492,7 @@
         "z": 1022.0, 
         "mipmapLevels": {
             "0": {
-                "imageUrl": "file:/allen/programs/celltypes/production/wijem/prod7/Wij_Set_594561487/594089217_594561487/20170502212159531_295434_5LC_0064_01_001022_0_47_56.tif"
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502212159531_295434_5LC_0064_01_001022_0_47_56.tif"
             }
         }, 
         "transforms": {
@@ -1534,7 +1534,7 @@
         "z": 1022.0, 
         "mipmapLevels": {
             "0": {
-                "imageUrl": "file:/allen/programs/celltypes/production/wijem/prod7/Wij_Set_594561487/594089217_594561487/20170502212159835_295434_5LC_0064_01_001022_0_48_56.tif"
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_tiles/20170502212159835_295434_5LC_0064_01_001022_0_48_56.tif"
             }
         }, 
         "transforms": {
