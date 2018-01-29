@@ -65,6 +65,6 @@ def point_matches_from_json():
 
 def test_montage_stack(render, montage_stack):
     zvalues = render.run(renderapi.stack.get_z_values_for_stack,
-                          test_montage_stack)
+                          montage_stack)
     zs = [1020, 1021, 1022]
     assert(set(zvalues) == set(zs))
