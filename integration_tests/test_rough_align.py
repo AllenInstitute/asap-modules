@@ -94,8 +94,8 @@ def point_matches_from_json():
     point_matches = [d for d in ROUGH_POINT_MATCH_COLLECTION]
     return point_matches
 
-#@pytest.fixture(scope='module')
-def test_montage_scape_stack(render, montage_stack, downsample_sections_dir):
+@pytest.fixture(scope='module')
+def montage_scape_stack(render, montage_stack, downsample_sections_dir):
     output_stack = '{}OUT'.format(montage_stack)
     params = {
         "render": render_params,
@@ -120,5 +120,8 @@ def test_montage_scape_stack(render, montage_stack, downsample_sections_dir):
     renderapi.stack.delete_stack(test_montage_scape_stack, render=render)
 
     
-    
+def test_montage_scape_stack(render, montage_scape_stack):
+    zvalues = render.run(renderapi.stack.get_z_values_for_stack, montage_stack)
+    zs = [1020, 1021, 1022]
+    assert(set(zvalues)==set(zs)) 
     
