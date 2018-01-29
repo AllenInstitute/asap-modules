@@ -55,6 +55,23 @@ def montage_stack(render,tspecs_from_json):
     yield test_montage_stack
     #renderapi.stack.delete_stack(test_montage_stack, render=render)
 
+@pytest.fixture(scope='module')
+def downsample_sections_dir(montage_stack, tmpdir_factory):
+    image_directory = str(tmpdir_factory.mktemp('rough_align'))
+    print(render_params)
+    ex = {
+        "render": render_params,
+        "input_stack": montage_stack,
+        "image_directory": image_directory,
+        "imgformat": "png",
+        "scale": 0.1,
+        "minZ": 1020,
+        "maxZ": 1022
+    }
+
+    mod = RenderSectionAtScale(input_data=ex, args=[])
+    mod.run()
+    yield image_directory
 
 
 @pytest.fixture(scope='module')
@@ -68,3 +85,13 @@ def test_montage_stack(render, montage_stack):
                           montage_stack)
     zs = [1020, 1021, 1022]
     assert(set(zvalues) == set(zs))
+
+def test_downsample_section_images(render, montage_stack, downsample_sections_dir):
+    out_dir = os.path.join(downsample_sections_dir, render.DEFAULT_PROJECT, montage_stack, 'sections_at_0.1/001/0')
+    assert(os.path.exists(out_dir))
+    
+    files = glob.glob(os.path.join(out_dir, '*.png'))
+    for fil in files:
+        img = os.path.join(out_dir, fil)
+        assert(os.path.exists(img) and os.path.isfile(img) and os.path.getsize(img) > 0)
+    
