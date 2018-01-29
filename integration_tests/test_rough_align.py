@@ -66,8 +66,9 @@ def downsample_sections_dir(montage_stack, tmpdir_factory):
         "imgformat": "png",
         "scale": 0.1,
         "minZ": 1020,
-        "maxZ": 1022
+        "maxZ": 1022,
     }
+    ex['output_json'] = os.path.join(image_directory, 'output.json')
 
     mod = RenderSectionAtScale(input_data=ex, args=[])
     mod.run()
