@@ -52,8 +52,13 @@ def montage_stack(render,tspecs_from_json):
                     renderapi.stack.get_stack_tileIds(
                         test_montage_stack, render=render)))) == 0
     
+    zvalues = render.run(renderapi.stack.get_z_values_for_stack,
+                          test_montage_stack)
+    zs = [1020, 1021, 1022]
+    assert(set(zvalues) == set(zs))
+
     yield test_montage_stack
-    #renderapi.stack.delete_stack(test_montage_stack, render=render)
+    renderapi.stack.delete_stack(test_montage_stack, render=render)
 
 @pytest.fixture(scope='module')
 def downsample_sections_dir(montage_stack, tmpdir_factory):
@@ -72,6 +77,15 @@ def downsample_sections_dir(montage_stack, tmpdir_factory):
 
     mod = RenderSectionAtScale(input_data=ex, args=[])
     mod.run()
+
+    out_dir = os.path.join(image_directory, render.DEFAULT_PROJECT, montage_stack, 'sections_at_0.1/001/0')
+    assert(os.path.exists(out_dir))
+    
+    files = glob.glob(os.path.join(out_dir, '*.png'))
+    for fil in files:
+        img = os.path.join(out_dir, fil)
+        assert(os.path.exists(img) and os.path.isfile(img) and os.path.getsize(img) > 0)
+    
     yield image_directory
 
 
@@ -80,19 +94,31 @@ def point_matches_from_json():
     point_matches = [d for d in ROUGH_POINT_MATCH_COLLECTION]
     return point_matches
 
+#@pytest.fixture(scope='module')
+def test_montage_scape_stack(render, montage_stack, downsample_sections_dir):
+    output_stack = '{}OUT'.format(montage_stack)
+    params = {
+        "render": render_params,
+        "montage_stack": montage_stack,
+        "output_stack": output_stack,
+        "image_directory": downsample_sections_dir,
+        "imgformat": "png",
+        "scale":0.1,
+        "zstart": 1020,
+        "zend": 1022
+    }
 
-def test_montage_stack(render, montage_stack):
-    zvalues = render.run(renderapi.stack.get_z_values_for_stack,
-                          montage_stack)
-    zs = [1020, 1021, 1022]
-    assert(set(zvalues) == set(zs))
+    mod = MakeMontageScapeSectionStack(input_data=params, args=[])
+    mod.run()
 
-def test_downsample_section_images(render, montage_stack, downsample_sections_dir):
-    out_dir = os.path.join(downsample_sections_dir, render.DEFAULT_PROJECT, montage_stack, 'sections_at_0.1/001/0')
-    assert(os.path.exists(out_dir))
+    assert len(params['zend']-params['zstart']+1) == len(renderapi.stack.get_z_values_for_stack(
+                                        output_stack, render=render))
+    assert len({range(params['zstart'], params['zend']+1)}.symmetric_difference(
+                                        renderapi.stack.get_z_values_for_stack(
+                                            output_stack, render=render))) == 0
+    yield output_stack
+    renderapi.stack.delete_stack(test_montage_scape_stack, render=render)
+
     
-    files = glob.glob(os.path.join(out_dir, '*.png'))
-    for fil in files:
-        img = os.path.join(out_dir, fil)
-        assert(os.path.exists(img) and os.path.isfile(img) and os.path.getsize(img) > 0)
+    
     
