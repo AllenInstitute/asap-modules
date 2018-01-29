@@ -19,11 +19,10 @@ from rendermodules.rough_align.apply_rough_alignment_to_montages import ApplyRou
 logger = renderapi.client.logger
 logger.setLevel(logging.DEBUG)
 
-render_params['project'] = 'rough_align_test'
-
 
 @pytest.fixture(scope='module')
 def render():
+    render_params['project'] = 'rough_align_test'
     render = renderapi.connect(**render_params)
     return render
 
@@ -65,6 +64,7 @@ def point_matches_from_json():
 @pytest.fixture(scope='module')
 def downsample_sections_dir(montage_stack, tmpdir_factory):
     image_directory = str(tmpdir_factory.mktemp('rough_align'))
+    print(render_params)
     ex = {
         "render": render_params,
         "input_stack": montage_stack,
