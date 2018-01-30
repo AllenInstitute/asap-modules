@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from marshmallow import post_load
+from marshmallow import post_load, validate
 
 import argschema
 from argschema.fields import (Str, OutputDir, Int, Boolean, Float,
@@ -9,31 +9,53 @@ from rendermodules.module.schemas import RenderClientParameters
 
 
 class MaterializedBoxParameters(argschema.schemas.DefaultSchema):
-    stack = Str(required=True, description=(""))
-    rootDirectory = OutputDir(required=True, description=(""))
-    width = Int(required=True, description="")
-    height = Int(required=True, description="")
-    maxLevel = Int(required=False, default=0, description="")
-    fmt = Str(required=False)  # TODO validate to allow PNG, TIF(F?), JPG
-    maxOverviewWidthAndHeight = Int(required=False, description=(""))
-    skipInterpolation = Boolean(required=False, description=(""))
-    binaryMask = Boolean(required=False, description=(""))
-    label = Boolean(required=False, description=(""))
-    createIGrid = Boolean(required=False, description=(""))
-    forceGeneration = Boolean(required=False, description=(""))
-    renderGroup = Int(required=False, description=(""))
-    numberOfRenderGroups = Int(required=False, description=(""))
+    stack = Str(required=True, description=(
+        "stack fromw which boxes will be materialized"))
+    rootDirectory = OutputDir(required=True, description=(
+        "directory in which materialization directory structure will be "
+        "created (structure is "
+        "<rootDirectory>/<project>/<stack>/<width>x<height>/<mipMapLevel>/<z>/<row>/<col>.<fmt>)"))
+    width = Int(required=True, description=(
+        "width of flat rectangular tiles to generate"))
+    height = Int(required=True, description=(
+        "height of flat rectangular tiles to generate"))
+    maxLevel = Int(required=False, default=0, description=(
+        "maximum mipMapLevel to generate."))
+    fmt = Str(required=False, validator=validate.OneOf(['PNG', 'TIF', 'JPG']),
+              description=("image format to generate mipmaps -- "
+                           "PNG if not specified"))
+    maxOverviewWidthAndHeight = Int(required=False, description=(
+        "maximum pixel size for width or height of overview image.  "
+        "If excluded or 0, no overview generated."))
+    skipInterpolation = Boolean(required=False, description=(
+        "whether to skip interpolation (e.g. DMG data)"))
+    binaryMask = Boolean(required=False, description=(
+        "whether to use binary mask (e.g. DMG data)"))
+    label = Boolean(required=False, description=(
+        "whether to generate single color tile labels rather "
+        "than actual images"))
+    createIGrid = Boolean(required=False, description=(
+        "whther to create an IGrid file"))
+    forceGeneration = Boolean(required=False, description=(
+        "whether to regenerate existing tiles"))
+    renderGroup = Int(required=False, description=(
+        "index (1-n) identifying coarse portion of layer to render"))
+    numberOfRenderGroups = Int(required=False, description=(
+        "used in conjunction with renderGroup, total number of groups "
+        "being used"))
 
 
 class ZRangeParameters(argschema.schemas.DefaultSchema):
-    minZ = Int(required=False)
-    maxZ = Int(required=False)
+    # TODO how does this work with zValues?
+    minZ = Int(required=False, description=("minimum Z integer"))
+    maxZ = Int(required=False, description=("maximum Z integer"))
 
 
 class RenderWebServiceParameters(argschema.schemas.DefaultSchema):
-    baseDataUrl = Str(required=False)
-    owner = Str(required=False)
-    project = Str(required=False)
+    baseDataUrl = Str(required=False, description=(
+        "api endpoint url e.g. http://<host>[:port]/render-ws/v1"))
+    owner = Str(required=False, description=("owner of target collection"))
+    project = Str(required=False, description=("project fo target collection"))
 
 
 class RenderParametersRenderWebServiceParameters(RenderWebServiceParameters):
@@ -58,24 +80,39 @@ class RenderParametersRenderWebServiceParameters(RenderWebServiceParameters):
 
 
 class SparkParameters(argschema.schemas.DefaultSchema):
-    masterUrl = Str(required=True, description=(""))
-    jarfile = Str(required=True, description=(""))
-    className = Str(required=True, description=(""))
-    driverMemory = Str(required=False, default='6g', description=(""))
+    masterUrl = Str(required=True, description=(
+        "spark master url.  For local execution local[num_procs,num_retries]"))
+    jarfile = Str(required=True, description=(
+        "spark jar to call java spark command"))
+    className = Str(required=True, description=(
+        "spark class to call"))
+    driverMemory = Str(required=False, default='6g', description=(
+        "spark driver memory (important for local spark)"))
     # memory = Str(required=False, defaut='6g', description=(""))
-    sparkhome = InputDir(required=True, description=(""))
-    spark_files = List(InputFile, required=False, description=(""))
-    spark_conf = Dict(required=False, description=(""))
+    sparkhome = InputDir(required=True, description=(
+        "Spark home directory containing bin/spark_submit"))
+    spark_files = List(InputFile, required=False, description=(
+        "additional files for spark"))
+    spark_conf = Dict(required=False, description=(
+        "configuration dictionary for spark"))
 
 
 class MaterializeSectionsParameters(
         argschema.ArgSchema, MaterializedBoxParameters,
         ZRangeParameters, RenderParametersRenderWebServiceParameters,
         SparkParameters):
-    cleanUpPriorRun = Boolean(required=False)
-    explainPlan = Boolean(required=False)
-    maxImageCacheGb = Float(required=False, default=2.0)  # TODO see Eric's
-    zValues = List(Int, required=False)
+    cleanUpPriorRun = Boolean(required=False, description=(
+        "whether to regenerate most recently generated boxes of an "
+        "identical plan.  Useful for rerunning failed jobs."))
+    explainPlan = Boolean(required=False, description=(
+        "whether to perform a dry run, logging as partition stages are run "
+        "but skipping materialization"))
+    maxImageCacheGb = Float(required=False, default=2.0, description=(
+        "maximum image cache in GB of tilespec level 0 data to cache per "
+        "core.  Larger values may degrade performance due "
+        "to JVM garbage collection."))  # TODO see Eric's
+    zValues = List(Int, required=False, description=(
+        "z indices to materialize"))
 
 
 class MaterializeSectionsOutput(argschema.schemas.DefaultSchema):

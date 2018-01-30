@@ -84,11 +84,11 @@ class MaterializeSectionsModule(argschema.ArgSchemaParser):
             get_cmd_opt(fmt, '--format') +
             get_cmd_opt(maxOverviewWidthAndHeight,
                         '--maxOverviewWidthAndHeight') +
-            get_cmd_opt(skipInterpolation, '--skipInterpolation') +
-            get_cmd_opt(binaryMask, '--binaryMask') +
-            get_cmd_opt(label, '--label') +
-            get_cmd_opt(createIGrid, '--createIGrid') +
-            get_cmd_opt(forceGeneration, '--forceGeneration') +
+            get_flag_cmd(skipInterpolation, '--skipInterpolation') +
+            get_flag_cmd(binaryMask, '--binaryMask') +
+            get_flag_cmd(label, '--label') +
+            get_flag_cmd(createIGrid, '--createIGrid') +
+            get_flag_cmd(forceGeneration, '--forceGeneration') +
             get_cmd_opt(renderGroup, '--renderGroup') +
             get_cmd_opt(numberOfRenderGroups, '--numberOfRenderGroups') +
             get_flag_cmd(cleanUpPriorRun, '--cleanUpPriorRun') +
