@@ -111,9 +111,10 @@ def montage_scape_stack(render, montage_stack, downsample_sections_dir):
     mod = MakeMontageScapeSectionStack(input_data=params, args=['--output_json', outjson])
     mod.run()
 
-    assert len({range(params['zstart'], params['zend']+1)}.symmetric_difference(
-                                        renderapi.stack.get_z_values_for_stack(
-                                            output_stack, render=render))) == 0
+    zvalues = render.run(renderapi.stack.get_z_values_for_stack, output_stack)
+    zs = [1020, 1021, 1022]
+    assert(set(zvalues) == set(zs))
+
     yield output_stack
     renderapi.stack.delete_stack(test_montage_scape_stack, render=render)
 
