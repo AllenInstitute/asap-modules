@@ -166,5 +166,5 @@ def test_montage_scape_stack(render, montage_scape_stack):
     
 def test_point_match_collection(render, rough_point_match_collection):
     groupIds = render.run(renderapi.pointmatch.get_match_groupIds, rough_point_match_collection)
-    assert(len(groupIds) == 3)
+    assert(('1020.0' in groupIds) and ('1021.0' in groupIds) and ('1022.0' in groupIds))
 
