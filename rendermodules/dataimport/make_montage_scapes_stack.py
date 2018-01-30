@@ -219,7 +219,8 @@ class MakeMontageScapeSectionStack(RenderModule):
                                             self.args['scale'],
                                             self.args['render']['project'],
                                             tagstr,
-                                            self.args['imgformat'])
+                                            self.args['imgformat'],
+                                            zs)
 
         # get all the output tilespec json files
         tspath = os.path.join(self.args['image_directory'],
