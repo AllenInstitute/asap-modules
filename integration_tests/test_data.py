@@ -157,21 +157,6 @@ ROUGH_POINT_MATCH_COLLECTION = render_json_template(example_env, 'rough_align_po
 
 rough_project = "rough_align_test"
 
-'''
-test_rough_pointmatch_parameters = render_json_template(example_env,
-    'point_match_parameters.json',
-    render_host = render_host,
-    render_port = render_port,
-    render_project = rough_project,
-    render_owner = render_test_owner,
-    render_client_scripts = client_script_location,
-    spark_log_dir = tempfile.mkdtemp(),
-    render_spark_jar = RENDER_SPARK_JAR,
-    spark_master_url = os.environ['SPARK_MASTER_URL'],
-    spark_home = SPARK_HOME,
-    point_match_collecttion = rough_collection,
-    spark_logging_properties = log4propertiesfile)
-'''
 
 test_rough_parameters = render_json_template(example_env,
     'run_rough_job_for_chunk_template.json',
@@ -185,6 +170,7 @@ test_rough_parameters = render_json_template(example_env,
     firstz = 1020,
     lastz = 1022
     )
+
 
 # EM Montage QC data
 PRESTITCHED_STACK_INPUT_JSON = render_json_template(example_env, 'em_montage_qc_pre_tilespecs.json',

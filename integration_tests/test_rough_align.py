@@ -58,7 +58,7 @@ def montage_stack(render,tspecs_from_json):
     assert(set(zvalues) == set(zs))
 
     yield test_montage_stack
-    renderapi.stack.delete_stack(test_montage_stack, render=render)
+    #renderapi.stack.delete_stack(test_montage_stack, render=render)
 
 @pytest.fixture(scope='module')
 def downsample_sections_dir(montage_stack, tmpdir_factory):
@@ -96,7 +96,7 @@ def rough_point_matches_from_json():
 
 @pytest.fixture(scope='module')
 def montage_scape_stack(render, montage_stack, downsample_sections_dir):
-    output_stack = '{}OUT'.format(montage_stack)
+    output_stack = '{}_DS'.format(montage_stack)
     params = {
         "render": render_params,
         "montage_stack": montage_stack,
@@ -116,7 +116,7 @@ def montage_scape_stack(render, montage_stack, downsample_sections_dir):
     assert(set(zvalues) == set(zs))
 
     yield output_stack
-    renderapi.stack.delete_stack(test_montage_scape_stack, render=render)
+    #renderapi.stack.delete_stack(test_montage_scape_stack, render=render)
 
 @pytest.fixture(scope='module')
 def rough_point_match_collection(render, rough_point_matches_from_json):
@@ -146,15 +146,15 @@ def test_do_rough_alignment(render, montage_scape_stack, rough_point_match_colle
     mod = SolveRoughAlignmentModule(input_data=solver_example, args=[])
     mod.run()
 
-    zend = solver_example['maxz']
-    zstart = solver_example['minz']
+    zend = solver_example['first_section']
+    zstart = solver_example['last_section']
     
     zvalues = render.run(renderapi.stack.get_z_values_for_stack, output_lowres_stack)
     zs = [1020, 1021, 1022]
     assert(set(zvalues) == set(zs))
     
     yield output_lowres_stack
-    renderapi.stack.delete_stack(output_lowres_stack, render=render)
+    #renderapi.stack.delete_stack(output_lowres_stack, render=render)
 
     
 def test_montage_scape_stack(render, montage_scape_stack):
@@ -167,16 +167,16 @@ def test_point_match_collection(render, rough_point_match_collection):
     assert(('1020.0' in groupIds) and ('1021.0' in groupIds) and ('1022.0' in groupIds))
 
 def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_alignment, tmpdir_factory, prealigned_stack=None, output_stack=None):
-    ex1['montage_stack'] = montage_stack
-    
     ex1['render'] = render_params
+    ex1['montage_stack'] = montage_stack
     ex1['lowres_stack'] = test_do_rough_alignment
+    ex1['prealigned_stack'] = montage_stack
     ex1['output_stack'] = '{}_Rough'.format(montage_stack)
     ex1['tilespec_directory'] = str(tmpdir_factory.mktemp('scratch'))
     ex1['minZ'] = 1020
     ex1['maxZ'] = 1022
     ex1['scale'] = 0.1
-
+    
     mod = ApplyRoughAlignmentTransform(input_data=ex1, args=[])
     mod.run()
 

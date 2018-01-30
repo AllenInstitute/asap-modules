@@ -7,14 +7,14 @@
       "client_scripts": "{{render_client_scripts}}"
     },
     "solver_options": {
-  		"degree": 0,
+  		"degree": 1,
   		"solver": "backslash",
   		"transfac": 1,
   		"lambda": 0.005,
   		"edge_lambda": 0.005,
   		"nbrs": 2,
   		"nbrs_step": 1,
-  		"xs_weight": 0,
+  		"xs_weight": 1,
   		"min_points": 3,
   		"max_points": 80,
   		"filter_point_matches": 1,
@@ -30,7 +30,8 @@
   		},
   		"matrix_only": 0,
   		"distribute_A": 16,
-  		"dir_scratch": "{{scratch_dir}}",
+			"dir_scratch": "{{scratch_dir}}",
+			"close_stack":"True",
   		"distributed": 0,
   		"disableValidation": 1,
   		"use_peg": 0,
@@ -61,6 +62,6 @@
   	},
   "solver_executable": "{{em_solver_bin}}",
   "first_section": {{firstz}},
-  "last_section": {{lastz}},
+	"last_section": {{lastz}},
 	"verbose": 0
 }

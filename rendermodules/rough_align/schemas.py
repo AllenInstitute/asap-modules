@@ -366,7 +366,10 @@ class SolveRoughAlignmentParameters(RenderParameters):
         if data['source_collection']['project'] is None:
             data['source_collection']['project'] = data['render']['project']
         if data['source_collection']['service_host'] is None:
-            data['source_collection']['service_host'] = data['render']['host'][7:] + ":" + str(data['render']['port'])
+            if data['render']['host'].find('http://') == 0:
+                data['source_collection']['service_host'] = data['render']['host'][7:] + ":" + str(data['render']['port'])
+            else:
+                data['source_collection']['service_host'] = data['render']['host'] + ":" + str(data['render']['port'])
         if data['source_collection']['baseURL'] is None:
             data['source_collection']['baseURL'] = data['render']['host'] + ":" + str(data['render']['port']) + '/render-ws/v1'
         if data['source_collection']['renderbinPath'] is None:
@@ -377,7 +380,10 @@ class SolveRoughAlignmentParameters(RenderParameters):
         if data['target_collection']['project'] is None:
             data['target_collection']['project'] = data['render']['project']
         if data['target_collection']['service_host'] is None:
-            data['target_collection']['service_host'] = data['render']['host'][7:] + ":" + str(data['render']['port'])
+            if data['render']['host'].find('http://') == 0:
+                data['target_collection']['service_host'] = data['render']['host'][7:] + ":" + str(data['render']['port'])
+            else:
+                data['target_collection']['service_host'] = data['render']['host'] + ":" + str(data['render']['port'])
         if data['target_collection']['baseURL'] is None:
             data['target_collection']['baseURL'] = data['render']['host'] + ":" + str(data['render']['port']) + '/render-ws/v1'
         if data['target_collection']['renderbinPath'] is None:

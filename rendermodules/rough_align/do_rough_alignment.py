@@ -13,7 +13,7 @@ from rendermodules.montage.schemas import SolveMontageSectionParameters
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.rough_align.do_rough_alignment"
 
-
+'''
 example = {
     "render": {
         "host": "http://em-131fs",
@@ -91,7 +91,85 @@ example = {
 	"verbose": 0,
     "solver_executable": "/allen/aibs/pipeline/image_processing/volume_assembly/EMAligner/dev/allen_templates/run_em_solver.sh"
 }
+'''
 
+example = {
+    "render": {
+        "host": "http://localhost",
+        "port": 9000,
+        "owner": "test",
+        "project": "rough_align_test",
+        "client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/staging/scripts/"
+    },
+    "first_section": 1020,
+    "last_section": 1022,
+    "solver_options": {
+        "degree": 0,
+    	"solver": "backslash",
+    	"transfac": 1e-15,
+    	"lambda": 100.0,
+    	"edge_lambda": 100.0,
+    	"nbrs": 5,
+    	"nbrs_step": 1,
+    	"xs_weight": 1,
+    	"min_points": 3,
+    	"max_points": 800,
+    	"filter_point_matches": 1,
+    	"outlier_lambda": 100,
+    	"min_tiles": 2,
+        "Width":3840,
+        "Height":3840,
+        "outside_group":0,
+        "close_stack":"True",
+    	"pastix": {
+    		"ncpus": 8,
+    		"parms_fn": "/nrs/flyTEM/khairy/FAFB00v13/matlab_production_scripts/params_file.txt",
+    		"split": 1
+    	},
+    	"matrix_only": 0,
+    	"distribute_A": 16,
+    	"dir_scratch": "/allen/aibs/pipeline/image_processing/volume_assembly/scratch/solver_scratch",
+    	"distributed": 0,
+    	"disableValidation": 1,
+    	"use_peg": 0,
+    	"pmopts": {
+    		"NumRandomSamplingsMethod": "Desired confidence",
+    		"MaximumRandomSamples": 5000,
+    		"DesiredConfidence": 99.9,
+            "Transform":"AFFINE",
+    		"PixelDistanceThreshold": 0.1
+    	},
+    	"verbose": 1,
+    	"debug": 0,
+    	"constrain_by_z": 0,
+		"sandwich": 0,
+		"constraint_fac": 1e+15
+	},
+    "source_collection": {
+		"owner": "test",
+		"project": "rough_align_test",
+		"stack": "input_montage_stack_DS",
+		"service_host": "localhost:9000",
+		"baseURL": "http://localhost:9000/render-ws/v1",
+		"verbose": 0
+	},
+	"target_collection": {
+		"owner": "test",
+		"project": "rough_align_test",
+		"stack": "output_rough_DS",
+		"service_host": "localhost:9000",
+		"baseURL": "http://localhost:9000/render-ws/v1",
+		"verbose": 0
+	},
+	"source_point_match_collection": {
+		"server": "http://localhost:9000/render-ws/v1",
+		"owner": "test",
+		"match_collection": "rough_point_match_collection",
+		"verbose": 0
+	},
+	"verbose": 0,
+    "solver_executable": "/allen/aibs/pipeline/image_processing/volume_assembly/EMAligner/staging/allen_templates/run_em_solver.sh"
+}
 
 
 class SolveRoughAlignmentModule(RenderModule):
@@ -143,11 +221,11 @@ class SolveRoughAlignmentModule(RenderModule):
         else:
             raise RenderModuleException("solve failed with input_json {}",self.args)
 
-        try:
-            d = {'minz':self.args['first_section'], 'maxz':self.args['last_section']}
-            self.output(d)
-        except:
-            raise RenderModuleException("unable to output json {}",d)
+        #try:
+        #    d = {'minz':self.args['first_section'], 'maxz':self.args['last_section']}
+        #    self.output(d)
+        #except:
+        #    raise RenderModuleException("unable to output json {}",d)
 
 
 if __name__ == "__main__":
