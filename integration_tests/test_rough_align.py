@@ -107,8 +107,8 @@ def montage_scape_stack(render, montage_stack, downsample_sections_dir):
         "zstart": 1020,
         "zend": 1022
     }
-
-    mod = MakeMontageScapeSectionStack(input_data=params, args=[])
+    outjson = 'test_montage_scape_output.json'
+    mod = MakeMontageScapeSectionStack(input_data=params, args=['--output_json', outjson])
     mod.run()
 
     assert len(params['zend']-params['zstart']+1) == len(renderapi.stack.get_z_values_for_stack(
