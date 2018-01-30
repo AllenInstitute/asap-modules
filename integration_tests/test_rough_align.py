@@ -120,10 +120,10 @@ def montage_scape_stack(render, montage_stack, downsample_sections_dir):
     renderapi.stack.delete_stack(test_montage_scape_stack, render=render)
 
 @pytest.fixture(scope='module')
-def rough_point_match_collection(render, point_matches_from_json):
+def rough_point_match_collection(render, rough_point_matches_from_json):
     pt_match_collection = 'rough_point_match_collection'
     renderapi.pointmatch.import_matches(point_match_collection,
-                                        point_matches_from_json,
+                                        rough_point_matches_from_json,
                                         render=render)
     
     # check if point matches have been imported properly
