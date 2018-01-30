@@ -111,8 +111,6 @@ def montage_scape_stack(render, montage_stack, downsample_sections_dir):
     mod = MakeMontageScapeSectionStack(input_data=params, args=['--output_json', outjson])
     mod.run()
 
-    assert len(params['zend']-params['zstart']+1) == len(renderapi.stack.get_z_values_for_stack(
-                                        output_stack, render=render))
     assert len({range(params['zstart'], params['zend']+1)}.symmetric_difference(
                                         renderapi.stack.get_z_values_for_stack(
                                             output_stack, render=render))) == 0
@@ -149,8 +147,7 @@ def test_do_rough_alignment(render, montage_scape_stack, rough_point_match_colle
 
     zend = solver_example['maxz']
     zstart = solver_example['minz']
-    assert len(zend-zstart+1) == len(renderapi.stack.get_z_values_for_stack(
-                                        output_lowres_stack, render=render))
+    
     assert len({range(zstart, zend+1)}.symmetric_difference(
                                         renderapi.stack.get_z_values_for_stack(
                                             output_lowres_stack, render=render))) == 0
@@ -168,3 +165,23 @@ def test_point_match_collection(render, rough_point_match_collection):
     groupIds = render.run(renderapi.pointmatch.get_match_groupIds, rough_point_match_collection)
     assert(('1020.0' in groupIds) and ('1021.0' in groupIds) and ('1022.0' in groupIds))
 
+def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_alignment, tmpdir_factory, prealigned_stack=None, output_stack=None):
+    ex1['montage_stack'] = montage_stack
+    
+    ex1['render'] = render_params
+    ex1['lowres_stack'] = test_do_rough_alignment
+    ex1['output_stack'] = '{}_Rough'.format(montage_stack)
+    ex1['tilespec_directory'] = str(tmpdir_factory.mktemp('scratch'))
+    ex1['minZ'] = 1020
+    ex1['maxZ'] = 1022
+    ex1['scale'] = 0.1
+
+    mod = ApplyRoughAlignmentTransform(input_data=ex1, args=[])
+    mod.run()
+
+    zend = ex1['maxZ']
+    zstart = ex1['minZ']
+
+    assert len({range(zstart, zend+1)}.symmetric_difference(
+                                        renderapi.stack.get_z_values_for_stack(
+                                            ex1['output_stack'], render=render))) == 0
