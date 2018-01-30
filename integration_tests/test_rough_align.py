@@ -148,10 +148,10 @@ def test_do_rough_alignment(render, montage_scape_stack, rough_point_match_colle
     zend = solver_example['maxz']
     zstart = solver_example['minz']
     
-    assert len({range(zstart, zend+1)}.symmetric_difference(
-                                        renderapi.stack.get_z_values_for_stack(
-                                            output_lowres_stack, render=render))) == 0
-
+    zvalues = render.run(renderapi.stack.get_z_values_for_stack, output_lowres_stack)
+    zs = [1020, 1021, 1022]
+    assert(set(zvalues) == set(zs))
+    
     yield output_lowres_stack
     renderapi.stack.delete_stack(output_lowres_stack, render=render)
 
@@ -182,6 +182,7 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
     zend = ex1['maxZ']
     zstart = ex1['minZ']
 
-    assert len({range(zstart, zend+1)}.symmetric_difference(
-                                        renderapi.stack.get_z_values_for_stack(
-                                            ex1['output_stack'], render=render))) == 0
+    zvalues = render.run(renderapi.stack.get_z_values_for_stack, ex1['output_stack'])
+    zs = range(zstart, zend+1)
+
+    assert(set(zvalues) == set(zs))
