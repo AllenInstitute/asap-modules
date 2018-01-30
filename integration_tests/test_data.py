@@ -15,6 +15,13 @@ client_script_location = os.environ.get(
     ('/shared/render/render-ws-java-client/'
      'src/main/scripts/'))
 
+# rendermodules test compares with integer
+try:
+    render_port=int(render_port)
+except ValueError:
+    pass
+
+
 render_params = {
     "host": render_host,
     "port": render_port,
