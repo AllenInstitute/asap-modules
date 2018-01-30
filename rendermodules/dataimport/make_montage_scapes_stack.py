@@ -209,18 +209,8 @@ class MakeMontageScapeSectionStack(RenderModule):
             tagstr,
             self.args['imgformat'])
 
-        #with renderapi.client.WithPool(self.args['pool_size']) as pool:
-        #    pool.map(mypartial, Z)
-
-        for zs in Z:
-            create_montage_scape_tile_specs(self.render,
-                                            self.args['montage_stack'],
-                                            self.args['image_directory'],
-                                            self.args['scale'],
-                                            self.args['render']['project'],
-                                            tagstr,
-                                            self.args['imgformat'],
-                                            zs)
+        with renderapi.client.WithPool(self.args['pool_size']) as pool:
+            pool.map(mypartial, Z)
 
         # get all the output tilespec json files
         tspath = os.path.join(self.args['image_directory'],
