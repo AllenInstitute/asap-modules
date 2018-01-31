@@ -235,7 +235,6 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
     with pytest.raises(RenderModuleException):
         mod.run()
 
-    
 
 # additional tests for code coverage
 
@@ -269,6 +268,45 @@ def test_render_downsample_with_mipmaps(render, one_tile_montage, tmpdir_factory
         img = os.path.join(out_dir, fil)
         assert(os.path.exists(img) and os.path.isfile(img) and os.path.getsize(img) > 0)
     
+    ex['minZ'] = 1021
+    ex['maxZ'] = 1020
+    mod = RenderSectionAtScale(input_data=ex, args=[])
+    with pytest.raises(RenderModuleException):
+        mod.run()
+    
+    ex['minZ'] = 1
+    ex['maxZ'] = 2
+    mod = RenderSectionAtScale(input_data=ex, args=[])
+    with pytest.raises(RenderModuleException):
+        mod.run()
+    
+    
+
+def test_make_montage_scape_stack_fail(render, montage_stack, downsample_sections_dir):
+    output_stack = '{}_DS'.format(montage_stack)
+    params = {
+        "render": render_params,
+        "montage_stack": montage_stack,
+        "output_stack": output_stack,
+        "image_directory": downsample_sections_dir,
+        "imgformat": "png",
+        "set_new_z":True,
+        "new_z_start":-1,
+        "scale":0.1,
+        "zstart": 1020,
+        "zend": 1022
+    }
+    outjson = 'test_montage_scape_output.json'
+    with pytest.raises(mm.ValidationError):
+        mod = MakeMontageScapeSectionStack(input_data=params, args=['--output_json', outjson])
+        mod.run()
+
+    params['set_new_z'] = False
+    params['zstart'] = 1
+    params['zend'] = 2
+    mod = MakeMontageScapeSectionStack(input_data=params, args=['--output_json', outjson])
+    with pytest.raises(RenderModuleException):
+        mod.run()
 
 def test_setting_new_z_montage_scape(render, montage_stack, downsample_sections_dir):
     output_stack = '{}_DS'.format(montage_stack)
