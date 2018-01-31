@@ -77,7 +77,7 @@ class AddMipMapsToStackParameters(RenderParameters):
         required=True,
         description='stack for which the mipmaps are to be generated')
     output_stack = mm.fields.Str(
-        required=True, 
+        required=True,
         description='the output stack name. Leave to overwrite input stack')
     mipmap_dir = InputDir(
         required=True,
@@ -104,6 +104,10 @@ class AddMipMapsToStackParameters(RenderParameters):
         required=False, default=False,
         description=("whether to set output stack state to "
                      "'COMPLETE' upon completion"))
+    overwrite_zlayer = Boolean(
+        required=False, default=False,
+        description=("whether to remove the existing layer from the "
+                     "target stack before uploading."))
 
     @post_load
     def validate_zvalues(self, data):
@@ -154,4 +158,3 @@ class GenerateEMTileSpecsParameters(RenderParameters):
 class GenerateEMTileSpecsOutput(DefaultSchema):
     stack = Str(required=True,
                 description="stack to which generated tiles were added")
-
