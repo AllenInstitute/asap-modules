@@ -53,12 +53,9 @@ class GenerateMipMapsParameters(RenderParameters):
 
     @post_load
     def validate_zvalues(self, data):
-        if 'zstart' not in data.keys() or 'zend' not in data.keys():
-            if 'zvalue' not in data.keys():
-                raise ValidationError('Need a z value')
-        if 'zvalue' not in data.keys():
-            if 'zstart' not in data.keys() or 'zend' not in data.keys():
-                raise ValidationError('Need a z range')
+        if ('zstart' not in data.keys()) or ('zend' not in data.keys()):
+            if 'z' not in data.keys():
+                raise ValidationError('Need a z value or z range')
 
     @classmethod
     def validationOptions(cls, options):
@@ -80,7 +77,7 @@ class AddMipMapsToStackParameters(RenderParameters):
         required=True,
         description='stack for which the mipmaps are to be generated')
     output_stack = mm.fields.Str(
-        required=False, default=None, allow_none=True,
+        required=True, 
         description='the output stack name. Leave to overwrite input stack')
     mipmap_dir = InputDir(
         required=True,
@@ -110,12 +107,10 @@ class AddMipMapsToStackParameters(RenderParameters):
 
     @post_load
     def validate_zvalues(self, data):
-        if 'zstart' not in data.keys() or 'zend' not in data.keys():
-            if 'zvalue' not in data.keys():
-                raise ValidationError('Need a z value')
-        if 'zvalue' not in data.keys():
-            if 'zstart' not in data.keys() or 'zend' not in data.keys():
-                raise ValidationError('Need a z range')
+        if ('zstart' not in data.keys()) or ('zend' not in data.keys()):
+            if 'z' not in data.keys():
+                raise ValidationError('Need a z value or a z range')
+
 
 
 class GenerateEMTileSpecsParameters(RenderParameters):
@@ -160,50 +155,3 @@ class GenerateEMTileSpecsOutput(DefaultSchema):
     stack = Str(required=True,
                 description="stack to which generated tiles were added")
 
-
-class MakeMontageScapeSectionStackParameters(RenderParameters):
-    montage_stack = mm.fields.Str(
-        required=True,
-        metadata={'description':'stack to make a downsample version of'})
-    output_stack = mm.fields.Str(
-        required=True,
-        metadata={'description':'output stack name'})
-    image_directory = InputDir(
-        required=True,
-        metadata={'description':'directory that stores the montage scapes'})
-    set_new_z = mm.fields.Boolean(
-        required=False,
-        default=False,
-        missing=False,
-        metadata={'description':'set to assign new z values starting from 0 (default - False)'})
-    new_z_start = mm.fields.Int(
-        required=False,
-        default=0,
-        missing=0,
-        metadata={'description':'new starting z index'})
-    imgformat = mm.fields.Str(
-        required=False,
-        default='tif',
-        missing='tif',
-        metadata={'description':'image format of the montage scapes (default - tif)'})
-    scale = mm.fields.Float(
-        required=True,
-        metadata={'description':'scale of montage scapes'})
-    zstart = mm.fields.Int(
-        required=True,
-        metadata={'description':'min z value'})
-    zend = mm.fields.Int(
-        required=True,
-        metadata={'description':'max z value'})
-    pool_size = mm.fields.Int(
-        require=False,
-        default=20,
-        missing=20,
-        metadata={'description':'pool size for parallel processing'})
-
-    @post_load
-    def validate_data(self, data):
-        if data['set_new_z'] and data['new_z_start'] == 0:
-            raise ValidationError('new Z start cannot be zero')
-        elif not data['set_new_z']:
-            data['new_z_start'] = data['zstart']

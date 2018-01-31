@@ -9,11 +9,10 @@ import renderapi
 import tempfile
 from rendermodules.module.render_module import RenderModule
 from rendermodules.pointmatch.schemas import PointMatchClientParametersQsub
-from .generate_point_matches_spark import form_sift_params
+from rendermodules.pointmatch.generate_point_matches_spark import form_sift_params_list, add_arg
 
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.pointmatch.generate_point_matches_qsub"
-
 
 example = {
     "render": {
@@ -59,7 +58,7 @@ class PointMatchClientModuleQsub(RenderModule):
     def run(self):
 
         # prepare sift parameters
-        sift_params = form_sift_params(self.args)
+        sift_params = form_sift_params_list(self.args)
 
         temppbs = tempfile.NamedTemporaryFile(
                 suffix=".sh",
@@ -71,18 +70,18 @@ class PointMatchClientModuleQsub(RenderModule):
         sparkargs = "\" --owner {}".format(self.args['owner'])
         sparkargs += " --baseDataUrl {}".format(self.args['baseDataUrl'])
         sparkargs += " --collection {}".format(self.args['collection'])
-        sparkargs += " pairJson {} {}\"".format(self.args['pairJson'], sift_params)
+        sparkargs += " pairJson {} {}\"".format(self.args['pairJson'], " ".join(sift_params))
 
         env = "sparkhome={},".format(self.args['sparkhome'])
         env += "sparkjar={},".format(self.args['jarfile'])
         env += "sparkclass={},".format(self.args['className'])
         env += "sparkargs={}".format(sparkargs)
+ 
+        cmd_to_submit = ["qsub","-l","nodes={}:ppn={}".format(self.args['no_nodes'], self.args['ppn'])]
+        cmd_to_submit += ["-q",self.args['queue_name'],"-v",self.args['logdir']]
+        cmd_to_submit += [env,self.args['pbs_template']]
 
-        cmd_to_submit = "qsub -l nodes={}:ppn={}".format(self.args['no_nodes'], self.args['ppn'])
-        cmd_to_submit += " -q {} -v logdir={},".format(self.args['queue_name'], self.args['logdir'])
-        cmd_to_submit += "{} {}".format(env, self.args['pbs_template'])
-
-        os.system(cmd_to_submit)
+        subprocess.check_call(cmd_to_submit)
 
 
 if __name__ == "__main__":
