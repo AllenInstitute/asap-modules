@@ -198,7 +198,6 @@ class SolveRoughAlignmentModule(RenderModule):
         self.args['first_section'] = min(zvalues) if self.args['first_section'] > min(zvalues) else self.args['first_section']
         self.args['last_section'] = max(zvalues) if self.args['last_section'] > max(zvalues) else self.args['last_section']
         
-
         # generate a temporary json to feed in to the solver
         tempjson = tempfile.NamedTemporaryFile(
             suffix=".json",

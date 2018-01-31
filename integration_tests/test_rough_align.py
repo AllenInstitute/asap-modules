@@ -85,7 +85,9 @@ def one_tile_montage(render, tspecs):
                 in tspecs}.symmetric_difference(set(
                     renderapi.stack.get_stack_tileIds(
                         one_tile_montage_stack, render=render)))) == 0
+    
     yield one_tile_montage_stack
+    render.run(renderapi.stack.delete_stack, one_tile_montage_stack)
 
 
 @pytest.fixture(scope='module')
@@ -157,6 +159,7 @@ def rough_point_match_collection(render, rough_point_matches_from_json):
     groupIds = render.run(renderapi.pointmatch.get_match_groupIds, pt_match_collection)
     #assert(len(groupIds) == 3)
     yield pt_match_collection
+    render.run(renderapi.pointmatch.delete_collection, pt_match_collection)
 
 @pytest.fixture(scope='module')
 def test_do_rough_alignment(render, montage_scape_stack, rough_point_match_collection, tmpdir_factory, output_lowres_stack=None):
@@ -235,6 +238,12 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
     with pytest.raises(RenderModuleException):
         mod.run()
 
+    ex1['set_new_z'] = True
+    ex1['minZ'] = 1020
+    ex1['maxZ'] = 1022
+    mod = ApplyRoughAlignmentTransform(input_data=ex1, args=[])
+    mod.run()
+
 
 # additional tests for code coverage
 
@@ -279,6 +288,24 @@ def test_render_downsample_with_mipmaps(render, one_tile_montage, tmpdir_factory
     mod = RenderSectionAtScale(input_data=ex, args=[])
     with pytest.raises(RenderModuleException):
         mod.run()
+
+def test_make_montage_stack_without_downsamples(render, one_tile_montage, tmpdir_factory):
+    # testing for make montage scape stack without having downsamples generated
+    tmp_dir = str(tmpdir_factory.mktemp('downsample'))
+    output_stack = '{}_Downsample'.format(one_tile_montage) 
+    params = {
+        "render": render_params,
+        "montage_stack": one_tile_montage,
+        "output_stack": output_stack,
+        "image_directory": tmp_dir,
+        "imgformat": "png",
+        "scale":0.1,
+        "zstart": 1020,
+        "zend": 1020
+    }
+    outjson = 'test_montage_scape_output.json'
+    mod = MakeMontageScapeSectionStack(input_data=params, args=['--output_json', outjson])
+    mod.run()
     
     
 
