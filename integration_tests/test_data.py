@@ -15,6 +15,13 @@ client_script_location = os.environ.get(
     ('/shared/render/render-ws-java-client/'
      'src/main/scripts/'))
 
+# rendermodules test compares with integer
+try:
+    render_port=int(render_port)
+except ValueError:
+    pass
+
+
 render_params = {
     "host": render_host,
     "port": render_port,
@@ -89,6 +96,11 @@ TILESPECS_NO_LC_JSON = render_json_template(example_env, 'test_noLC.json',
 TILESPECS_LC_JSON = render_json_template(example_env, 'test_LC.json',
                                          test_data_root=TEST_DATA_ROOT)
 
+# materialization testing
+MATERIALIZE_BOX_JSON = render_json_template(
+    example_env, 'materialize_sections_test_data.json',
+    test_data_root=TEST_DATA_ROOT)
+
 
 # rough alignment test data
 rough_align_test_data_dir = os.path.join(TEST_DATA_ROOT,
@@ -106,7 +118,7 @@ montage_project = "em_montage_test"
 montage_collection = "test_montage_collection"
 montage_z = 1015
 log4propertiesfile = os.environ.get("SPARK_LOG_PROPERTIES",
-    "/allen/aibs/pipeline/image_processing/volume_assembly/utils/spark/conf/log4j.properties.template") 
+    "/allen/aibs/pipeline/image_processing/volume_assembly/utils/spark/conf/log4j.properties.template")
 pbs_template=os.environ.get("PBS_TEMPLATE",
     "/allen/aibs/pipeline/image_processing/volume_assembly/utils/code/spark_submit/spinup_spark.pbs")
 
@@ -160,4 +172,3 @@ POSTSTITCHED_STACK_INPUT_JSON = render_json_template(example_env, 'em_montage_qc
 MONTAGE_QC_POINT_MATCH_JSON = render_json_template(example_env, 'em_montage_qc_point_matches.json')
 
 montage_qc_project = "em_montage_qc_test"
-
