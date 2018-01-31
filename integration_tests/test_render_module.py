@@ -4,6 +4,9 @@ import argschema
 from test_data import render_params
 import pytest
 
+pytestmark = pytest.mark.skip()
+
+
 def test_render_modules():
     d = {'render':render_params}
     mod = RenderModule(input_data = d,args=[])

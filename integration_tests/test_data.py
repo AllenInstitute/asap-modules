@@ -172,3 +172,9 @@ POSTSTITCHED_STACK_INPUT_JSON = render_json_template(example_env, 'em_montage_qc
 MONTAGE_QC_POINT_MATCH_JSON = render_json_template(example_env, 'em_montage_qc_point_matches.json')
 
 montage_qc_project = "em_montage_qc_test"
+
+# Point match optimization
+PT_MATCH_STACK_TILESPECS = render_json_template(example_env, 'pt_match_optimization_tilespecs.json',
+                                                test_data_root=TEST_DATA_ROOT)
+
+

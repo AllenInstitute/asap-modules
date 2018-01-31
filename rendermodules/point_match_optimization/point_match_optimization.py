@@ -8,6 +8,7 @@ import cv2
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import tempfile
+import time
 from numbers import Number
 from functools import partial
 from marshmallow import Schema, fields
@@ -80,6 +81,7 @@ def get_parameter_sets_and_strings(SIFT_options):
     all_parameter_list = []
     for key in SIFT_options:
         if (~isinstance(SIFT_options[key], list)):
+            print(key, SIFT_options[key])
             new_options[key] = list(SIFT_options[key])
         else:
             new_options[key] = SIFT_options[key]

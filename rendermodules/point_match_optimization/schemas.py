@@ -25,28 +25,28 @@ class SIFT_options(DefaultSchema):
     SIFTfdSize = List(
         fields.Int,
         required=False,
-        many=True,
+        cli_as_single_argument=True,
         default=[89],
         missing=[89],
         description='SIFT feature descriptor size: how many samples per row and column')
     SIFTmaxScale = List(
         fields.Float,
         required=False,
-        many=True,
+        cli_as_single_argument=True,
         default=[0.85],
         missing=[0.85],
         description='SIFT maximum scale: minSize * minScale < size < maxSize * maxScale')
     SIFTminScale = List(
         fields.Float,
         required=False,
-        many=True,
+        cli_as_single_argument=True,
         default=[0.5],
         missing=[0.5],
         description='SIFT minimum scale: minSize * minScale < size < maxSize * maxScale')
     SIFTsteps = List(
         fields.Int,
         required=False,
-        many=True,
+        cli_as_single_argument=True,
         default=[3],
         missing=[3],
         description='SIFT steps per scale octave')
@@ -55,11 +55,12 @@ class SIFT_options(DefaultSchema):
         required=False,
         default=[1000],
         missing=[1000],
+        cli_as_single_argument=True,
         description='Match filter iterations')
     matchMaxEpsilon = List(
         fields.Float,
         required=False,
-        many=True,
+        cli_as_single_argument=True,
         default=[20.0],
         missing=[20.0],
         description='Minimal allowed transfer error for match filtering')
@@ -68,18 +69,19 @@ class SIFT_options(DefaultSchema):
         required=False,
         default=[500],
         missing=[500],
+        cli_as_single_argument=True,
         description='Maximum number of inliers for match filtering')
     matchMaxTrust = List(
         fields.Float,
         required=False,
-        many=True,
+        cli_as_single_argument=True,
         default=[3.0],
         missing=[3.0],
         description='Reject match candidates with a cost larger than maxTrust * median cost')
     matchMinInlierRatio = List(
         fields.Float,
         required=False,
-        many=True,
+        cli_as_single_argument=True,
         default=[0.0],
         missing=[0.0],
         description='Minimal ratio of inliers to candidates for match filtering')
@@ -88,24 +90,26 @@ class SIFT_options(DefaultSchema):
         required=False,
         default=[8],
         missing=[8],
+        cli_as_single_argument=True,
         description='Minimal absolute number of inliers for match filtering')
     matchModelType = List(
         fields.String,
         required=False,
         default=['AFFINE'],
         missing=['AFFINE'],
+        cli_as_single_argument=True,
         description='Type of model for match filtering Possible Values: [TRANSLATION, RIGID, SIMILARITY, AFFINE]')
     matchRod = List(
         fields.Float,
         required=False,
-        many=True,
+        cli_as_single_argument=True,
         default=[0.92],
         missing=[0.92],
         description='Ratio of distances for matches')
     renderScale = List(
         fields.Float,
         required=False,
-        many=True,
+        cli_as_single_argument=True,
         default=[0.35],
         missing=[0.35],
         description='Render canvases at this scale')
@@ -117,6 +121,7 @@ class PointMatchOptimizationParameters(RenderParameters):
     tile_stack = Str(
         required=False,
         default=None,
+        missing=None,
         description='Name of the stack that will hold these two tiles')
     tileId1 = Str(
         required=True,
