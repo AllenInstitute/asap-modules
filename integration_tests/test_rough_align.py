@@ -112,6 +112,9 @@ def downsample_sections_dir(montage_stack, tmpdir_factory):
     assert(os.path.exists(out_dir))
     
     files = glob.glob(os.path.join(out_dir, '*.png'))
+    
+    assert(len(files) == len(range(ex['minZ'], ex['maxZ']+1)))
+
     for fil in files:
         img = os.path.join(out_dir, fil)
         assert(os.path.exists(img) and os.path.isfile(img) and os.path.getsize(img) > 0)
