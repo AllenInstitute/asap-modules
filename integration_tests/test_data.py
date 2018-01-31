@@ -153,6 +153,9 @@ test_em_montage_parameters = render_json_template(example_env,
 ROUGH_MONTAGE_TILESPECS_JSON = render_json_template(example_env, 'rough_align_montage_tilespecs.json',
                                                     test_data_root=TEST_DATA_ROOT)
 
+ROUGH_DS_TEST_TILESPECS_JSON = render_json_template(example_env, 'rough_align_downsample_test_tilespecs.json',
+                                                    test_data_root=TEST_DATA_ROOT)
+
 ROUGH_POINT_MATCH_COLLECTION = render_json_template(example_env, 'rough_align_point_matches.json')
 
 rough_project = "rough_align_test"

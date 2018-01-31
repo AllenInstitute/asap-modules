@@ -91,7 +91,7 @@ class RenderSectionAtScale(RenderModule):
             raise RenderModuleException('Invalid Z range: {} > {}'.format(self.args['minZ'], self.args['maxZ']))
         
         zvalues1 = np.array(zvalues1)
-        zrange = range(self.args['minZ'], self.args['maxZ']+1)
+        zrange = range(int(self.args['minZ']), int(self.args['maxZ'])+1)
         zvalues = list(set(zvalues1).intersection(set(zrange)))
 
         if not zvalues:

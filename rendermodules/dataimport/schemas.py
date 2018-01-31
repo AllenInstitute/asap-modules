@@ -198,8 +198,8 @@ class MakeMontageScapeSectionStackParameters(RenderParameters):
 
     @post_load
     def validate_data(self, data):
-        if data['set_new_z'] and data['new_z_start'] == 0:
-            raise ValidationError('new Z start cannot be zero')
+        if data['set_new_z'] and data['new_z_start'] < 0:
+            raise ValidationError('new Z start cannot be less than zero')
         elif not data['set_new_z']:
             data['new_z_start'] = data['zstart']
 

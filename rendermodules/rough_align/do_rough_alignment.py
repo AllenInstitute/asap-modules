@@ -189,7 +189,7 @@ class SolveRoughAlignmentModule(RenderModule):
     def run(self):
         if "MCRROOT" not in os.environ:
             raise ValidationError("MCRROOT not set")
-
+			
         if self.args['first_section'] >= self.args['last_section']:
             raise RenderModuleException("First section z cannot be greater or equal to last section z")
 
@@ -197,7 +197,6 @@ class SolveRoughAlignmentModule(RenderModule):
                                                          render=self.render)
         self.args['first_section'] = min(zvalues) if self.args['first_section'] > min(zvalues) else self.args['first_section']
         self.args['last_section'] = max(zvalues) if self.args['last_section'] > max(zvalues) else self.args['last_section']
-        
         
 
         # generate a temporary json to feed in to the solver
