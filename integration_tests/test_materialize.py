@@ -14,9 +14,6 @@ from rendermodules.materialize import materialize_sections
 from test_data import (render_params, MATERIALIZE_BOX_JSON)
 
 
-pytestmark = pytest.mark.skip()
-
-
 @pytest.fixture(scope='module')
 def render():
     return renderapi.connect(**render_params)

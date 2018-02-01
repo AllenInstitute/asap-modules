@@ -10,8 +10,6 @@ import logging
 EPSILON = .001
 render_params['project'] = "consolidate_test"
 
-pytestmark = pytest.mark.skip()
-
 @pytest.fixture(scope='module')
 def render():
     render = renderapi.connect(**render_params)

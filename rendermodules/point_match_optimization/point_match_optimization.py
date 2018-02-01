@@ -81,7 +81,6 @@ def get_parameter_sets_and_strings(SIFT_options):
     all_parameter_list = []
     for key in SIFT_options:
         if (~isinstance(SIFT_options[key], list)):
-            print(key, SIFT_options[key])
             new_options[key] = list(SIFT_options[key])
         else:
             new_options[key] = SIFT_options[key]

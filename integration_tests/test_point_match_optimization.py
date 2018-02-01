@@ -143,13 +143,14 @@ def test_run_without_partial(render, pt_match_input_stack, tmpdir_factory):
 
     keys, options = get_parameter_sets_and_strings(example['SIFT_options'])
 
+    print(len(options))
     compute_point_matches(render,
-                          example['tile_stack'],
+                          example['stack'],
                           example['tileId1'],
                           example['tileId2'],
                           1050.0,
                           1050.0,
                           example['outputDirectory'],
                           example['url_options'],
-                          keys, options[0])
+                          keys, options[-1])
 

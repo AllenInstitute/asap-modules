@@ -23,8 +23,6 @@ from rendermodules.module.render_module import RenderModuleException
 logger = renderapi.client.logger
 logger.setLevel(logging.DEBUG)
 
-pytestmark = pytest.mark.skip()
-
 
 @pytest.fixture(scope='module')
 def render():

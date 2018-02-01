@@ -9,8 +9,6 @@ from rendermodules.lens_correction.lens_correction import LensCorrectionModule
 from test_data import render_params, TILESPECS_NO_LC_JSON, TILESPECS_LC_JSON
 from test_data import calc_lens_parameters
 
-pytestmark = pytest.mark.skip()
-
 
 render_params['project'] = "lens_correction_test"
 
