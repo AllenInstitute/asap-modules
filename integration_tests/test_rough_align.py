@@ -68,7 +68,7 @@ def montage_stack(render,tspecs_from_json):
     assert(set(zvalues) == set(zs))
 
     yield test_montage_stack
-    #renderapi.stack.delete_stack(test_montage_stack, render=render)
+    renderapi.stack.delete_stack(test_montage_stack, render=render)
 
 @pytest.fixture(scope='module')
 def one_tile_montage(render, tspecs):
@@ -149,7 +149,7 @@ def montage_scape_stack(render, montage_stack, downsample_sections_dir):
     assert(set(zvalues) == set(zs))
 
     yield output_stack
-    #renderapi.stack.delete_stack(test_montage_scape_stack, render=render)
+    renderapi.stack.delete_stack(test_montage_scape_stack, render=render)
 
 @pytest.fixture(scope='module')
 def rough_point_match_collection(render, rough_point_matches_from_json):
@@ -188,7 +188,7 @@ def test_do_rough_alignment(render, montage_scape_stack, rough_point_match_colle
     assert(set(zvalues) == set(zs))
 
     yield output_lowres_stack
-    #renderapi.stack.delete_stack(output_lowres_stack, render=render)
+    renderapi.stack.delete_stack(output_lowres_stack, render=render)
 
     
 def test_montage_scape_stack(render, montage_scape_stack):
