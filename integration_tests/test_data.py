@@ -15,6 +15,13 @@ client_script_location = os.environ.get(
     ('/shared/render/render-ws-java-client/'
      'src/main/scripts/'))
 
+# rendermodules test compares with integer
+try:
+    render_port=int(render_port)
+except ValueError:
+    pass
+
+
 render_params = {
     "host": render_host,
     "port": render_port,
@@ -46,6 +53,10 @@ TEST_DATA_ROOT = os.environ.get(
 
 FIJI_PATH = os.environ.get(
     'FIJI_PATH', '/allen/aibs/pipeline/image_processing/volume_assembly/Fiji.app')
+
+#ROUGH_SOLVER_EXECUTABLE = os.environ.get(
+#    'ROUGH_SOLVER_EXECUTABLE',
+#    '/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/matlab_compiled/do_rough_alignment')
 
 
 def render_json_template(env, template_file, **kwargs):
@@ -85,6 +96,15 @@ TILESPECS_NO_LC_JSON = render_json_template(example_env, 'test_noLC.json',
 TILESPECS_LC_JSON = render_json_template(example_env, 'test_LC.json',
                                          test_data_root=TEST_DATA_ROOT)
 
+# materialization testing
+MATERIALIZE_BOX_JSON = render_json_template(
+    example_env, 'materialize_sections_test_data.json',
+    test_data_root=TEST_DATA_ROOT)
+
+
+# rough alignment test data
+rough_align_test_data_dir = os.path.join(TEST_DATA_ROOT,
+                                        'rough_align_test_data')
 RAW_STACK_INPUT_JSON = render_json_template(example_env, 'raw_tile_specs_for_em_montage.json',
                                             test_data_root=TEST_DATA_ROOT)
 
@@ -97,6 +117,11 @@ SPARK_HOME = os.environ.get('SPARK_HOME','/shared/spark')
 montage_project = "em_montage_test"
 montage_collection = "test_montage_collection"
 montage_z = 1015
+log4propertiesfile = os.environ.get("SPARK_LOG_PROPERTIES",
+    "/allen/aibs/pipeline/image_processing/volume_assembly/utils/spark/conf/log4j.properties.template")
+pbs_template=os.environ.get("PBS_TEMPLATE",
+    "/allen/aibs/pipeline/image_processing/volume_assembly/utils/code/spark_submit/spinup_spark.pbs")
+
 test_pointmatch_parameters = render_json_template(example_env,
     'point_match_parameters.json',
     render_host = render_host,
@@ -108,7 +133,23 @@ test_pointmatch_parameters = render_json_template(example_env,
     render_spark_jar = RENDER_SPARK_JAR,
     spark_master_url = os.environ['SPARK_MASTER_URL'],
     spark_home = SPARK_HOME,
-    point_match_collection = montage_collection )
+    point_match_collection = montage_collection,
+    spark_logging_properties = log4propertiesfile)
+
+test_pointmatch_parameters_qsub = render_json_template(example_env,
+    'point_match_parameters_qsub.json',
+    render_host = render_host,
+    render_port = render_port,
+    render_project = montage_project,
+    render_owner = render_test_owner,
+    render_client_scripts = client_script_location,
+    spark_log_dir = tempfile.mkdtemp(),
+    render_spark_jar = RENDER_SPARK_JAR,
+    spark_home = SPARK_HOME,
+    point_match_collection = montage_collection,
+    spark_logging_properties = log4propertiesfile,
+    pbs_template=pbs_template)
+
 test_em_montage_parameters = render_json_template(example_env,
     'run_montage_job_for_section_template.json',
     render_host = render_host,
@@ -120,3 +161,14 @@ test_em_montage_parameters = render_json_template(example_env,
     scratch_dir = tempfile.mkdtemp(),
     point_match_collection = montage_collection,
     montage_z = montage_z)
+
+# EM Montage QC data
+PRESTITCHED_STACK_INPUT_JSON = render_json_template(example_env, 'em_montage_qc_pre_tilespecs.json',
+                                                    test_data_root=TEST_DATA_ROOT)
+
+POSTSTITCHED_STACK_INPUT_JSON = render_json_template(example_env, 'em_montage_qc_post_tilespecs.json',
+                                                    test_data_root=TEST_DATA_ROOT)
+
+MONTAGE_QC_POINT_MATCH_JSON = render_json_template(example_env, 'em_montage_qc_point_matches.json')
+
+montage_qc_project = "em_montage_qc_test"
