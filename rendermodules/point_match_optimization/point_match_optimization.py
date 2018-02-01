@@ -118,7 +118,7 @@ def draw_matches(im1, im2, ptmatches, scale, color=None):
     # Draw lines between matches. Make sure to offset end coords n second image appropriately
     r = 5
     thickness = 2
-    if color:
+    if ~(color is None):
         c = color
 
     if (len(ptmatches) > 0):
@@ -130,7 +130,7 @@ def draw_matches(im1, im2, ptmatches, scale, color=None):
 
         for p, q in zip(ps, qs):
             # generate random color for RGB and grayscale images as needed
-            if not color:
+            if ~(color is None):
                 c = np.random.randint(0,255,3) #if len(img1.shape) == 3 else np.random.randint(0,255)
             end1 = tuple(([int(pi*scale) for pi in p]))
             end2 = tuple(([int(qi*scale) for qi in q]))
@@ -247,6 +247,7 @@ def compute_point_matches(render, stack, tile1, tile2, pGroupId, qGroupId, outpu
     return_struct['keys'] = option_keys
     return_struct['zipped'] = zip(option_keys, options)
     return_struct['match_img_filename'] = match_img_filename
+    return_struct['collection_name'] = collection_name
     return_struct['ptmatch_count'] = ptmatch_count
     return_struct['tilepair_url'] = tilepair_base_url
     return_struct['outdir'] = outdir

@@ -4,6 +4,7 @@ import logging
 import renderapi
 import tempfile
 import json
+import numpy as np
 
 from test_data import PT_MATCH_STACK_TILESPECS, render_params
 
@@ -143,14 +144,27 @@ def test_run_without_partial(render, pt_match_input_stack, tmpdir_factory):
 
     keys, options = get_parameter_sets_and_strings(example['SIFT_options'])
 
-    print(len(options))
-    compute_point_matches(render,
-                          example['stack'],
-                          example['tileId1'],
-                          example['tileId2'],
-                          1050.0,
-                          1050.0,
-                          example['outputDirectory'],
-                          example['url_options'],
-                          keys, options[-1])
+    return_struct = compute_point_matches(render,
+                                          example['stack'],
+                                          example['tileId1'],
+                                          example['tileId2'],
+                                          1050.0,
+                                          1050.0,
+                                          example['outputDirectory'],
+                                          example['url_options'],
+                                          keys, options[-1])
+    
+    im1 = '%s.jpg'%(example['tileId1'])
+    im2 = '%s.jpg'%(example['tileId2'])
+    im1 = os.path.join(example['outputDirectory'], im1)
+    im2 = os.path.join(example['outputDirectory'], im2)
+
+    ptmatches = renderapi.pointmatch.get_matches_from_tile_to_tile(return_struct['collection_name'],
+                                                                   1050.0,
+                                                                   example['tileId1'],
+                                                                   1050.0,
+                                                                   example['tileId2'],
+                                                                   render=render)
+
+    match_img_filename = draw_matches(im1, im2, ptmatches, 0.1, color=np.random.randint(0,255,3))
 
