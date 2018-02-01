@@ -376,7 +376,7 @@ def test_solver_default_options(render, montage_scape_stack, rough_point_match_c
     solver_example['target_collection']['renderbinPath'] = None
     solver_example['source_point_match_collection']['match_collection'] = rough_point_match_collection
     solver_example['source_point_match_collection']['server'] = None
-    solver_example['source_point_match_collection']['owner'] = None
+    #solver_example['source_point_match_collection']['owner'] = None
     solver_example['first_section'] = 1020
     solver_example['last_section'] = 1020
 

@@ -132,8 +132,10 @@ class OutputLowresStackParameters(DefaultSchema):
 
 class PointMatchCollectionParameters(DefaultSchema):
     owner = Str(
-        required=True,
-        description="Point match collection owner")
+        required=False,
+        default=None,
+        missing=None,
+        description="Point match collection owner (defaults to render owner")
     match_collection = Str(
         required=True,
         description="Point match collection name")
@@ -170,6 +172,11 @@ class PointMatchParameters(DefaultSchema):
         default=0.1,
         missing=0.1,
         description='Pixel distance threshold for filtering')
+    Transform = Str(
+        required=False,
+        default="AFFINE",
+        missing="AFFINE",
+        description='Transformation type parameter for point match filtering (default AFFINE)')
 
 
 class PastixParameters(DefaultSchema):
@@ -372,6 +379,12 @@ class SolveRoughAlignmentParameters(RenderParameters):
         if data['solver_options']['pastix'] is None:
             data['solver_options'].pop('pastix', None)
 
+        host = ""
+        if data['render']['host'].find('http://') == 0:
+            host = data['render']['host']
+        else:
+            host = "http://%s"%(data['render']['host'])
+
         if data['source_collection']['owner'] is None:
             data['source_collection']['owner'] = data['render']['owner']
         if data['source_collection']['project'] is None:
@@ -382,7 +395,7 @@ class SolveRoughAlignmentParameters(RenderParameters):
             else:
                 data['source_collection']['service_host'] = data['render']['host'] + ":" + str(data['render']['port'])
         if data['source_collection']['baseURL'] is None:
-            data['source_collection']['baseURL'] = data['render']['host'] + ":" + str(data['render']['port']) + '/render-ws/v1'
+            data['source_collection']['baseURL'] = host + ":" + str(data['render']['port']) + '/render-ws/v1'
         if data['source_collection']['renderbinPath'] is None:
             data['source_collection']['renderbinPath'] = data['render']['client_scripts']
 
@@ -396,7 +409,7 @@ class SolveRoughAlignmentParameters(RenderParameters):
             else:
                 data['target_collection']['service_host'] = data['render']['host'] + ":" + str(data['render']['port'])
         if data['target_collection']['baseURL'] is None:
-            data['target_collection']['baseURL'] = data['render']['host'] + ":" + str(data['render']['port']) + '/render-ws/v1'
+            data['target_collection']['baseURL'] = host + ":" + str(data['render']['port']) + '/render-ws/v1'
         if data['target_collection']['renderbinPath'] is None:
             data['target_collection']['renderbinPath'] = data['render']['client_scripts']
 

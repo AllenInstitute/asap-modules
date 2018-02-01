@@ -10,7 +10,7 @@
   		"degree": 1,
   		"solver": "backslash",
   		"transfac": 1,
-  		"lambda": 0.005,
+  		"lambda_value": 0.005,
   		"edge_lambda": 0.005,
   		"nbrs": 2,
   		"nbrs_step": 1,
@@ -25,7 +25,7 @@
       "outside_group":0,
   		"pastix": {
   			"ncpus": 8,
-  			"parms_fn": "/nrs/flyTEM/khairy/FAFB00v13/matlab_production_scripts/params_file.txt",
+  			"parms_fn": "/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/allen_templates/parms_file.txt",
   			"split": 1
   		},
   		"matrix_only": 0,
@@ -39,7 +39,7 @@
   			"NumRandomSamplingsMethod": "Desired confidence",
   			"MaximumRandomSamples": 5000,
   			"DesiredConfidence": 99.9,
-        "Transform":"Affine",
+        "Transform":"AFFINE",
   			"PixelDistanceThreshold": 0.1
   		},
   		"verbose": 1,

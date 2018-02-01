@@ -7,13 +7,13 @@ from functools import partial
 import numpy as np
 import tempfile
 from ..module.render_module import RenderModule, RenderModuleException
-from rendermodules.montage.schemas import SolveMontageSectionParameters
+from rendermodules.rough_align.schemas import SolveRoughAlignmentParameters
 
 
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.rough_align.do_rough_alignment"
 
-'''
+
 example = {
     "render": {
         "host": "http://em-131fs",
@@ -22,13 +22,13 @@ example = {
         "project": "Tests",
         "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts"
     },
-    "first_section": 1019,
-	"last_section": 1023,
+    "first_section": 1020,
+	"last_section": 1022,
     "solver_options": {
 		"degree": 1,
 		"solver": "backslash",
 		"transfac": 1e-15,
-		"lambda": 100.0,
+		"lambda_value": 100.0,
 		"edge_lambda": 100.0,
 		"nbrs": 5,
 		"nbrs_step": 1,
@@ -44,8 +44,8 @@ example = {
         "close_stack":"True",
 		"pastix": {
 			"ncpus": 8,
-			"parms_fn": "/nrs/flyTEM/khairy/FAFB00v13/matlab_production_scripts/params_file.txt",
-			"split": 1
+			"parms_fn": "/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/allen_templates/parms_file.txt",
+    		"split": 1
 		},
 		"matrix_only": 0,
 		"distribute_A": 16,
@@ -57,7 +57,7 @@ example = {
 			"NumRandomSamplingsMethod": "Desired confidence",
 			"MaximumRandomSamples": 5000,
 			"DesiredConfidence": 99.9,
-            "Transform":"AFFINE",
+            "Transform":"Affine",
 			"PixelDistanceThreshold": 0.1
 		},
 		"verbose": 1,
@@ -107,7 +107,7 @@ example = {
         "degree": 0,
     	"solver": "backslash",
     	"transfac": 1e-15,
-    	"lambda": 100.0,
+    	"lambda_value": 100.0,
     	"edge_lambda": 100.0,
     	"nbrs": 5,
     	"nbrs_step": 1,
@@ -123,7 +123,7 @@ example = {
         "close_stack":"True",
     	"pastix": {
     		"ncpus": 8,
-    		"parms_fn": "/nrs/flyTEM/khairy/FAFB00v13/matlab_production_scripts/params_file.txt",
+    		"parms_fn": "/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/allen_templates/parms_file.txt",
     		"split": 1
     	},
     	"matrix_only": 0,
@@ -170,12 +170,12 @@ example = {
 	"verbose": 0,
     "solver_executable": "/allen/aibs/pipeline/image_processing/volume_assembly/EMAligner/staging/allen_templates/run_em_solver.sh"
 }
-
+'''
 
 class SolveRoughAlignmentModule(RenderModule):
     def __init__(self, schema_type=None, *args, **kwargs):
         if schema_type is None:
-            schema_type = SolveMontageSectionParameters
+            schema_type = SolveRoughAlignmentParameters
         super(SolveRoughAlignmentModule, self).__init__(
             schema_type=schema_type,
             *args,
