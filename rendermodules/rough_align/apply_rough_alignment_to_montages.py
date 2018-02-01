@@ -4,9 +4,9 @@ import json
 import renderapi
 import glob
 import numpy as np
-from ..module.render_module import RenderModule
+from ..module.render_module import RenderModule, RenderModuleException
 from rendermodules.rough_align.schemas import ApplyRoughAlignmentTransformParameters
-from rendermodules.stack.consolidate_transforms import *
+from rendermodules.stack.consolidate_transforms import consolidate_transforms
 from functools import partial
 
 
