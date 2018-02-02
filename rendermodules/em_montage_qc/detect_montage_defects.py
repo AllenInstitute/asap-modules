@@ -223,12 +223,11 @@ def check_status_of_stack(render, stack, zvalues):
                                            min(zvalues),
                                            max(zvalues),
                                            time.strftime("%m%d%y_%H%M%S"))
-        
         renderapi.stack.clone_stack(stack,
                                     new_stack,
                                     zs=zvalues,
                                     render=render)
-        return status['state'], new_stack
+    return status['state'], new_stack
                                 
 
 
@@ -251,6 +250,7 @@ class DetectMontageDefectsModule(RenderModule):
         status1, new_prestitched = check_status_of_stack(self.render,
                                                 self.args['prestitched_stack'],
                                                 zvalues)
+        
         status2, new_poststitched = check_status_of_stack(self.render,
                                                  self.args['poststitched_stack'],
                                                  zvalues)
@@ -302,10 +302,10 @@ class DetectMontageDefectsModule(RenderModule):
 
         # delete the stacks that were cloned
         if status1 == 'LOADING':
-            render.run(renderapi.stack.delete_stack, new_prestitched)
+            self.render.run(renderapi.stack.delete_stack, new_prestitched)
         
         if status2 == 'LOADING':
-            render.run(renderapi.stack.delete_stack, new_poststitched)
+            self.render.run(renderapi.stack.delete_stack, new_poststitched)
 
 if __name__ == "__main__":
     mod = DetectMontageDefectsModule(input_data=example)
