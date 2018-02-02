@@ -4,6 +4,7 @@ from scipy.spatial import KDTree
 import networkx as nx
 import numpy as np
 import renderapi
+import time
 from rendermodules.residuals import compute_residuals as cr
 from rendermodules.em_montage_qc.schemas import DetectMontageDefectsParameters, DetectMontageDefectsParametersOutput
 from ..module.render_module import RenderModule, RenderModuleException
@@ -211,6 +212,28 @@ def detect_stitching_mistakes(render, prestitched_stack, poststitched_stack, mat
     return disconnected_tiles, gap_tiles, seam_centroids
 
 
+def check_status_of_stack(render, stack, zvalues):
+    status = render.run(renderapi.stack.get_stack_metadata,
+                        stack)
+    status = status.to_dict()
+    new_stack = stack
+    
+    if (status['state'] is 'LOADING'):
+        # clone the stack
+        new_stack = "{}_zs{}_ze{}_t{}".format(stack,
+                                           min(zvalues),
+                                           max(zvalues),
+                                           time.strftime("%m%d%y_%H%M%S"))
+        
+        renderapi.stack.clone_stack(stack,
+                                    new_stack,
+                                    zs=zvalues,
+                                    render=render)
+        return status['state'], new_stack
+                                
+
+
+
 class DetectMontageDefectsModule(RenderModule):
     default_output_schema = DetectMontageDefectsParametersOutput
     default_schema = DetectMontageDefectsParameters    
@@ -224,10 +247,19 @@ class DetectMontageDefectsModule(RenderModule):
         if len(zvalues) == 0:
             raise RenderModuleException('No valid zvalues found in stack for given range {} - {}'.format(self.args['minZ'], self.args['maxZ']))
             
+        # check if pre or post stitched stack is in LOADING state.
+        # if so, clone them to new stacks
+        status1, new_prestitched = check_status_of_stack(self.render,
+                                                self.args['prestitched_stack'],
+                                                zvalues)
+        status2, new_poststitched = check_status_of_stack(self.render,
+                                                 self.args['poststitched_stack'],
+                                                 zvalues)
+
         disconnected_tiles, gap_tiles, seam_centroids = detect_stitching_mistakes(
                                                             self.render,
-                                                            self.args['prestitched_stack'],
-                                                            self.args['poststitched_stack'],
+                                                            new_prestitched,
+                                                            new_poststitched,
                                                             self.args['match_collection'],
                                                             self.args['match_collection_owner'],
                                                             self.args['residual_threshold'],
@@ -259,7 +291,7 @@ class DetectMontageDefectsModule(RenderModule):
         self.args['output_html'] = self.args['out_html_dir']
         if len(combinedz) > 0:
             if self.args['plot_sections']:
-                self.args['output_html'] = plot_section_maps(self.render, self.args['poststitched_stack'], combinedz, out_html_dir=self.args['output_html'])
+                self.args['output_html'] = plot_section_maps(self.render, new_poststitched, combinedz, out_html_dir=self.args['output_html'])
                 #print(self.args['output_html'])
         
         self.output({'output_html':self.args['output_html'],
@@ -269,7 +301,12 @@ class DetectMontageDefectsModule(RenderModule):
                      'seam_sections':seams,
                      'seam_centroids':np.array(centroids)})
 
-            
+        # delete the stacks that were cloned
+        if status1 == 'LOADING':
+            render.run(renderapi.stack.delete_stack, new_prestitched)
+        
+        if status2 == 'LOADING':
+            render.run(renderapi.stack.delete_stack, new_poststitched)
 
 if __name__ == "__main__":
     mod = DetectMontageDefectsModule(input_data=example)
