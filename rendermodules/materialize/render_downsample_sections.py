@@ -150,7 +150,8 @@ class RenderSectionAtScale(RenderModule):
                         fillWithNoise=self.args['fillWithNoise'])
         
         # delete the temp stack
-        #self.render.run(renderapi.stack.delete_stack, self.args['temp_stack'])
+        self.render.run(renderapi.stack.delete_stack, self.args['temp_stack'])
+        
         self.output({"image_directory": self.args['image_directory'],
                      "temp_stack": self.args['temp_stack']})
 
