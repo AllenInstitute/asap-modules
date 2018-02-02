@@ -149,8 +149,9 @@ class RenderSectionAtScale(RenderModule):
                         doFilter=self.args['doFilter'],
                         fillWithNoise=self.args['fillWithNoise'])
         
-        # delete the temp stack
-        self.render.run(renderapi.stack.delete_stack, self.args['temp_stack'])
+        if stack_has_mipmaps:
+            # delete the temp stack
+            self.render.run(renderapi.stack.delete_stack, self.args['temp_stack'])
         
         self.output({"image_directory": self.args['image_directory'],
                      "temp_stack": self.args['temp_stack']})
