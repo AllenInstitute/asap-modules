@@ -207,6 +207,10 @@ def test_detect_montage_defects_fail(render,
                                 point_match_collection,
                                 tmpdir_factory):
     output_directory = str(tmpdir_factory.mktemp('montage_qc_output'))
+
+    # also set poststitched_stack to LOADING state to run the clone stack function
+
+    render.run(renderapi.stack.set_stack_state, poststitched_stack, 'LOADING')
     
     ex = detect_montage_defects.example
     ex['render'] = render_params

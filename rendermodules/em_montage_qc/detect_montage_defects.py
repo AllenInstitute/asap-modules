@@ -215,7 +215,6 @@ def detect_stitching_mistakes(render, prestitched_stack, poststitched_stack, mat
 def check_status_of_stack(render, stack, zvalues):
     status = render.run(renderapi.stack.get_full_stack_metadata,
                         stack)
-    status = status.to_dict()
     new_stack = stack
     
     if (status['state'] is 'LOADING'):
