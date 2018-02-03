@@ -29,7 +29,7 @@ example_input = {
 
 def intensity_corr(img, ff,clip,scale_factor,clip_min,clip_max):
     """utility function to correct an image with a flatfield correction
-    will take img and return 
+    will take img and return
     img_out = img * max(ff) / (ff + .0001)
     converted back to the original type of img
 
@@ -62,13 +62,13 @@ def intensity_corr(img, ff,clip,scale_factor,clip_min,clip_max):
 
 
 def getImage(ts):
-    """Simple function to get the level 0 image of this tilespec 
+    """Simple function to get the level 0 image of this tilespec
     as a numpy array
 
     Parameters
     ==========
     ts: renderapi.tilespec.TileSpec
-        tilespec to get images from 
+        tilespec to get images from
         (presently assumes this is a tiff image whose URL can be read with tifffile)
 
     Returns
@@ -169,7 +169,16 @@ class MultIntensityCorr(RenderModule):
         # upload to render
         renderapi.stack.create_stack(
             self.args['output_stack'], cycleNumber=self.args['cycle_number'],
-             cycleStepNumber=self.args['cycle_step_number'], render=self.render)
+            cycleStepNumber=self.args['cycle_step_number'], render=self.render)
+
+        if self.args['overwrite_zlayer']:
+            try:
+                renderapi.stack.delete_section(
+                    self.args['output_stack'], self.args['z_index'],
+                    render=self.render)
+            except renderapi.errors.RenderError as e:
+                self.logger.error(e)
+
         renderapi.client.import_tilespecs_parallel(
             self.args['output_stack'], output_tilespecs,
             poolsize = self.args['pool_size'],render=self.render,close_stack=self.args['close_stack'])
