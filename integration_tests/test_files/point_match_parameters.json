@@ -28,7 +28,7 @@
     "renderScale": 0.3,
     "matchRod": 0.9,
     "matchMinInlierRatio": 0.0,
-    "matchMinNumInliers": 8,
+    "matchMinNumInliers": 10,
     "matchMaxNumInliers": 200,
     "clipWidth":1000,
     "clipHeight":1000
