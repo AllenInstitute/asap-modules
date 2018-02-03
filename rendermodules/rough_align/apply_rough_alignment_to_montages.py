@@ -72,7 +72,15 @@ def consolidate_transforms(tforms, verbose=False, makePolyDegree=0):
     return new_tform_list
 '''
 
-def apply_rough_alignment(render, input_stack, prealigned_stack, lowres_stack, output_dir, scale, Z, consolidateTransforms=True):
+def apply_rough_alignment(render,
+                          input_stack,
+                          prealigned_stack,
+                          lowres_stack,
+                          output_dir,
+                          scale,
+                          logger,
+                          Z,
+                          consolidateTransforms=True):
     z = Z[0]
     newz = Z[1]
 
@@ -159,8 +167,9 @@ def apply_rough_alignment(render, input_stack, prealigned_stack, lowres_stack, o
         fp = open(tilespecfilename,'w')
         json.dump([ts for ts in allts], fp, indent=4)
         fp.close()
-    except:
-        print("This z has not been aligned!")
+        return True
+    except Exception as e:
+        logger.error("z={} encountered exception({})".format(Z,e))
 
 
 
@@ -207,10 +216,16 @@ class ApplyRoughAlignmentTransform(RenderModule):
                         self.args['lowres_stack'],
                         self.args['tilespec_directory'],
                         self.args['scale'],
+                        self.logger,
                         consolidateTransforms=self.args['consolidate_transforms'])
 
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
-            pool.map(mypartial, Z)
+            results=pool.map(mypartial, Z)
+
+        #raise an exception if all the z values to apply alignment were not 
+        if not all(results):
+            failed_zs = [z for result,z in zip(results,Z) if not result]
+            raise RenderModuleException("Failed to rough align z values {}".format(failed_zs)
 
         jsonfiles = glob.glob("%s/*.json"%self.args['tilespec_directory'])
         
