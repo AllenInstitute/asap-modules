@@ -247,7 +247,7 @@ class ApplyRoughAlignmentTransform(RenderModule):
             self.args['output_stack'],
             state='COMPLETE')
 
-        self.output({'zs',np.array(Z)})
+        self.output({'zs':np.array(Z)})
 
 if __name__ == "__main__":
     mod = ApplyRoughAlignmentTransform(input_data=example)
