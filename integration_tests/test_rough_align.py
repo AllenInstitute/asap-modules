@@ -200,7 +200,8 @@ def test_point_match_collection(render, rough_point_match_collection):
     groupIds = render.run(renderapi.pointmatch.get_match_groupIds, rough_point_match_collection)
     assert(('1020.0' in groupIds) and ('1021.0' in groupIds) and ('1022.0' in groupIds))
 
-def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_alignment, tmpdir_factory, prealigned_stack=None, output_stack=None):
+def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_alignment, tmpdir, prealigned_stack=None, output_stack=None):
+    output_file = str(tmpdir.join('output.json'))
     ex1['render'] = render_params
     ex1['montage_stack'] = montage_stack
     ex1['lowres_stack'] = test_do_rough_alignment
@@ -210,6 +211,7 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
     ex1['minZ'] = 1020
     ex1['maxZ'] = 1022
     ex1['scale'] = 0.1
+    ex1['output_json']=output_file
     
     mod = ApplyRoughAlignmentTransform(input_data=ex1, args=[])
     mod.run()
