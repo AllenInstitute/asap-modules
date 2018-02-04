@@ -5,7 +5,7 @@ import renderapi
 import glob
 import numpy as np
 from ..module.render_module import RenderModule, RenderModuleException
-from rendermodules.rough_align.schemas import ApplyRoughAlignmentTransformParameters
+from rendermodules.rough_align.schemas import ApplyRoughAlignmentTransformParameters, ApplyRoughAlignmentOutputParameters
 from rendermodules.stack.consolidate_transforms import consolidate_transforms
 from functools import partial
 
@@ -174,7 +174,7 @@ def apply_rough_alignment(render,
 
 class ApplyRoughAlignmentTransform(RenderModule):
     default_schema = ApplyRoughAlignmentTransformParameters
-    default_output_schema = 
+    default_output_schema = ApplyRoughAlignmentOutputParameters
     def run(self):
         if self.args['minZ'] >= self.args['maxZ']:
             raise RenderModuleException("First section z cannot be greater or equal to last section z")
