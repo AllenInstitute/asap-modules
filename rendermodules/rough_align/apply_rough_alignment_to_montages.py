@@ -78,7 +78,6 @@ def apply_rough_alignment(render,
                           lowres_stack,
                           output_dir,
                           scale,
-                          logger,
                           Z,
                           consolidateTransforms=True):
     z = Z[0]
@@ -167,9 +166,9 @@ def apply_rough_alignment(render,
         fp = open(tilespecfilename,'w')
         json.dump([ts for ts in allts], fp, indent=4)
         fp.close()
-        return True
+        return None
     except Exception as e:
-        logger.error("z={} encountered exception({})".format(Z,e))
+        return e
 
 
 
@@ -223,8 +222,8 @@ class ApplyRoughAlignmentTransform(RenderModule):
             results=pool.map(mypartial, Z)
 
         #raise an exception if all the z values to apply alignment were not 
-        if not all(results):
-            failed_zs = [z for result,z in zip(results,Z) if not result]
+        if not all([r is None for r in results]):
+            failed_zs = [result,z for result,z in zip(results,Z) if result is not None]
             raise RenderModuleException("Failed to rough align z values {}".format(failed_zs))
 
         jsonfiles = glob.glob("%s/*.json"%self.args['tilespec_directory'])
