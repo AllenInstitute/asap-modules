@@ -174,7 +174,7 @@ def apply_rough_alignment(render,
 
 class ApplyRoughAlignmentTransform(RenderModule):
     default_schema = ApplyRoughAlignmentTransformParameters
-
+    default_output_schema = 
     def run(self):
         if self.args['minZ'] >= self.args['maxZ']:
             raise RenderModuleException("First section z cannot be greater or equal to last section z")
@@ -247,6 +247,7 @@ class ApplyRoughAlignmentTransform(RenderModule):
             self.args['output_stack'],
             state='COMPLETE')
 
+        self.output({'zs',np.array(Z)})
 
 if __name__ == "__main__":
     mod = ApplyRoughAlignmentTransform(input_data=example)
