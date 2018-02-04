@@ -173,12 +173,7 @@ def apply_rough_alignment(render,
 
 
 class ApplyRoughAlignmentTransform(RenderModule):
-    def __init__(self, schema_type=None, *args, **kwargs):
-        if schema_type is None:
-            schema_type = ApplyRoughAlignmentTransformParameters
-        super(ApplyRoughAlignmentTransform, self).__init__(
-            schema_type=schema_type, *args, **kwargs)
-
+    default_schema = ApplyRoughAlignmentTransformParameters
 
     def run(self):
         if self.args['minZ'] >= self.args['maxZ']:
