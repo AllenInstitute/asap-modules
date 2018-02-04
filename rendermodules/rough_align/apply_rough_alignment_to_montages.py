@@ -210,7 +210,6 @@ class ApplyRoughAlignmentTransform(RenderModule):
                         self.args['lowres_stack'],
                         self.args['tilespec_directory'],
                         self.args['scale'],
-                        self.logger,
                         consolidateTransforms=self.args['consolidate_transforms'])
 
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
