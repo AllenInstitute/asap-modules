@@ -225,7 +225,7 @@ class ApplyRoughAlignmentTransform(RenderModule):
         #raise an exception if all the z values to apply alignment were not 
         if not all(results):
             failed_zs = [z for result,z in zip(results,Z) if not result]
-            raise RenderModuleException("Failed to rough align z values {}".format(failed_zs)
+            raise RenderModuleException("Failed to rough align z values {}".format(failed_zs))
 
         jsonfiles = glob.glob("%s/*.json"%self.args['tilespec_directory'])
         
