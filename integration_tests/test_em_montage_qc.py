@@ -94,9 +94,9 @@ def poststitched_stack(render, poststitched_stack_from_json):
                         test_poststitched_stack, render=render)))) == 0
                         
     yield test_poststitched_stack
-    renderapi.stack.delete_stack(
-                        test_poststitched_stack,
-                        render=render)
+    #renderapi.stack.delete_stack(
+    #                    test_poststitched_stack,
+    #                    render=render)
 
 @pytest.fixture(scope='module')
 def point_match_collection(render, point_matches_from_json):
@@ -208,10 +208,6 @@ def test_detect_montage_defects_fail(render,
                                 tmpdir_factory):
     output_directory = str(tmpdir_factory.mktemp('montage_qc_output'))
 
-    # also set poststitched_stack to LOADING state to run the clone stack function
-
-    render.run(renderapi.stack.set_stack_state, poststitched_stack, 'LOADING')
-    
     ex = detect_montage_defects.example
     ex['render'] = render_params
     ex['prestitched_stack'] = prestitched_stack
@@ -229,3 +225,33 @@ def test_detect_montage_defects_fail(render,
     mod = DetectMontageDefectsModule(input_data=ex, args=[])
     with pytest.raises(RenderModuleException):
         mod.run()
+
+    
+def test_stack_in_loading_state(render, 
+                                prestitched_stack, 
+                                poststitched_stack, 
+                                point_match_collection, 
+                                tmpdir_factory):
+    # also set pre and poststitched_stack to LOADING state to run the clone stack function
+    render.run(renderapi.stack.set_stack_state, poststitched_stack, 'LOADING')
+    render.run(renderapi.stack.set_stack_state, prestitched_stack, 'LOADING')
+
+    output_directory = str(tmpdir_factory.mktemp('montage_qc_output'))
+    ex = detect_montage_defects.example
+    ex['render'] = render_params
+    ex['prestitched_stack'] = prestitched_stack
+    ex['poststitched_stack'] = poststitched_stack
+    ex['match_collection'] = point_match_collection
+    ex['minZ'] = 1028
+    ex['maxZ'] = 1029
+    ex['plot_sections'] = 'False'
+    ex['out_html_dir'] = output_directory
+    ex['residual_threshold'] = 4
+    ex['neighbors_distance'] = 80
+    ex['min_cluster_size'] = 12
+    ex['output_json'] = os.path.join(output_directory, 'output.json')
+
+    #status, new_stack = detect_montage_defects.check_status_of_stack(render, poststitched_stack, [1028, 1029])
+    
+    mod = DetectMontageDefectsModule(input_data=ex, args=[])
+    mod.run()
