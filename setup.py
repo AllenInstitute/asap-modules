@@ -2,7 +2,7 @@
 import sys
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
-
+import logging
 
 class PyTest(TestCommand):
     user_options = [('pytest-args=', 'a', "Arguments to pass to pytest")]
@@ -17,7 +17,8 @@ class PyTest(TestCommand):
         import pytest
         self.pytest_args += " --cov=rendermodules --cov-report html "\
                             "--junitxml=test-reports/test.xml"
-
+        FORMAT = "[%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s"
+        logging.basicConfig(format=FORMAT)
         errno = pytest.main(shlex.split(self.pytest_args))
         sys.exit(errno)
 
