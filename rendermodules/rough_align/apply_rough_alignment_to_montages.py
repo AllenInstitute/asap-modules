@@ -137,7 +137,6 @@ def apply_rough_alignment(render,
             if consolidateTransforms:
                 newt = consolidate_transforms(t.tforms)
                 t.tforms = newt
-            d1 = t.to_dict()
             t.z = newz
         
         renderapi.client.import_tilespecs(output_stack,highres_ts1,render=render)
@@ -169,13 +168,6 @@ class ApplyRoughAlignmentTransform(RenderModule):
 
         # the old and new z values are required for the AT team
         Z = [[a,b] for a,b in zip(zvalues, newzvalues)]
-
-        # delete existing json files in the tilespec directory
-        jsonfiles = glob.glob("%s/*.json"%self.args['tilespec_directory'])
-        for js in jsonfiles:
-            if os.path.exists(js):
-                cmd = "rm %s"%js
-                os.system(cmd)
 
         mypartial = partial(
                         apply_rough_alignment,
