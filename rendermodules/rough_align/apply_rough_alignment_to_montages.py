@@ -8,7 +8,7 @@ from ..module.render_module import RenderModule, RenderModuleException
 from rendermodules.rough_align.schemas import ApplyRoughAlignmentTransformParameters, ApplyRoughAlignmentOutputParameters
 from rendermodules.stack.consolidate_transforms import consolidate_transforms
 from functools import partial
-
+import logging
 
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.rough_align.apply_rough_alignment_to_montages"
@@ -71,6 +71,7 @@ def consolidate_transforms(tforms, verbose=False, makePolyDegree=0):
 
     return new_tform_list
 '''
+logger = logging.getLogger('rendermodules')
 
 def apply_rough_alignment(render,
                           input_stack,
@@ -86,11 +87,12 @@ def apply_rough_alignment(render,
 
     try:
         # get lowres stack tile specs
+        logger.debug('getting tilespecs from {} z={}'.format(lowres_stack,z))
         lowres_ts = render.run(
                             renderapi.tilespec.get_tile_specs_from_z,
                             lowres_stack,
                             z)
-
+        
         # get the lowres stack rough alignment transformation
         tforms = lowres_ts[0].tforms
         tf = tforms[-1]
@@ -117,7 +119,8 @@ def apply_rough_alignment(render,
         translation_tform = renderapi.transform.AffineModel(B0=tx,B1=ty)     
 
         ftform = [translation_tform] + tforms
-        
+        logger.debug('getting tilespecs from {} z={}'.format(lowres_stack,z))
+
         highres_ts1 = render.run(
                             renderapi.tilespec.get_tile_specs_from_z,
                             input_stack,
