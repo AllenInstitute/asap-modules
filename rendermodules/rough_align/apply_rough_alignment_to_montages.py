@@ -89,21 +89,13 @@ def apply_rough_alignment(render,
         lowres_ts = render.run(
                             renderapi.tilespec.get_tile_specs_from_z,
                             lowres_stack,
-                            newz)
+                            z)
 
         # get the lowres stack rough alignment transformation
         tforms = lowres_ts[0].tforms
-        d = tforms[-1].to_dict()
+        tf = tforms[-1]
+        tf.M[0:2,0:2]*=scale
         
-        dsList = d['dataString'].split()
-        v0 = float(dsList[0])*scale
-        v1 = float(dsList[1])*scale
-        v2 = float(dsList[2])*scale
-        v3 = float(dsList[3])*scale
-        v4 = float(dsList[4])
-        v5 = float(dsList[5])
-        d['dataString'] = "%f %f %f %f %s %s"%(v0, v1, v2, v3, v4, v5)
-        tforms[-1].from_dict(d)
         stackbounds = render.run(
                             renderapi.stack.get_bounds_from_z,
                             input_stack,
