@@ -3,6 +3,8 @@ from jinja2 import Environment, FileSystemLoader
 import json
 import tempfile
 
+pool_size = os.environ.get('RENDERMODULES_POOL_SIZE',5)
+
 render_host = os.environ.get(
     'RENDER_HOST', 'renderservice')
 render_port = os.environ.get(

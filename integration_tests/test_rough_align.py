@@ -10,7 +10,8 @@ from test_data import (ROUGH_MONTAGE_TILESPECS_JSON,
                        ROUGH_POINT_MATCH_COLLECTION,
                        ROUGH_DS_TEST_TILESPECS_JSON,
                        render_params,
-                       test_rough_parameters as solver_example)
+                       test_rough_parameters as solver_example,
+                       pool_size)
 
 from rendermodules.module.render_module import RenderModuleException
 from rendermodules.materialize.render_downsample_sections import RenderSectionAtScale, create_tilespecs_without_mipmaps
@@ -211,7 +212,7 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
     ex1['minZ'] = 1020
     ex1['maxZ'] = 1022
     ex1['scale'] = 0.1
-    ex1['pool_size'] = 3
+    ex1['pool_size'] = pool_size
     ex1['output_json']=str(tmpdir_factory.mktemp('output').join('output.json'))
     ex1['loglevel']='DEBUG'
     
