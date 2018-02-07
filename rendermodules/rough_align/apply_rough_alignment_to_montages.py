@@ -9,6 +9,7 @@ from rendermodules.rough_align.schemas import ApplyRoughAlignmentTransformParame
 from rendermodules.stack.consolidate_transforms import consolidate_transforms
 from functools import partial
 import logging
+import requests
 
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.rough_align.apply_rough_alignment_to_montages"
@@ -71,7 +72,7 @@ def consolidate_transforms(tforms, verbose=False, makePolyDegree=0):
 
     return new_tform_list
 '''
-logger = logging.getLogger('rendermodules')
+logger = logging.getLogger()
 
 def apply_rough_alignment(render,
                           input_stack,
@@ -84,14 +85,15 @@ def apply_rough_alignment(render,
                           consolidateTransforms=True):
     z = Z[0]
     newz = Z[1]
-
+    session=requests.session()
     try:
         # get lowres stack tile specs
         logger.debug('getting tilespecs from {} z={}'.format(lowres_stack,z))
         lowres_ts = render.run(
                             renderapi.tilespec.get_tile_specs_from_z,
                             lowres_stack,
-                            z)
+                            z,
+                            session=session)
         
         # get the lowres stack rough alignment transformation
         tforms = lowres_ts[0].tforms
@@ -101,11 +103,13 @@ def apply_rough_alignment(render,
         stackbounds = render.run(
                             renderapi.stack.get_bounds_from_z,
                             input_stack,
-                            z)
+                            z,
+                            session=session)
         prestackbounds = render.run(
                             renderapi.stack.get_bounds_from_z,
                             prealigned_stack,
-                            z)
+                            z,
+                            session=session)
         
         tx = 0
         ty = 0
@@ -124,7 +128,7 @@ def apply_rough_alignment(render,
         highres_ts1 = render.run(
                             renderapi.tilespec.get_tile_specs_from_z,
                             input_stack,
-                            z)
+                            z,session=session)
 
         for t in highres_ts1:
             for f in ftform:
@@ -135,6 +139,7 @@ def apply_rough_alignment(render,
             t.z = newz
         
         renderapi.client.import_tilespecs(output_stack,highres_ts1,render=render)
+        session.close()
         return None
     except Exception as e:
         return e
