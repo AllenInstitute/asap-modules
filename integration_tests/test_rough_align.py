@@ -211,6 +211,7 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
     ex1['minZ'] = 1020
     ex1['maxZ'] = 1022
     ex1['scale'] = 0.1
+    ex1['pool_size'] = 3
     ex1['output_json']=str(tmpdir_factory.mktemp('output').join('output.json'))
     ex1['loglevel']='DEBUG'
     
