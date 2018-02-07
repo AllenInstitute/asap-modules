@@ -5,7 +5,7 @@ import renderapi
 import glob
 import numpy as np
 from ..module.render_module import RenderModule, RenderModuleException
-from rendermodules.rough_align.schemas import ApplyRoughAlignmentTransformParameters
+from rendermodules.rough_align.schemas import ApplyRoughAlignmentTransformParameters, ApplyRoughAlignmentOutputParameters
 from rendermodules.stack.consolidate_transforms import consolidate_transforms
 from functools import partial
 
@@ -72,7 +72,15 @@ def consolidate_transforms(tforms, verbose=False, makePolyDegree=0):
     return new_tform_list
 '''
 
-def apply_rough_alignment(render, input_stack, prealigned_stack, lowres_stack, output_dir, scale, Z, consolidateTransforms=True):
+def apply_rough_alignment(render,
+                          input_stack,
+                          prealigned_stack,
+                          lowres_stack,
+                          output_stack,
+                          output_dir,
+                          scale,
+                          Z,
+                          consolidateTransforms=True):
     z = Z[0]
     newz = Z[1]
 
@@ -81,27 +89,13 @@ def apply_rough_alignment(render, input_stack, prealigned_stack, lowres_stack, o
         lowres_ts = render.run(
                             renderapi.tilespec.get_tile_specs_from_z,
                             lowres_stack,
-                            newz)
-
-        # get input stack tile specs (for the first tile)
-        highres_ts = render.run(
-                            renderapi.tilespec.get_tile_specs_from_z,
-                            input_stack,
-                            z)[0]
+                            z)
 
         # get the lowres stack rough alignment transformation
         tforms = lowres_ts[0].tforms
-        d = tforms[-1].to_dict()
+        tf = tforms[-1]
+        tf.M[0:2,0:2]*=scale
         
-        dsList = d['dataString'].split()
-        v0 = float(dsList[0])*scale
-        v1 = float(dsList[1])*scale
-        v2 = float(dsList[2])*scale
-        v3 = float(dsList[3])*scale
-        v4 = float(dsList[4])
-        v5 = float(dsList[5])
-        d['dataString'] = "%f %f %f %f %s %s"%(v0, v1, v2, v3, v4, v5)
-        tforms[-1].from_dict(d)
         stackbounds = render.run(
                             renderapi.stack.get_bounds_from_z,
                             input_stack,
@@ -120,26 +114,10 @@ def apply_rough_alignment(render, input_stack, prealigned_stack, lowres_stack, o
             tx = int(stackbounds['minX']) - int(prestackbounds['minX'])
             ty = int(stackbounds['minY']) - int(prestackbounds['minY'])
         
-        tforms1 = highres_ts.tforms
-        d = tforms1[-1].to_dict()
-        
-        dsList = d['dataString'].split()
-        v0 = 1.0
-        v1 = 0.0
-        v2 = 0.0
-        v3 = 1.0
-        v4 = tx
-        v5 = ty
-        d['dataString'] = "%f %f %f %f %s %s"%(v0,v1,v2,v3,v4,v5)
-        tforms1[-1].from_dict(d)
-        
-        # delete the lens correction transform
-        if len(tforms1) > 1:
-            del tforms1[0]
+        translation_tform = renderapi.transform.AffineModel(B0=tx,B1=ty)     
 
-        ftform = tforms1 + tforms
+        ftform = [translation_tform] + tforms
         
-        allts = []
         highres_ts1 = render.run(
                             renderapi.tilespec.get_tile_specs_from_z,
                             input_stack,
@@ -151,27 +129,18 @@ def apply_rough_alignment(render, input_stack, prealigned_stack, lowres_stack, o
             if consolidateTransforms:
                 newt = consolidate_transforms(t.tforms)
                 t.tforms = newt
-            d1 = t.to_dict()
-            d1['z'] = newz
-            allts.append(d1)
-
-        tilespecfilename = os.path.join(output_dir,'tilespec_%04d.json'%newz)
-        fp = open(tilespecfilename,'w')
-        json.dump([ts for ts in allts], fp, indent=4)
-        fp.close()
-    except:
-        print("This z has not been aligned!")
+            t.z = newz
+        
+        renderapi.client.import_tilespecs(output_stack,highres_ts1,render=render)
+        return None
+    except Exception as e:
+        return e
 
 
 
 class ApplyRoughAlignmentTransform(RenderModule):
-    def __init__(self, schema_type=None, *args, **kwargs):
-        if schema_type is None:
-            schema_type = ApplyRoughAlignmentTransformParameters
-        super(ApplyRoughAlignmentTransform, self).__init__(
-            schema_type=schema_type, *args, **kwargs)
-
-
+    default_schema = ApplyRoughAlignmentTransformParameters
+    default_output_schema = ApplyRoughAlignmentOutputParameters
     def run(self):
         if self.args['minZ'] >= self.args['maxZ']:
             raise RenderModuleException("First section z cannot be greater or equal to last section z")
@@ -192,28 +161,17 @@ class ApplyRoughAlignmentTransform(RenderModule):
         # the old and new z values are required for the AT team
         Z = [[a,b] for a,b in zip(zvalues, newzvalues)]
 
-        # delete existing json files in the tilespec directory
-        jsonfiles = glob.glob("%s/*.json"%self.args['tilespec_directory'])
-        for js in jsonfiles:
-            if os.path.exists(js):
-                cmd = "rm %s"%js
-                os.system(cmd)
-
         mypartial = partial(
                         apply_rough_alignment,
                         self.render,
                         self.args['montage_stack'],
                         self.args['prealigned_stack'],
                         self.args['lowres_stack'],
+                        self.args['output_stack'],
                         self.args['tilespec_directory'],
                         self.args['scale'],
                         consolidateTransforms=self.args['consolidate_transforms'])
 
-        with renderapi.client.WithPool(self.args['pool_size']) as pool:
-            pool.map(mypartial, Z)
-
-        jsonfiles = glob.glob("%s/*.json"%self.args['tilespec_directory'])
-        
         # Create the output stack if it doesn't exist
         if self.args['output_stack'] not in self.render.run(renderapi.render.get_stacks_by_owner_project):
             # stack does not exist
@@ -226,11 +184,13 @@ class ApplyRoughAlignmentTransform(RenderModule):
                             self.args['output_stack'],
                             'LOADING')
 
-        # import tilespecs to render
-        self.render.run(
-            renderapi.client.import_jsonfiles_parallel,
-            self.args['output_stack'],
-            jsonfiles)
+        with renderapi.client.WithPool(self.args['pool_size']) as pool:
+            results=pool.map(mypartial, Z)
+
+        #raise an exception if all the z values to apply alignment were not 
+        if not all([r is None for r in results]):
+            failed_zs = [(result,z) for result,z in zip(results,Z) if result is not None]
+            raise RenderModuleException("Failed to rough align z values {}".format(failed_zs))
 
         # set stack state to complete
         self.render.run(
@@ -238,6 +198,12 @@ class ApplyRoughAlignmentTransform(RenderModule):
             self.args['output_stack'],
             state='COMPLETE')
 
+        self.output(
+            {
+            'zs':np.array(Z),
+            'output_stack':self.args['output_stack']
+            }
+        )
 
 if __name__ == "__main__":
     mod = ApplyRoughAlignmentTransform(input_data=example)

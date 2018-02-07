@@ -425,3 +425,7 @@ class SolveRoughAlignmentParameters(RenderParameters):
                 data['solver_options']['pastix']['ncpus'] = 8
             if pastix['split'] is None:
                 data['solver_options']['pastix']['split'] = 1
+
+class ApplyRoughAlignmentOutputParameters(DefaultSchema):
+    zs = argschema.fields.NumpyArray(description="list of z values that were applied to")
+    output_stack = argschema.fields.Str(descriptoin="stack where applied trasforms were set")

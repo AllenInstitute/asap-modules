@@ -210,6 +210,7 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
     ex1['minZ'] = 1020
     ex1['maxZ'] = 1022
     ex1['scale'] = 0.1
+    ex1['output_json']=str(tmpdir_factory.mktemp('output').join('output.json'))
     
     mod = ApplyRoughAlignmentTransform(input_data=ex1, args=[])
     mod.run()
@@ -226,6 +227,7 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
                           ex1['montage_stack'], 
                           ex1['montage_stack'],
                           ex1['lowres_stack'],
+                          ex1['output_stack'],
                           ex1['tilespec_directory'],
                           ex1['scale'],
                           (1020,1020),
