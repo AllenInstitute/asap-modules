@@ -228,6 +228,7 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
                           ex1['montage_stack'], 
                           ex1['montage_stack'],
                           ex1['lowres_stack'],
+                          ex1['output_stack'],
                           ex1['tilespec_directory'],
                           ex1['scale'],
                           (1020,1020),
