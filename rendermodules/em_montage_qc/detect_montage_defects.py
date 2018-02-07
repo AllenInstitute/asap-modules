@@ -219,7 +219,8 @@ def check_status_of_stack(render, stack, zvalues):
                         stack)
     new_stack = stack
     
-    if (status['state'].find('LOADING') >= 0):
+    #if (status['state'].find('LOADING') >= 0):
+    if status['state'] == 'LOADING':
         # clone the stack
         new_stack = "{}_zs{}_ze{}_t{}".format(stack,
                                            min(zvalues),
@@ -303,11 +304,13 @@ class DetectMontageDefectsModule(RenderModule):
                      'seam_centroids':np.array(centroids)})
 
         # delete the stacks that were cloned
-        if status1.find('LOADING') >= 0:
+        #if status1.find('LOADING') >= 0:
+        if status1 == 'LOADING':
             #print("Deleting %s"%(new_prestitched))
             self.render.run(renderapi.stack.delete_stack, new_prestitched)
         
-        if status2.find('LOADING') >= 0:
+        #if status2.find('LOADING') >= 0:
+        if status2 == 'LOADING':
             #print("Deleting %s"%(new_poststitched))
             self.render.run(renderapi.stack.delete_stack, new_poststitched)
 
