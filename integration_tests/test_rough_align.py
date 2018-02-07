@@ -201,7 +201,6 @@ def test_point_match_collection(render, rough_point_match_collection):
     assert(('1020.0' in groupIds) and ('1021.0' in groupIds) and ('1022.0' in groupIds))
 
 def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_alignment, tmpdir_factory, prealigned_stack=None, output_stack=None):
-
     ex1['render'] = render_params
     ex1['montage_stack'] = montage_stack
     ex1['lowres_stack'] = test_do_rough_alignment
