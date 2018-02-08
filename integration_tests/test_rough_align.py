@@ -254,7 +254,8 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
     mod.run()
     zvalues = render.run(renderapi.stack.get_z_values_for_stack, ex1['output_stack'])
     assert(set(zvalues) == set(range(len(zvalues))))
-
+    
+    ex1['set_new_z'] = False
     with pytest.raises(RenderModuleException):
         renderapi.stack.delete_section(ex1['lowres_stack'],1021,render=render)
         mod = ApplyRoughAlignmentTransform(input_data=ex1, args=[])
@@ -339,6 +340,7 @@ def test_make_montage_scape_stack_fail(render, montage_stack, downsample_section
         "zend": 1022
     }
     outjson = 'test_montage_scape_output.json'
+    
     with pytest.raises(mm.ValidationError):
         mod = MakeMontageScapeSectionStack(input_data=params, args=['--output_json', outjson])
         mod.run()
