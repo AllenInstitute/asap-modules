@@ -7,8 +7,6 @@ import numpy as np
 import tempfile
 import renderapi
 from functools import partial
-import pathos.multiprocessing as mp
-
 from bokeh.plotting import figure, output_file, show, save
 from bokeh.layouts import column
 from bokeh.models import HoverTool, ColumnDataSource
@@ -85,7 +83,7 @@ def plot_section_maps(render, stack, zvalues, out_html_dir=None, pool_size=5):
     # Get the tileIds and tile bounds for each z
     mypartial = partial(get_tile_ids_and_tile_boundaries, render, stack)
 
-    with mp.ProcessingPool(pool_size) as pool:
+    with renderapi.client.WithPool(pool_size) as pool:
         tile_data = pool.map(mypartial, zvalues)
     #for z in zvalues:
     #    tile_data = get_tile_ids_and_tile_boundaries(render, stack, z)
