@@ -1,5 +1,5 @@
 from rendermodules.module.schemas import RenderParameters
-from argschema.fields import Str, Int, Slice, Float, Boolean
+from argschema.fields import Str, Int, Slice, Float
 from argschema.schemas import DefaultSchema
 
 class ConsolidateTransformsParameters(RenderParameters):
@@ -20,11 +20,6 @@ class ConsolidateTransformsParameters(RenderParameters):
     maxZ = Float(required=False,
                  description="""minimaximummum z to consolidate in read in from stack and write to output_stack\
                  default to maximum z in stack""")
-    overwrite_zlayer = Boolean(
-        required=False, default=False,
-        description=("whether to remove the existing layer from the "
-                     "target stack before uploading."))
-
 
 
 class ConsolidateTransformsOutputParameters(DefaultSchema):

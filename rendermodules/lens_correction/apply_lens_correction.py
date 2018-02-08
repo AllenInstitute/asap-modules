@@ -83,16 +83,6 @@ class ApplyLensCorrection(RenderModule):
 
         renderapi.stack.create_stack(outputStack, render=r)
         renderapi.stack.set_stack_state(outputStack, 'LOADING', render=r)
-
-        if self.args['overwrite_zlayer']:
-            for z in self.args['zs']:
-                try:
-                    renderapi.stack.delete_section(
-                        outputStack, z,
-                        render=self.render)
-                except renderapi.errors.RenderError as e:
-                    self.logger.error(e)
-
         renderapi.client.import_tilespecs_parallel(
             outputStack, new_tspecs, poolsize=self.args['pool_size'],
             close_stack=self.args['close_stack'], render=r)

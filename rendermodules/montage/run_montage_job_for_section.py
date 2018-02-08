@@ -127,36 +127,6 @@ class SolveMontageSectionModule(RenderModule):
                                         render=self.render)
             self.args['source_collection']['stack']=tmp_stack
 
-            # the clone stack option should also set the first and last section z appropriately in self.args for solver
-            self.args['first_section'] = min(zs)
-            self.args['last_section'] = max(zs)
-
-        # Check if the target stack exists and whether we need to overwrite the z
-        target_host = self.args['target_collection']['service_host']
-        num = target_host[-4:]
-        port=None
-        if num.isdigit():
-            target_host = target_host[:-5]
-            if target_host.find('http://') < 0:
-                target_host = 'http://%s'%(target_host)
-            port = int(num)
-        
-        list_of_stacks = renderapi.render.get_stacks_by_owner_project(owner=self.args['target_collection']['owner'],
-                                                                      project=self.args['target_collection']['project'],
-                                                                      host=target_host,
-                                                                      port=port,
-                                                                      render=self.render)
-
-        if self.args['target_collection']['stack'] in list_of_stacks:
-            for z in xrange(int(self.args['first_section']), int(self.args['last_section'])+1):
-                renderapi.stack.delete_section(self.args['target_collection']['stack'],
-                                               z,
-                                               host=target_host,
-                                               port=port,
-                                               owner=self.args['target_collection']['owner'],
-                                               project=self.args['target_collection']['project'],
-                                               render=self.render)
-
         # generate a temporary json to feed in to the solver
         tempjson = tempfile.NamedTemporaryFile(
             suffix=".json",

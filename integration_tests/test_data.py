@@ -54,7 +54,6 @@ TEST_DATA_ROOT = os.environ.get(
 FIJI_PATH = os.environ.get(
     'FIJI_PATH', '/allen/aibs/pipeline/image_processing/volume_assembly/Fiji.app')
 
-
 #ROUGH_SOLVER_EXECUTABLE = os.environ.get(
 #    'ROUGH_SOLVER_EXECUTABLE',
 #    '/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/matlab_compiled/do_rough_alignment')
@@ -103,13 +102,15 @@ MATERIALIZE_BOX_JSON = render_json_template(
     test_data_root=TEST_DATA_ROOT)
 
 
-
+# rough alignment test data
+rough_align_test_data_dir = os.path.join(TEST_DATA_ROOT,
+                                        'rough_align_test_data')
 RAW_STACK_INPUT_JSON = render_json_template(example_env, 'raw_tile_specs_for_em_montage.json',
                                             test_data_root=TEST_DATA_ROOT)
 
 MATLAB_SOLVER_PATH = os.environ.get('MATLAB_SOLVER_PATH',
     '/allen/aibs/pipeline/image_processing/volume_assembly/EMAligner/dev/allen_templates')
-
+#MATLAB_SOLVER_PATH='/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/allen_templates/'
 MONTAGE_SOLVER_BIN = os.path.join(MATLAB_SOLVER_PATH,'run_em_solver.sh')
 RENDER_SPARK_JAR = os.environ['RENDER_SPARK_JAR']
 SPARK_HOME = os.environ.get('SPARK_HOME','/shared/spark')
@@ -160,32 +161,6 @@ test_em_montage_parameters = render_json_template(example_env,
     scratch_dir = tempfile.mkdtemp(),
     point_match_collection = montage_collection,
     montage_z = montage_z)
-
-# rough alignment parameters' data
-ROUGH_MONTAGE_TILESPECS_JSON = render_json_template(example_env, 'rough_align_montage_tilespecs.json',
-                                                    test_data_root=TEST_DATA_ROOT)
-
-ROUGH_DS_TEST_TILESPECS_JSON = render_json_template(example_env, 'rough_align_downsample_test_tilespecs.json',
-                                                    test_data_root=TEST_DATA_ROOT)
-
-ROUGH_POINT_MATCH_COLLECTION = render_json_template(example_env, 'rough_align_point_matches.json')
-
-rough_project = "rough_align_test"
-
-
-test_rough_parameters = render_json_template(example_env,
-    'run_rough_job_for_chunk_template.json',
-    render_host = render_host,
-    render_port = render_port,
-    render_project = rough_project,
-    render_owner = render_test_owner,
-    render_client_scripts = client_script_location,
-    em_solver_bin = MONTAGE_SOLVER_BIN,
-    scratch_dir = tempfile.mkdtemp(),
-    firstz = 1020,
-    lastz = 1022
-    )
-
 
 # EM Montage QC data
 PRESTITCHED_STACK_INPUT_JSON = render_json_template(example_env, 'em_montage_qc_pre_tilespecs.json',

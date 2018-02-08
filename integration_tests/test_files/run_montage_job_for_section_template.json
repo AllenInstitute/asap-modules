@@ -10,7 +10,7 @@
   		"degree": 1,
   		"solver": "backslash",
   		"transfac": 1,
-  		"lambda_value": 0.005,
+  		"lambda": 0.005,
   		"edge_lambda": 0.005,
   		"nbrs": 2,
   		"nbrs_step": 1,

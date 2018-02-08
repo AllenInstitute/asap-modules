@@ -389,10 +389,7 @@ class SolveMontageSectionParameters(RenderParameters):
         if data['source_collection']['project'] is None:
             data['source_collection']['project'] = data['render']['project']
         if data['source_collection']['service_host'] is None:
-            if data['render']['host'].find('http://') == 0:
-                data['source_collection']['service_host'] = data['render']['host'][7:] + ":" + str(data['render']['port'])
-            else:
-                data['source_collection']['service_host'] = data['render']['host'] + ":" + str(data['render']['port'])
+            data['source_collection']['service_host'] = data['render']['host'][7:] + ":" + str(data['render']['port'])
         if data['source_collection']['baseURL'] is None:
             data['source_collection']['baseURL'] = "http://{}:{}/render-ws/v1".format(data['render']['host'],data['render']['port']) 
         if data['source_collection']['renderbinPath'] is None:
@@ -403,10 +400,7 @@ class SolveMontageSectionParameters(RenderParameters):
         if data['target_collection']['project'] is None:
             data['target_collection']['project'] = data['render']['project']
         if data['target_collection']['service_host'] is None:
-            if data['render']['host'].find('http://') == 0:
-                data['target_collection']['service_host'] = data['render']['host'][7:] + ":" + str(data['render']['port'])
-            else:
-                data['target_collection']['service_host'] = data['render']['host'] + ":" + str(data['render']['port'])
+            data['target_collection']['service_host'] = data['render']['host'][7:] + ":" + str(data['render']['port'])
         if data['target_collection']['baseURL'] is None:
             data['target_collection']['baseURL'] = "http://{}:{}/render-ws/v1".format(data['render']['host'],data['render']['port']) 
         if data['target_collection']['renderbinPath'] is None:

@@ -4,6 +4,7 @@ from scipy.spatial import KDTree
 import networkx as nx
 import numpy as np
 import renderapi
+import time
 from rendermodules.residuals import compute_residuals as cr
 from rendermodules.em_montage_qc.schemas import DetectMontageDefectsParameters, DetectMontageDefectsParametersOutput
 from ..module.render_module import RenderModule, RenderModuleException
@@ -18,7 +19,7 @@ example = {
         "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts"
     },
     "prestitched_stack": "2_sections_near_crack_fine_lam_1e3",
-    "poststitched_stack": "2_sections_near_crack_fine_lam_1e3_omitted",
+    "poststitched_stack": "2_sections_near_crack_fine_lam_1e3_omitted_auto",
     "match_collection": "NewPMS_combined_with_montage",
     "out_html_dir":"/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch",
     "plot_sections":"True",
@@ -206,9 +207,33 @@ def detect_stitching_mistakes(render, prestitched_stack, poststitched_stack, mat
         seam_centroids = pool.map(mypartial3, zvalues)
 
     #for z in zvalues:
-    #    seam_centroids = detect_seams(render, poststitched_stack, match_collection, match_collection_owner, z, distance=80)
+    #    disconnected_tiles.append(detect_disconnected_tiles(render, prestitched_stack, poststitched_stack, z))
+    #    gap_tiles.append(detect_stitching_gaps(render, prestitched_stack, poststitched_stack, z))
+    #    seam_centroids.append(detect_seams(render, poststitched_stack, match_collection, match_collection_owner, z, distance=80))
 
     return disconnected_tiles, gap_tiles, seam_centroids
+
+
+def check_status_of_stack(render, stack, zvalues):
+    status = render.run(renderapi.stack.get_full_stack_metadata,
+                        stack)
+    new_stack = stack
+    
+    #if (status['state'].find('LOADING') >= 0):
+    if status['state'] == 'LOADING':
+        # clone the stack
+        new_stack = "{}_zs{}_ze{}_t{}".format(stack,
+                                           min(zvalues),
+                                           max(zvalues),
+                                           time.strftime("%m%d%y_%H%M%S"))
+        renderapi.stack.clone_stack(stack,
+                                    new_stack,
+                                    zs=zvalues,
+                                    render=render)
+        
+    return status['state'], new_stack
+                                
+
 
 
 class DetectMontageDefectsModule(RenderModule):
@@ -224,10 +249,19 @@ class DetectMontageDefectsModule(RenderModule):
         if len(zvalues) == 0:
             raise RenderModuleException('No valid zvalues found in stack for given range {} - {}'.format(self.args['minZ'], self.args['maxZ']))
             
+        # check if pre or post stitched stack is in LOADING state.
+        # if so, clone them to new stacks
+        status1, new_prestitched = check_status_of_stack(self.render,
+                                                self.args['prestitched_stack'],
+                                                zvalues)
+        
+        status2, new_poststitched = check_status_of_stack(self.render,
+                                                 self.args['poststitched_stack'],
+                                                 zvalues)
         disconnected_tiles, gap_tiles, seam_centroids = detect_stitching_mistakes(
                                                             self.render,
-                                                            self.args['prestitched_stack'],
-                                                            self.args['poststitched_stack'],
+                                                            new_prestitched,
+                                                            new_poststitched,
                                                             self.args['match_collection'],
                                                             self.args['match_collection_owner'],
                                                             self.args['residual_threshold'],
@@ -259,7 +293,7 @@ class DetectMontageDefectsModule(RenderModule):
         self.args['output_html'] = self.args['out_html_dir']
         if len(combinedz) > 0:
             if self.args['plot_sections']:
-                self.args['output_html'] = plot_section_maps(self.render, self.args['poststitched_stack'], combinedz, out_html_dir=self.args['output_html'])
+                self.args['output_html'] = plot_section_maps(self.render, new_poststitched, combinedz, out_html_dir=self.args['output_html'])
                 #print(self.args['output_html'])
         
         self.output({'output_html':self.args['output_html'],
@@ -269,7 +303,16 @@ class DetectMontageDefectsModule(RenderModule):
                      'seam_sections':seams,
                      'seam_centroids':np.array(centroids)})
 
-            
+        # delete the stacks that were cloned
+        #if status1.find('LOADING') >= 0:
+        if status1 == 'LOADING':
+            #print("Deleting %s"%(new_prestitched))
+            self.render.run(renderapi.stack.delete_stack, new_prestitched)
+        
+        #if status2.find('LOADING') >= 0:
+        if status2 == 'LOADING':
+            #print("Deleting %s"%(new_poststitched))
+            self.render.run(renderapi.stack.delete_stack, new_poststitched)
 
 if __name__ == "__main__":
     mod = DetectMontageDefectsModule(input_data=example)

@@ -92,8 +92,7 @@ def test_apply_correction(test_median_stack, mini_raw_stack, render, tmpdir_fact
         "output_stack": output_stack,
         "output_directory": output_directory,
         "z_index": 0,
-        "pool_size": 10,
-        "overwrite_zlayer": True
+        "pool_size": 10
     }
     mod = MultIntensityCorr(input_data=params, args=[])
     mod.run()
@@ -122,7 +121,7 @@ def test_single_tile(test_apply_correction,render,tmpdir):
     N, M, C = getImage(corr_tilespecs[0])
 
 	#process_tile(C, dirout, stackname, clip,scale_factor,clip_min,clip_max,input_ts)
-    process_tile(C,
+    process_tile(C, 
                  test_apply_correction.args['output_directory'],
                  test_apply_correction.args['output_stack'],
 		 True, 1.0,0,65535,

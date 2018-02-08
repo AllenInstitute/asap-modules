@@ -49,10 +49,6 @@ class MultIntensityCorrParams(RenderParameters):
                   description='Min Clip value')
     clip_max = Int(required=False, default=65535,
                   description='Max Clip value')
-    overwrite_zlayer = Bool(
-        required=False, default=False,
-        description=("whether to remove the existing layer from the "
-                     "target stack before uploading."))
 
 
 

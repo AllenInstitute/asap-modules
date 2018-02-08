@@ -1,60 +1,11 @@
+#!/usr/bin/env python
 
-from marshmallow import ValidationError, validates_schema, post_load, validate
+from marshmallow import post_load, validate
+
 import argschema
-from rendermodules.module.schemas import RenderParameters, RenderClientParameters
 from argschema.fields import (Str, OutputDir, Int, Boolean, Float,
                               List, InputDir, InputFile, Dict, Nested)
-
-
-class RenderSectionAtScaleParameters(RenderParameters):
-    input_stack = Str(
-        required=True,
-        description='Input stack to make the downsample version of')
-    image_directory = OutputDir(
-        required=True,
-        description='Directory to save the downsampled sections')
-    imgformat = Str(
-        required=False,
-        default="png",
-        missing="png",
-        description='Image format (default -  png)')
-    doFilter = Boolean(
-        required=False,
-        default=True,
-        missing=True,
-        description='Apply filtering before rendering')
-    fillWithNoise = Boolean(
-        required=False,
-        default=False,
-        missing=False,
-        description='Fill image with noise (default - False)')
-    scale = Float(
-        required=True,
-        description='scale of the downsampled sections')
-    minZ = Int(
-        required=False,
-        default=-1,
-        missing=-1,
-        description='min Z to create the downsample section from')
-    maxZ = Int(
-        required=False,
-        default=-1,
-        missing=-1,
-        description='max Z to create the downsample section from')
-    pool_size = Int(
-        required=False,
-        default=20,
-        missing=20,
-        description='number of parallel threads to use')
-
-class RenderSectionAtScaleOutput(argschema.schemas.DefaultSchema):
-    image_directory = InputDir(
-        required=True,
-        description='Directory in which the downsampled section images are saved')
-    temp_stack = Str(
-        required=True,
-        description='The temp stack that was used to generate the downsampled sections')
-
+from rendermodules.module.schemas import RenderClientParameters
 
 
 class MaterializedBoxParameters(argschema.schemas.DefaultSchema):

@@ -42,7 +42,7 @@ def dereference_tforms(tforms, ref_tforms):
             except StopIteration as e:
                 raise RenderModuleException(
                     ("reference transform: {} not found in provided refererence transforms {}".format(
-                                                                                                tf.refId,
+                                                                                                tf.refId, 
                                                                                                 ref_tforms)))
         else:
             deref_tforms.append(tf)
@@ -129,14 +129,6 @@ class ConsolidateTransforms(RenderModule):
         zvalues = zvalues[zvalues <= maxZ]
 
         self.render.run(renderapi.stack.create_stack, outstack)
-        if self.args['overwrite_zlayer']:
-            for z in zvalues:
-                try:
-                    renderapi.stack.delete_section(
-                        outstack, z, render=self.render)
-                except renderapi.errors.RenderError as e:
-                    self.logger.error(e)
-
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
             resolved_tiles_list = pool.map(partial(
                 process_z,

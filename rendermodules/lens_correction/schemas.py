@@ -129,11 +129,6 @@ class ApplyLensCorrectionParameters(RenderParameters):
         required=False, default=False,
         description=("whether to set output stack to 'COMPLETE' "
                      "upon completion"))
-    overwrite_zlayer = Boolean(
-        required=False, default=False,
-        description=("whether to remove the existing layer from the "
-                     "target stack before uploading."))
-
 
 
 class ApplyLensCorrectionOutput(DefaultSchema):

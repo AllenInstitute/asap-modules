@@ -46,10 +46,9 @@ def test_consolidate_module(render,test_stack):
         "pool_size": 2,
         "minZ":input_z[1],
         "maxZ":np.max(input_z),
-        "output_json":"test.json",
-        "overwrite_zlayer": True
+        "output_json":"test.json"
     }
-
+    
     mod = ConsolidateTransforms(input_data = params,args=[])
     mod.run()
 
@@ -58,12 +57,12 @@ def test_consolidate_module(render,test_stack):
     assert(len(output_z)==len(input_z)-1)
 
     #make sure the input_tilespecs are correct
-    input_tilespecs = renderapi.tilespec.get_tile_specs_from_stack(test_stack, render=render)
+    input_tilespecs = renderapi.tilespec.get_tile_specs_from_stack(test_stack, render=render)   
     # 2lens correction, 2 affines
     assert all([len(ts.tforms)==4 for ts in input_tilespecs])
 
     #make sure the output_tilespecs have the right number of transforms
-    output_tilespecs = renderapi.tilespec.get_tile_specs_from_stack(output_stack, render=render)
+    output_tilespecs = renderapi.tilespec.get_tile_specs_from_stack(output_stack, render=render)   
     #2 lens correction, 1 combined affine
     assert all([len(ts.tforms)==3 for ts in output_tilespecs])
 
@@ -83,7 +82,7 @@ def test_consolidate_single(render,test_stack,test_consolidate_module):
     input_z = np.array(renderapi.stack.get_z_values_for_stack(test_stack,render=render))
     print input_z,type(input_z)
     print len(input_z)
-    outputs=process_z(render,
+    outputs=process_z(render, 
               test_consolidate_module.logger,
               test_consolidate_module.args['stack'],
               test_consolidate_module.args['output_stack'],
@@ -95,7 +94,7 @@ def test_consolidate_transforms_function(render,test_stack):
 
     resolved_tiles = renderapi.resolvedtiles.get_resolved_tiles_from_z(
         test_stack, input_z[1], render=render)
-
+    
     tile0 = resolved_tiles.tilespecs[0]
     new_tforms=consolidate_transforms(tile0.tforms, resolved_tiles.transforms)
 
@@ -103,3 +102,5 @@ def test_consolidate_transforms_function(render,test_stack):
 
     with pytest.raises(RenderModuleException) as e:
         new_tforms=consolidate_transforms(tile0.tforms)
+        
+
