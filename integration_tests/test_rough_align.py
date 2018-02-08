@@ -252,7 +252,13 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
     ex1['maxZ'] = 1022
     mod = ApplyRoughAlignmentTransform(input_data=ex1, args=[])
     mod.run()
+    zvalues = render.run(renderapi.stack.get_z_values_for_stack, ex1['output_stack'])
+    assert(set(zvalues) == set(range(len(zvalues))))
 
+    with pytest.raises(RenderModuleException):
+        renderapi.stack.delete_section1(ex1['lowres_stack'],1020,render=render)
+        mod = ApplyRoughAlignmentTransform(input_data=ex1, args=[])
+        mod.run()
 
 # additional tests for code coverage
 
