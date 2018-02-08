@@ -5,6 +5,7 @@ import networkx as nx
 import numpy as np
 import renderapi
 import time
+import requests
 from rendermodules.residuals import compute_residuals as cr
 from rendermodules.em_montage_qc.schemas import DetectMontageDefectsParameters, DetectMontageDefectsParametersOutput
 from ..module.render_module import RenderModule, RenderModuleException
@@ -103,15 +104,18 @@ def detect_seams(render, stack, match_collection, match_owner, z, residual_thres
 
 def detect_disconnected_tiles(render, prestitched_stack, poststitched_stack, z):
 
+    session = requests.session()
     # get the tilespecs for both prestitched_stack and poststitched_stack
     pre_tilespecs = render.run(
                         renderapi.tilespec.get_tile_specs_from_z,
                         prestitched_stack,
-                        z)
+                        z,
+                        session=session)
     post_tilespecs = render.run(
                         renderapi.tilespec.get_tile_specs_from_z,
                         poststitched_stack,
-                        z)
+                        z,
+                        session=session)
 
     # pre tile_ids
     pre_tileIds = []
@@ -122,9 +126,14 @@ def detect_disconnected_tiles(render, prestitched_stack, poststitched_stack, z):
     post_tileIds = [ts.tileId for ts in post_tilespecs]
 
     missing_tileIds = list(set(pre_tileIds) - set(post_tileIds))
+
+    session.close()
+
     return missing_tileIds
 
 def detect_stitching_gaps(render, prestitched_stack, poststitched_stack, z):
+    session = requests.session()
+
     # setup an rtree to find overlapping tiles
     pre_ridx = rindex.Index()
 
@@ -135,11 +144,13 @@ def detect_stitching_gaps(render, prestitched_stack, poststitched_stack, z):
     pre_tilespecs = render.run(
                         renderapi.tilespec.get_tile_specs_from_z,
                         prestitched_stack,
-                        z)
+                        z,
+                        session=session)
     tilespecs = render.run(
                         renderapi.tilespec.get_tile_specs_from_z,
                         poststitched_stack,
-                        z)
+                        z,
+                        session=session)
 
     # insert the prestitched_tilespecs into rtree with their bounding boxes to find overlaps
     [pre_ridx.insert(i, (ts.minX, ts.minY, ts.maxX, ts.maxY)) for i, ts in enumerate(pre_tilespecs)]
@@ -176,6 +187,8 @@ def detect_stitching_gaps(render, prestitched_stack, poststitched_stack, z):
         if G1.degree(n) > G2.degree(n):
             tileId = pre_tileIds.keys()[pre_tileIds.values().index(n)]
             gap_tiles.append(tileId)
+
+    session.close()
 
     return gap_tiles
 

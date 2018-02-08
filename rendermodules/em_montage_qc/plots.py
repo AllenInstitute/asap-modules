@@ -6,6 +6,7 @@ import numpy as np
 #import matplotlib.cm as cm
 import tempfile
 import renderapi
+import requests
 from functools import partial
 from bokeh.plotting import figure, output_file, show, save
 from bokeh.layouts import column
@@ -14,8 +15,9 @@ from bokeh.models import HoverTool, ColumnDataSource
 
 
 def get_tile_ids_and_tile_boundaries(render, input_stack, z):
+    session = requests.session()
     # read the tilespecs for the z
-    tilespecs = render.run(renderapi.tilespec.get_tile_specs_from_z, input_stack, z)
+    tilespecs = render.run(renderapi.tilespec.get_tile_specs_from_z, input_stack, z, session=session)
     tile_positions = []
     tile_ids = []
 
