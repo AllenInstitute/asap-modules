@@ -256,11 +256,14 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
     assert(set(zvalues) == set(range(len(zvalues))))
     
     ex1['set_new_z'] = False
+    ex1['output_stack'] = 'failed_output'
     with pytest.raises(RenderModuleException):
         renderapi.stack.delete_section(ex1['lowres_stack'],1021,render=render)
         mod = ApplyRoughAlignmentTransform(input_data=ex1, args=[])
         mod.run()
-
+        zvalues = renderapi.stack.get_z_values_for_stack(ex1['output_stack'],render=render)
+        assert(1021 not in zvalues)
+        
 # additional tests for code coverage
 
 def test_render_downsample_with_mipmaps(render, one_tile_montage, tmpdir_factory):
