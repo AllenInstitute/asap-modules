@@ -10,7 +10,8 @@ from test_data import (ROUGH_MONTAGE_TILESPECS_JSON,
                        ROUGH_POINT_MATCH_COLLECTION,
                        ROUGH_DS_TEST_TILESPECS_JSON,
                        render_params,
-                       test_rough_parameters as solver_example)
+                       test_rough_parameters as solver_example,
+                       pool_size)
 
 from rendermodules.module.render_module import RenderModuleException
 from rendermodules.materialize.render_downsample_sections import RenderSectionAtScale, create_tilespecs_without_mipmaps
@@ -201,6 +202,7 @@ def test_point_match_collection(render, rough_point_match_collection):
     assert(('1020.0' in groupIds) and ('1021.0' in groupIds) and ('1022.0' in groupIds))
 
 def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_alignment, tmpdir_factory, prealigned_stack=None, output_stack=None):
+
     ex1['render'] = render_params
     ex1['montage_stack'] = montage_stack
     ex1['lowres_stack'] = test_do_rough_alignment
@@ -210,6 +212,9 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
     ex1['minZ'] = 1020
     ex1['maxZ'] = 1022
     ex1['scale'] = 0.1
+    ex1['pool_size'] = pool_size
+    ex1['output_json']=str(tmpdir_factory.mktemp('output').join('output.json'))
+    ex1['loglevel']='DEBUG'
     
     mod = ApplyRoughAlignmentTransform(input_data=ex1, args=[])
     mod.run()
@@ -226,6 +231,7 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
                           ex1['montage_stack'], 
                           ex1['montage_stack'],
                           ex1['lowres_stack'],
+                          ex1['output_stack'],
                           ex1['tilespec_directory'],
                           ex1['scale'],
                           (1020,1020),
