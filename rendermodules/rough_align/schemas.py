@@ -428,4 +428,4 @@ class SolveRoughAlignmentParameters(RenderParameters):
 
 class ApplyRoughAlignmentOutputParameters(DefaultSchema):
     zs = argschema.fields.NumpyArray(description="list of z values that were applied to")
-    output_stack = argschema.fields.Str(descriptoin="stack where applied trasforms were set")
+    output_stack = argschema.fields.Str(description="stack where applied transforms were set")
