@@ -8,6 +8,10 @@ render-modules
 ##############
 Shared repo for EM connectomics and Array Tomography render based image processing modules 
 
+support
+#######
+We are not currently supporting this code, but simply releasing it to the community AS IS but are not able to provide any guarantees of support, as it is under active development. The community is welcome to submit issues, but you should not expect an active response.
+
 acknowledgments
 ###############
 This project is supported by the Intelligence Advanced Research Projects Activity (IARPA) via Department of Interior / Interior Business Center (DoI/IBC) contract number D16PC00004. The U.S. Government is authorized to reproduce and distribute reprints for Governmental purposes notwithstanding any copyright annotation theron.

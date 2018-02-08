@@ -13,7 +13,6 @@ import renderapi
 from rendermodules.materialize import materialize_sections
 from test_data import (render_params, MATERIALIZE_BOX_JSON)
 
-
 @pytest.fixture(scope='module')
 def render():
     return renderapi.connect(**render_params)
