@@ -11,6 +11,7 @@ from rendermodules.em_montage_qc.schemas import DetectMontageDefectsParameters, 
 from ..module.render_module import RenderModule, RenderModuleException
 from rendermodules.em_montage_qc.plots import plot_section_maps
 
+
 example = {
     "render":{
         "host": "http://em-131fs",
@@ -35,15 +36,15 @@ example = {
         "host": "http://em-131db",
         "port": 8081,
         "owner": "timf",
-        "project": "STAGE",
+        "project": "17021_1R",
         "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_20170613/render-ws-java-client/src/main/scripts"
     },
-    "prestitched_stack": "em_2d_montage_lc_clone_20180112",
-    "poststitched_stack": "em_2d_montage_solved_clone_20180112",
+    "prestitched_stack": "em_2d_montage_lc",
+    "poststitched_stack": "em_2d_montage_solved",
     "match_collection_owner": "timf",
     "match_collection": "default_point_matches",
-    "minZ": 103,
-    "maxZ": 107,
+    "minZ": 47,
+    "maxZ": 50,
     "pool_size": 10
 }
 '''
@@ -79,7 +80,7 @@ def detect_seams(render, stack, match_collection, match_owner, z, residual_thres
 
     # construct a networkx graph
     G = nx.Graph()
-
+    
     # iterate through each point to get its nearest neighbors within a distance
     for m, npt in enumerate(new_pts):
         idx = tree.query_ball_point(npt, r=distance)
@@ -88,17 +89,22 @@ def detect_seams(render, stack, match_collection, match_owner, z, residual_thres
         [G.add_edge(m, id) for id in idx]
 
     # get the connected subraphs from G
-    Gc = nx.connected_component_subgraphs(G)
+    # this is slower instead use nx.connected_components
+    #Gc = nx.connected_component_subgraphs(G)
+
+    Gc = sorted(nx.connected_components(G), key=len, reverse=True)
+
+    Gs = [s for s in Gc if len(s) > min_cluster_size]
 
     # find the clusters that have more than specified number of nodes
     centroids = []
-    for s in Gc:
-        if len(s.nodes()) > min_cluster_size:
-            pts = new_pts[s.nodes(),:]
-            # get the centroid of these points that give the approximate location of the seam
-            x_pts = pts[:,0]
-            y_pts = pts[:,1]
-            centroids.append([np.sum(x_pts)/len(pts), np.sum(y_pts)/len(pts)])
+    for s in Gs:
+        #if len(s.nodes()) > min_cluster_size:
+        pts = new_pts[list(s),:]
+        # get the centroid of these points that give the approximate location of the seam
+        x_pts = pts[:,0]
+        y_pts = pts[:,1]
+        centroids.append([np.sum(x_pts)/len(pts), np.sum(y_pts)/len(pts)])
     
     return centroids
 
@@ -271,6 +277,7 @@ class DetectMontageDefectsModule(RenderModule):
         status2, new_poststitched = check_status_of_stack(self.render,
                                                  self.args['poststitched_stack'],
                                                  zvalues)
+        print(new_prestitched, new_poststitched)
         disconnected_tiles, gap_tiles, seam_centroids = detect_stitching_mistakes(
                                                             self.render,
                                                             new_prestitched,
@@ -296,18 +303,17 @@ class DetectMontageDefectsModule(RenderModule):
         gaps = [zvalues[i] for i in gaps_indices]
         seams = [zvalues[i] for i in seams_indices]
 
-        combinedz = holes + gaps + seams
+        combinedz = list(set(holes + gaps + seams))
         
         qc_passed_sections = set(zvalues) - set(combinedz)
         centroids = [seam_centroids[i] for i in seams_indices]
 
         
-        
         self.args['output_html'] = self.args['out_html_dir']
         if len(combinedz) > 0:
             if self.args['plot_sections']:
                 self.args['output_html'] = plot_section_maps(self.render, new_poststitched, combinedz, out_html_dir=self.args['output_html'])
-                #print(self.args['output_html'])
+                print(self.args['output_html'])
         
         self.output({'output_html':self.args['output_html'],
                      'qc_passed_sections': qc_passed_sections, 
@@ -319,12 +325,12 @@ class DetectMontageDefectsModule(RenderModule):
         # delete the stacks that were cloned
         #if status1.find('LOADING') >= 0:
         if status1 == 'LOADING':
-            #print("Deleting %s"%(new_prestitched))
+            print("Deleting %s"%(new_prestitched))
             self.render.run(renderapi.stack.delete_stack, new_prestitched)
         
         #if status2.find('LOADING') >= 0:
         if status2 == 'LOADING':
-            #print("Deleting %s"%(new_poststitched))
+            print("Deleting %s"%(new_poststitched))
             self.render.run(renderapi.stack.delete_stack, new_poststitched)
 
 if __name__ == "__main__":
