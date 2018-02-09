@@ -6,22 +6,24 @@ import renderapi
 import json
 import itertools as it
 from functools import partial
-import pathos.multiprocessing as mp
+import requests
 
 
 def compute_residuals_within_group(render, stack, matchCollectionOwner, matchCollection, z, min_points=1):
+    session = requests.session()
     # get the sectionID which is the group ID in point match collection
-    groupId = render.run(renderapi.stack.get_sectionId_for_z, stack, z)
+    groupId = render.run(renderapi.stack.get_sectionId_for_z, stack, z, session=session)
 
     # get matches within the group for this section
     allmatches = render.run(
                     renderapi.pointmatch.get_matches_within_group,
                     matchCollection,
                     groupId,
-                    owner=matchCollectionOwner)
+                    owner=matchCollectionOwner,
+                    session=session)
 
     # get the tilespecs to extract the transformations
-    tilespecs = render.run(renderapi.tilespec.get_tile_specs_from_z, stack, z)
+    tilespecs = render.run(renderapi.tilespec.get_tile_specs_from_z, stack, z, session=session)
     tforms = {ts.tileId:ts.tforms for ts in tilespecs}
 
     transformed_pts = np.zeros((1,2))
@@ -68,5 +70,8 @@ def compute_residuals_within_group(render, stack, matchCollectionOwner, matchCol
     statistics['z'] = z
     statistics['tile_residuals'] = tile_residuals
     statistics['pt_match_positions'] = pt_match_positions
+
+    session.close()
+    
     return statistics
 
