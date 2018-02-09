@@ -175,6 +175,10 @@ def test_run_montage_job_for_section(render,
     tilespecs = renderapi.tilespec.get_tile_specs_from_z(output_stack, solver_example['z_value'], render=render)
     assert len(tilespecs) == 4
 
+    # run this job again with same target collection to make sure that existing z in target stack gets deleted
+    mod = SolveMontageSectionModule(input_data=solver_example, args=[])
+    mod.run()
+
 def test_fail_montage_job_for_section(render,
                                      raw_stack,
                                      test_point_match_generation,
@@ -191,3 +195,7 @@ def test_fail_montage_job_for_section(render,
     with pytest.raises(RenderModuleException):
         mod = SolveMontageSectionModule(input_data=solver_example, args=[])
         mod.run()
+    
+    # code coverage for schema
+    solver_example['render']['host'] = 'http://' + solver_example['render']['host']
+    mod = SolveMontageSectionModule(input_data=solver_example, args=[])
