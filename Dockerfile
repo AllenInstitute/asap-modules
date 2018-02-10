@@ -7,4 +7,4 @@ RUN apt-get update && apt-get install -y libxcomposite-dev && rm -rf /var/lib/ap
 SHELL ["/bin/bash", "-c"]
 RUN conda create -n render-modules && source activate render-modules && conda install -y -c conda-forge rtree 
 RUN python setup.py install
-
+ENTRYPOINT ["/bin/bash","-c","source","activate","render-modules"]
