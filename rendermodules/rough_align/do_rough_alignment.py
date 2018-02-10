@@ -219,11 +219,11 @@ class SolveRoughAlignmentModule(RenderModule):
         else:
             raise RenderModuleException("solve failed with input_json {}",self.args)
 
-        #try:
-        #    d = {'minz':self.args['first_section'], 'maxz':self.args['last_section']}
-        #    self.output(d)
-        #except:
-        #    raise RenderModuleException("unable to output json {}",d)
+        try:
+           d = {'minz':self.args['first_section'], 'maxz':self.args['last_section']}
+           self.output(d)
+        except:
+           raise RenderModuleException("unable to output json {}",d)
 
 
 if __name__ == "__main__":
