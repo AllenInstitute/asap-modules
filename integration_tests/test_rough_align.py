@@ -258,7 +258,9 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
     ex1['set_new_z'] = False
     ex1['output_stack'] = 'failed_output'
     with pytest.raises(RenderModuleException):
+        renderapi.stack.set_stack_state(ex1['lowres_stack'],'LOADING',render=render)
         renderapi.stack.delete_section(ex1['lowres_stack'],1021,render=render)
+        renderapi.stack.set_stack_state(ex1['lowres_stack'],'COMPLETE',render=render)
         mod = ApplyRoughAlignmentTransform(input_data=ex1, args=[])
         mod.run()
         zvalues = renderapi.stack.get_z_values_for_stack(ex1['output_stack'],render=render)
