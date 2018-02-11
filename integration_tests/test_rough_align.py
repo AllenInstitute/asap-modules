@@ -298,6 +298,17 @@ def test_render_downsample_with_mipmaps(render, one_tile_montage, tmpdir_factory
     with pytest.raises(RenderModuleException):
         mod.run()
 
+    ex1['set_new_z'] = False
+    ex1['output_stack'] = 'failed_output'
+    with pytest.raises(RenderModuleException):
+        renderapi.stack.set_stack_state(ex1['lowres_stack'],'LOADING',render=render)
+        renderapi.stack.delete_section(ex1['lowres_stack'],1021,render=render)
+        renderapi.stack.set_stack_state(ex1['lowres_stack'],'COMPLETE',render=render)
+        mod = ApplyRoughAlignmentTransform(input_data=ex1, args=[])
+        mod.run()
+        zvalues = renderapi.stack.get_z_values_for_stack(ex1['output_stack'],render=render)
+        assert(1021 not in zvalues)
+
 def test_make_montage_stack_without_downsamples(render, one_tile_montage, tmpdir_factory):
     # testing for make montage scape stack without having downsamples generated
     tmp_dir = str(tmpdir_factory.mktemp('downsample'))
