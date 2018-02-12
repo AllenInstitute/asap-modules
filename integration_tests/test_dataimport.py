@@ -80,13 +80,14 @@ def outfile_test_and_remove(f, output_fn):
     os.remove(output_fn)
     assert not os.path.isfile(output_fn)
     return val
-       
+
 def apply_generated_mipmaps(r, output_stack, generate_params,z=None):
     ex = apply_mipmaps_to_render.example
     ex['render'] = r.make_kwargs()
     ex['input_stack'] = generate_params['input_stack']
     ex['output_stack'] = output_stack
     ex['mipmap_dir'] = generate_params['output_dir']
+    ex['overwrite_zlayer'] = True
     zvalues = renderapi.stack.get_z_values_for_stack(ex['input_stack'],render=r)
     if z is not None:
         ex['z']=z
@@ -194,7 +195,7 @@ def test_mipmaps(render, input_stack, tspecs_to_mipmap, output_stack=None):
 
     renderapi.stack.delete_stack(output_stack, render=render)
     addMipMapsToRender_test(render, ex)
-    
+
 
 def test_make_mipmaps_single_z(render, input_stack, tspecs_to_mipmap, tmpdir,output_stack=None):
     assert isinstance(render, renderapi.render.RenderClient)
@@ -223,7 +224,7 @@ def test_make_mipmaps_single_z(render, input_stack, tspecs_to_mipmap, tmpdir,out
         mod = generate_mipmaps.GenerateMipMaps(
             input_data=ex, args=['--output_json', outfn])
         mod.run()
-        
+
 def test_make_mipmaps_fail_no_z(render,input_stack,tmpdir):
     ex = generate_mipmaps.example
     ex['render'] = render.make_kwargs()

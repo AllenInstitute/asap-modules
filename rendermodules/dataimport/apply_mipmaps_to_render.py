@@ -110,6 +110,16 @@ class AddMipMapsToStack(RenderModule):
 
         self.render.run(renderapi.stack.set_stack_state,
                         output_stack, 'LOADING')
+
+        if self.args['overwrite_zlayer']:
+            for z in zvalues:
+                try:
+                    renderapi.stack.delete_section(
+                        output_stack, z,
+                        render=self.render)
+                except renderapi.errors.RenderError as e:
+                    self.logger.error(e)
+
         self.render.run(renderapi.client.import_tilespecs_parallel,
                         output_stack, tilespecs,
                         poolsize=self.args['pool_size'], close_stack=False)

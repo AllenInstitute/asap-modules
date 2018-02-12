@@ -14,7 +14,7 @@
   		"edge_lambda": 0.005,
   		"nbrs": 2,
   		"nbrs_step": 1,
-  		"xs_weight": 0,
+  		"xs_weight": 1,
   		"min_points": 3,
   		"max_points": 80,
   		"filter_point_matches": 1,
@@ -25,12 +25,13 @@
       "outside_group":0,
   		"pastix": {
   			"ncpus": 8,
-  			"parms_fn": "/nrs/flyTEM/khairy/FAFB00v13/matlab_production_scripts/params_file.txt",
+  			"parms_fn": "/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/allen_templates/parms_file.txt",
   			"split": 1
   		},
   		"matrix_only": 0,
   		"distribute_A": 16,
-  		"dir_scratch": "{{scratch_dir}}",
+			"dir_scratch": "{{scratch_dir}}",
+			"close_stack":"True",
   		"distributed": 0,
   		"disableValidation": 1,
   		"use_peg": 0,
@@ -38,7 +39,7 @@
   			"NumRandomSamplingsMethod": "Desired confidence",
   			"MaximumRandomSamples": 5000,
   			"DesiredConfidence": 99.9,
-        "Transform":"Affine",
+        "Transform":"AFFINE",
   			"PixelDistanceThreshold": 0.1
   		},
   		"verbose": 1,
@@ -60,7 +61,7 @@
       "verbose": 0
   	},
   "solver_executable": "{{em_solver_bin}}",
-  "first_section": {{montage_z}},
-  "last_section": {{montage_z}},
+  "first_section": {{firstz}},
+	"last_section": {{lastz}},
 	"verbose": 0
 }

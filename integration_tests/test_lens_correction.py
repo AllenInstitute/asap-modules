@@ -142,7 +142,8 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_tform_dict
         "zs": [2266],
         "transform": example_tform_dict,
         "refId": None,
-        "pool_size": 5
+        "pool_size": 5,
+        "overwrite_zlayer": True
     }
 
     mod = ApplyLensCorrection(input_data=params, args=['--output_json', 'test_ALC_out.json'])

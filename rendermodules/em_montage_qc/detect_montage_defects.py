@@ -4,10 +4,13 @@ from scipy.spatial import KDTree
 import networkx as nx
 import numpy as np
 import renderapi
+import time
+import requests
 from rendermodules.residuals import compute_residuals as cr
 from rendermodules.em_montage_qc.schemas import DetectMontageDefectsParameters, DetectMontageDefectsParametersOutput
 from ..module.render_module import RenderModule, RenderModuleException
 from rendermodules.em_montage_qc.plots import plot_section_maps
+
 
 example = {
     "render":{
@@ -18,7 +21,7 @@ example = {
         "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts"
     },
     "prestitched_stack": "2_sections_near_crack_fine_lam_1e3",
-    "poststitched_stack": "2_sections_near_crack_fine_lam_1e3_omitted",
+    "poststitched_stack": "2_sections_near_crack_fine_lam_1e3_omitted_auto",
     "match_collection": "NewPMS_combined_with_montage",
     "out_html_dir":"/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch",
     "plot_sections":"True",
@@ -33,15 +36,15 @@ example = {
         "host": "http://em-131db",
         "port": 8081,
         "owner": "timf",
-        "project": "STAGE",
+        "project": "17021_1R",
         "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_20170613/render-ws-java-client/src/main/scripts"
     },
-    "prestitched_stack": "em_2d_montage_lc_clone_20180112",
-    "poststitched_stack": "em_2d_montage_solved_clone_20180112",
+    "prestitched_stack": "em_2d_montage_lc",
+    "poststitched_stack": "em_2d_montage_solved",
     "match_collection_owner": "timf",
     "match_collection": "default_point_matches",
-    "minZ": 103,
-    "maxZ": 107,
+    "minZ": 47,
+    "maxZ": 50,
     "pool_size": 10
 }
 '''
@@ -77,7 +80,7 @@ def detect_seams(render, stack, match_collection, match_owner, z, residual_thres
 
     # construct a networkx graph
     G = nx.Graph()
-
+    
     # iterate through each point to get its nearest neighbors within a distance
     for m, npt in enumerate(new_pts):
         idx = tree.query_ball_point(npt, r=distance)
@@ -86,31 +89,39 @@ def detect_seams(render, stack, match_collection, match_owner, z, residual_thres
         [G.add_edge(m, id) for id in idx]
 
     # get the connected subraphs from G
-    Gc = nx.connected_component_subgraphs(G)
+    # this is slower instead use nx.connected_components
+    #Gc = nx.connected_component_subgraphs(G)
+
+    Gc = sorted(nx.connected_components(G), key=len, reverse=True)
+
+    Gs = [s for s in Gc if len(s) > min_cluster_size]
 
     # find the clusters that have more than specified number of nodes
     centroids = []
-    for s in Gc:
-        if len(s.nodes()) > min_cluster_size:
-            pts = new_pts[s.nodes(),:]
-            # get the centroid of these points that give the approximate location of the seam
-            x_pts = pts[:,0]
-            y_pts = pts[:,1]
-            centroids.append([np.sum(x_pts)/len(pts), np.sum(y_pts)/len(pts)])
+    for s in Gs:
+        #if len(s.nodes()) > min_cluster_size:
+        pts = new_pts[list(s),:]
+        # get the centroid of these points that give the approximate location of the seam
+        x_pts = pts[:,0]
+        y_pts = pts[:,1]
+        centroids.append([np.sum(x_pts)/len(pts), np.sum(y_pts)/len(pts)])
     
     return centroids
 
 def detect_disconnected_tiles(render, prestitched_stack, poststitched_stack, z):
 
+    session = requests.session()
     # get the tilespecs for both prestitched_stack and poststitched_stack
     pre_tilespecs = render.run(
                         renderapi.tilespec.get_tile_specs_from_z,
                         prestitched_stack,
-                        z)
+                        z,
+                        session=session)
     post_tilespecs = render.run(
                         renderapi.tilespec.get_tile_specs_from_z,
                         poststitched_stack,
-                        z)
+                        z,
+                        session=session)
 
     # pre tile_ids
     pre_tileIds = []
@@ -121,9 +132,14 @@ def detect_disconnected_tiles(render, prestitched_stack, poststitched_stack, z):
     post_tileIds = [ts.tileId for ts in post_tilespecs]
 
     missing_tileIds = list(set(pre_tileIds) - set(post_tileIds))
+
+    session.close()
+
     return missing_tileIds
 
 def detect_stitching_gaps(render, prestitched_stack, poststitched_stack, z):
+    session = requests.session()
+
     # setup an rtree to find overlapping tiles
     pre_ridx = rindex.Index()
 
@@ -134,11 +150,13 @@ def detect_stitching_gaps(render, prestitched_stack, poststitched_stack, z):
     pre_tilespecs = render.run(
                         renderapi.tilespec.get_tile_specs_from_z,
                         prestitched_stack,
-                        z)
+                        z,
+                        session=session)
     tilespecs = render.run(
                         renderapi.tilespec.get_tile_specs_from_z,
                         poststitched_stack,
-                        z)
+                        z,
+                        session=session)
 
     # insert the prestitched_tilespecs into rtree with their bounding boxes to find overlaps
     [pre_ridx.insert(i, (ts.minX, ts.minY, ts.maxX, ts.maxY)) for i, ts in enumerate(pre_tilespecs)]
@@ -176,6 +194,8 @@ def detect_stitching_gaps(render, prestitched_stack, poststitched_stack, z):
             tileId = pre_tileIds.keys()[pre_tileIds.values().index(n)]
             gap_tiles.append(tileId)
 
+    session.close()
+
     return gap_tiles
 
 def detect_stitching_mistakes(render, prestitched_stack, poststitched_stack, match_collection, match_collection_owner, residual_threshold, neighbor_distance, min_cluster_size, zvalues, pool_size=20):
@@ -206,9 +226,33 @@ def detect_stitching_mistakes(render, prestitched_stack, poststitched_stack, mat
         seam_centroids = pool.map(mypartial3, zvalues)
 
     #for z in zvalues:
-    #    seam_centroids = detect_seams(render, poststitched_stack, match_collection, match_collection_owner, z, distance=80)
+    #    disconnected_tiles.append(detect_disconnected_tiles(render, prestitched_stack, poststitched_stack, z))
+    #    gap_tiles.append(detect_stitching_gaps(render, prestitched_stack, poststitched_stack, z))
+    #    seam_centroids.append(detect_seams(render, poststitched_stack, match_collection, match_collection_owner, z, distance=80))
 
     return disconnected_tiles, gap_tiles, seam_centroids
+
+
+def check_status_of_stack(render, stack, zvalues):
+    status = render.run(renderapi.stack.get_full_stack_metadata,
+                        stack)
+    new_stack = stack
+    
+    #if (status['state'].find('LOADING') >= 0):
+    if status['state'] == 'LOADING':
+        # clone the stack
+        new_stack = "{}_zs{}_ze{}_t{}".format(stack,
+                                           min(zvalues),
+                                           max(zvalues),
+                                           time.strftime("%m%d%y_%H%M%S"))
+        renderapi.stack.clone_stack(stack,
+                                    new_stack,
+                                    zs=zvalues,
+                                    render=render)
+        
+    return status['state'], new_stack
+                                
+
 
 
 class DetectMontageDefectsModule(RenderModule):
@@ -224,10 +268,19 @@ class DetectMontageDefectsModule(RenderModule):
         if len(zvalues) == 0:
             raise RenderModuleException('No valid zvalues found in stack for given range {} - {}'.format(self.args['minZ'], self.args['maxZ']))
             
+        # check if pre or post stitched stack is in LOADING state.
+        # if so, clone them to new stacks
+        status1, new_prestitched = check_status_of_stack(self.render,
+                                                self.args['prestitched_stack'],
+                                                zvalues)
+        
+        status2, new_poststitched = check_status_of_stack(self.render,
+                                                 self.args['poststitched_stack'],
+                                                 zvalues)
         disconnected_tiles, gap_tiles, seam_centroids = detect_stitching_mistakes(
                                                             self.render,
-                                                            self.args['prestitched_stack'],
-                                                            self.args['poststitched_stack'],
+                                                            new_prestitched,
+                                                            new_poststitched,
                                                             self.args['match_collection'],
                                                             self.args['match_collection_owner'],
                                                             self.args['residual_threshold'],
@@ -249,19 +302,17 @@ class DetectMontageDefectsModule(RenderModule):
         gaps = [zvalues[i] for i in gaps_indices]
         seams = [zvalues[i] for i in seams_indices]
 
-        combinedz = holes + gaps + seams
+        combinedz = list(set(holes + gaps + seams))
         
         qc_passed_sections = set(zvalues) - set(combinedz)
         centroids = [seam_centroids[i] for i in seams_indices]
 
         
-        
         self.args['output_html'] = self.args['out_html_dir']
         if len(combinedz) > 0:
             if self.args['plot_sections']:
-                self.args['output_html'] = plot_section_maps(self.render, self.args['poststitched_stack'], combinedz, out_html_dir=self.args['output_html'])
-                #print(self.args['output_html'])
-        
+                self.args['output_html'] = plot_section_maps(self.render, new_poststitched, combinedz, out_html_dir=self.args['output_html'])
+                
         self.output({'output_html':self.args['output_html'],
                      'qc_passed_sections': qc_passed_sections, 
                      'hole_sections': holes,
@@ -269,7 +320,14 @@ class DetectMontageDefectsModule(RenderModule):
                      'seam_sections':seams,
                      'seam_centroids':np.array(centroids)})
 
-            
+        # delete the stacks that were cloned
+        #if status1.find('LOADING') >= 0:
+        if status1 == 'LOADING':
+            self.render.run(renderapi.stack.delete_stack, new_prestitched)
+        
+        #if status2.find('LOADING') >= 0:
+        if status2 == 'LOADING':
+            self.render.run(renderapi.stack.delete_stack, new_poststitched)
 
 if __name__ == "__main__":
     mod = DetectMontageDefectsModule(input_data=example)
