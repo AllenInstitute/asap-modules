@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import renderapi
-from rendermodules.module.render_module import RenderModule
+from rendermodules.module.render_module import StackTransitionModule
 from rendermodules.lens_correction.schemas import ApplyLensCorrectionOutput, ApplyLensCorrectionParameters
 
 example_input = {
@@ -59,12 +59,13 @@ example_input = {
     "refId": None
 }
 
-class ApplyLensCorrection(RenderModule):
+
+class ApplyLensCorrection(StackTransitionModule):
     default_schema = ApplyLensCorrectionParameters
     default_output_schema = ApplyLensCorrectionOutput
 
     def run(self):
-        outputStack = self.args['outputStack']
+        outputStack = self.output_stack
         r = self.render
         refId = (r.run(renderapi.stack.likelyUniqueId)
                  if self.args['refId'] is None else self.args['refId'])
@@ -73,9 +74,9 @@ class ApplyLensCorrection(RenderModule):
             self.args['transform'])
         # new tile specs for each z selected
         new_tspecs = []
-        for z in self.args['zs']:
+        for z in self.zValues:
             tspecs = renderapi.tilespec.get_tile_specs_from_z(
-                self.args['inputStack'], z, render=r)
+                self.input_stack, z, render=r)
 
             for ts in tspecs:
                 ts.tforms = [lc_tform] + ts.tforms
@@ -85,7 +86,7 @@ class ApplyLensCorrection(RenderModule):
         renderapi.stack.set_stack_state(outputStack, 'LOADING', render=r)
 
         if self.args['overwrite_zlayer']:
-            for z in self.args['zs']:
+            for z in self.zValues:
                 try:
                     renderapi.stack.delete_section(
                         outputStack, z,
