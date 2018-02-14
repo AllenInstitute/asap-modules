@@ -6,6 +6,7 @@ from functools import partial
 import numpy as np
 import tifffile
 from ..module.render_module import RenderModule
+from ..module.render_module import StackTransitionModule
 from rendermodules.intensity_correction.schemas import MultIntensityCorrParams
 import urllib
 import urlparse
@@ -22,7 +23,7 @@ example_input = {
     "correction_stack": "Median_TEST_DAPI_1",
     "output_stack": "Flatfield_TEST_DAPI_1",
     "output_directory": "/nas/data/M246930_Scnn1a_4/processed/FlatfieldTEST",
-    "z_index": 102,
+    "z": 102,
     "pool_size": 20
 }
 
@@ -134,7 +135,7 @@ def process_tile(C, dirout, stackname, clip,scale_factor,clip_min,clip_max,input
     return input_ts, output_ts
 
 
-class MultIntensityCorr(RenderModule):
+class MultIntensityCorr(StackTransitionModule):
     default_schema = MultIntensityCorrParams
 
     def run(self):
@@ -149,13 +150,13 @@ class MultIntensityCorr(RenderModule):
         #     regex_pattern = None
 
         # get tilespecs
-        Z = self.args['z_index']
+        # Z = self.args['z_index']
+        Z = self.zValues[0]
         inp_tilespecs = renderapi.tilespec.get_tile_specs_from_z(
             self.args['input_stack'], Z, render=self.render)
         corr_tilespecs = renderapi.tilespec.get_tile_specs_from_z(
             self.args['correction_stack'], Z, render=self.render)
         # mult intensity correct each tilespecs and return tilespecs
-        render = self.render
         N, M, C = getImage(corr_tilespecs[0])
         mypartial = partial(
             process_tile, C, self.args['output_directory'], self.args['output_stack'],self.args['clip'],self.args['scale_factor'],self.args['clip_min'],self.args['clip_max'])
@@ -174,7 +175,7 @@ class MultIntensityCorr(RenderModule):
         if self.args['overwrite_zlayer']:
             try:
                 renderapi.stack.delete_section(
-                    self.args['output_stack'], self.args['z_index'],
+                    self.args['output_stack'], self.zValues[0],  # self.args['z_index'],
                     render=self.render)
             except renderapi.errors.RenderError as e:
                 self.logger.error(e)
