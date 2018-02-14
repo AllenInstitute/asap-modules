@@ -3,6 +3,7 @@ import pytest
 import logging
 import renderapi
 import json
+import copy
 
 from test_data import (PRESTITCHED_STACK_INPUT_JSON,
                        POSTSTITCHED_STACK_INPUT_JSON,
@@ -10,7 +11,7 @@ from test_data import (PRESTITCHED_STACK_INPUT_JSON,
                        render_params,
                        montage_qc_project)
 
-from rendermodules.em_montage_qc.detect_montage_defects import DetectMontageDefectsModule, detect_seams, detect_disconnected_tiles, detect_stitching_gaps 
+from rendermodules.em_montage_qc.detect_montage_defects import DetectMontageDefectsModule, detect_seams, detect_disconnected_tiles, detect_stitching_gaps
 from rendermodules.module.render_module import RenderModuleException
 from rendermodules.em_montage_qc import detect_montage_defects
 from rendermodules.em_montage_qc import plots
@@ -60,7 +61,7 @@ def prestitched_stack(render, prestitched_stack_from_json):
                         test_prestitched_stack,
                         'COMPLETE',
                         render=render)
-    
+
     # assure stack is built correctly
     assert len({tspec.tileId for tspec
                 in prestitched_stack_from_json}.symmetric_difference(set(
@@ -86,13 +87,13 @@ def poststitched_stack(render, poststitched_stack_from_json):
                         test_poststitched_stack,
                         'COMPLETE',
                         render=render)
-    
+
     # assure stack is built correctly
     assert len({tspec.tileId for tspec
                 in poststitched_stack_from_json}.symmetric_difference(set(
                     renderapi.stack.get_stack_tileIds(
                         test_poststitched_stack, render=render)))) == 0
-                        
+
     yield test_poststitched_stack
     #renderapi.stack.delete_stack(
     #                    test_poststitched_stack,
@@ -105,7 +106,7 @@ def point_match_collection(render, point_matches_from_json):
                          test_point_match_collection,
                          point_matches_from_json,
                          render=render)
-    
+
     # check if point matches have been imported properly
     groupIds = render.run(renderapi.pointmatch.get_match_groupIds, test_point_match_collection)
     assert(len(groupIds) == 2)
@@ -119,8 +120,8 @@ def test_detect_montage_defects(render,
                                 point_match_collection,
                                 tmpdir_factory):
     output_directory = str(tmpdir_factory.mktemp('montage_qc_output'))
-    
-    ex = detect_montage_defects.example
+
+    ex = copy.copy(detect_montage_defects.example)
     ex['render'] = render_params
     ex['prestitched_stack'] = prestitched_stack
     ex['poststitched_stack'] = poststitched_stack
@@ -154,7 +155,7 @@ def test_detect_montage_defects(render,
 
     for s in data['seam_centroids']:
         assert(len(s) > 0)
-    
+
     assert(len(data['gap_sections']) == 1)
 
     centroids = detect_seams(render,
@@ -165,23 +166,23 @@ def test_detect_montage_defects(render,
                              residual_threshold=ex['residual_threshold'],
                              distance=ex['neighbors_distance'],
                              min_cluster_size=ex['min_cluster_size'])
-    
+
     assert(len(centroids) > 0)
 
-    disconnected = detect_disconnected_tiles(render,  
+    disconnected = detect_disconnected_tiles(render,
                                              ex['prestitched_stack'],
                                              ex['poststitched_stack'],
                                              1029)
-                                            
+
     assert(len(disconnected ) > 0)
 
     gaps = detect_stitching_gaps(render,
                                  ex['prestitched_stack'],
                                  ex['poststitched_stack'],
                                  1029)
-    
+
     assert(len(gaps) > 0)
-    
+
     out_html = plots.plot_section_maps(render, poststitched_stack, [1028])
 
     assert(os.path.exists(out_html) and os.path.isfile(out_html) and os.path.getsize(out_html) > 0)
@@ -198,7 +199,7 @@ def test_detect_montage_defects(render,
 
     for tile in new_ids:
         assert(tile in tile_ids)
-    
+
 
 
 def test_detect_montage_defects_fail(render,
@@ -208,7 +209,7 @@ def test_detect_montage_defects_fail(render,
                                 tmpdir_factory):
     output_directory = str(tmpdir_factory.mktemp('montage_qc_output'))
 
-    ex = detect_montage_defects.example
+    ex = copy.copy(detect_montage_defects.example)
     ex['render'] = render_params
     ex['prestitched_stack'] = prestitched_stack
     ex['poststitched_stack'] = poststitched_stack
@@ -226,18 +227,18 @@ def test_detect_montage_defects_fail(render,
     with pytest.raises(RenderModuleException):
         mod.run()
 
-    
-def test_stack_in_loading_state(render, 
-                                prestitched_stack, 
-                                poststitched_stack, 
-                                point_match_collection, 
+
+def test_stack_in_loading_state(render,
+                                prestitched_stack,
+                                poststitched_stack,
+                                point_match_collection,
                                 tmpdir_factory):
     # also set pre and poststitched_stack to LOADING state to run the clone stack function
     render.run(renderapi.stack.set_stack_state, poststitched_stack, 'LOADING')
     render.run(renderapi.stack.set_stack_state, prestitched_stack, 'LOADING')
 
     output_directory = str(tmpdir_factory.mktemp('montage_qc_output'))
-    ex = detect_montage_defects.example
+    ex = copy.copy(detect_montage_defects.example)
     ex['render'] = render_params
     ex['prestitched_stack'] = prestitched_stack
     ex['poststitched_stack'] = poststitched_stack
@@ -252,6 +253,6 @@ def test_stack_in_loading_state(render,
     ex['output_json'] = os.path.join(output_directory, 'output.json')
 
     #status, new_stack = detect_montage_defects.check_status_of_stack(render, poststitched_stack, [1028, 1029])
-    
+
     mod = DetectMontageDefectsModule(input_data=ex, args=[])
     mod.run()
