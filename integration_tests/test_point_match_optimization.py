@@ -55,7 +55,7 @@ def pt_match_input_stack(render, stack_from_json):
     
 
 def test_pt_match_optimization_module(render, pt_match_input_stack, tmpdir_factory):
-    output_dir = str(str(tmpdir_factory.mktemp('pt_match_optimization')))
+    output_dir = str(tmpdir_factory.mktemp('pt_match_optimization'))
 
     example['render'] = render_params
     example['stack'] = pt_match_input_stack
