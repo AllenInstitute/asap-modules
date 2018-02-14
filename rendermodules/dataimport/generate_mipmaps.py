@@ -3,7 +3,7 @@ import urllib
 import urlparse
 from rendermodules.dataimport.create_mipmaps import create_mipmaps
 from functools import partial
-from ..module.render_module import RenderModule, RenderModuleException
+from ..module.render_module import StackInputModule, RenderModuleException
 from rendermodules.dataimport.schemas import (
     GenerateMipMapsParameters, GenerateMipMapsOutput)
 
@@ -83,7 +83,7 @@ def verify_mipmap_generation(mipmap_args):
 '''
 
 
-class GenerateMipMaps(RenderModule):
+class GenerateMipMaps(StackInputModule):
     default_schema = GenerateMipMapsParameters
     default_output_schema = GenerateMipMapsOutput
 
@@ -93,23 +93,11 @@ class GenerateMipMaps(RenderModule):
         # get the list of z indices
         zvalues = self.render.run(renderapi.stack.get_z_values_for_stack,
                                   self.args['input_stack'])
-
-        try:
-            zvalues1 = range(self.args['zstart'], self.args['zend'] + 1)
-            # extract only those z's that exist in the input stack
-            zvalues = list(set(zvalues1).intersection(set(zvalues)))
-        except KeyError:
-            try:
-                if self.args['z'] in zvalues:
-                    zvalues = [self.args['z']]
-                else:
-                    zvalues = []
-            except KeyError:
-                raise RenderModuleException('No z value given for mipmap generation')           
+        zvalues = list(set(self.zValues).intersection(set(zvalues)))
         if not zvalues:
             raise RenderModuleException("No sections found for stack {} for specified zs".format(
                 self.args['input_stack']))
-        
+
         self.logger.debug("Creating mipmaps...")
 
         if self.args['method'] in ['PIL']:

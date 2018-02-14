@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 import renderapi
-from ..module.render_module import RenderModule, RenderModuleException
+from ..module.render_module import StackTransitionModule
 from functools import partial
 import urllib
 import urlparse
@@ -63,7 +63,7 @@ def addMipMapsToRender(render, input_stack, mipmap_dir, imgformat, levels, z):
     # return tilespecPaths
 
 
-class AddMipMapsToStack(RenderModule):
+class AddMipMapsToStack(StackTransitionModule):
     default_schema = AddMipMapsToStackParameters
     default_output_schema = AddMipMapsToStackOutput
 
@@ -74,15 +74,7 @@ class AddMipMapsToStack(RenderModule):
         zvalues = self.render.run(
             renderapi.stack.get_z_values_for_stack, self.args['input_stack'])
 
-        try:
-            zvalues1 = range(self.args['zstart'], self.args['zend']+1)
-            zvalues = list(set(zvalues1).intersection(set(zvalues))) # extract only those z's that exist in the input stack
-        except KeyError:
-            try:
-                if self.args['z'] in zvalues:
-                    zvalues = [self.args['z']]
-            except KeyError:
-                raise RenderModuleException('No z value given for mipmap generation')
+        zvalues = list(set(self.zValues).intersection(set(zvalues)))
 
         if len(zvalues) == 0:
             self.logger.error('No sections found for stack {}'.format(
@@ -102,30 +94,7 @@ class AddMipMapsToStack(RenderModule):
                         self.args['output_stack'] is None
                         else self.args['output_stack'])
 
-        if output_stack not in self.render.run(
-                renderapi.render.get_stacks_by_owner_project):
-            # stack does not exist
-            self.render.run(renderapi.stack.create_stack,
-                            output_stack)
-
-        self.render.run(renderapi.stack.set_stack_state,
-                        output_stack, 'LOADING')
-
-        if self.args['overwrite_zlayer']:
-            for z in zvalues:
-                try:
-                    renderapi.stack.delete_section(
-                        output_stack, z,
-                        render=self.render)
-                except renderapi.errors.RenderError as e:
-                    self.logger.error(e)
-
-        self.render.run(renderapi.client.import_tilespecs_parallel,
-                        output_stack, tilespecs,
-                        poolsize=self.args['pool_size'], close_stack=False)
-        # self.render.run(renderapi.client.import_jsonfiles_parallel,
-        #                 output_stack, tilespecPaths,
-        #                 close_stack=self.args['close_stack'])
+        self.output_tilespecs_to_stack(tilespecs, output_stack)
         self.output({"output_stack": output_stack})
 
 
