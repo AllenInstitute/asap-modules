@@ -56,7 +56,8 @@ example_input = {
             "1.12997804746083296E17 1.1130902498005392E17 "
             "1.23651446458254E17 1.85995206005396736E17 0.0 3840 3840 ")
     },
-    "refId": None
+    "refId": None,
+    "labels":["lens"]
 }
 
 class ApplyLensCorrection(RenderModule):

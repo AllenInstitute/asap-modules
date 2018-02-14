@@ -105,7 +105,16 @@ class TransformParameters(DefaultSchema):
     dataString = Str(
         required=True,
         description='mpicbg-compatible dataString')
+    labels = List( Str,
+        required=False,
+        description = 'list of transform labels to apply to this tranformation'
+    )
 
+class LensTransformParameters(TransformParameters):
+    labels = List (Str,
+        required=False,
+        default = ["lens"],
+        description= 'list of transform labels to apply to this transformation')
 
 class ApplyLensCorrectionParameters(RenderParameters):
     inputStack = Str(
@@ -117,7 +126,7 @@ class ApplyLensCorrectionParameters(RenderParameters):
     zs = List(
         Int, required=True,
         description='z indices to which transform should be prepended')
-    transform = Nested(TransformParameters)
+    transform = Nested(LensTransformParameters)
     refId = Str(
         allow_none=True, required=True,
         description=('Reference ID to use when uploading transform to '

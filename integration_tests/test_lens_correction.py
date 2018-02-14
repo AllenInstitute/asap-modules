@@ -161,7 +161,7 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_tform_dict
 
             assert np.array_equal([example_tform.height, example_tform.width, example_tform.length, example_tform.dimension],
                                   [new_tform.height, new_tform.width, new_tform.length, new_tform.dimension])
-
+            assert('lens' in ts.tforms[0].labels)
             test_new_tform = new_tform.tform(test_points)
 
             compute_lc_norm_and_max(test_example_tform, test_new_tform)
