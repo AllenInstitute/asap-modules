@@ -3,11 +3,8 @@
 Materialize Render sections using BetterBox client
 """
 import os
-import subprocess
 
-import argschema
-
-from rendermodules.module.render_module import RenderModuleException
+from rendermodules.module.render_module import (RenderModuleException, SparkModule)
 from rendermodules.materialize.schemas import (MaterializeSectionsParameters,
                                                MaterializeSectionsOutput)
 
@@ -36,28 +33,9 @@ class MaterializeSectionsError(RenderModuleException):
     pass
 
 
-class MaterializeSectionsModule(argschema.ArgSchemaParser):
+class MaterializeSectionsModule(SparkModule):
     default_schema = MaterializeSectionsParameters
     default_output_schema = MaterializeSectionsOutput
-
-    @staticmethod
-    def sanitize_cmd(cmd):
-        def jbool_str(c):
-            return str(c) if type(c) is not bool else "true" if c else "false"
-        if any([i is None for i in cmd]):
-            raise MaterializeSectionsError(
-                'missing argument in command "{}"'.format(map(str, cmd)))
-        return map(jbool_str, cmd)
-
-    @classmethod
-    def get_spark_call(cls, masterUrl=None, jarfile=None, className=None,
-                       driverMemory=None, sparkhome=None, **kwargs):
-        sparksub = os.path.join(sparkhome, 'bin', 'spark-submit')
-        # TODO spark_files and spark_conf
-        cmd = [sparksub, '--master', masterUrl,
-               '--driver-memory', driverMemory, '--class', className,
-               jarfile]
-        return cls.sanitize_cmd(cmd)
 
     @classmethod
     def get_materialize_options(
@@ -68,12 +46,9 @@ class MaterializeSectionsModule(argschema.ArgSchemaParser):
             createIGrid=None, forceGeneration=None, renderGroup=None,
             numberOfRenderGroups=None, cleanUpPriorRun=None, explainPlan=None,
             maxImageCacheGb=None, zValues=None, **kwargs):
-        def get_cmd_opt(v, flag=None):
-            return [] if v is None else [v] if flag is None else [flag, v]
+        get_cmd_opt = cls.get_cmd_opt
+        get_flag_cmd = cls.get_flag_cmd
 
-        def get_flag_cmd(v, flag=None):
-            # for arity 0
-            return [flag] if v else []
         cmd = (
             get_cmd_opt(baseDataUrl, '--baseDataUrl') +
             get_cmd_opt(owner, '--owner') + get_cmd_opt(project, '--project') +
@@ -98,14 +73,8 @@ class MaterializeSectionsModule(argschema.ArgSchemaParser):
         return cls.sanitize_cmd(cmd)
 
     @classmethod
-    def get_spark_command(cls, **kwargs):
-        c = cls.get_spark_call(**kwargs) + cls.get_materialize_options(
-            **kwargs)
-        return c
-
-    def run_spark_command(self, **kwargs):
-        return subprocess.check_call(
-            self.get_spark_command(**self.args), **kwargs)
+    def get_args(cls, **kwargs):
+        return cls.get_materialize_options(**kwargs)
 
     def run(self):
         r = self.run_spark_command()
