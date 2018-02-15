@@ -44,7 +44,6 @@ class ZValueParameters(  # argschema.schemas.DefaultSchema,
         return self._generate_zValues(data)
 
     def _generate_zValues(self, data):
-        print data
         if 'zValues' in data:
             return
         elif 'z' in data:

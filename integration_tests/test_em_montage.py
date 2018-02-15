@@ -127,7 +127,6 @@ def test_point_match_generation(render, test_create_montage_tile_pairs,tmpdir_fa
     mod.run()
     with open(pointmatch_example['output_json'],'r') as fp:
         output_d = json.load(fp)
-    print output_d
     assert (output_d['pairCount']>0)
     yield pointmatch_example['collection']
 
