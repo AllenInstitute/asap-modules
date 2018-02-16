@@ -10,7 +10,8 @@ from test_data import (ROUGH_MONTAGE_TILESPECS_JSON,
                        ROUGH_POINT_MATCH_COLLECTION,
                        ROUGH_DS_TEST_TILESPECS_JSON,
                        render_params,
-                       test_rough_parameters as solver_example)
+                       test_rough_parameters as solver_example,
+                       pool_size)
 
 from rendermodules.module.render_module import RenderModuleException
 from rendermodules.materialize.render_downsample_sections import RenderSectionAtScale, create_tilespecs_without_mipmaps
@@ -210,6 +211,9 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
     ex1['minZ'] = 1020
     ex1['maxZ'] = 1022
     ex1['scale'] = 0.1
+    ex1['pool_size'] = pool_size
+    ex1['output_json']=str(tmpdir_factory.mktemp('output').join('output.json'))
+    ex1['loglevel']='DEBUG'
     
     mod = ApplyRoughAlignmentTransform(input_data=ex1, args=[])
     mod.run()
@@ -226,6 +230,7 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
                           ex1['montage_stack'], 
                           ex1['montage_stack'],
                           ex1['lowres_stack'],
+                          ex1['output_stack'],
                           ex1['tilespec_directory'],
                           ex1['scale'],
                           (1020,1020),
@@ -291,6 +296,17 @@ def test_render_downsample_with_mipmaps(render, one_tile_montage, tmpdir_factory
     mod = RenderSectionAtScale(input_data=ex, args=[])
     with pytest.raises(RenderModuleException):
         mod.run()
+
+    ex1['set_new_z'] = False
+    ex1['output_stack'] = 'failed_output'
+    with pytest.raises(RenderModuleException):
+        renderapi.stack.set_stack_state(ex1['lowres_stack'],'LOADING',render=render)
+        renderapi.stack.delete_section(ex1['lowres_stack'],1021,render=render)
+        renderapi.stack.set_stack_state(ex1['lowres_stack'],'COMPLETE',render=render)
+        mod = ApplyRoughAlignmentTransform(input_data=ex1, args=[])
+        mod.run()
+        zvalues = renderapi.stack.get_z_values_for_stack(ex1['output_stack'],render=render)
+        assert(1021 not in zvalues)
 
 def test_make_montage_stack_without_downsamples(render, one_tile_montage, tmpdir_factory):
     # testing for make montage scape stack without having downsamples generated
