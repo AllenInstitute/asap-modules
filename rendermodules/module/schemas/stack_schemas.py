@@ -55,6 +55,8 @@ class ZValueParameters(  # argschema.schemas.DefaultSchema,
 
     def _override_input(self, data):
         super(ZValueParameters, self)._override_input(data)
+        # DEPRECATED
+        # the following overrides should be removed in future versions
         self.fix_badkey(data, 'z_index', 'z')
         self.fix_badkey(data, 'zstart', 'minZ')
         self.fix_badkey(data, 'zend', 'maxZ')
@@ -100,6 +102,8 @@ class OutputStackParameters(RenderParameters, ZValueParameters,
 
     def _override_input(self, data):
         super(OutputStackParameters, self)._override_input(data)
+        # DEPRECATED
+        # the following overrides should be removed in future versions
         self.fix_badkey(data, 'stack', 'output_stack')
         self.fix_badkey(data, 'outputStack', 'output_stack')
 
@@ -112,6 +116,8 @@ class InputStackParameters(RenderParameters, ZValueParameters,
 
     def _override_input(self, data):
         super(InputStackParameters, self)._override_input(data)
+        # DEPRECATED
+        # the following overrides should be removed in future versions
         self.fix_badkey(data, 'stack', 'input_stack')
         self.fix_badkey(data, 'inputStack', 'input_stack')
 
