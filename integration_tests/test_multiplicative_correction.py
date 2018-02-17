@@ -14,6 +14,7 @@ from rendermodules.intensity_correction.apply_multiplicative_correction import M
 logger = renderapi.client.logger
 logger.setLevel(logging.DEBUG)
 
+
 @pytest.fixture(scope='module')
 def render():
     render_params['project']='multi_correct_test'

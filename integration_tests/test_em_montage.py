@@ -23,6 +23,7 @@ from rendermodules.module.render_module import RenderModuleException
 logger = renderapi.client.logger
 logger.setLevel(logging.DEBUG)
 
+
 @pytest.fixture(scope='module')
 def render():
     render_params['project'] = montage_project

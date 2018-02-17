@@ -18,6 +18,7 @@ from rendermodules.em_montage_qc import plots
 logger = renderapi.client.logger
 logger.setLevel(logging.DEBUG)
 
+
 @pytest.fixture(scope='module')
 def render():
     render_params['project'] = montage_qc_project

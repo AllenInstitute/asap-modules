@@ -15,6 +15,7 @@ from test_data import (render_params,
                        METADATA_FILE, MIPMAP_TILESPECS_JSON, scratch_dir)
 import os
 
+
 @pytest.fixture(scope='module')
 def render():
     return renderapi.connect(**render_params)
