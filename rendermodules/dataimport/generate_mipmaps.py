@@ -90,10 +90,13 @@ class GenerateMipMaps(StackInputModule):
     def run(self):
         self.logger.debug('Mipmap generation module')
 
+        """
         # get the list of z indices
         zvalues = self.render.run(renderapi.stack.get_z_values_for_stack,
                                   self.args['input_stack'])
         zvalues = list(set(self.zValues).intersection(set(zvalues)))
+        """
+        zvalues = self.get_overlapping_inputstack_zvalues()
         if not zvalues:
             raise RenderModuleException("No sections found for stack {} for specified zs".format(
                 self.args['input_stack']))

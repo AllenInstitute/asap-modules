@@ -37,6 +37,23 @@ class StackInputModule(RenderModule):
         self.input_stack = self.args['input_stack']
         self.zValues = self.args['zValues']
 
+    def get_inputstack_zs(self, input_stack=None, render=None, **kwargs):
+        input_stack = self.input_stack if input_stack is None else input_stack
+        render = self.render if render is None else render
+
+        return renderapi.stack.get_z_values_for_stack(
+            input_stack, render=render)
+
+    def get_overlapping_inputstack_zvalues(
+            self, input_stack=None, zValues=None,
+            render=None, **kwargs):
+        input_stack = self.input_stack if input_stack is None else input_stack
+        zValues = self.zValues if zValues is None else zValues
+        render = self.render if render is None else render
+
+        inputstack_zs = self.get_inputstack_zs(input_stack, render, **kwargs)
+        return list(set(zValues).intersection(set(inputstack_zs)))
+
 
 class StackOutputModule(RenderModule):
     default_schema = OutputStackParameters

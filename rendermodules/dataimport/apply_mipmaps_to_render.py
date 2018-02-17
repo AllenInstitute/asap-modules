@@ -69,13 +69,7 @@ class AddMipMapsToStack(StackTransitionModule):
 
     def run(self):
         self.logger.debug('Applying mipmaps to stack')
-
-        # get the list of z indices
-        zvalues = self.render.run(
-            renderapi.stack.get_z_values_for_stack, self.args['input_stack'])
-
-        zvalues = list(set(self.zValues).intersection(set(zvalues)))
-
+        zvalues = self.get_overlapping_inputstack_zvalues()
         if len(zvalues) == 0:
             self.logger.error('No sections found for stack {}'.format(
                 self.args['input_stack']))
