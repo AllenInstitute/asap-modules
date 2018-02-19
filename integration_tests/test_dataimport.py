@@ -14,6 +14,7 @@ from rendermodules.dataimport import apply_mipmaps_to_render
 from test_data import (render_params,
                        METADATA_FILE, MIPMAP_TILESPECS_JSON, scratch_dir)
 import os
+import copy
 
 
 @pytest.fixture(scope='module')
@@ -24,7 +25,7 @@ def test_generate_EM_metadata(render):
     assert isinstance(render, renderapi.render.RenderClient)
     with open(METADATA_FILE, 'r') as f:
         md = json.load(f)
-    ex = generate_EM_tilespecs_from_metafile.example_input
+    ex = copy.copy(generate_EM_tilespecs_from_metafile.example_input)
     ex['render'] = render.make_kwargs()
     ex['metafile'] = METADATA_FILE
     with tempfile.NamedTemporaryFile(suffix='.json') as probablyemptyfn:
@@ -82,7 +83,7 @@ def outfile_test_and_remove(f, output_fn):
     return val
 
 def apply_generated_mipmaps(r, output_stack, generate_params,z=None):
-    ex = apply_mipmaps_to_render.example
+    ex = copy.copy(apply_mipmaps_to_render.example)
     ex['render'] = r.make_kwargs()
     ex['input_stack'] = generate_params['input_stack']
     ex['output_stack'] = output_stack
@@ -178,7 +179,7 @@ def test_mipmaps(render, input_stack, tspecs_to_mipmap, output_stack=None):
     output_stack = ('{}OUT'.format(input_stack) if output_stack
                     is None else output_stack)
 
-    ex = generate_mipmaps.example
+    ex = copy.copy(generate_mipmaps.example)
     ex['render'] = render.make_kwargs()
     ex['input_stack'] = input_stack
     ex['zstart'] = min([ts.z for ts in tspecs_to_mipmap])
@@ -202,7 +203,7 @@ def test_make_mipmaps_single_z(render, input_stack, tspecs_to_mipmap, tmpdir,out
     output_stack = ('{}OUTSINGLEZ'.format(input_stack) if output_stack
                     is None else output_stack)
 
-    ex = generate_mipmaps.example
+    ex = copy.copy(generate_mipmaps.example)
     ex['render'] = render.make_kwargs()
     ex['input_stack'] = input_stack
     ex['z'] = min([ts.z for ts in tspecs_to_mipmap])
@@ -226,7 +227,7 @@ def test_make_mipmaps_single_z(render, input_stack, tspecs_to_mipmap, tmpdir,out
         mod.run()
 
 def test_make_mipmaps_fail_no_z(render,input_stack,tmpdir):
-    ex = generate_mipmaps.example
+    ex = copy.copy(generate_mipmaps.example)
     ex['render'] = render.make_kwargs()
     ex['input_stack'] = input_stack
     ex['output_dir'] = scratch_dir

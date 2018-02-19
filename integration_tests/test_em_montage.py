@@ -196,7 +196,7 @@ def test_fail_montage_job_for_section(render,
     with pytest.raises(RenderModuleException):
         mod = SolveMontageSectionModule(input_data=solver_example, args=[])
         mod.run()
-    
+
     # code coverage for schema
     solver_example['render']['host'] = 'http://' + solver_example['render']['host']
     mod = SolveMontageSectionModule(input_data=solver_example, args=[])
