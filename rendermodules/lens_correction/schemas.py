@@ -92,7 +92,12 @@ class AlignmentParameters(DefaultSchema):
                      'running through xvfb'))
 
 
-
+class TransformMetaData(DefaultSchema):
+    labels = List( Str,
+        required=False,
+        description = 'list of transform labels to apply to this tranformation'
+    )
+    
 class TransformParameters(DefaultSchema):
     type = Str(
         required=True,
@@ -105,9 +110,9 @@ class TransformParameters(DefaultSchema):
     dataString = Str(
         required=True,
         description='mpicbg-compatible dataString')
-    labels = List( Str,
+    metaData = Nested( TransformMetaData,
         required=False,
-        description = 'list of transform labels to apply to this tranformation'
+        description = 'metadata for this transformation'
     )
 
 class LensTransformParameters(TransformParameters):
