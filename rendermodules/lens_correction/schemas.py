@@ -97,7 +97,7 @@ class TransformMetaData(DefaultSchema):
         required=False,
         description = 'list of transform labels to apply to this tranformation'
     )
-    
+
 class TransformParameters(DefaultSchema):
     type = Str(
         required=True,
@@ -147,7 +147,10 @@ class ApplyLensCorrectionParameters(RenderParameters):
         required=False, default=False,
         description=("whether to remove the existing layer from the "
                      "target stack before uploading."))
-
+    add_label = Str(
+        required=False, default="lens",
+        description = "labal to add to lens correction before importing"
+    )
 
 
 class ApplyLensCorrectionOutput(DefaultSchema):

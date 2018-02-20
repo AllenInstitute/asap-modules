@@ -57,7 +57,7 @@ example_input = {
             "1.23651446458254E17 1.85995206005396736E17 0.0 3840 3840 ")
     },
     "refId": None,
-    "labels":["lens"]
+    "metaData":{"labels":["lens"]}
 }
 
 class ApplyLensCorrection(RenderModule):
@@ -72,6 +72,11 @@ class ApplyLensCorrection(RenderModule):
 
         lc_tform = renderapi.transform.load_transform_json(
             self.args['transform'])
+            
+        #if this transform is not labelled, label it
+        if self.args['add_label'] not in lc_tform.labels:
+            lc_tform.labels.append(self.args['add_label'])
+
         # new tile specs for each z selected
         new_tspecs = []
         for z in self.args['zs']:

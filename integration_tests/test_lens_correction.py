@@ -21,9 +21,6 @@ def example_tform_dict():
     tform = {
         "type": "leaf",
         "className": "lenscorrection.NonLinearTransform",
-        "metaData":{
-            "labels":["lens"]
-        },
         "dataString": (
             "5 21 1078.539787490504 5.9536401731869155 "
             "18.082459176969103 1078.355487979244 3.5307003058070348 "
