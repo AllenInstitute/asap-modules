@@ -30,7 +30,7 @@ ex = {
         "SIFTmaxScale": [0.82],
         "SIFTminScale": [0.28],
         "SIFTsteps": [3],
-        "renderScale": [0.1, 0.35]
+        "renderScale": [0.35, 0.1]
     },
     "outputDirectory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch/pmopts",
     "tile_stack": "point_match_optimization_test",
@@ -163,8 +163,10 @@ def get_tile_pair_matched_image(render, stack, tileId1, tileId2, pGroupId, qGrou
     # check if the point match collection exists
     collections = renderapi.pointmatch.get_matchcollections(owner=matchCollectionOwner, 
                                                             render=render)
+    collectionIds = [f['collectionId']['name'] for f in collections]
+    
     ptmatches = []
-    if (matchCollection in collections):
+    if (matchCollection in collectionIds):
         ptmatches = renderapi.pointmatch.get_matches_from_tile_to_tile(matchCollection,
                                                                     pGroupId,
                                                                     tileId1,
@@ -229,6 +231,7 @@ def compute_point_matches(render, stack, tile1, tile2, pGroupId, qGroupId, outpu
                                                     collection_name,
                                                     renderScale)
 
+    print(match_img_filename)
     # create the tilepair url for this parameter setting
     tilepair_base_url = '%s:%d/render-ws/view/tile-pair.html'%(render.DEFAULT_KWARGS['host'], render.DEFAULT_KWARGS['port'])
     tilepair_base_url += '?renderStackOwner=%s'%(render.DEFAULT_KWARGS['owner'])
