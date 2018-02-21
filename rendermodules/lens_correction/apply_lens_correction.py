@@ -75,8 +75,8 @@ class ApplyLensCorrection(RenderModule):
 
         #if this transform is not labelled, label it
         if lc_tform.labels is None:
-            lc_tform.labels=[self.args['add_label']]
-        elif self.args['add_label'] not in lc_tform.labels:
+            lc_tform.labels=[]
+        if self.args['add_label'] not in lc_tform.labels:
             lc_tform.labels.append(self.args['add_label'])
 
         # new tile specs for each z selected
