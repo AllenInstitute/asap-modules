@@ -27,7 +27,8 @@ class RenderParameters(argschema.ArgSchema):
 class TemplateParameters(RenderParameters):
     example = argschema.fields.Str(required=True,
                                    description='an example')
-    default_val = argschema.fields.Str(required=False, default="a default value",
+    default_val = argschema.fields.Str(required=False,
+                                       default="a default value",
                                        description='an example with a default')
 
 

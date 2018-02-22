@@ -5,7 +5,8 @@ import json
 from PIL import Image
 import renderapi
 from rendermodules.dataimport.schemas import MakeMontageScapeSectionStackParameters, MakeMontageScapeSectionStackOutput
-from ..module.render_module import RenderModule, RenderModuleException
+from ..module.render_module import StackOutputModule, RenderModuleException
+
 
 
 
@@ -78,13 +79,13 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory, scale,
     # need to submit the job in a cluster
     if not os.path.isfile(filename):
         print "Montage scape does not exist for %d. Creating one now..."%z
-        render.run(renderapi.client.renderSectionClient, 
-                   input_stack, 
-                   image_directory, 
-                   [z], 
-                   scale=str(scale), 
-                   format=imgformat, 
-                   doFilter=True, 
+        render.run(renderapi.client.renderSectionClient,
+                   input_stack,
+                   image_directory,
+                   [z],
+                   scale=str(scale),
+                   format=imgformat,
+                   doFilter=True,
                    fillWithNoise=False)
 
     # get section bounds
@@ -145,18 +146,16 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory, scale,
                                     'sections_at_%s'%str(scale),
                                     'tilespecs_%s'%tagstr,
                                     'tilespec_%04d.json'%z)
-    
+
     fp = open(tilespecfilename, 'w')
     json.dump([ts.to_dict() for ts in allts], fp, indent=4)
     fp.close()
 
 
-
-
-class MakeMontageScapeSectionStack(RenderModule):
+class MakeMontageScapeSectionStack(StackOutputModule):
     default_schema = MakeMontageScapeSectionStackParameters
     default_output_schema = MakeMontageScapeSectionStackOutput
-    
+
     def run(self):
         self.logger.debug('Montage scape stack generation module')
 
@@ -164,7 +163,7 @@ class MakeMontageScapeSectionStack(RenderModule):
         zvalues = self.render.run(
             renderapi.stack.get_z_values_for_stack,
             self.args['montage_stack'])
-        zvalues1 = range(self.args['zstart'], self.args['zend']+1)
+        zvalues1 = self.zValues
         zvalues = list(set(zvalues1).intersection(set(zvalues)))
 
         if not zvalues:
@@ -188,12 +187,12 @@ class MakeMontageScapeSectionStack(RenderModule):
         #f.write("%d"%len(zvalues))
         #f.close()
 
-        tilespecdir = os.path.join(self.args['image_directory'], 
-                                   self.args['render']['project'], 
-                                   self.args['montage_stack'], 
-                                   'sections_at_%s'%str(self.args['scale']), 
+        tilespecdir = os.path.join(self.args['image_directory'],
+                                   self.args['render']['project'],
+                                   self.args['montage_stack'],
+                                   'sections_at_%s'%str(self.args['scale']),
                                    'tilespecs_%s'%tagstr)
-        
+
         if not os.path.exists(tilespecdir):
             os.makedirs(tilespecdir)
 
@@ -235,10 +234,11 @@ class MakeMontageScapeSectionStack(RenderModule):
             raise RenderModuleException('No tilespecs json files were generated')
 
         # create the stack if it doesn't exist
-        if self.args['output_stack'] not in self.render.run(renderapi.render.get_stacks_by_owner_project):
+        if self.output_stack not in self.render.run(renderapi.render.get_stacks_by_owner_project):
             # stack does not exist
+            # TODO configurable stack metadata
             self.render.run(renderapi.stack.create_stack,
-                            self.args['output_stack'],
+                            self.output_stack,
                             cycleNumber=5,
                             cycleStepNumber=1,
                             stackResolutionX = 1,
@@ -246,15 +246,15 @@ class MakeMontageScapeSectionStack(RenderModule):
 
         # import tilespecs to render
         self.render.run(renderapi.client.import_jsonfiles_parallel,
-                        self.args['output_stack'],
+                        self.output_stack,
                         jsonfiles)
 
         # set stack state to complete
         self.render.run(renderapi.stack.set_stack_state,
-                        self.args['output_stack'],
+                        self.output_stack,
                         state='COMPLETE')
 
-        self.output({'output_stack': self.args['output_stack']})
+        self.output({'output_stack': self.output_stack})
 
 
 if __name__ == "__main__":

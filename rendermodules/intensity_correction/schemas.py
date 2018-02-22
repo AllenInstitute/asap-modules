@@ -1,46 +1,25 @@
-from argschema.fields import InputFile, InputDir, Str, Float, Int, OutputDir, Bool
-from ..module.schemas import RenderParameters
+from argschema.fields import Str, Float, Int, Bool
+from ..module.schemas import StackTransitionParameters
 
-class MakeMedianParams(RenderParameters):
-    input_stack = Str(required=True,
-                      description='Input stack to derive median from')
+
+class MakeMedianParams(StackTransitionParameters):
     file_prefix = Str(required=False, default="Median",
                       description='File prefix for median image file that is saved')
     output_directory = Str(required=True,
                                  description='Output Directory for saving median image')
-    output_stack = Str(required=True,
-                       description='Output stack to save correction into')
-    minZ = Int(required=True,
-               description='z value for section')
-    maxZ = Int(required=True,
-               description='z value for section')
-    pool_size = Int(required=False, default=20,
-                    description='size of pool for parallel processing (default=20)')
-    close_stack = Bool(required=False, default=False,
-                       description="whether to close stack or not")
     num_images = Int (required=False,default=-1,
                              description="Number of images to randomly subsample to generate median")
 
-
-class MultIntensityCorrParams(RenderParameters):
-    input_stack = Str(required=True,
-                      description="Input stack")
-    output_stack = Str(required=True,
-                       description='Output stack')
+class MultIntensityCorrParams(StackTransitionParameters):
     correction_stack = Str(required=True,
                            description='Correction stack (usually median stack for AT data)')
     output_directory = Str(required=True,
                                  description='Directory for storing Images')
-    z_index = Int(required=True,
-                  description='z value for section')
-    pool_size = Int(required=False, default=20,
-                    description='size of pool for parallel processing (default=20)')
+    # TODO add create_stack metadata
     cycle_number = Int(required=False, default=2,
-                       description="what cycleNumber to upload for output_stack on render")
+                    description="what cycleNumber to upload for output_stack on render")
     cycle_step_number = Int(required=False, default=1,
-                            description="what cycleStepNumber to upload for output_stack on render")
-    close_stack = Bool(required=False, default=False,
-                       description="whether to close stack or not")
+                         description="what cycleStepNumber to upload for output_stack on render")
     clip = Bool(required=False, default=True,
                        description="whether to clip values")
     scale_factor = Float(required=False,default=1.0,
@@ -49,12 +28,6 @@ class MultIntensityCorrParams(RenderParameters):
                   description='Min Clip value')
     clip_max = Int(required=False, default=65535,
                   description='Max Clip value')
-    overwrite_zlayer = Bool(
-        required=False, default=False,
-        description=("whether to remove the existing layer from the "
-                     "target stack before uploading."))
-
-
 
     # move_input = Bool(required=False, default=False,
     #                   description="whether to move input tiles to new location")
