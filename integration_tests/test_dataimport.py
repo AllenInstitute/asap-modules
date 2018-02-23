@@ -17,6 +17,7 @@ import os
 import copy
 
 
+
 @pytest.fixture(scope='module')
 def render():
     return renderapi.connect(**render_params)

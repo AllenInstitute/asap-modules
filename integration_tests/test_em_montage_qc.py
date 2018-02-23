@@ -122,7 +122,7 @@ def test_detect_montage_defects(render,
                                 tmpdir_factory):
     output_directory = str(tmpdir_factory.mktemp('montage_qc_output'))
 
-    ex = copy.copy(detect_montage_defects.example)
+    ex = {}
     ex['render'] = render_params
     ex['prestitched_stack'] = prestitched_stack
     ex['poststitched_stack'] = poststitched_stack

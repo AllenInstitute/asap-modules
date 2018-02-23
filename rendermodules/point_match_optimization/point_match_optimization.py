@@ -163,8 +163,10 @@ def get_tile_pair_matched_image(render, stack, tileId1, tileId2, pGroupId, qGrou
     # check if the point match collection exists
     collections = renderapi.pointmatch.get_matchcollections(owner=matchCollectionOwner, 
                                                             render=render)
+    collectionIds = [f['collectionId']['name'] for f in collections]
+    
     ptmatches = []
-    if (matchCollection in collections):
+    if (matchCollection in collectionIds):
         ptmatches = renderapi.pointmatch.get_matches_from_tile_to_tile(matchCollection,
                                                                     pGroupId,
                                                                     tileId1,
