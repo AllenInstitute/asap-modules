@@ -7,7 +7,8 @@ from marshmallow import  post_load
 from rendermodules.module.schemas import (
     RenderParameters, FeatureExtractionParameters, FeatureRenderParameters,
     FeatureStorageParameters, MatchDerivationParameters,
-    RenderParametersMatchWebServiceParameters, SparkOptions, SparkParameters)
+    RenderParametersMatchWebServiceParameters, SparkOptions, SparkParameters,
+    FeatureRenderClipParameters)
 
 
 class TilePairClientOutputParameters(DefaultSchema):
@@ -74,6 +75,7 @@ class TilePairClientParameters(RenderParameters):
 
 class SIFTPointMatchParameters(argschema.ArgSchema,
         FeatureExtractionParameters, FeatureRenderParameters,
+        FeatureRenderClipParameters,
         FeatureStorageParameters, MatchDerivationParameters,
         RenderParametersMatchWebServiceParameters):
     pairJson = InputFile(required=True, description=(
