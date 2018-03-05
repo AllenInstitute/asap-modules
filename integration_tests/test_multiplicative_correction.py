@@ -14,6 +14,7 @@ from rendermodules.intensity_correction.apply_multiplicative_correction import M
 logger = renderapi.client.logger
 logger.setLevel(logging.DEBUG)
 
+
 @pytest.fixture(scope='module')
 def render():
     render_params['project']='multi_correct_test'
@@ -113,7 +114,8 @@ def test_apply_correction(test_median_stack, mini_raw_stack, render, tmpdir_fact
 def test_single_tile(test_apply_correction,render,tmpdir):
 
     # get tilespecs
-    Z = test_apply_correction.args['z_index']
+    # Z = test_apply_correction.args['z_index']
+    Z = test_apply_correction.zValues[0]
     inp_tilespecs = renderapi.tilespec.get_tile_specs_from_z(
         test_apply_correction.args['input_stack'], Z, render=test_apply_correction.render)
     corr_tilespecs = renderapi.tilespec.get_tile_specs_from_z(

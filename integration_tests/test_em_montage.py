@@ -23,6 +23,7 @@ from rendermodules.module.render_module import RenderModuleException
 logger = renderapi.client.logger
 logger.setLevel(logging.DEBUG)
 
+
 @pytest.fixture(scope='module')
 def render():
     render_params['project'] = montage_project
@@ -195,7 +196,7 @@ def test_fail_montage_job_for_section(render,
     with pytest.raises(RenderModuleException):
         mod = SolveMontageSectionModule(input_data=solver_example, args=[])
         mod.run()
-    
+
     # code coverage for schema
     solver_example['render']['host'] = 'http://' + solver_example['render']['host']
     mod = SolveMontageSectionModule(input_data=solver_example, args=[])

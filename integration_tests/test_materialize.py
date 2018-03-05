@@ -4,6 +4,7 @@
 import json
 import os
 import imghdr
+import copy
 
 import pytest
 
@@ -52,7 +53,7 @@ def test_materialize_boxes(render, input_materializeboxes_stack, tmpdir):
     zs_totest = renderapi.stack.get_z_values_for_stack(
         input_materializeboxes_stack, render=render)
 
-    input_params = dict(materialize_sections.example_input, **{
+    input_params = dict(copy.copy(materialize_sections.example_input), **{
         'stack': input_materializeboxes_stack,
         'render': {
             'owner': render_params['owner'],

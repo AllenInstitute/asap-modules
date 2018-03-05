@@ -9,6 +9,7 @@ from rendermodules.lens_correction.lens_correction import LensCorrectionModule
 from test_data import render_params, TILESPECS_NO_LC_JSON, TILESPECS_LC_JSON
 from test_data import calc_lens_parameters
 
+
 render_params['project'] = "lens_correction_test"
 
 @pytest.fixture(scope='module')
@@ -153,7 +154,7 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_tform_dict
     test_example_tform = example_tform.tform(test_points)
 
     for z in params['zs']:
-        tspecs = renderapi.tilespec.get_tile_specs_from_z(params['outputStack'], z, render=render)
+        tspecs = renderapi.tilespec.get_tile_specs_from_z(params['output_stack'], z, render=render)
 
         for ts in tspecs:
             new_tform_dict = ts.tforms[0].to_dict()

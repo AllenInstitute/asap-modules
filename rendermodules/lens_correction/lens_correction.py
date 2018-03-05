@@ -118,9 +118,13 @@ class LensCorrectionModule(ArgSchemaParser):
             "--", "--no-splash",
             run_lc_bsh]
 
-        ret=subprocess.call(bsh_call)
         self.logger.debug('bsh_cmd: {}'.format(bsh_call))
-        self.logger.debug('ret_code: {}'.format(ret))
+        try:
+            subprocess.check_call(bsh_call)
+        except subprocess.CalledProcessError as e:
+            raise(RenderModuleException("{}".format(e)))
+
+        #self.logger.debug('ret_code: {}'.format(ret))
         
         if delete_procdir:
             shutil.rmtree(procdir)

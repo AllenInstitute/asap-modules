@@ -1,8 +1,10 @@
 import marshmallow as mm
-from argschema.fields import InputDir, InputFile, Str, Int, Boolean, InputDir, Float
-from ..module.schemas import RenderParameters
+from argschema.fields import InputDir, InputFile, Str, Int, Boolean, Float
+from ..module.schemas import (StackTransitionParameters, InputStackParameters,
+                              OutputStackParameters)
 from marshmallow import ValidationError, post_load
 from argschema.schemas import DefaultSchema
+
 
 
 class GenerateMipMapsOutput(DefaultSchema):
@@ -10,10 +12,7 @@ class GenerateMipMapsOutput(DefaultSchema):
     output_dir = Str(required=True)
 
 
-class GenerateMipMapsParameters(RenderParameters):
-    input_stack = mm.fields.Str(
-        required=True,
-        description='stack for which the mipmaps are to be generated')
+class GenerateMipMapsParameters(InputStackParameters):
     output_dir = mm.fields.Str(
         required=True,
         description='directory to which the mipmaps will be stored')
@@ -41,21 +40,6 @@ class GenerateMipMapsParameters(RenderParameters):
     force_redo = mm.fields.Boolean(
         required=False, default=True,
         description='force re-generation of existing mipmaps')
-    zstart = mm.fields.Int(
-        required=False,
-        description='start z-index in the stack')
-    zend = mm.fields.Int(
-        required=False,
-        description='end z-index in the stack')
-    z = mm.fields.Int(
-        required=False,
-        description='z-index in the stack')
-
-    @post_load
-    def validate_zvalues(self, data):
-        if ('zstart' not in data.keys()) or ('zend' not in data.keys()):
-            if 'z' not in data.keys():
-                raise ValidationError('Need a z value or z range')
 
     @classmethod
     def validationOptions(cls, options):
@@ -72,82 +56,34 @@ class AddMipMapsToStackOutput(DefaultSchema):
     output_stack = Str(required=True)
 
 
-class AddMipMapsToStackParameters(RenderParameters):
-    input_stack = mm.fields.Str(
-        required=True,
-        description='stack for which the mipmaps are to be generated')
-    output_stack = mm.fields.Str(
-        required=True,
-        description='the output stack name. Leave to overwrite input stack')
+class AddMipMapsToStackParameters(StackTransitionParameters):
     mipmap_dir = InputDir(
         required=True,
         description='directory to which the mipmaps will be stored')
     levels = mm.fields.Int(
         required=False, default=6,
         description='number of levels of mipmaps, default is 6')
-    zstart = mm.fields.Int(
-        required=False,
-        description='start z-index in the stack')
-    zend = mm.fields.Int(
-        required=False,
-        description='end z-index in the stack')
-    z = mm.fields.Int(
-        required=False,
-        description='z-index of section in the stack')
     imgformat = mm.fields.Str(
         required=False, default="tiff",
         description='mipmap image format, default is tiff')
-    pool_size = mm.fields.Int(
-        required=False, default=20,
-        description='number of cores to be used')
-    close_stack = mm.fields.Boolean(
-        required=False, default=False,
-        description=("whether to set output stack state to "
-                     "'COMPLETE' upon completion"))
-    overwrite_zlayer = Boolean(
-        required=False, default=False,
-        description=("whether to remove the existing layer from the "
-                     "target stack before uploading."))
-
-    @post_load
-    def validate_zvalues(self, data):
-        if ('zstart' not in data.keys()) or ('zend' not in data.keys()):
-            if 'z' not in data.keys():
-                raise ValidationError('Need a z value or a z range')
 
 
 
-class GenerateEMTileSpecsParameters(RenderParameters):
+class GenerateEMTileSpecsParameters(OutputStackParameters):
     metafile = InputFile(
         required=True,
         description="metadata file containing TEMCA acquisition data")
-    stack = Str(required=True,
-                description="stack to which tiles should be added")
     image_directory = InputDir(
         required=False,
         description=("directory used in determining absolute paths to images. "
                      "Defaults to parent directory containing metafile "
                      "if omitted."))
-    pool_size = Int(
-        required=False, default=1,
-        description="processes to spawn for parallelization")
-    close_stack = Boolean(
-        required=False, default=False,
-        description=("whether to set stack to 'COMPLETE' after "
-                     "performing operation"))
-    overwrite_zlayer = Boolean(
-        required=False, default=False,
-        description=("whether to remove the existing layer from the "
-                     "target stack before uploading."))
     maximum_intensity = Int(
         required=False, default=255,
         description=("intensity value to interpret as white"))
     minimum_intensity = Int(
         required=False, default=0,
         description=("intensity value to interpret as black"))
-    z_index = Int(
-        required=True,
-        description="z value to which tilespecs from ROI will be added")
     sectionId = Str(
         required=False,
         description=("sectionId to apply to tiles during ingest.  "
@@ -160,13 +96,10 @@ class GenerateEMTileSpecsOutput(DefaultSchema):
                 description="stack to which generated tiles were added")
 
 
-class MakeMontageScapeSectionStackParameters(RenderParameters):
+class MakeMontageScapeSectionStackParameters(OutputStackParameters):
     montage_stack = Str(
         required=True,
         metadata={'description':'stack to make a downsample version of'})
-    output_stack = Str(
-        required=True,
-        metadata={'description':'output stack name'})
     image_directory = InputDir(
         required=True,
         metadata={'description':'directory that stores the montage scapes'})
@@ -188,24 +121,13 @@ class MakeMontageScapeSectionStackParameters(RenderParameters):
     scale = Float(
         required=True,
         metadata={'description':'scale of montage scapes'})
-    zstart = Int(
-        required=True,
-        metadata={'description':'min z value'})
-    zend = Int(
-        required=True,
-        metadata={'description':'max z value'})
-    pool_size = Int(
-        require=False,
-        default=20,
-        missing=20,
-        metadata={'description':'pool size for parallel processing'})
 
     @post_load
     def validate_data(self, data):
         if data['set_new_z'] and data['new_z_start'] < 0:
             raise ValidationError('new Z start cannot be less than zero')
         elif not data['set_new_z']:
-            data['new_z_start'] = data['zstart']
+            data['new_z_start'] = min(data['zValues'])
 
 
 class MakeMontageScapeSectionStackOutput(DefaultSchema):

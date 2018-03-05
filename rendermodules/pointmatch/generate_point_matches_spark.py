@@ -1,11 +1,13 @@
 import json
 import os
 import subprocess
+from urlparse import urlparse
 from argschema.fields import Bool, Float, Int, Nested, Str, InputDir
 from argschema.schemas import DefaultSchema
 import marshmallow as mm
 import renderapi
 from rendermodules.module.render_module import RenderModule, RenderModuleException
+from rendermodules.module.render_module import SparkModule
 from rendermodules.pointmatch.schemas import PointMatchClientParametersSpark,PointMatchClientOutputSchema
 
 if __name__ == "__main__" and __package__ is None:
@@ -40,6 +42,7 @@ example = {
     "matchMinNumInliers": 8,
     "matchMaxNumInliers": 200
 }
+
 def add_arg(l,argname,args):
     value = args.get(argname,None)
     if value is not None:
@@ -63,46 +66,80 @@ def form_sift_params_list(args):
     add_arg(sift_params,'clipHeight',args)
     return sift_params
 
-class PointMatchClientModuleSpark(RenderModule):
+
+def get_host_port_dict_from_url(url):
+    p = urlparse(url)
+    return {'host': '{}://{}'.format(p.scheme, p.hostname),
+            'port': p.port}
+
+class PointMatchClientModuleSpark(SparkModule):
+    default_schema = PointMatchClientParametersSpark
     default_output_schema = PointMatchClientOutputSchema
-    def __init__(self, schema_type=None, *args, **kwargs):
-        if schema_type is None:
-            schema_type = PointMatchClientParametersSpark
-        super(PointMatchClientModuleSpark, self).__init__(
-            schema_type=schema_type, *args, **kwargs)
+
+    @classmethod
+    def get_pointmatch_args(cls, baseDataUrl=None, owner=None,
+                            collection=None, pairJson=None, SIFTfdSize=None,
+                            SIFTminScale=None, SIFTmaxScale=None,
+                            SIFTsteps=None, matchRod=None,
+                            matchModelType=None, matchIterations=None,
+                            matchMaxEpsilon=None, matchMinInlierRatio=None,
+                            matchMinNumInliers=None, matchMaxNumInliers=None,
+                            matchMaxTrust=None, maxFeatureCacheGb=None,
+                            clipWidth=None, clipHeight=None, renderScale=None,
+                            renderWithFilter=None, renderWithoutMask=None,
+                            renderFullScaleWidth=None,
+                            renderFullScaleHeight=None, fillWithNoise=None,
+                            **kwargs):
+        get_cmd_opt = cls.get_cmd_opt
+        cmd = (
+            get_cmd_opt(baseDataUrl, '--baseDataUrl') +
+            get_cmd_opt(owner, '--owner') +
+            get_cmd_opt(collection, '--collection') +
+            get_cmd_opt(pairJson, '--pairJson') +
+            get_cmd_opt(SIFTfdSize, '--SIFTfdSize') +
+            get_cmd_opt(SIFTminScale, '--SIFTminScale') +
+            get_cmd_opt(SIFTmaxScale, '--SIFTmaxScale') +
+            get_cmd_opt(SIFTsteps, '--SIFTsteps') +
+            get_cmd_opt(matchRod, '--matchRod') +
+            get_cmd_opt(matchModelType, '--matchModelType') +
+            get_cmd_opt(matchIterations, '--matchIterations') +
+            get_cmd_opt(matchMaxEpsilon, '--matchMaxEpsilon') +
+            get_cmd_opt(matchMinInlierRatio, '--matchMinInlierRatio') +
+            get_cmd_opt(matchMinNumInliers, '--matchMinNumInliers') +
+            get_cmd_opt(matchMaxNumInliers, '--matchMaxNumInliers') +
+            get_cmd_opt(matchMaxTrust, '--matchMaxTrust') +
+            get_cmd_opt(maxFeatureCacheGb, '--maxFeatureCacheGb') +
+            get_cmd_opt(clipWidth, '--clipWidth') +
+            get_cmd_opt(clipHeight, '--clipHeight') +
+            get_cmd_opt(renderScale, '--renderScale') +
+            get_cmd_opt(renderWithFilter, '--renderWithFilter') +
+            get_cmd_opt(renderWithoutMask, '--renderWithoutMask') +
+            get_cmd_opt(renderFullScaleWidth, '--renderFullScaleWidth') +
+            get_cmd_opt(renderFullScaleHeight, '--renderFullScaleHeight') +
+            get_cmd_opt(fillWithNoise, '--fillWithNoise'))
+        return cmd
+
+    @classmethod
+    def get_args(cls, **kwargs):
+        return cls.sanitize_cmd(cls.get_pointmatch_args(**kwargs))
+
 
     def run(self):
-        # prepare sift parameters     
-        sift_params = form_sift_params_list(self.args)
+        r = self.run_spark_command()
+        self.logger.debug("spark run completed with code {}".format(r))
 
-        sparksubmit = os.path.join(self.args['sparkhome'], 'bin', 'spark-submit')
 
-        # prepare the spark submit command
-        cmd = [sparksubmit,"--master", self.args['masterUrl']]
-        cmd += ["--executor-memory",self.args['memory']]
-        cmd += ["--driver-memory",self.args['driverMemory']]
-        if self.args.get('spark_files',None) is not None:
-            for spark_file in self.args['spark_files']:
-                cmd += ["--files",spark_file]
-        if self.args.get('spark_conf',None) is not None:       
-            for key,value in  self.args['spark_conf'].items():
-                cmd+= ["--conf","{}='{}'".format(key,value)]
-        cmd += ["--class",self.args['className'],self.args['jarfile']]
-        add_arg(cmd,'baseDataUrl',self.args)
-        add_arg(cmd,'owner',self.args)
-        add_arg(cmd,'collection',self.args)
-        add_arg(cmd,'pairJson',self.args)
- 
-        cmd_to_submit = cmd + sift_params
 
-        try:
-            subprocess.check_call(cmd_to_submit)
-        except subprocess.CalledProcessError as e:
-            raise RenderModuleException("PointMatchClientModuleSpark failed with inputs {} ",self.args)
-        
-        mc=renderapi.pointmatch.get_matchcollections(self.args['owner'],render=self.render)
-        collection = next(m for m in mc if m['collectionId']['name']==self.args['collection'])
+        # FIXME render object should be able to initialize without needing to be RenderModule
+        mc = renderapi.pointmatch.get_matchcollections(
+            self.args['owner'], **get_host_port_dict_from_url(
+                self.args['baseDataUrl']))
+
+        collection = next(
+            m for m in mc if m['collectionId']['name'] ==
+            self.args['collection'])
         self.output(collection)
+
 
 if __name__ == "__main__":
     module = PointMatchClientModuleSpark(input_data=example)
