@@ -1,11 +1,17 @@
-import renderapi
-from rendermodules.stack.consolidate_transforms import ConsolidateTransforms, process_z, consolidate_transforms
-from rendermodules.module.render_module import RenderModuleException
-from test_data import render_params, cons_ex_tilespec_json, cons_ex_transform_json
-import pytest
-import numpy as np
 import json
 import logging
+import os
+import urllib
+import urlparse
+import pytest
+import numpy as np
+
+import renderapi
+
+from test_data import render_params, cons_ex_tilespec_json, cons_ex_transform_json
+from rendermodules.module.render_module import RenderModuleException
+from rendermodules.stack.consolidate_transforms import ConsolidateTransforms, process_z, consolidate_transforms
+from rendermodules.stack import redirect_mipmaps
 
 EPSILON = .001
 render_params['project'] = "consolidate_test"
@@ -103,3 +109,32 @@ def test_consolidate_transforms_function(render,test_stack):
 
     with pytest.raises(RenderModuleException) as e:
         new_tforms=consolidate_transforms(tile0.tforms)
+
+
+def test_redirect_mipMapLevels(render, test_stack, tmpdir):
+    output_stack = "redirect_mipmaps_test"
+    out_fn = 'redirectmipmapsout.json'
+
+    z = renderapi.stack.get_z_values_for_stack(test_stack, render=render)[0]
+    input_d = dict(redirect_mipmaps.example_input, **{
+        "input_stack": test_stack,
+        "output_stack": output_stack,
+        "render": render.DEFAULT_KWARGS,
+        "z": z,
+        "new_mipmap_directories": [{
+            "level": 0,
+            "directory": str(tmpdir)
+        }]
+    })
+
+    mod = redirect_mipmaps.RedirectMipMapsModule(
+        input_data=input_d, args=['--output_json', out_fn])
+    mod.run()
+
+    modified_tspecs = renderapi.tilespec.get_tile_specs_from_z(
+        output_stack, z, render=render)
+
+    assert all([os.path.abspath(urllib.unquote(urlparse.urlparse(
+        ts.ip.get(0)['imageUrl']).path)).startswith(
+            os.path.abspath(str(tmpdir)))
+                for ts in modified_tspecs])
