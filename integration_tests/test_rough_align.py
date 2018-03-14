@@ -369,7 +369,6 @@ def test_make_montage_scape_stack_fail(render, montage_stack, downsample_section
     params_RMEx = dict(params, **{'set_new_z': False, 'zstart': 1, 'zend': 2})
     outjson = 'test_montage_scape_output.json'
 
-    print params
     with pytest.raises(mm.ValidationError):
         mod = MakeMontageScapeSectionStack(input_data=params, args=['--output_json', outjson])
         mod.run()
@@ -395,7 +394,6 @@ def test_setting_new_z_montage_scape(render, montage_stack, downsample_sections_
     }
     outjson = 'test_montage_scape_output.json'
     with pytest.raises(mm.ValidationError):
-        print params
         mod = MakeMontageScapeSectionStack(input_data=params, args=['--output_json', outjson])
 
 def test_solver_default_options(render, montage_scape_stack, rough_point_match_collection, tmpdir_factory):

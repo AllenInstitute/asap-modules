@@ -27,7 +27,8 @@ example = {
     "lowres_stack": "rough_test_downsample_rough_stack",
     "output_stack": "rough_test_rough_stack",
     "tilespec_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch/rough/jsonFiles",
-    "set_new_z": "False",
+    "map_z": "False",
+    "map_z_start": 251,
     "consolidate_trasnforms": "True",
     "minZ": 1020,
     "maxZ": 1022,
@@ -83,8 +84,8 @@ def apply_rough_alignment(render,
                           scale,
                           Z,
                           consolidateTransforms=True):
-    z = Z[0]
-    newz = Z[1]
+    z = Z[0] # z value from the montage stack - to be mapped to the newz values in lowres stack
+    newz = Z[1] # z value in the lowres stack for this montage
     session=requests.session()
     try:
         # get lowres stack tile specs
@@ -92,7 +93,7 @@ def apply_rough_alignment(render,
         lowres_ts = render.run(
                             renderapi.tilespec.get_tile_specs_from_z,
                             lowres_stack,
-                            z,
+                            newz,
                             session=session)
         
         # get the lowres stack rough alignment transformation
@@ -111,14 +112,26 @@ def apply_rough_alignment(render,
                             z,
                             session=session)
         
+        sectionbounds = render.run(
+                                renderapi.stack.get_bounds_from_z,
+                                input_stack,
+                                z,
+                                session=session)
+        
+        presectionbounds = render.run(
+                                    renderapi.stack.get_bounds_from_z,
+                                    prealigned_stack,
+                                    z,
+                                    session=session)
+        
         tx = 0
         ty = 0
         if input_stack == prealigned_stack:
-            tx =  -int(stackbounds['minX']) #- int(prestackbounds['minX'])
-            ty =  -int(stackbounds['minY']) #- int(prestackbounds['minY'])
+            tx =  -int(sectionbounds['minX']) #- int(prestackbounds['minX'])
+            ty =  -int(sectionbounds['minY']) #- int(prestackbounds['minY'])
         else:
-            tx = int(stackbounds['minX']) - int(prestackbounds['minX'])
-            ty = int(stackbounds['minY']) - int(prestackbounds['minY'])
+            tx = int(sectionbounds['minX']) - int(presectionbounds['minX'])
+            ty = int(sectionbounds['minY']) - int(presectionbounds['minY'])
         
         translation_tform = renderapi.transform.AffineModel(B0=tx,B1=ty)     
 
@@ -128,7 +141,8 @@ def apply_rough_alignment(render,
         highres_ts1 = render.run(
                             renderapi.tilespec.get_tile_specs_from_z,
                             input_stack,
-                            z,session=session)
+                            z,
+                            session=session)
 
         for t in highres_ts1:
             for f in ftform:
@@ -137,6 +151,8 @@ def apply_rough_alignment(render,
                 newt = consolidate_transforms(t.tforms)
                 t.tforms = newt
             t.z = newz
+            #t.z = z
+            t.layout.sectionId = "%s.0"%str(int(newz))
         
         renderapi.client.import_tilespecs(output_stack,highres_ts1,render=render)
         session.close()
@@ -150,19 +166,22 @@ class ApplyRoughAlignmentTransform(RenderModule):
     default_schema = ApplyRoughAlignmentTransformParameters
     default_output_schema = ApplyRoughAlignmentOutputParameters
     def run(self):
-        if self.args['minZ'] >= self.args['maxZ']:
+        if self.args['minZ'] > self.args['maxZ']:
             raise RenderModuleException("First section z cannot be greater or equal to last section z")
         
         allzvalues = self.render.run(renderapi.stack.get_z_values_for_stack,
                                      self.args['montage_stack'])
         allzvalues = np.array(allzvalues)
 
-        self.args['minZ'] = min(allzvalues) if self.args['minZ'] > min(allzvalues) else self.args['minZ']
+        self.args['minZ'] = self.args['minZ'] if self.args['minZ'] > min(allzvalues) else min(allzvalues)
         self.args['maxZ'] = max(allzvalues) if self.args['maxZ'] > max(allzvalues) else self.args['maxZ']
         zvalues = allzvalues[(allzvalues >= self.args['minZ']) & (allzvalues <= self.args['maxZ'])]
 
-        if self.args['set_new_z']:
-            newzvalues = range(0, len(zvalues))
+        if self.args['map_z']:
+            zvalues = list(np.sort(np.array(zvalues)))
+            diffarray = [x-zvalues[0] for x in zvalues]
+            newzvalues = [self.args['map_z_start']+x for x in diffarray]
+            #newzvalues = range(0, len(zvalues))
         else:
             newzvalues = zvalues
 

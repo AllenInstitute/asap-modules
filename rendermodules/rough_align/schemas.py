@@ -27,11 +27,15 @@ class ApplyRoughAlignmentTransformParameters(RenderParameters):
     tilespec_directory = mm.fields.Str(
         required=True,
         metadata={'description':'path to save section images'})
-    set_new_z = mm.fields.Boolean(
+    map_z = mm.fields.Boolean(
         required=False,
         default=False,
         missing=False,
-        metadata={'description':'set to assign new z values starting from 0 (default - False)'})
+        metadata={'description':'map the montage Z indices to the rough alignment indices (default - False)'})
+    map_z_start = mm.fields.Int(
+        required=False,
+        default=-1,
+        metadata={'description':'the starting index of the z in the montage stack'})
     consolidate_transforms = mm.fields.Boolean(
         required=False,
         default=True,
@@ -56,6 +60,11 @@ class ApplyRoughAlignmentTransformParameters(RenderParameters):
     def validate_data(self, data):
         if data['prealigned_stack'] is None:
             data['prealigned_stack'] = data['montage_stack']
+        if data['map_z']:
+            if data['map_z_start'] == -1:
+                raise ValidationError("map_z_start is invalid")
+        else:
+            data['map_z_start'] = data['minZ']
 
 
 class LowresStackParameters(DefaultSchema):
