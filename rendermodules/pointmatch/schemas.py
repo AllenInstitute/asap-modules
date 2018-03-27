@@ -130,3 +130,15 @@ class PointMatchClientParametersQsub(
         required=True,
         description="location to set logging for qsub command"
     )
+
+
+class ExtractFeaturesParameters(argschema.ArgSchema, SparkParameters,
+        FeatureExtractionParameters, FeatureRenderParameters,
+        FeatureRenderClipParameters):
+    rootFeatureDirectory = OutputDir(required=True, description="")
+    pairJson = InputFile(required=True, description="")
+    baseDataUrl = Str(required=True, description="")
+
+
+class ExtractFeaturesOutput(DefaultSchema):
+    pass
