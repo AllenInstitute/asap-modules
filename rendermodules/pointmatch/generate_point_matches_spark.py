@@ -89,6 +89,7 @@ class PointMatchClientModuleSpark(SparkModule):
                             renderWithFilter=None, renderWithoutMask=None,
                             renderFullScaleWidth=None,
                             renderFullScaleHeight=None, fillWithNoise=None,
+                            rootFeatureDirectory=None,requireStoredFeature=None,
                             **kwargs):
         get_cmd_opt = cls.get_cmd_opt
         cmd = (
@@ -116,7 +117,9 @@ class PointMatchClientModuleSpark(SparkModule):
             get_cmd_opt(renderWithoutMask, '--renderWithoutMask') +
             get_cmd_opt(renderFullScaleWidth, '--renderFullScaleWidth') +
             get_cmd_opt(renderFullScaleHeight, '--renderFullScaleHeight') +
-            get_cmd_opt(fillWithNoise, '--fillWithNoise'))
+            get_cmd_opt(fillWithNoise, '--fillWithNoise')+
+            get_cmd_opt(rootFeatureDirectory,'--rootFeatureDirectory')+
+            cls.get_flag_cmd(requireStoredFeature,'--requireStoredFeature'))
         return cmd
 
     @classmethod
