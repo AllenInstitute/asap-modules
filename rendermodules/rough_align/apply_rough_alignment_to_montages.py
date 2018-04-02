@@ -101,16 +101,6 @@ def apply_rough_alignment(render,
         tf = tforms[-1]
         tf.M[0:2,0:2]*=scale
         
-        #stackbounds = render.run(
-        #                    renderapi.stack.get_bounds_from_z,
-        #                    input_stack,
-        #                    z,
-        #                    session=session)
-        #prestackbounds = render.run(
-        #                    renderapi.stack.get_bounds_from_z,
-        #                    prealigned_stack,
-        #                    z,
-        #                    session=session)
         
         sectionbounds = render.run(
                                 renderapi.stack.get_bounds_from_z,

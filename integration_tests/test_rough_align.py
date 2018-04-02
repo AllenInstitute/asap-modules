@@ -27,11 +27,13 @@ logger = renderapi.client.logger
 logger.setLevel(logging.DEBUG)
 
 
+
 @pytest.fixture(scope='module')
 def render():
     render_params['project'] = 'rough_align_test'
     render = renderapi.connect(**render_params)
     return render
+
 
 
 @pytest.fixture(scope='module')
@@ -40,11 +42,15 @@ def tspecs_from_json():
         for d in ROUGH_MONTAGE_TILESPECS_JSON]
     return tilespecs
 
+
+
 @pytest.fixture(scope='module')
 def tspecs():
     tilespecs = [renderapi.tilespec.TileSpec(json=d)
                 for d in ROUGH_DS_TEST_TILESPECS_JSON]
     return tilespecs
+
+
 
 # A stack with multiple sections montaged
 @pytest.fixture(scope='module')
@@ -72,6 +78,8 @@ def montage_stack(render,tspecs_from_json):
     yield test_montage_stack
     renderapi.stack.delete_stack(test_montage_stack, render=render)
 
+
+
 @pytest.fixture(scope='module')
 def one_tile_montage(render, tspecs):
     one_tile_montage_stack = 'one_tile_montage_stack'
@@ -90,6 +98,7 @@ def one_tile_montage(render, tspecs):
 
     yield one_tile_montage_stack
     render.run(renderapi.stack.delete_stack, one_tile_montage_stack)
+
 
 
 @pytest.fixture(scope='module')
@@ -124,10 +133,13 @@ def downsample_sections_dir(montage_stack, tmpdir_factory):
     yield image_directory
 
 
+
 @pytest.fixture(scope='module')
 def rough_point_matches_from_json():
     point_matches = [d for d in ROUGH_POINT_MATCH_COLLECTION]
     return point_matches
+
+
 
 @pytest.fixture(scope='module')
 def montage_scape_stack(render, montage_stack, downsample_sections_dir):
@@ -153,6 +165,8 @@ def montage_scape_stack(render, montage_stack, downsample_sections_dir):
     yield output_stack
     renderapi.stack.delete_stack(test_montage_scape_stack, render=render)
 
+
+
 @pytest.fixture(scope='module')
 def rough_point_match_collection(render, rough_point_matches_from_json):
     pt_match_collection = 'rough_point_match_collection'
@@ -165,6 +179,8 @@ def rough_point_match_collection(render, rough_point_matches_from_json):
     #assert(len(groupIds) == 3)
     yield pt_match_collection
     render.run(renderapi.pointmatch.delete_collection, pt_match_collection)
+
+
 
 @pytest.fixture(scope='module')
 def test_do_rough_alignment(render, montage_scape_stack, rough_point_match_collection, tmpdir_factory, output_lowres_stack=None):
@@ -204,14 +220,19 @@ def test_do_rough_alignment(render, montage_scape_stack, rough_point_match_colle
     renderapi.stack.delete_stack(output_lowres_stack, render=render)
 
 
+
 def test_montage_scape_stack(render, montage_scape_stack):
     zvalues = render.run(renderapi.stack.get_z_values_for_stack, montage_scape_stack)
     zs = [1020, 1021, 1022]
     assert(set(zvalues)==set(zs))
 
+
+
 def test_point_match_collection(render, rough_point_match_collection):
     groupIds = render.run(renderapi.pointmatch.get_match_groupIds, rough_point_match_collection)
     assert(('1020.0' in groupIds) and ('1021.0' in groupIds) and ('1022.0' in groupIds))
+
+
 
 def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_alignment, tmpdir_factory, prealigned_stack=None, output_stack=None):
 
@@ -265,8 +286,8 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
     mod.run()
 
 
-# additional tests for code coverage
 
+# additional tests for code coverage
 def test_render_downsample_with_mipmaps(render, one_tile_montage, tmpdir_factory, test_do_rough_alignment, montage_stack):
     image_directory = str(tmpdir_factory.mktemp('rough'))
     ex = {
@@ -332,6 +353,8 @@ def test_render_downsample_with_mipmaps(render, one_tile_montage, tmpdir_factory
         zvalues = renderapi.stack.get_z_values_for_stack(ex2['output_stack'],render=render)
         assert(1021 not in zvalues)
 
+
+
 def test_make_montage_stack_without_downsamples(render, one_tile_montage, tmpdir_factory):
     # testing for make montage scape stack without having downsamples generated
     tmp_dir = str(tmpdir_factory.mktemp('downsample'))
@@ -378,6 +401,8 @@ def test_make_montage_scape_stack_fail(render, montage_stack, downsample_section
     with pytest.raises(RenderModuleException):
         mod.run()
 
+
+
 def test_setting_new_z_montage_scape(render, montage_stack, downsample_sections_dir):
     output_stack = '{}_DS'.format(montage_stack)
     params = {
@@ -386,15 +411,22 @@ def test_setting_new_z_montage_scape(render, montage_stack, downsample_sections_
         "output_stack": output_stack,
         "image_directory": downsample_sections_dir,
         "imgformat": "png",
-        "set_new_z": True,
-        "new_z_start": -1,
+        "map_z": True,
+        "map_z_start": 1020,
         "scale":0.1,
         "zstart": 1020,
         "zend": 1022
     }
     outjson = 'test_montage_scape_output.json'
-    with pytest.raises(mm.ValidationError):
-        mod = MakeMontageScapeSectionStack(input_data=params, args=['--output_json', outjson])
+    #with pytest.raises(mm.ValidationError):
+    #    mod = MakeMontageScapeSectionStack(input_data=params, args=['--output_json', outjson])
+    mod = MakeMontageScapeSectionStack(input_data=params, args=['--output_json', outjson])
+    mod.run()
+
+    zvalues = renderapi.stack.get_z_values_for_stack(output_stack, render=render)
+    assert(set(zvalues) == set([1020, 1021, 1022]))
+
+
 
 def test_solver_default_options(render, montage_scape_stack, rough_point_match_collection, tmpdir_factory):
     output_lowres_stack = '{}_DS_Rough'.format(montage_scape_stack)
