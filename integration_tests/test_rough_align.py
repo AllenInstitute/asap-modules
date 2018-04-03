@@ -251,7 +251,8 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
         'loglevel': 'DEBUG'
     })
     ex2 = dict(ex, **{'minZ': 1022, 'maxZ': 1020})
-    ex3 = dict(ex, **{'set_new_z': True})
+    ex3 = dict(ex, **{'map_z': True})
+    ex4 = dict(ex, **{'map_z': True, 'map_z_start': -1})
 
     mod = ApplyRoughAlignmentTransform(input_data=ex, args=[])
     mod.run()
@@ -283,7 +284,11 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
         mod.run()
 
     mod = ApplyRoughAlignmentTransform(input_data=ex3, args=[])
-    mod.run()
+    with pytest.raises(RenderModuleException):
+        mod.run()
+    
+    with pytest.raises(mm.ValidationError):
+        mod = ApplyRoughAlignmentTransform(input_data=ex4, args=[])
 
 
 
@@ -411,18 +416,16 @@ def test_setting_new_z_montage_scape(render, montage_stack, downsample_sections_
         "output_stack": output_stack,
         "image_directory": downsample_sections_dir,
         "imgformat": "png",
-        "map_z": True,
-        "map_z_start": 1020,
+        "set_new_z": True,
+        "new_z_start": -1,
         "scale":0.1,
         "zstart": 1020,
         "zend": 1022
     }
     outjson = 'test_montage_scape_output.json'
-    #with pytest.raises(mm.ValidationError):
-    #    mod = MakeMontageScapeSectionStack(input_data=params, args=['--output_json', outjson])
-    mod = MakeMontageScapeSectionStack(input_data=params, args=['--output_json', outjson])
-    mod.run()
-
+    with pytest.raises(mm.ValidationError):
+        mod = MakeMontageScapeSectionStack(input_data=params, args=['--output_json', outjson])
+    
     zvalues = renderapi.stack.get_z_values_for_stack(output_stack, render=render)
     assert(set(zvalues) == set([1020, 1021, 1022]))
 

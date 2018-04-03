@@ -35,6 +35,7 @@ class ApplyRoughAlignmentTransformParameters(RenderParameters):
     map_z_start = mm.fields.Int(
         required=False,
         default=-1,
+        missing=-1,
         metadata={'description':'the starting index of the z in the montage stack'})
     consolidate_transforms = mm.fields.Boolean(
         required=False,
