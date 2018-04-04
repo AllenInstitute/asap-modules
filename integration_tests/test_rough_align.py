@@ -10,6 +10,7 @@ import marshmallow as mm
 from test_data import (ROUGH_MONTAGE_TILESPECS_JSON,
                        ROUGH_POINT_MATCH_COLLECTION,
                        ROUGH_DS_TEST_TILESPECS_JSON,
+                       ROUGH_MAPPED_PT_MATCH_COLLECTION,
                        render_params,
                        test_rough_parameters as solver_example,
                        pool_size)
@@ -139,6 +140,10 @@ def rough_point_matches_from_json():
     point_matches = [d for d in ROUGH_POINT_MATCH_COLLECTION]
     return point_matches
 
+@pytest.fixture(scope='module')
+def rough_mapped_pt_matches_from_json():
+    pt_matches = [d for d in ROUGH_MAPPED_PT_MATCH_COLLECTION]
+    return pt_matches
 
 
 @pytest.fixture(scope='module')
@@ -168,6 +173,32 @@ def montage_scape_stack(render, montage_stack, downsample_sections_dir):
 
 
 @pytest.fixture(scope='module')
+def montage_z_mapped_stack(render, montage_stack, downsample_sections_dir):
+    output_stack = '{}_mapped_DS'.format(montage_stack)
+    params = {
+        "render": render_params,
+        "montage_stack": montage_stack,
+        "output_stack": output_stack,
+        "image_directory": downsample_sections_dir,
+        "imgformat": "png",
+        "scale": 0.1,
+        "zstart": 1020,
+        "zend": 1022,
+        "set_new_z": True,
+        "new_z_start": 251
+    }
+    outjson = 'test_montage_scape_output.json'
+    mod = MakeMontageScapeSectionStack(input_data=params, args=['--output_json', outjson])
+    mod.run()
+
+    zvalues = render.run(renderapi.stack.get_z_values_for_stack, output_stack)
+    zs = [251, 252, 253]
+
+    yield output_stack
+    renderapi.stack.delete_stack(output_stack, render=render)
+
+
+@pytest.fixture(scope='module')
 def rough_point_match_collection(render, rough_point_matches_from_json):
     pt_match_collection = 'rough_point_match_collection'
     renderapi.pointmatch.import_matches(pt_match_collection,
@@ -179,6 +210,51 @@ def rough_point_match_collection(render, rough_point_matches_from_json):
     #assert(len(groupIds) == 3)
     yield pt_match_collection
     render.run(renderapi.pointmatch.delete_collection, pt_match_collection)
+
+
+@pytest.fixture(scope='module')
+def rough_mapped_pt_match_collection(render, rough_mapped_pt_matches_from_json):
+    pt_match_collection = 'rough_mapped_point_match_collection'
+    renderapi.pointmatch.import_matches(pt_match_collection,
+                                        rough_mapped_pt_matches_from_json,
+                                        render=render)
+
+    # check if point matches have been imported properly
+    groupIds = render.run(renderapi.pointmatch.get_match_groupIds, pt_match_collection)
+    assert(len(groupIds) == 3)
+    yield pt_match_collection
+    render.run(renderapi.pointmatch.delete_collection, pt_match_collection)
+
+
+@pytest.fixture(scope="module")
+def test_do_mapped_rough_alignment(render, montage_z_mapped_stack, rough_mapped_pt_match_collection, tmpdir_factory, output_lowres_stack=None):
+    if output_lowres_stack == None:
+        output_lowres_stack = '{}_DS_Rough'.format(montage_z_mapped_stack)
+
+    output_directory = str(tmpdir_factory.mktemp('output_json'))
+    solver_ex = dict(solver_example, **{
+        'output_json': os.path.join(output_directory,'output.json'),
+        'first_section': 251,
+        'last_section': 253,
+        'source_collection': dict(solver_example['source_collection'], **{
+            'stack': montage_z_mapped_stack}),
+        'target_collection': dict(solver_example['target_collection'], **{
+            'stack': output_lowres_stack}),
+        'source_point_match_collection': dict(
+            solver_example['source_point_match_collection'], **{
+                'match_collection': rough_mapped_pt_match_collection
+            })
+    })
+
+    mod = SolveRoughAlignmentModule(input_data=solver_ex, args=[])
+    mod.run()
+
+    zvalues = render.run(renderapi.stack.get_z_values_for_stack, output_lowres_stack)
+    zs = [251, 252, 253]
+    assert(set(zvalues) == set(zs))
+
+    yield output_lowres_stack
+    renderapi.stack.delete_stack(output_lowres_stack, render=render)
 
 
 
@@ -232,6 +308,37 @@ def test_point_match_collection(render, rough_point_match_collection):
     groupIds = render.run(renderapi.pointmatch.get_match_groupIds, rough_point_match_collection)
     assert(('1020.0' in groupIds) and ('1021.0' in groupIds) and ('1022.0' in groupIds))
 
+def test_mapped_apply_rough_alignment_transform(render, montage_stack, test_do_mapped_rough_alignment, tmpdir_factory, prealigned_stack=None, output_stack=None):
+    ex = dict(ex1, **{
+        'render': dict(ex1['render'], **render_params),
+        'montage_stack': montage_stack,
+        'lowres_stack': test_do_mapped_rough_alignment,
+        'prealigned_stack': None,
+        'output_stack': '{}_Rough'.format(montage_stack),
+        'tilespec_directory': str(tmpdir_factory.mktemp('scratch')),
+        'minZ': 1020,
+        'maxZ': 1022,
+        'map_z':True,
+        'map_z_start': 251,
+        'scale': 0.1,
+        'pool_size': pool_size,
+        'output_json': str(tmpdir_factory.mktemp('output').join('output.json')),
+        'loglevel': 'DEBUG'
+    })
+
+    mod = ApplyRoughAlignmentTransform(input_data=ex, args=[])
+    mod.run()
+
+    zvalues = render.run(renderapi.stack.get_z_values_for_stack, ex['output_stack'])
+    zs = [251, 252, 253]
+    assert(set(zvalues) == set(zs))
+
+    # test for map_z_start validation error
+    ex4 = dict(ex, **{'map_z_start': -1})
+
+    with pytest.raises(mm.ValidationError):
+        mod = ApplyRoughAlignmentTransform(input_data=ex4, args=[])
+
 
 
 def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_alignment, tmpdir_factory, prealigned_stack=None, output_stack=None):
@@ -252,8 +359,7 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
     })
     ex2 = dict(ex, **{'minZ': 1022, 'maxZ': 1020})
     ex3 = dict(ex, **{'map_z': True})
-    ex4 = dict(ex, **{'map_z': True, 'map_z_start': -1})
-
+    
     mod = ApplyRoughAlignmentTransform(input_data=ex, args=[])
     mod.run()
 
@@ -287,9 +393,7 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
     with pytest.raises(RenderModuleException):
         mod.run()
     
-    with pytest.raises(mm.ValidationError):
-        mod = ApplyRoughAlignmentTransform(input_data=ex4, args=[])
-
+    
 
 
 # additional tests for code coverage

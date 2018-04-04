@@ -172,6 +172,8 @@ ROUGH_DS_TEST_TILESPECS_JSON = render_json_template(example_env, 'rough_align_do
 
 ROUGH_POINT_MATCH_COLLECTION = render_json_template(example_env, 'rough_align_point_matches.json')
 
+ROUGH_MAPPED_PT_MATCH_COLLECTION = render_json_template(example_env, 'rough_align_mapped_point_matches.json')
+
 rough_project = "rough_align_test"
 
 
