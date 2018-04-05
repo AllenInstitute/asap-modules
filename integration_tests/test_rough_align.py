@@ -13,6 +13,7 @@ from test_data import (ROUGH_MONTAGE_TILESPECS_JSON,
                        ROUGH_MAPPED_PT_MATCH_COLLECTION,
                        render_params,
                        test_rough_parameters as solver_example,
+                       apply_rough_alignment_example as ex1,
                        pool_size)
 
 from rendermodules.module.render_module import RenderModuleException
@@ -20,7 +21,7 @@ from rendermodules.materialize.render_downsample_sections import RenderSectionAt
 from rendermodules.dataimport.make_montage_scapes_stack import MakeMontageScapeSectionStack, create_montage_scape_tile_specs
 from rendermodules.rough_align.do_rough_alignment import SolveRoughAlignmentModule
 from rendermodules.rough_align.apply_rough_alignment_to_montages import (ApplyRoughAlignmentTransform,
-                                                                         example as ex1,
+                                                                         #example as ex1,
                                                                          apply_rough_alignment)
 
 
@@ -382,7 +383,6 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
         'loglevel': 'DEBUG'
     })
     ex2 = dict(ex, **{'minZ': 1022, 'maxZ': 1020})
-    ex3 = dict(ex, **{'map_z': True})
     ex4 = dict(ex, **{'map_z': True, 'map_z_start': -1})
     
     mod = ApplyRoughAlignmentTransform(input_data=ex, args=[])
@@ -414,9 +414,9 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
     with pytest.raises(RenderModuleException):
         mod.run()
 
-    mod = ApplyRoughAlignmentTransform(input_data=ex3, args=[])
-    with pytest.raises(RenderModuleException):
-        mod.run()
+    #mod = ApplyRoughAlignmentTransform(input_data=ex3, args=[])
+    #with pytest.raises(RenderModuleException):
+    #    mod.run()
     
     with pytest.raises(mm.ValidationError):
         mod = ApplyRoughAlignmentTransform(input_data=ex4, args=[])
