@@ -505,8 +505,29 @@ def test_make_montage_stack_without_downsamples(render, one_tile_montage, tmpdir
         "zend": 1020
     }
     outjson = 'test_montage_scape_output.json'
-    mod = MakeMontageScapeSectionStack(input_data=params, args=['--output_json', outjson])
-    mod.run()
+    #mod = MakeMontageScapeSectionStack(input_data=params, args=['--output_json', outjson])
+    #mod.run()
+
+    tagstr = "%s.0_%s.0" % (params['zstart'], params['zend'])
+    Z = [1020, 1020]
+
+    tilespecdir = os.path.join(params['image_directory'],
+                                   render_params['project'],
+                                   params['montage_stack'],
+                                   'sections_at_%s'%str(params['scale']),
+                                   'tilespecs_%s'%tagstr)
+
+    if not os.path.exists(tilespecdir):
+        os.makedirs(tilespecdir)
+    
+    create_montage_scape_tile_specs(render,
+                                    params['montage_stack'],
+                                    params['image_directory'],
+                                    params['scale'],
+                                    render_params['project'],
+                                    tagstr,
+                                    params['imgformat'],
+                                    Z)
 
 
 
