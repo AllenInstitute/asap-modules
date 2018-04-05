@@ -17,7 +17,7 @@ from test_data import (ROUGH_MONTAGE_TILESPECS_JSON,
 
 from rendermodules.module.render_module import RenderModuleException
 from rendermodules.materialize.render_downsample_sections import RenderSectionAtScale, create_tilespecs_without_mipmaps
-from rendermodules.dataimport.make_montage_scapes_stack import MakeMontageScapeSectionStack
+from rendermodules.dataimport.make_montage_scapes_stack import MakeMontageScapeSectionStack, create_montage_scape_tile_specs
 from rendermodules.rough_align.do_rough_alignment import SolveRoughAlignmentModule
 from rendermodules.rough_align.apply_rough_alignment_to_montages import (ApplyRoughAlignmentTransform,
                                                                          example as ex1,
@@ -302,11 +302,35 @@ def test_montage_scape_stack(render, montage_scape_stack):
     zs = [1020, 1021, 1022]
     assert(set(zvalues)==set(zs))
 
+def test_montage_scape_stack_code_coverage(render, montage_stack, downsample_sections_dir):
+    output_stack = '{}_DS_code_coverage'.format(montage_stack)
+    params = {
+        "render": render_params,
+        "montage_stack": montage_stack,
+        "output_stack": output_stack,
+        "image_directory": downsample_sections_dir,
+        "imgformat": "png",
+        "scale":0.1,
+        "zstart": 1020,
+        "zend": 1022
+    }
+    outjson = 'test_montage_scape_output.json'
+    tagstr = "%s.0_%s.0" % (params['zstart'], params['zend'])
+    Z = [1020, 1020]
+    create_montage_scape_tile_specs(render,
+                                    params['montage_stack'],
+                                    params['image_directory'],
+                                    params['scale'],
+                                    render_params['project'],
+                                    tagstr,
+                                    params['imgformat'],
+                                    Z)
 
 
 def test_point_match_collection(render, rough_point_match_collection):
     groupIds = render.run(renderapi.pointmatch.get_match_groupIds, rough_point_match_collection)
     assert(('1020.0' in groupIds) and ('1021.0' in groupIds) and ('1022.0' in groupIds))
+
 
 def test_mapped_apply_rough_alignment_transform(render, montage_stack, test_do_mapped_rough_alignment, tmpdir_factory, prealigned_stack=None, output_stack=None):
     ex = dict(ex1, **{
@@ -359,6 +383,7 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
     })
     ex2 = dict(ex, **{'minZ': 1022, 'maxZ': 1020})
     ex3 = dict(ex, **{'map_z': True})
+    ex4 = dict(ex, **{'map_z': True, 'map_z_start': -1})
     
     mod = ApplyRoughAlignmentTransform(input_data=ex, args=[])
     mod.run()
@@ -393,7 +418,8 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
     with pytest.raises(RenderModuleException):
         mod.run()
     
-    
+    with pytest.raises(mm.ValidationError):
+        mod = ApplyRoughAlignmentTransform(input_data=ex4, args=[])
 
 
 # additional tests for code coverage

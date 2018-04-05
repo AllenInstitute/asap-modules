@@ -57,7 +57,7 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory, scale,
 
     z = Z[0]
     newz = Z[1]
-
+    
     # create the full path to the images
     # directory structure as per Render's RenderSectionClient output
     [q,r] = divmod(z,1000)
