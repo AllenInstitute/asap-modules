@@ -10,7 +10,8 @@ import renderapi
 
 from test_data import render_params, cons_ex_tilespec_json, cons_ex_transform_json
 from rendermodules.module.render_module import RenderModuleException
-from rendermodules.stack.consolidate_transforms import ConsolidateTransforms, process_z, consolidate_transforms
+from rendermodules.stack.consolidate_transforms import ConsolidateTransforms, 
+                                        process_z, consolidate_transforms, my_module
 from rendermodules.stack import redirect_mipmaps
 
 EPSILON = .001
@@ -138,3 +139,6 @@ def test_redirect_mipMapLevels(render, test_stack, tmpdir):
         ts.ip.get(0)['imageUrl']).path)).startswith(
             os.path.abspath(str(tmpdir)))
                 for ts in modified_tspecs])
+
+def test_module():
+    my_module()
