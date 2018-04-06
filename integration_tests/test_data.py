@@ -172,6 +172,8 @@ ROUGH_DS_TEST_TILESPECS_JSON = render_json_template(example_env, 'rough_align_do
 
 ROUGH_POINT_MATCH_COLLECTION = render_json_template(example_env, 'rough_align_point_matches.json')
 
+ROUGH_MAPPED_PT_MATCH_COLLECTION = render_json_template(example_env, 'rough_align_mapped_point_matches.json')
+
 rough_project = "rough_align_test"
 
 
@@ -187,6 +189,29 @@ test_rough_parameters = render_json_template(example_env,
     firstz = 1020,
     lastz = 1022
     )
+
+apply_rough_alignment_example = {
+    "render": {
+        "host": "http://em-131fs",
+        "port": 8080,
+        "owner": "gayathri",
+        "project": "Tests",
+        "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts"
+    },
+    "montage_stack": "rough_test_montage_stack",
+    "prealigned_stack": "rough_test_montage_stack",
+    "lowres_stack": "rough_test_downsample_rough_stack",
+    "output_stack": "rough_test_rough_stack",
+    "tilespec_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch/rough/jsonFiles",
+    "map_z": "False",
+    "map_z_start": -1,
+    "consolidate_trasnforms": "True",
+    "minZ": 1020,
+    "maxZ": 1022,
+    "scale": 0.1,
+    "pool_size": 20
+}
+
 
 
 # EM Montage QC data
