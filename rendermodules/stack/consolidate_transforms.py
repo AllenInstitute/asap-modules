@@ -91,18 +91,18 @@ def consolidate_transforms(tforms, ref_tforms=[], logger=logging.getLogger(), ma
     return new_tform_list
 
 
-def process_z(render, logger, stack, outstack, transform_slice, z):
+def process_z(render, stack, outstack, transform_slice, z):
     resolved_tiles = renderapi.resolvedtiles.get_resolved_tiles_from_z(
         stack, z, render=render)
 
     for ts in resolved_tiles.tilespecs:
-        logger.debug('process_z_make_json: tileId {}'.format(ts.tileId))
+        #logger.debug('process_z_make_json: tileId {}'.format(ts.tileId))
         ts.tforms[transform_slice] = consolidate_transforms(
-            ts.tforms[transform_slice], resolved_tiles.transforms, logger)
-        logger.debug('consolatedate tformlist {}'.format(ts.tforms[0]))
+            ts.tforms[transform_slice], resolved_tiles.transforms)
+        #logger.debug('consolatedate tformlist {}'.format(ts.tforms[0]))
 
-    logger.debug("tileid:{} transforms:{}".format(
-        resolved_tiles.tilespecs[0].tileId, resolved_tiles.tilespecs[0].tforms))
+    #logger.debug("tileid:{} transforms:{}".format(
+    #    resolved_tiles.tilespecs[0].tileId, resolved_tiles.tilespecs[0].tforms))
     renderapi.client.import_tilespecs(outstack, resolved_tiles.tilespecs,
                                       resolved_tiles.transforms, render=render)
     #json_filepath = renderapi.utils.renderdump_temp(resolved_tiles.tilespecs)
@@ -138,13 +138,13 @@ class ConsolidateTransforms(RenderModule):
                     self.logger.error(e)
 
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
-            resolved_tiles_list = pool.map(partial(
+            mypartial = partial(
                 process_z,
                 self.render,
-                self.logger,
                 stack,
                 outstack,
-                self.args['transforms_slice']), zvalues)
+                self.args['transforms_slice'])
+            resolved_tiles_list = pool.map(mypartial, zvalues)
 
         # self.render.run(
         #     renderapi.client.import_jsonfiles_parallel, outstack, json_files)

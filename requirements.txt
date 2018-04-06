@@ -1,8 +1,7 @@
-render-python>=1.6.2
+render-python>=1.9.0
 argschema>=1.15.17
 numpy
 pillow
-pathos
 tifffile
 pathlib
 scipy
