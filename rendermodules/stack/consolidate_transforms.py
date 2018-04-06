@@ -155,18 +155,6 @@ class ConsolidateTransforms(RenderModule):
         }
         self.output(output_d)
 
-import time
-def simple_subfunction(a,i):
-    print(a,i)
-    time.sleep(1)
-    return i
-
-def my_module():
-    values = range(10)
-    myfunc = partial(simple_subfunction,5)
-    with renderapi.client.WithPool(5) as pool:
-        results=pool.map(myfunc,values)
-
 if __name__ == "__main__":
     mod = ConsolidateTransforms(input_data=example_json)
     mod.run()
