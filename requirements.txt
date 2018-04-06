@@ -1,4 +1,4 @@
-render-python>=1.9.0
+render-python>=1.9.1
 argschema>=1.15.17
 numpy
 pillow
