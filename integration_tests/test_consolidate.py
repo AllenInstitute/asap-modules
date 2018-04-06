@@ -10,8 +10,7 @@ import renderapi
 
 from test_data import render_params, cons_ex_tilespec_json, cons_ex_transform_json
 from rendermodules.module.render_module import RenderModuleException
-from rendermodules.stack.consolidate_transforms import ConsolidateTransforms, 
-                                        process_z, consolidate_transforms, my_module
+from rendermodules.stack.consolidate_transforms import ConsolidateTransforms, process_z, consolidate_transforms, my_module
 from rendermodules.stack import redirect_mipmaps
 
 EPSILON = .001
