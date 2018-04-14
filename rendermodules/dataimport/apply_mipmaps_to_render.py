@@ -95,7 +95,7 @@ class AddMipMapsToStack(StackTransitionModule):
         identified_tforms = {tform.transformId: tform for tform in (
             i for l in (resolvedtiles.transforms
                         for resolvedtiles in allresolved)
-            for i in l)}.items()
+            for i in l)}.values()
 
         output_stack = (self.args['input_stack'] if
                         self.args['output_stack'] is None
