@@ -29,7 +29,7 @@ example = {
     "tilespec_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch/rough/jsonFiles",
     "map_z": "False",
     "map_z_start": 251,
-    "consolidate_trasnforms": "True",
+    "consolidate_transforms": "True",
     "minZ": 1020,
     "maxZ": 1022,
     "scale": 0.1,
@@ -95,25 +95,25 @@ def apply_rough_alignment(render,
                             lowres_stack,
                             newz,
                             session=session)
-        
+
         # get the lowres stack rough alignment transformation
         tforms = lowres_ts[0].tforms
         tf = tforms[-1]
         tf.M[0:2,0:2]*=scale
-        
-        
+
+
         sectionbounds = render.run(
                                 renderapi.stack.get_bounds_from_z,
                                 input_stack,
                                 z,
                                 session=session)
-        
+
         presectionbounds = render.run(
                                     renderapi.stack.get_bounds_from_z,
                                     prealigned_stack,
                                     z,
                                     session=session)
-        
+
         tx = 0
         ty = 0
         if input_stack == prealigned_stack:
@@ -122,17 +122,23 @@ def apply_rough_alignment(render,
         else:
             tx = int(sectionbounds['minX']) - int(presectionbounds['minX'])
             ty = int(sectionbounds['minY']) - int(presectionbounds['minY'])
-        
-        translation_tform = renderapi.transform.AffineModel(B0=tx,B1=ty)     
+
+        translation_tform = renderapi.transform.AffineModel(B0=tx,B1=ty)
 
         ftform = [translation_tform] + tforms
         logger.debug('getting tilespecs from {} z={}'.format(lowres_stack,z))
-
+        """
         highres_ts1 = render.run(
                             renderapi.tilespec.get_tile_specs_from_z,
                             input_stack,
                             z,
                             session=session)
+        """
+        resolved_highrests1 = render.run(
+            renderapi.resolvedtiles.get_resolved_tiles_from_z,
+            input_stack, z, session=session)
+        highres_ts1 = resolved_highrests1.tilespecs
+        sharedTransforms_highrests1 = resolved_highrests1.transforms
 
         for t in highres_ts1:
             for f in ftform:
@@ -143,13 +149,14 @@ def apply_rough_alignment(render,
             t.z = newz
             #t.z = z
             t.layout.sectionId = "%s.0"%str(int(newz))
-        
-        renderapi.client.import_tilespecs(output_stack,highres_ts1,render=render)
+
+        renderapi.client.import_tilespecs(
+            output_stack, highres_ts1,
+            sharedTransforms=sharedTransforms_highrests1, render=render)
         session.close()
         return None
     except Exception as e:
         return e
-
 
 
 class ApplyRoughAlignmentTransform(RenderModule):
@@ -158,7 +165,7 @@ class ApplyRoughAlignmentTransform(RenderModule):
     def run(self):
         if self.args['minZ'] > self.args['maxZ']:
             raise RenderModuleException("First section z cannot be greater or equal to last section z")
-        
+
         allzvalues = self.render.run(renderapi.stack.get_z_values_for_stack,
                                      self.args['montage_stack'])
         allzvalues = np.array(allzvalues)
@@ -195,7 +202,7 @@ class ApplyRoughAlignmentTransform(RenderModule):
             self.render.run(
                 renderapi.stack.create_stack,
                 self.args['output_stack'])
-        else: 
+        else:
             # stack exists and has to be set to LOADING state
             self.render.run(renderapi.stack.set_stack_state,
                             self.args['output_stack'],
@@ -204,7 +211,7 @@ class ApplyRoughAlignmentTransform(RenderModule):
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
             results=pool.map(mypartial, Z)
 
-        #raise an exception if all the z values to apply alignment were not 
+        #raise an exception if all the z values to apply alignment were not
         if not all([r is None for r in results]):
             failed_zs = [(result,z) for result,z in zip(results,Z) if result is not None]
             raise RenderModuleException("Failed to rough align z values {}".format(failed_zs))
