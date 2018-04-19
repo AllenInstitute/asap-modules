@@ -8,3 +8,6 @@ scipy
 rtree
 networkx
 bokeh
+matplotlib
+python-opencv
+jinja2
