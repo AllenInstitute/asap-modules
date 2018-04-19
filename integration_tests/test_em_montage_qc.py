@@ -57,6 +57,7 @@ def prestitched_stack(render, prestitched_stack_from_json):
     renderapi.client.import_tilespecs(
                         test_prestitched_stack,
                         prestitched_stack_from_json,
+                        use_rest=True,
                         render=render)
     renderapi.stack.set_stack_state(
                         test_prestitched_stack,
@@ -83,6 +84,7 @@ def poststitched_stack(render, poststitched_stack_from_json):
     renderapi.client.import_tilespecs(
                         test_poststitched_stack,
                         poststitched_stack_from_json,
+                        use_rest=True,
                         render=render)
     renderapi.stack.set_stack_state(
                         test_poststitched_stack,

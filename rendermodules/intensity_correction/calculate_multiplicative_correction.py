@@ -109,6 +109,7 @@ class MakeMedian(RenderModule):
             self.args['output_stack'], "LOADING", render=self.render)
         renderapi.client.import_tilespecs_parallel(
             self.args['output_stack'], outtilespecs,
+            use_rest=True,
             poolsize=self.args['pool_size'],render=self.render,close_stack=self.args['close_stack'])
         #renderapi.stack.set_stack_state(
         #    self.args['output_stack'], "COMPLETE", render=self.render)

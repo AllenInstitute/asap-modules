@@ -67,7 +67,7 @@ def stack_no_lc(render):
     renderapi.stack.create_stack(stack, render=render)
 
     tspecs = [renderapi.tilespec.TileSpec(json=tspec) for tspec in TILESPECS_NO_LC_JSON]
-    renderapi.client.import_tilespecs(stack, tspecs, render=render)
+    renderapi.client.import_tilespecs(stack, tspecs, use_rest=True, render=render)
     renderapi.stack.set_stack_state(stack, 'COMPLETE', render=render)
     yield stack
 
@@ -81,7 +81,7 @@ def stack_lc(render):
     renderapi.stack.create_stack(stack, render=render)
 
     tspecs = [renderapi.tilespec.TileSpec(json=tspec) for tspec in TILESPECS_LC_JSON]
-    renderapi.client.import_tilespecs(stack, tspecs, render=render)
+    renderapi.client.import_tilespecs(stack, tspecs, use_rest=True, render=render)
     renderapi.stack.set_stack_state(stack, 'COMPLETE', render=render)
     yield stack
 

@@ -154,7 +154,8 @@ def apply_rough_alignment(render,
 
         renderapi.client.import_tilespecs(
             output_stack, highres_ts1,
-            sharedTransforms=sharedTransforms_highrests1, render=render)
+            sharedTransforms=sharedTransforms_highrests1,
+            use_rest=True, render=render)
         session.close()
         return None
     except Exception as e:

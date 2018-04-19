@@ -46,6 +46,7 @@ def raw_stack(render, tspecs_from_json):
     renderapi.client.import_tilespecs(
                         test_raw_stack,
                         tspecs_from_json,
+                        use_rest=True,
                         render=render)
     renderapi.stack.set_stack_state(
                         test_raw_stack,

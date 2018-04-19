@@ -36,6 +36,7 @@ def pt_match_input_stack(render, stack_from_json):
     renderapi.client.import_tilespecs(
                         ptmatch_input_stack,
                         stack_from_json,
+                        use_rest=True,
                         render=render)
     renderapi.stack.set_stack_state(
                         ptmatch_input_stack,

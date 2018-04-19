@@ -31,7 +31,7 @@ def raw_stack(render,test_tilespecs):
     stack = 'input_raw'
     renderapi.stack.create_stack(stack, render=render)
     renderapi.client.import_tilespecs(
-        stack, test_tilespecs, render=render)
+        stack, test_tilespecs, use_rest=True, render=render)
     renderapi.stack.set_stack_state(stack, 'COMPLETE', render=render)
     yield stack
     renderapi.stack.delete_stack(stack, render=render)
@@ -43,7 +43,7 @@ def mini_raw_stack(render,test_tilespecs):
     renderapi.stack.create_stack(stack, render=render)
     tilespecs = random.sample(test_tilespecs, 5)
 
-    renderapi.client.import_tilespecs(stack, tilespecs, render=render)
+    renderapi.client.import_tilespecs(stack, tilespecs, use_rest=True, render=render)
     renderapi.stack.set_stack_state(stack, 'COMPLETE', render=render)
     yield stack
     renderapi.stack.delete_stack(stack, render=render)

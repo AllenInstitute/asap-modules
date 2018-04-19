@@ -110,7 +110,8 @@ def process_z(render, stack, outstack, transform_slice, z):
     #logger.debug("tileid:{} transforms:{}".format(
     #    resolved_tiles.tilespecs[0].tileId, resolved_tiles.tilespecs[0].tforms))
     renderapi.client.import_tilespecs(outstack, resolved_tiles.tilespecs,
-                                      resolved_tiles.transforms, render=render)
+                                      resolved_tiles.transforms, 
+                                      use_rest=True, render=render)
     #json_filepath = renderapi.utils.renderdump_temp(resolved_tiles.tilespecs)
     return resolved_tiles
 

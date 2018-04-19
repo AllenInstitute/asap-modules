@@ -107,7 +107,8 @@ class StackOutputModule(RenderModule):
                                 **kwargs)
         renderapi.client.import_tilespecs_parallel(
             output_stack, tilespecs, sharedTransforms=sharedTransforms,
-            pool_size=pool_size, close_stack=close_stack, render=render)
+            pool_size=pool_size, use_rest=True, close_stack=close_stack,
+            render=render)
 
 
 class StackTransitionModule(StackOutputModule, StackInputModule):

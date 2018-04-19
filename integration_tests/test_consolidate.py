@@ -35,7 +35,8 @@ def test_stack(render,render_example_tilespec_and_transforms):
     [ts.tforms.append(new_affine) for ts in tilespecs]
     stack = 'test_stack'
     renderapi.stack.create_stack(stack, render=render)
-    renderapi.client.import_tilespecs('test_stack',tilespecs,tforms,render=render)
+    renderapi.client.import_tilespecs('test_stack',tilespecs,tforms,
+                                      use_rest=True,render=render)
     yield stack
     renderapi.stack.delete_stack(stack, render=render)
 

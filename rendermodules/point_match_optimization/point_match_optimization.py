@@ -281,7 +281,9 @@ class PointMatchOptimizationModule(RenderModule):
             self.args['tile_stack'] = tile_stack
 
         renderapi.stack.create_stack(self.args['tile_stack'], render=self.render)
-        renderapi.client.import_tilespecs(self.args['tile_stack'], ts, render=self.render)
+        renderapi.client.import_tilespecs(self.args['tile_stack'], ts, 
+                                          use_rest=True,
+                                          render=self.render)
         renderapi.stack.set_stack_state(self.args['tile_stack'], 'COMPLETE', render=self.render)
 
         # the order of these two lines matter

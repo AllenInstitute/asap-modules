@@ -64,6 +64,7 @@ def montage_stack(render, resolvedtiles_from_json):
     renderapi.stack.create_stack(test_montage_stack, render=render)
     renderapi.client.import_tilespecs(test_montage_stack,
                                       tspecs, sharedTransforms=tforms,
+                                      use_rest=True,
                                       render=render)
     renderapi.stack.set_stack_state(test_montage_stack,
                                     'COMPLETE',
@@ -91,6 +92,7 @@ def one_tile_montage(render, tspecs):
     renderapi.stack.create_stack(one_tile_montage_stack, render=render)
     renderapi.client.import_tilespecs(one_tile_montage_stack,
                                       tspecs,
+                                      use_rest=True,
                                       render=render)
     renderapi.stack.set_stack_state(one_tile_montage_stack,
                                     'COMPLETE',

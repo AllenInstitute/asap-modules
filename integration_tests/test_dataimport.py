@@ -148,13 +148,14 @@ def resolvedtiles_to_mipmap():
 @pytest.fixture(scope='module')
 def input_stack(render, resolvedtiles_to_mipmap):
     # TODO should maybe make this  fixture to separate tests
-    test_input_stack='MIPMAPTEST'
+    test_input_stack = 'MIPMAPTEST'
 
     renderapi.stack.create_stack(test_input_stack, render=render)
     tspecs = resolvedtiles_to_mipmap.tilespecs
     tforms = resolvedtiles_to_mipmap.transforms
     renderapi.client.import_tilespecs_parallel(
-        test_input_stack, tspecs, sharedTransforms=tforms, render=render)
+        test_input_stack, tspecs, use_rest=True, 
+        sharedTransforms=tforms, render=render)
 
     # assure stack is built correctly
     assert len({tspec.tileId for tspec

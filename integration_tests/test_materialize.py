@@ -31,7 +31,7 @@ def input_materializeboxes_stack(render, tspecs_to_materialize):
     test_stack = 'materialize_boxes_test'
     renderapi.stack.create_stack(test_stack, render=render)
     renderapi.client.import_tilespecs_parallel(
-        test_stack, tspecs_to_materialize, render=render)
+        test_stack, tspecs_to_materialize, use_rest=True, render=render)
 
     # assure stack is built correctly
     assert len({tspec.tileId for tspec
