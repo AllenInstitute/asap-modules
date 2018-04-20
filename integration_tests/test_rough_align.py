@@ -169,7 +169,7 @@ def montage_scape_stack(render, montage_stack, downsample_sections_dir):
     assert(set(zvalues) == set(zs))
 
     yield output_stack
-    renderapi.stack.delete_stack(test_montage_scape_stack, render=render)
+    renderapi.stack.delete_stack(output_stack, render=render)
 
 
 
