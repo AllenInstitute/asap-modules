@@ -9,3 +9,6 @@ rtree
 networkx
 bokeh
 EMaligner==0.0.12
+matplotlib
+opencv-python
+jinja2
