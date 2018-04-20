@@ -8,3 +8,4 @@ scipy
 rtree
 networkx
 bokeh
+EMaligner==0.0.12
