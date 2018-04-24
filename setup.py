@@ -2,7 +2,7 @@
 import sys
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
-
+import logging
 
 class PyTest(TestCommand):
     user_options = [('pytest-args=', 'a', "Arguments to pass to pytest")]
@@ -17,7 +17,8 @@ class PyTest(TestCommand):
         import pytest
         self.pytest_args += " --cov=rendermodules --cov-report html "\
                             "--junitxml=test-reports/test.xml"
-
+        FORMAT = "[%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s"
+        logging.basicConfig(format=FORMAT)
         errno = pytest.main(shlex.split(self.pytest_args))
         sys.exit(errno)
 
@@ -37,7 +38,7 @@ setup(name='render-modules',
       author_email='forrestc@alleninstitute.org',
       url='https://github.com/AllenInstitute/render-modules/',
       packages=find_packages(),
-      package_data={'':['*.bsh','LICENSE','README.rst','*.md']},
+      package_data={'':['*.bsh','LICENSE','README.rst','*.md', 'rendermodules/point_match_optimization/*.html']},
       install_requires=required,
       setup_requires=['flake8','setuptools_scm'],
       tests_require=test_required,

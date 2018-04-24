@@ -5,7 +5,7 @@ import tempfile
 import shutil
 from rendermodules.lens_correction.schemas import LensCorrectionOutput, LensCorrectionParameters
 from argschema import ArgSchemaParser
-from rendermodules.module.render_module import RenderModuleException, ArgSchemaModule
+from rendermodules.module.render_module import RenderModuleException
 
 example_input = {
     "manifest_path": "/allen/programs/celltypes/workgroups/em-connectomics/samk/lc_test_data/Wij_Set_594451332/594089217_594451332/_trackem_20170502174048_295434_5LC_0064_01_20170502174047_reference_0_.txt",
@@ -118,9 +118,13 @@ class LensCorrectionModule(ArgSchemaParser):
             "--", "--no-splash",
             run_lc_bsh]
 
-        ret=subprocess.call(bsh_call)
         self.logger.debug('bsh_cmd: {}'.format(bsh_call))
-        self.logger.debug('ret_code: {}'.format(ret))
+        try:
+            subprocess.check_call(bsh_call)
+        except subprocess.CalledProcessError as e:
+            raise(RenderModuleException("{}".format(e)))
+
+        #self.logger.debug('ret_code: {}'.format(ret))
         
         if delete_procdir:
             shutil.rmtree(procdir)

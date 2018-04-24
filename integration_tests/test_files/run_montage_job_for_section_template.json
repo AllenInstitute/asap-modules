@@ -9,8 +9,8 @@
     "solver_options": {
   		"degree": 1,
   		"solver": "backslash",
-  		"transfac": 1,
-  		"lambda": 0.005,
+  		"transfac": 1.0,
+  		"lambda_value": 0.005,
   		"edge_lambda": 0.005,
   		"nbrs": 2,
   		"nbrs_step": 1,
@@ -49,25 +49,13 @@
   	},
     "source_collection": {
   		"stack": "mm2_acquire_8bit",
-  		"owner": "{{render_owner}}",
-  		"project": "{{render_project}}",
-  		"service_host": "{{render_host}}:{{render_port}}",
-  		"baseURL": "http://{{render_host}}:{{render_port}}/render-ws/v1",
-  		"renderbinPath": "{{render_client_scripts}}",
   		"verbose": 0
   	},
     "target_collection": {
   		"stack": "mm2_acquire_8bit_Montage",
-      "owner": "{{render_owner}}",
-  		"project": "{{render_project}}",
-  		"service_host": "{{render_host}}:{{render_port}}",
-  		"baseURL": "http://{{render_host}}:{{render_port}}/render-ws/v1",
-      "renderbinPath": "{{render_client_scripts}}",
       "verbose": 0
   	},
     "source_point_match_collection": {
-  		"server": "http://{{render_host}}:{{render_port}}/render-ws/v1",
-  		"owner": "{{render_owner}}",
   		"match_collection": "{{point_match_collection}}",
       "verbose": 0
   	},

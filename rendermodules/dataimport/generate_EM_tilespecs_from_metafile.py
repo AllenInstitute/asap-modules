@@ -9,8 +9,9 @@ import pathlib
 import numpy
 import renderapi
 import argschema
-from rendermodules.module.render_module import (RenderModule, RenderParameters)
-from rendermodules.dataimport.schemas import GenerateEMTileSpecsOutput, GenerateEMTileSpecsParameters
+from rendermodules.module.render_module import StackOutputModule
+from rendermodules.dataimport.schemas import (GenerateEMTileSpecsOutput,
+                                              GenerateEMTileSpecsParameters)
 
 example_input = {
     "render": {
@@ -31,9 +32,7 @@ example_input = {
 }
 
 
-
-
-class GenerateEMTileSpecsModule(RenderModule):
+class GenerateEMTileSpecsModule(StackOutputModule):
     default_schema = GenerateEMTileSpecsParameters
     default_output_schema = GenerateEMTileSpecsOutput
 
@@ -49,7 +48,7 @@ class GenerateEMTileSpecsModule(RenderModule):
     def tileId_from_basename(self, fname):
         return '{bname}.{z}'.format(
             bname=os.path.splitext(os.path.basename(fname))[0],
-            z=str(float(self.args['z_index'])))
+            z=str(float(self.zValues[0])))
 
     @staticmethod
     def sectionId_from_z(z):
@@ -108,27 +107,15 @@ class GenerateEMTileSpecsModule(RenderModule):
             maxint=self.args['maximum_intensity'],
             width=roidata['camera_info']['width'],
             height=roidata['camera_info']['height'],
-            z=self.args['z_index'], sectionId=self.args.get('sectionId'),
+            z=self.zValues[0], sectionId=self.args.get('sectionId'),
             scopeId=roidata['temca_id'],
             cameraId=roidata['camera_info']['camera_id'],
             pixelsize=pixelsize) for img in imgdata]
 
-        # create stack if it does not exists, or set to loading if it does
-        renderapi.stack.create_stack(self.args['stack'], render=self.render)
-        if self.args['overwrite_zlayer']:
-            try:
-                renderapi.stack.delete_section(
-                    self.args['stack'], self.args['z_index'],
-                    render=self.render)
-            except renderapi.errors.RenderError as e:
-                self.logger.error(e)
-        renderapi.client.import_tilespecs_parallel(
-            self.args['stack'], tspecs,
-            poolsize=self.args['pool_size'],
-            close_stack=self.args['close_stack'], render=self.render)
+        self.output_tilespecs_to_stack(tspecs)
 
         try:
-            self.output({'stack': self.args['stack']})
+            self.output({'stack': self.output_stack})
         except AttributeError as e:
             self.logger.error(e)
 

@@ -1,5 +1,7 @@
-from rendermodules.module.schemas import RenderParameters
-from argschema.fields import Str, Int, Slice, Float
+from rendermodules.module.schemas import (RenderParameters,
+                                          StackTransitionParameters)
+from argschema.fields import (Str, Int, Slice, Float, Boolean,
+                              List, Nested, InputDir)
 from argschema.schemas import DefaultSchema
 
 class ConsolidateTransformsParameters(RenderParameters):
@@ -20,8 +22,30 @@ class ConsolidateTransformsParameters(RenderParameters):
     maxZ = Float(required=False,
                  description="""minimaximummum z to consolidate in read in from stack and write to output_stack\
                  default to maximum z in stack""")
+    overwrite_zlayer = Boolean(
+        required=False, default=False,
+        description=("whether to remove the existing layer from the "
+                     "target stack before uploading."))
+
 
 
 class ConsolidateTransformsOutputParameters(DefaultSchema):
     output_stack = Str(required=True, description="name of output stack")
     numZ = Int(required=True, description="Number of z values processed")
+
+
+class MipMapDirectories(DefaultSchema):
+    level = Int(required=True, description=(
+        "mipMapLevel for which parent directory will be changed"))
+    directory = InputDir(required=True, description=(
+        "directory where relocated mipmaps are found."))
+
+
+class RedirectMipMapsParameters(StackTransitionParameters):
+    new_mipmap_directories = Nested(
+        MipMapDirectories, required=True, many=True)
+
+
+class RedirectMipMapsOutput(DefaultSchema):
+    zValues = List(Int, required=True)
+    output_stack = Str(required=True)

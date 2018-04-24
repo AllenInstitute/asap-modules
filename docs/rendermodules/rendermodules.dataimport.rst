@@ -36,6 +36,14 @@ rendermodules\.dataimport\.generate\_mipmaps module
     :undoc-members:
     :show-inheritance:
 
+rendermodules\.dataimport\.schemas module
+-----------------------------------------
+
+.. automodule:: rendermodules.dataimport.schemas
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 Module contents
 ---------------

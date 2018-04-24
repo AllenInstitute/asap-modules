@@ -1,11 +1,13 @@
 import json
 import os
 import subprocess
+from urlparse import urlparse
 from argschema.fields import Bool, Float, Int, Nested, Str, InputDir
 from argschema.schemas import DefaultSchema
 import marshmallow as mm
 import renderapi
 from rendermodules.module.render_module import RenderModule, RenderModuleException
+from rendermodules.module.render_module import SparkModule
 from rendermodules.pointmatch.schemas import PointMatchClientParametersSpark,PointMatchClientOutputSchema
 
 if __name__ == "__main__" and __package__ is None:
@@ -40,59 +42,107 @@ example = {
     "matchMinNumInliers": 8,
     "matchMaxNumInliers": 200
 }
-def form_sift_params(args):
-    sift_params = " --SIFTfdSize {}".format(args['SIFTfdSize'])
-    sift_params += " --SIFTsteps {}".format(args['SIFTsteps'])
-    sift_params += " --matchMaxEpsilon {}".format(args['matchMaxEpsilon'])
-    sift_params += " --maxFeatureCacheGb {}".format(args['maxFeatureCacheGb'])
-    sift_params += " --SIFTminScale {}".format(args['SIFTminScale'])
-    sift_params += " --SIFTmaxScale {}".format(args['SIFTmaxScale'])
-    sift_params += " --renderScale {}".format(args['renderScale'])
-    sift_params += " --matchRod {}".format(args['matchRod'])
-    sift_params += " --matchMinInlierRatio {}".format(args['matchMinInlierRatio'])
-    sift_params += " --matchMinNumInliers {}".format(args['matchMinNumInliers'])
-    sift_params += " --matchMaxNumInliers {}".format(args['matchMaxNumInliers'])
-    clipWidth = args.get('clipWidth',None)
-    clipHeight = args.get('clipHeight',None)
-    if clipWidth is not None:
-        sift_params += " --clipWidth {}".format(clipWidth)
-    if clipHeight is not None:
-        sift_params += " --clipHeight {}".format(clipHeight)
+
+def add_arg(l,argname,args):
+    value = args.get(argname,None)
+    if value is not None:
+        l+=["--{}".format(argname),"{}".format(args[argname])]
+
+def form_sift_params_list(args):
+    sift_params = []
+
+    add_arg(sift_params,'SIFTfdSize',args)
+    add_arg(sift_params,'SIFTsteps',args)
+    add_arg(sift_params,'matchMaxEpsilon',args)
+    add_arg(sift_params,'maxFeatureCacheGb',args)
+    add_arg(sift_params,'SIFTminScale',args)
+    add_arg(sift_params,'SIFTmaxScale',args)
+    add_arg(sift_params,'renderScale',args)
+    add_arg(sift_params,'matchRod',args)
+    add_arg(sift_params,'matchMinInlierRatio',args)
+    add_arg(sift_params,'matchMinNumInliers',args)
+    add_arg(sift_params,'matchMaxNumInliers',args)
+    add_arg(sift_params,'clipWidth',args)
+    add_arg(sift_params,'clipHeight',args)
     return sift_params
 
-class PointMatchClientModuleSpark(RenderModule):
+
+def get_host_port_dict_from_url(url):
+    p = urlparse(url)
+    return {'host': '{}://{}'.format(p.scheme, p.hostname),
+            'port': p.port}
+
+class PointMatchClientModuleSpark(SparkModule):
+    default_schema = PointMatchClientParametersSpark
     default_output_schema = PointMatchClientOutputSchema
-    def __init__(self, schema_type=None, *args, **kwargs):
-        if schema_type is None:
-            schema_type = PointMatchClientParametersSpark
-        super(PointMatchClientModuleSpark, self).__init__(
-            schema_type=schema_type, *args, **kwargs)
+
+    @classmethod
+    def get_pointmatch_args(cls, baseDataUrl=None, owner=None,
+                            collection=None, pairJson=None, SIFTfdSize=None,
+                            SIFTminScale=None, SIFTmaxScale=None,
+                            SIFTsteps=None, matchRod=None,
+                            matchModelType=None, matchIterations=None,
+                            matchMaxEpsilon=None, matchMinInlierRatio=None,
+                            matchMinNumInliers=None, matchMaxNumInliers=None,
+                            matchMaxTrust=None, maxFeatureCacheGb=None,
+                            clipWidth=None, clipHeight=None, renderScale=None,
+                            renderWithFilter=None, renderWithoutMask=None,
+                            renderFullScaleWidth=None,
+                            renderFullScaleHeight=None, fillWithNoise=None,
+                            rootFeatureDirectory=None,requireStoredFeature=None,
+                            **kwargs):
+        get_cmd_opt = cls.get_cmd_opt
+        cmd = (
+            get_cmd_opt(baseDataUrl, '--baseDataUrl') +
+            get_cmd_opt(owner, '--owner') +
+            get_cmd_opt(collection, '--collection') +
+            get_cmd_opt(pairJson, '--pairJson') +
+            get_cmd_opt(SIFTfdSize, '--SIFTfdSize') +
+            get_cmd_opt(SIFTminScale, '--SIFTminScale') +
+            get_cmd_opt(SIFTmaxScale, '--SIFTmaxScale') +
+            get_cmd_opt(SIFTsteps, '--SIFTsteps') +
+            get_cmd_opt(matchRod, '--matchRod') +
+            get_cmd_opt(matchModelType, '--matchModelType') +
+            get_cmd_opt(matchIterations, '--matchIterations') +
+            get_cmd_opt(matchMaxEpsilon, '--matchMaxEpsilon') +
+            get_cmd_opt(matchMinInlierRatio, '--matchMinInlierRatio') +
+            get_cmd_opt(matchMinNumInliers, '--matchMinNumInliers') +
+            get_cmd_opt(matchMaxNumInliers, '--matchMaxNumInliers') +
+            get_cmd_opt(matchMaxTrust, '--matchMaxTrust') +
+            get_cmd_opt(maxFeatureCacheGb, '--maxFeatureCacheGb') +
+            get_cmd_opt(clipWidth, '--clipWidth') +
+            get_cmd_opt(clipHeight, '--clipHeight') +
+            get_cmd_opt(renderScale, '--renderScale') +
+            get_cmd_opt(renderWithFilter, '--renderWithFilter') +
+            get_cmd_opt(renderWithoutMask, '--renderWithoutMask') +
+            get_cmd_opt(renderFullScaleWidth, '--renderFullScaleWidth') +
+            get_cmd_opt(renderFullScaleHeight, '--renderFullScaleHeight') +
+            get_cmd_opt(fillWithNoise, '--fillWithNoise')+
+            get_cmd_opt(rootFeatureDirectory,'--rootFeatureDirectory')+
+            cls.get_flag_cmd(requireStoredFeature,'--requireStoredFeature'))
+        return cmd
+
+    @classmethod
+    def get_args(cls, **kwargs):
+        return cls.sanitize_cmd(cls.get_pointmatch_args(**kwargs))
+
 
     def run(self):
-        # prepare sift parameters     
-        sift_params = form_sift_params(self.args)
+        r = self.run_spark_command()
+        self.logger.debug("spark run completed with code {}".format(r))
 
-        sparksubmit = os.path.join(self.args['sparkhome'], 'bin', 'spark-submit')
 
-        # prepare the spark submit command
-        cmd = "{} --master {}".format(sparksubmit, self.args['masterUrl'])
-        cmd = cmd + " --executor-memory {}".format(self.args['memory'])
-        cmd = cmd + " --driver-memory {}".format(self.args['driverMemory'])
-        cmd = cmd + " --class {} {}".format(self.args['className'], self.args['jarfile'])
-        cmd = cmd + " --baseDataUrl {}".format(self.args['baseDataUrl'])
-        cmd = cmd + " --owner {}".format(self.args['owner'])
-        cmd = cmd + " --collection {}".format(self.args['collection'])
-        cmd = cmd + " --pairJson {}".format(self.args['pairJson'])
 
-        cmd_to_submit = cmd + sift_params
+        # FIXME render object should be able to initialize without needing to be RenderModule
+        mc = renderapi.pointmatch.get_matchcollections(
+            self.args['owner'], **get_host_port_dict_from_url(
+                self.args['baseDataUrl']))
 
-        ret=os.system(cmd_to_submit)
-        if ret != 0:
-            raise RenderModuleException("PointMatchClientModuleSpark failed with inputs {} ",self.args)
-        
-        mc=renderapi.pointmatch.get_matchcollections(self.args['owner'],render=self.render)
-        collection = next(m for m in mc if m['collectionId']['name']==self.args['collection'])
+        collection = next(
+            m for m in mc if m['collectionId']['name'] ==
+            self.args['collection'])
         self.output(collection)
+
 
 if __name__ == "__main__":
     module = PointMatchClientModuleSpark(input_data=example)

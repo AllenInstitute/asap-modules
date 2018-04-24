@@ -42,7 +42,7 @@ def dereference_tforms(tforms, ref_tforms):
             except StopIteration as e:
                 raise RenderModuleException(
                     ("reference transform: {} not found in provided refererence transforms {}".format(
-                                                                                                tf.refId, 
+                                                                                                tf.refId,
                                                                                                 ref_tforms)))
         else:
             deref_tforms.append(tf)
@@ -56,16 +56,22 @@ def flatten_and_dereference_tforms(tforms, ref_tforms):
     return deref_tforms
 
 
-def consolidate_transforms(tforms, ref_tforms=[], logger=logging.getLogger(), makePolyDegree=0):
+def consolidate_transforms(tforms, ref_tforms=[], logger=logging.getLogger(),
+                           makePolyDegree=0, keep_ref_tforms=False):
     # first flatten and dereference this transform list
-    tforms = flatten_and_dereference_tforms(tforms, ref_tforms)
+    tforms = (flatten_and_dereference_tforms(tforms, ref_tforms)
+              if not keep_ref_tforms else flatten_tforms(tforms))
     tform_total = AffineModel()
     start_index = 0
     total_affines = 0
     new_tform_list = []
 
     for i, tform in enumerate(tforms):
-        if 'AffineModel2D' in tform.className:
+        try:
+            isaffine = 'AffineModel2D' in tform.className
+        except AttributeError:
+            isaffine = False
+        if isaffine:
             total_affines += 1
             tform_total = tform.concatenate(tform_total)
             # tform_total.M=tform.M.dot(tform_total.M)
@@ -91,18 +97,18 @@ def consolidate_transforms(tforms, ref_tforms=[], logger=logging.getLogger(), ma
     return new_tform_list
 
 
-def process_z(render, logger, stack, outstack, transform_slice, z):
+def process_z(render, stack, outstack, transform_slice, z):
     resolved_tiles = renderapi.resolvedtiles.get_resolved_tiles_from_z(
         stack, z, render=render)
 
     for ts in resolved_tiles.tilespecs:
-        logger.debug('process_z_make_json: tileId {}'.format(ts.tileId))
+        #logger.debug('process_z_make_json: tileId {}'.format(ts.tileId))
         ts.tforms[transform_slice] = consolidate_transforms(
-            ts.tforms[transform_slice], resolved_tiles.transforms, logger)
-        logger.debug('consolatedate tformlist {}'.format(ts.tforms[0]))
+            ts.tforms[transform_slice], resolved_tiles.transforms)
+        #logger.debug('consolatedate tformlist {}'.format(ts.tforms[0]))
 
-    logger.debug("tileid:{} transforms:{}".format(
-        resolved_tiles.tilespecs[0].tileId, resolved_tiles.tilespecs[0].tforms))
+    #logger.debug("tileid:{} transforms:{}".format(
+    #    resolved_tiles.tilespecs[0].tileId, resolved_tiles.tilespecs[0].tforms))
     renderapi.client.import_tilespecs(outstack, resolved_tiles.tilespecs,
                                       resolved_tiles.transforms, render=render)
     #json_filepath = renderapi.utils.renderdump_temp(resolved_tiles.tilespecs)
@@ -129,14 +135,22 @@ class ConsolidateTransforms(RenderModule):
         zvalues = zvalues[zvalues <= maxZ]
 
         self.render.run(renderapi.stack.create_stack, outstack)
+        if self.args['overwrite_zlayer']:
+            for z in zvalues:
+                try:
+                    renderapi.stack.delete_section(
+                        outstack, z, render=self.render)
+                except renderapi.errors.RenderError as e:
+                    self.logger.error(e)
+
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
-            resolved_tiles_list = pool.map(partial(
+            mypartial = partial(
                 process_z,
                 self.render,
-                self.logger,
                 stack,
                 outstack,
-                self.args['transforms_slice']), zvalues)
+                self.args['transforms_slice'])
+            resolved_tiles_list = pool.map(mypartial, zvalues)
 
         # self.render.run(
         #     renderapi.client.import_jsonfiles_parallel, outstack, json_files)
@@ -146,7 +160,6 @@ class ConsolidateTransforms(RenderModule):
             "numZ": len(zvalues)
         }
         self.output(output_d)
-
 
 if __name__ == "__main__":
     mod = ConsolidateTransforms(input_data=example_json)

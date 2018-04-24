@@ -66,7 +66,7 @@ def create_mipmaps(inputImage, outputDirectory='.', mipmaplevels=[1, 2, 3],
                               os.path.dirname(inputImage[1:]))
 
         try:
-            os.makedirs(outdir, 0o775)
+            os.makedirs(outdir, 0775)
         except OSError as e:
             pass  # TODO better validation
 
