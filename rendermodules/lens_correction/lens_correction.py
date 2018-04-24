@@ -3,8 +3,9 @@ import os
 import subprocess
 import tempfile
 import shutil
-from rendermodules.lens_correction.schemas import LensCorrectionOutput, LensCorrectionParameters
 from argschema import ArgSchemaParser
+from rendermodules.lens_correction.schemas import (
+    LensCorrectionOutput, LensCorrectionParameters)
 from rendermodules.module.render_module import RenderModuleException
 
 example_input = {
@@ -43,6 +44,7 @@ example_input = {
         "visualize": False
     }
 }
+
 
 class LensCorrectionException(RenderModuleException):
     pass
@@ -115,6 +117,7 @@ class LensCorrectionModule(ArgSchemaParser):
             "-Doutfn={}".format(outfn),
             "-Dctrans=" + str(self.args['align_params']['clearTransform']),
             "-Dvis=" + str(self.args['align_params']['visualize']),
+            "-DthreadsSIFT={}".format(self.args['max_threads_SIFT']),
             "--", "--no-splash",
             run_lc_bsh]
 
@@ -124,8 +127,7 @@ class LensCorrectionModule(ArgSchemaParser):
         except subprocess.CalledProcessError as e:
             raise(RenderModuleException("{}".format(e)))
 
-        #self.logger.debug('ret_code: {}'.format(ret))
-        
+        # self.logger.debug('ret_code: {}'.format(ret))
         if delete_procdir:
             shutil.rmtree(procdir)
 

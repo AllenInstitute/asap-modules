@@ -166,6 +166,8 @@ try {
 	param.clearTransform = Boolean.parseBoolean(System.getProperty("ctrans"));
 	param.visualize = Boolean.parseBoolean(System.getProperty("vis"));
 
+	param.maxNumThreadsSift = Integer.parseInt(System.getProperty("threadsSIFT", "1"));
+
 	// prepare to cook
 	patches = new ArrayList();
 
