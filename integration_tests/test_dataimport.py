@@ -193,10 +193,11 @@ def addMipMapsToRender_test(render,generate_params):
 """
 
 
-def test_mipmaps(render, input_stack, resolvedtiles_to_mipmap,
+@pytest.mark.parametrize("method", ["PIL", "block_reduce"])
+def test_mipmaps(render, input_stack, resolvedtiles_to_mipmap, method,
                  output_stack=None):
     assert isinstance(render, renderapi.render.RenderClient)
-    output_stack = ('{}OUT'.format(input_stack) if output_stack
+    output_stack = ('{}_{}_OUT'.format(input_stack, method) if output_stack
                     is None else output_stack)
 
     tspecs = resolvedtiles_to_mipmap.tilespecs
@@ -206,6 +207,7 @@ def test_mipmaps(render, input_stack, resolvedtiles_to_mipmap,
     ex['zstart'] = min([ts.z for ts in tspecs])
     ex['zend'] = max([ts.z for ts in tspecs])
     ex['output_dir'] = scratch_dir
+    ex['method'] = method
 
     outfn = 'TEST_genmipmaps.json'
     mod = generate_mipmaps.GenerateMipMaps(
