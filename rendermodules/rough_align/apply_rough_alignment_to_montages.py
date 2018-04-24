@@ -144,7 +144,9 @@ def apply_rough_alignment(render,
             for f in ftform:
                 t.tforms.append(f)
             if consolidateTransforms:
-                newt = consolidate_transforms(t.tforms)
+                newt = consolidate_transforms(
+                    t.tforms, sharedTransforms_highrests1,
+                    keep_ref_tforms=True)
                 t.tforms = newt
             t.z = newz
             #t.z = z
