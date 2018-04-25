@@ -155,7 +155,7 @@ class LensCorrectionParameters(ArgSchema):
     SIFT_params = Nested(SIFTParameters)
     align_params = Nested(AlignmentParameters)
     max_threads_SIFT = Int(
-        required=False, default=1, description=(
+        required=False, default=3, description=(
             "Threads specified for SIFT"))
 
 
