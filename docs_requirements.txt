@@ -1,5 +1,4 @@
 sphinxcontrib-napoleon
-numpy
 marshmallow
 render-python>=1.9.1
 argschema>=1.15.17
