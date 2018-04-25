@@ -2,10 +2,13 @@ from functools import partial
 import glob
 import os
 import json
+import numpy as np
 from PIL import Image
 import renderapi
+import pathos.multiprocessing as mp
 from rendermodules.dataimport.schemas import MakeMontageScapeSectionStackParameters, MakeMontageScapeSectionStackOutput
-from ..module.render_module import RenderModule, RenderModuleException
+from ..module.render_module import StackOutputModule, RenderModuleException
+
 
 
 
@@ -54,7 +57,7 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory, scale,
 
     z = Z[0]
     newz = Z[1]
-
+    
     # create the full path to the images
     # directory structure as per Render's RenderSectionClient output
     [q,r] = divmod(z,1000)
@@ -78,13 +81,13 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory, scale,
     # need to submit the job in a cluster
     if not os.path.isfile(filename):
         print "Montage scape does not exist for %d. Creating one now..."%z
-        render.run(renderapi.client.renderSectionClient, 
-                   input_stack, 
-                   image_directory, 
-                   [z], 
-                   scale=str(scale), 
-                   format=imgformat, 
-                   doFilter=True, 
+        render.run(renderapi.client.renderSectionClient,
+                   input_stack,
+                   image_directory,
+                   [z],
+                   scale=str(scale),
+                   format=imgformat,
+                   doFilter=True,
                    fillWithNoise=False)
 
     # get section bounds
@@ -105,7 +108,7 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory, scale,
 
     # EM_aligner expects the level 0 to be filled regardless of other level mipmaps
     d['mipmapLevels'][0] = {}
-    d['mipmapLevels'][0]['imageUrl'] = filename
+    d['mipmapLevels'][0]['imageUrl'] = "file:" + filename
 
     # remove all the mipmap levels that will disrupt the NDViz viewing
     [d['mipmapLevels'].pop(k) for k in list(d['mipmapLevels'].keys()) if k != 0]
@@ -124,6 +127,8 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory, scale,
     #d['width'] = stackbounds['maxX']/scale
     #d['height'] = stackbounds['maxY']/scale
     d['z'] = newz
+    d['layout']['sectionId'] = "%s.0"%str(int(newz))
+    print(d['layout'])
     v0 = 1.0 / scale
     v1 = 0.0
     v2 = 0.0
@@ -145,18 +150,16 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory, scale,
                                     'sections_at_%s'%str(scale),
                                     'tilespecs_%s'%tagstr,
                                     'tilespec_%04d.json'%z)
-    
+
     fp = open(tilespecfilename, 'w')
     json.dump([ts.to_dict() for ts in allts], fp, indent=4)
     fp.close()
 
 
-
-
-class MakeMontageScapeSectionStack(RenderModule):
+class MakeMontageScapeSectionStack(StackOutputModule):
     default_schema = MakeMontageScapeSectionStackParameters
     default_output_schema = MakeMontageScapeSectionStackOutput
-    
+
     def run(self):
         self.logger.debug('Montage scape stack generation module')
 
@@ -164,7 +167,7 @@ class MakeMontageScapeSectionStack(RenderModule):
         zvalues = self.render.run(
             renderapi.stack.get_z_values_for_stack,
             self.args['montage_stack'])
-        zvalues1 = range(self.args['zstart'], self.args['zend']+1)
+        zvalues1 = self.zValues
         zvalues = list(set(zvalues1).intersection(set(zvalues)))
 
         if not zvalues:
@@ -173,7 +176,10 @@ class MakeMontageScapeSectionStack(RenderModule):
         # generate tuple of old and new Zs
         # setting a new z range does not check whether the range overlaps with existing sections/chunks in the output stack
         if self.args['set_new_z']:
-            newzvalues = range(self.args['new_z_start'], self.args['new_z_start']+len(zvalues))
+            zvalues = list(np.sort(np.array(zvalues)))
+            diffarray = [x-zvalues[0] for x in zvalues]
+            newzvalues = [self.args['new_z_start']+x for x in diffarray]
+            #newzvalues = range(self.args['new_z_start'], self.args['new_z_start']+len(zvalues))
         else:
             newzvalues = zvalues
 
@@ -188,12 +194,12 @@ class MakeMontageScapeSectionStack(RenderModule):
         #f.write("%d"%len(zvalues))
         #f.close()
 
-        tilespecdir = os.path.join(self.args['image_directory'], 
-                                   self.args['render']['project'], 
-                                   self.args['montage_stack'], 
-                                   'sections_at_%s'%str(self.args['scale']), 
+        tilespecdir = os.path.join(self.args['image_directory'],
+                                   self.args['render']['project'],
+                                   self.args['montage_stack'],
+                                   'sections_at_%s'%str(self.args['scale']),
                                    'tilespecs_%s'%tagstr)
-        
+
         if not os.path.exists(tilespecdir):
             os.makedirs(tilespecdir)
 
@@ -209,18 +215,18 @@ class MakeMontageScapeSectionStack(RenderModule):
             tagstr,
             self.args['imgformat'])
 
-        #with renderapi.client.WithPool(self.args['pool_size']) as pool:
-        #    pool.map(mypartial, Z)
+        with renderapi.client.WithPool(self.args['pool_size']) as pool:
+            pool.map(mypartial, Z)
 
-        for zs in Z:
-            create_montage_scape_tile_specs(self.render,
-                                            self.args['montage_stack'],
-                                            self.args['image_directory'],
-                                            self.args['scale'],
-                                            self.args['render']['project'],
-                                            tagstr,
-                                            self.args['imgformat'],
-                                            zs)
+        #for zs in Z:
+        #    create_montage_scape_tile_specs(self.render,
+        #                                    self.args['montage_stack'],
+        #                                    self.args['image_directory'],
+        #                                    self.args['scale'],
+        #                                    self.args['render']['project'],
+        #                                    tagstr,
+        #                                    self.args['imgformat'],
+        #                                    zs)
 
         # get all the output tilespec json files
         tspath = os.path.join(self.args['image_directory'],
@@ -235,10 +241,11 @@ class MakeMontageScapeSectionStack(RenderModule):
             raise RenderModuleException('No tilespecs json files were generated')
 
         # create the stack if it doesn't exist
-        if self.args['output_stack'] not in self.render.run(renderapi.render.get_stacks_by_owner_project):
+        if self.output_stack not in self.render.run(renderapi.render.get_stacks_by_owner_project):
             # stack does not exist
+            # TODO configurable stack metadata
             self.render.run(renderapi.stack.create_stack,
-                            self.args['output_stack'],
+                            self.output_stack,
                             cycleNumber=5,
                             cycleStepNumber=1,
                             stackResolutionX = 1,
@@ -246,15 +253,15 @@ class MakeMontageScapeSectionStack(RenderModule):
 
         # import tilespecs to render
         self.render.run(renderapi.client.import_jsonfiles_parallel,
-                        self.args['output_stack'],
+                        self.output_stack,
                         jsonfiles)
 
         # set stack state to complete
         self.render.run(renderapi.stack.set_stack_state,
-                        self.args['output_stack'],
+                        self.output_stack,
                         state='COMPLETE')
 
-        self.output({'output_stack': self.args['output_stack']})
+        self.output({'output_stack': self.output_stack})
 
 
 if __name__ == "__main__":

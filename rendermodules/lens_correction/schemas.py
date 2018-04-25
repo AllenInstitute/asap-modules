@@ -1,8 +1,8 @@
 from argschema import ArgSchema
-from argschema.fields import Bool, Float, Int, Nested, Str, InputFile, List, Boolean
+from argschema.fields import Bool, Float, Int, Nested, Str, InputFile
 from argschema.schemas import DefaultSchema
 from marshmallow.validate import OneOf
-from rendermodules.module.schemas import RenderParameters
+from rendermodules.module.schemas import StackTransitionParameters
 
 class SIFTParameters(DefaultSchema):
     initialSigma = Float(
@@ -107,33 +107,12 @@ class TransformParameters(DefaultSchema):
         description='mpicbg-compatible dataString')
 
 
-class ApplyLensCorrectionParameters(RenderParameters):
-    inputStack = Str(
-        required=True,
-        description='Render Stack with tiles that should be transformed')
-    outputStack = Str(
-        required=True,
-        description=('Render Stack to which transformed tiles will be added'))
-    zs = List(
-        Int, required=True,
-        description='z indices to which transform should be prepended')
+class ApplyLensCorrectionParameters(StackTransitionParameters):
     transform = Nested(TransformParameters)
     refId = Str(
         allow_none=True, required=True,
         description=('Reference ID to use when uploading transform to '
                      'render database (Not Implemented)'))
-    pool_size = Int(
-        required=False, default=1,
-        description="processes to spawn for parallelization")
-    close_stack = Boolean(
-        required=False, default=False,
-        description=("whether to set output stack to 'COMPLETE' "
-                     "upon completion"))
-    overwrite_zlayer = Boolean(
-        required=False, default=False,
-        description=("whether to remove the existing layer from the "
-                     "target stack before uploading."))
-
 
 
 class ApplyLensCorrectionOutput(DefaultSchema):
@@ -141,6 +120,7 @@ class ApplyLensCorrectionOutput(DefaultSchema):
                 description='stack to which transformed tiles were written')
     refId = Str(required=True,
                 description='unique identifier string used as reference ID')
+
 
 class LensCorrectionParameters(ArgSchema):
     manifest_path = InputFile(

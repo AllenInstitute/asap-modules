@@ -1,11 +1,12 @@
-import marshmallow as mm
 import argschema
 from marshmallow import post_load
-from ..module.render_module import RenderParameters
-from argschema.fields import Bool, Float, Int, Str, InputDir, List
+from ..module.schemas import (RenderParameters, ZValueParameters,
+                              ProcessPoolParameters)
+from argschema.fields import Bool, Int, Str, InputDir
 
 
-class DetectMontageDefectsParameters(RenderParameters):
+class DetectMontageDefectsParameters(
+        RenderParameters, ZValueParameters, ProcessPoolParameters):
     prestitched_stack = Str(
         required=True,
         description='Pre stitched stack (raw stack)')
@@ -20,12 +21,6 @@ class DetectMontageDefectsParameters(RenderParameters):
         default=None,
         missing=None,
         description='Name of the match collection owner')
-    minZ = Int(
-        required=True,
-        description='start z index of section')
-    maxZ = Int(
-        required=True,
-        description='end z index of section')
     residual_threshold = Int(
         required=False,
         default=4,
@@ -51,17 +46,12 @@ class DetectMontageDefectsParameters(RenderParameters):
         default=None,
         missing=None,
         description="Folder to save the Bokeh plot defaults to /tmp directory")
-    pool_size = Int(
-        required=False,
-        default=10,
-        missing=10,
-        description='Number of cores for parallel processing')
-    
+
     @post_load
     def add_match_collection_owner(self, data):
         if data['match_collection_owner'] is None:
             data['match_collection_owner'] = data['render']['owner']
-            
+
 
 class DetectMontageDefectsParametersOutput(argschema.schemas.DefaultSchema):
     output_html = Str(
@@ -73,8 +63,8 @@ class DetectMontageDefectsParametersOutput(argschema.schemas.DefaultSchema):
         required=True,
         description='List of sections that passed QC')
     hole_sections = argschema.fields.List(
-        argschema.fields.Int, 
-        required=True, 
+        argschema.fields.Int,
+        required=True,
         description='List of z values which failed QC and has holes')
     gap_sections = argschema.fields.List(
         argschema.fields.Int,
@@ -85,7 +75,7 @@ class DetectMontageDefectsParametersOutput(argschema.schemas.DefaultSchema):
         required=True,
         description='List of z values which have seams detected')
     seam_centroids = argschema.fields.NumpyArray(
-        dtype='object', 
+        dtype='object',
         required=True,
         description='An array of (x,y) positions of seams for each section with seams')
 

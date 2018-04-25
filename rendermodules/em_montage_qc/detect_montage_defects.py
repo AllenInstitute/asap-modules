@@ -34,17 +34,20 @@ example = {
 example = {
     "render":{
         "host": "http://em-131db",
-        "port": 8081,
-        "owner": "timf",
-        "project": "17021_1R",
-        "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_20170613/render-ws-java-client/src/main/scripts"
+        "port": 8080,
+        "owner": "TEM",
+        "project": "247488_8R",
+        "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts"
     },
     "prestitched_stack": "em_2d_montage_lc",
-    "poststitched_stack": "em_2d_montage_solved",
-    "match_collection_owner": "timf",
+    "poststitched_stack": "em_2d_montage_solved_TEMCA2_1222_1260",
+    "match_collection_owner": "TEM",
     "match_collection": "default_point_matches",
-    "minZ": 47,
-    "maxZ": 50,
+    "minZ": 1244,
+    "maxZ": 1244,
+    "residual_threshold":6,
+    "neighbor_distance": 50,
+    "min_cluster_size":20,
     "pool_size": 10
 }
 '''
@@ -55,7 +58,7 @@ def detect_seams(render, stack, match_collection, match_owner, z, residual_thres
 
     # Compute residuals and other stats for this z
     stats = cr.compute_residuals_within_group(render, stack, match_owner, match_collection, z)
-    
+    print(z)
     # get mean positions of the point matches as numpy array
     pt_match_positions = np.empty((0,2))
     for p in stats['pt_match_positions']:
@@ -303,6 +306,8 @@ class DetectMontageDefectsModule(RenderModule):
         seams = [zvalues[i] for i in seams_indices]
 
         combinedz = list(set(holes + gaps + seams))
+
+        print(combinedz)
         
         qc_passed_sections = set(zvalues) - set(combinedz)
         centroids = [seam_centroids[i] for i in seams_indices]

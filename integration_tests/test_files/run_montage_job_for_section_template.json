@@ -9,7 +9,7 @@
     "solver_options": {
   		"degree": 1,
   		"solver": "backslash",
-  		"transfac": 1,
+  		"transfac": 1.0,
   		"lambda_value": 0.005,
   		"edge_lambda": 0.005,
   		"nbrs": 2,

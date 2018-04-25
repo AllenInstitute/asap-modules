@@ -30,7 +30,7 @@ ex = {
         "SIFTmaxScale": [0.82],
         "SIFTminScale": [0.28],
         "SIFTsteps": [3],
-        "renderScale": [0.35, 0.1]
+        "renderScale": [0.1, 0.35]
     },
     "outputDirectory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch/pmopts",
     "tile_stack": "point_match_optimization_test",
@@ -231,7 +231,6 @@ def compute_point_matches(render, stack, tile1, tile2, pGroupId, qGroupId, outpu
                                                     collection_name,
                                                     renderScale)
 
-    print(match_img_filename)
     # create the tilepair url for this parameter setting
     tilepair_base_url = '%s:%d/render-ws/view/tile-pair.html'%(render.DEFAULT_KWARGS['host'], render.DEFAULT_KWARGS['port'])
     tilepair_base_url += '?renderStackOwner=%s'%(render.DEFAULT_KWARGS['owner'])

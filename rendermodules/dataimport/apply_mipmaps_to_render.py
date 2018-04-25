@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 import renderapi
-from ..module.render_module import RenderModule, RenderModuleException
+from ..module.render_module import StackTransitionModule
 from functools import partial
 import urllib
 import urlparse
@@ -32,10 +32,13 @@ example = {
 def addMipMapsToRender(render, input_stack, mipmap_dir, imgformat, levels, z):
     # tilespecPaths = []
 
-    tilespecs = render.run(renderapi.tilespec.get_tile_specs_from_z,
-                           input_stack, z)
+    # tilespecs = render.run(renderapi.tilespec.get_tile_specs_from_z,
+    #                        input_stack, z)
+    resolvedtiles = render.run(
+        renderapi.resolvedtiles.get_resolved_tiles_from_z,
+        input_stack, z)
 
-    for ts in tilespecs:
+    for ts in resolvedtiles.tilespecs:
         mm1 = ts.ip.mipMapLevels[0]
 
         oldUrl = mm1.imageUrl
@@ -58,32 +61,18 @@ def addMipMapsToRender(render, input_stack, mipmap_dir, imgformat, levels, z):
             print scUrl
             mm1 = renderapi.tilespec.MipMapLevel(level=i, imageUrl=scUrl)
             ts.ip.update(mm1)
-    return tilespecs
+    return resolvedtiles
     # tilespecPaths.append(renderapi.utils.renderdump_temp(tilespecs))
     # return tilespecPaths
 
 
-class AddMipMapsToStack(RenderModule):
+class AddMipMapsToStack(StackTransitionModule):
     default_schema = AddMipMapsToStackParameters
     default_output_schema = AddMipMapsToStackOutput
 
     def run(self):
         self.logger.debug('Applying mipmaps to stack')
-
-        # get the list of z indices
-        zvalues = self.render.run(
-            renderapi.stack.get_z_values_for_stack, self.args['input_stack'])
-
-        try:
-            zvalues1 = range(self.args['zstart'], self.args['zend']+1)
-            zvalues = list(set(zvalues1).intersection(set(zvalues))) # extract only those z's that exist in the input stack
-        except KeyError:
-            try:
-                if self.args['z'] in zvalues:
-                    zvalues = [self.args['z']]
-            except KeyError:
-                raise RenderModuleException('No z value given for mipmap generation')
-
+        zvalues = self.get_overlapping_inputstack_zvalues()
         if len(zvalues) == 0:
             self.logger.error('No sections found for stack {}'.format(
                 self.args['input_stack']))
@@ -95,37 +84,25 @@ class AddMipMapsToStack(RenderModule):
             self.args['levels'])
 
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
-            tilespecs = [i for l in pool.map(mypartial, zvalues)
-                         for i in l]
+            #  tilespecs = [i for l in pool.map(mypartial, zvalues)
+            #               for i in l]
+
+            allresolved = pool.map(mypartial, zvalues)
+
+        tilespecs = [i for l in (
+            resolvedtiles.tilespecs for resolvedtiles in allresolved)
+                     for i in l]
+        identified_tforms = {tform.transformId: tform for tform in (
+            i for l in (resolvedtiles.transforms
+                        for resolvedtiles in allresolved)
+            for i in l)}.values()
 
         output_stack = (self.args['input_stack'] if
                         self.args['output_stack'] is None
                         else self.args['output_stack'])
 
-        if output_stack not in self.render.run(
-                renderapi.render.get_stacks_by_owner_project):
-            # stack does not exist
-            self.render.run(renderapi.stack.create_stack,
-                            output_stack)
-
-        self.render.run(renderapi.stack.set_stack_state,
-                        output_stack, 'LOADING')
-
-        if self.args['overwrite_zlayer']:
-            for z in zvalues:
-                try:
-                    renderapi.stack.delete_section(
-                        output_stack, z,
-                        render=self.render)
-                except renderapi.errors.RenderError as e:
-                    self.logger.error(e)
-
-        self.render.run(renderapi.client.import_tilespecs_parallel,
-                        output_stack, tilespecs,
-                        poolsize=self.args['pool_size'], close_stack=False)
-        # self.render.run(renderapi.client.import_jsonfiles_parallel,
-        #                 output_stack, tilespecPaths,
-        #                 close_stack=self.args['close_stack'])
+        self.output_tilespecs_to_stack(tilespecs, output_stack,
+                                       sharedTransforms=identified_tforms)
         self.output({"output_stack": output_stack})
 
 

@@ -5,6 +5,7 @@ import renderapi
 import tempfile
 from ..module.render_module import RenderModule, RenderModuleException
 from rendermodules.montage.schemas import SolveMontageSectionParameters
+from marshmallow import ValidationError
 import time
 
 if __name__ == "__main__" and __package__ is None:
