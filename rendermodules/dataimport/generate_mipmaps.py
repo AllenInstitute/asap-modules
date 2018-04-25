@@ -33,11 +33,12 @@ example = {
 
 def create_mipmap_from_tuple(mipmap_tuple, levels=[1, 2, 3],
                              imgformat='tif', convertTo8bit=True,
-                             force_redo=True):
+                             force_redo=True, **kwargs):
     (filepath, downdir) = mipmap_tuple
     return create_mipmaps(filepath, outputDirectory=downdir,
                           mipmaplevels=levels, convertTo8bit=convertTo8bit,
-                          outputformat=imgformat, force_redo=force_redo)
+                          outputformat=imgformat,
+                          force_redo=force_redo, **kwargs)
 
 
 def get_filepath_from_tilespec(ts):
@@ -50,7 +51,8 @@ def get_filepath_from_tilespec(ts):
 
 
 def make_tilespecs_and_cmds(render, inputStack, output_dir, zvalues, levels,
-                            imgformat, convert_to_8bit, force_redo, pool_size):
+                            imgformat, convert_to_8bit, force_redo, pool_size,
+                            method):
     mipmap_args = []
 
     for z in zvalues:
@@ -62,7 +64,7 @@ def make_tilespecs_and_cmds(render, inputStack, output_dir, zvalues, levels,
             mipmap_args.append((filepath_in, output_dir))
 
     mypartial = partial(
-        create_mipmap_from_tuple, levels=range(1, levels + 1),
+        create_mipmap_from_tuple, method=method, levels=range(1, levels + 1),
         convertTo8bit=convert_to_8bit, force_redo=force_redo,
         imgformat=imgformat)
 
@@ -103,24 +105,18 @@ class GenerateMipMaps(StackInputModule):
 
         self.logger.debug("Creating mipmaps...")
 
-        if self.args['method'] in ['PIL']:
-            mipmap_args = make_tilespecs_and_cmds(self.render,
-                                                  self.args['input_stack'],
-                                                  self.args['output_dir'],
-                                                  zvalues,
-                                                  self.args['levels'],
-                                                  self.args['imgformat'],
-                                                  self.args['convert_to_8bit'],
-                                                  self.args['force_redo'],
-                                                  self.args['pool_size'])
+        mipmap_args = make_tilespecs_and_cmds(self.render,
+                                              self.args['input_stack'],
+                                              self.args['output_dir'],
+                                              zvalues,
+                                              self.args['levels'],
+                                              self.args['imgformat'],
+                                              self.args['convert_to_8bit'],
+                                              self.args['force_redo'],
+                                              self.args['pool_size'],
+                                              self.args['method'])
 
-        else:
-            raise RenderModuleException(
-                "method {} not supported".format(self.args['method']))
-            # self.logger.debug("mipmaps generation checks...")
-            # missing_files = verify_mipmap_generation(mipmap_args)
-            # if not missing_files:
-            #     self.logger.error("not all mipmaps have been generated")
+
         self.output({"levels": self.args["levels"],
                      "output_dir": self.args["output_dir"]})
 

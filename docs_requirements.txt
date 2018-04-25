@@ -13,3 +13,4 @@ bokeh
 matplotlib
 opencv-python
 jinja2
+scikit-image
