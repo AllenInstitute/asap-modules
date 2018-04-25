@@ -32,10 +32,13 @@ example = {
 def addMipMapsToRender(render, input_stack, mipmap_dir, imgformat, levels, z):
     # tilespecPaths = []
 
-    tilespecs = render.run(renderapi.tilespec.get_tile_specs_from_z,
-                           input_stack, z)
+    # tilespecs = render.run(renderapi.tilespec.get_tile_specs_from_z,
+    #                        input_stack, z)
+    resolvedtiles = render.run(
+        renderapi.resolvedtiles.get_resolved_tiles_from_z,
+        input_stack, z)
 
-    for ts in tilespecs:
+    for ts in resolvedtiles.tilespecs:
         mm1 = ts.ip.mipMapLevels[0]
 
         oldUrl = mm1.imageUrl
@@ -58,7 +61,7 @@ def addMipMapsToRender(render, input_stack, mipmap_dir, imgformat, levels, z):
             print scUrl
             mm1 = renderapi.tilespec.MipMapLevel(level=i, imageUrl=scUrl)
             ts.ip.update(mm1)
-    return tilespecs
+    return resolvedtiles
     # tilespecPaths.append(renderapi.utils.renderdump_temp(tilespecs))
     # return tilespecPaths
 
@@ -81,14 +84,25 @@ class AddMipMapsToStack(StackTransitionModule):
             self.args['levels'])
 
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
-            tilespecs = [i for l in pool.map(mypartial, zvalues)
-                         for i in l]
+            #  tilespecs = [i for l in pool.map(mypartial, zvalues)
+            #               for i in l]
+
+            allresolved = pool.map(mypartial, zvalues)
+
+        tilespecs = [i for l in (
+            resolvedtiles.tilespecs for resolvedtiles in allresolved)
+                     for i in l]
+        identified_tforms = {tform.transformId: tform for tform in (
+            i for l in (resolvedtiles.transforms
+                        for resolvedtiles in allresolved)
+            for i in l)}.values()
 
         output_stack = (self.args['input_stack'] if
                         self.args['output_stack'] is None
                         else self.args['output_stack'])
 
-        self.output_tilespecs_to_stack(tilespecs, output_stack)
+        self.output_tilespecs_to_stack(tilespecs, output_stack,
+                                       sharedTransforms=identified_tforms)
         self.output({"output_stack": output_stack})
 
 

@@ -8,6 +8,7 @@ import glob
 import copy
 import marshmallow as mm
 from test_data import (ROUGH_MONTAGE_TILESPECS_JSON,
+                       ROUGH_MONTAGE_TRANSFORM_JSON,
                        ROUGH_POINT_MATCH_COLLECTION,
                        ROUGH_DS_TEST_TILESPECS_JSON,
                        ROUGH_MAPPED_PT_MATCH_COLLECTION,
@@ -37,13 +38,14 @@ def render():
     return render
 
 
-
 @pytest.fixture(scope='module')
-def tspecs_from_json():
+def resolvedtiles_from_json():
     tilespecs = [renderapi.tilespec.TileSpec(json=d)
-        for d in ROUGH_MONTAGE_TILESPECS_JSON]
-    return tilespecs
-
+                 for d in ROUGH_MONTAGE_TILESPECS_JSON]
+    transforms = [renderapi.transform.load_transform_json(d)
+                  for d in ROUGH_MONTAGE_TRANSFORM_JSON]
+    return renderapi.resolvedtiles.ResolvedTiles(
+        tilespecs, transforms)
 
 
 @pytest.fixture(scope='module')
@@ -53,14 +55,15 @@ def tspecs():
     return tilespecs
 
 
-
 # A stack with multiple sections montaged
 @pytest.fixture(scope='module')
-def montage_stack(render,tspecs_from_json):
+def montage_stack(render, resolvedtiles_from_json):
+    tspecs = resolvedtiles_from_json.tilespecs
+    tforms = resolvedtiles_from_json.transforms
     test_montage_stack = 'input_montage_stack'
     renderapi.stack.create_stack(test_montage_stack, render=render)
     renderapi.client.import_tilespecs(test_montage_stack,
-                                      tspecs_from_json,
+                                      tspecs, sharedTransforms=tforms,
                                       render=render)
     renderapi.stack.set_stack_state(test_montage_stack,
                                     'COMPLETE',
@@ -68,7 +71,7 @@ def montage_stack(render,tspecs_from_json):
 
     # assure stack is built correctly
     assert len({tspec.tileId for tspec
-                in tspecs_from_json}.symmetric_difference(set(
+                in tspecs}.symmetric_difference(set(
                     renderapi.stack.get_stack_tileIds(
                         test_montage_stack, render=render)))) == 0
 
@@ -384,7 +387,7 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
     })
     ex2 = dict(ex, **{'minZ': 1022, 'maxZ': 1020})
     ex4 = dict(ex, **{'map_z': True, 'map_z_start': -1})
-    
+
     mod = ApplyRoughAlignmentTransform(input_data=ex, args=[])
     mod.run()
 
@@ -395,6 +398,19 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
     zs = range(zstart, zend+1)
 
     assert(set(zvalues) == set(zs))
+    for z in zs:
+        # WARNING: montage stack should be different than output stack
+        in_resolvedtiles = render.run(
+            renderapi.resolvedtiles.get_resolved_tiles_from_z,
+                ex['montage_stack'], z)
+        out_resolvedtiles = render.run(
+            renderapi.resolvedtiles.get_resolved_tiles_from_z,
+                ex['output_stack'], z)
+        assert in_resolvedtiles.transforms
+        assert in_resolvedtiles.transforms == out_resolvedtiles.transforms
+        assert all([isinstance(
+            ts.tforms[0], renderapi.transform.ReferenceTransform)
+                    for ts in out_resolvedtiles.tilespecs])
 
     apply_rough_alignment(render,
                           ex['montage_stack'],
@@ -409,7 +425,6 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
     # running again for code coverage
     mod.run()
 
-
     mod = ApplyRoughAlignmentTransform(input_data=ex2, args=[])
     with pytest.raises(RenderModuleException):
         mod.run()
@@ -417,7 +432,7 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
     #mod = ApplyRoughAlignmentTransform(input_data=ex3, args=[])
     #with pytest.raises(RenderModuleException):
     #    mod.run()
-    
+
     with pytest.raises(mm.ValidationError):
         mod = ApplyRoughAlignmentTransform(input_data=ex4, args=[])
 
@@ -519,7 +534,7 @@ def test_make_montage_stack_without_downsamples(render, one_tile_montage, tmpdir
 
     if not os.path.exists(tilespecdir):
         os.makedirs(tilespecdir)
-    
+
     create_montage_scape_tile_specs(render,
                                     params['montage_stack'],
                                     params['image_directory'],
@@ -576,7 +591,7 @@ def test_setting_new_z_montage_scape(render, montage_stack, downsample_sections_
     outjson = 'test_montage_scape_output.json'
     with pytest.raises(mm.ValidationError):
         mod = MakeMontageScapeSectionStack(input_data=params, args=['--output_json', outjson])
-    
+
     zvalues = renderapi.stack.get_z_values_for_stack(output_stack, render=render)
     assert(set(zvalues) == set([1020, 1021, 1022]))
 

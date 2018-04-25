@@ -56,16 +56,22 @@ def flatten_and_dereference_tforms(tforms, ref_tforms):
     return deref_tforms
 
 
-def consolidate_transforms(tforms, ref_tforms=[], logger=logging.getLogger(), makePolyDegree=0):
+def consolidate_transforms(tforms, ref_tforms=[], logger=logging.getLogger(),
+                           makePolyDegree=0, keep_ref_tforms=False):
     # first flatten and dereference this transform list
-    tforms = flatten_and_dereference_tforms(tforms, ref_tforms)
+    tforms = (flatten_and_dereference_tforms(tforms, ref_tforms)
+              if not keep_ref_tforms else flatten_tforms(tforms))
     tform_total = AffineModel()
     start_index = 0
     total_affines = 0
     new_tform_list = []
 
     for i, tform in enumerate(tforms):
-        if 'AffineModel2D' in tform.className:
+        try:
+            isaffine = 'AffineModel2D' in tform.className
+        except AttributeError:
+            isaffine = False
+        if isaffine:
             total_affines += 1
             tform_total = tform.concatenate(tform_total)
             # tform_total.M=tform.M.dot(tform_total.M)
