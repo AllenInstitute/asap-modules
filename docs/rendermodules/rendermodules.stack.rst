@@ -12,6 +12,14 @@ rendermodules\.stack\.consolidate\_transforms module
     :undoc-members:
     :show-inheritance:
 
+rendermodules\.stack\.redirect\_mipmaps module
+----------------------------------------------
+
+.. automodule:: rendermodules.stack.redirect_mipmaps
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 rendermodules\.stack\.schemas module
 ------------------------------------
 

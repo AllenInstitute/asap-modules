@@ -1,6 +1,13 @@
 rendermodules\.module package
 =============================
 
+Subpackages
+-----------
+
+.. toctree::
+
+    rendermodules.module.schemas
+
 Submodules
 ----------
 
@@ -8,14 +15,6 @@ rendermodules\.module\.render\_module module
 --------------------------------------------
 
 .. automodule:: rendermodules.module.render_module
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-rendermodules\.module\.schemas module
--------------------------------------
-
-.. automodule:: rendermodules.module.schemas
     :members:
     :undoc-members:
     :show-inheritance:
