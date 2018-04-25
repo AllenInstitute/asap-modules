@@ -154,6 +154,9 @@ class LensCorrectionParameters(ArgSchema):
                      "unspecified or create temporary directory if None)"))
     SIFT_params = Nested(SIFTParameters)
     align_params = Nested(AlignmentParameters)
+    max_threads_SIFT = Int(
+        required=False, default=3, description=(
+            "Threads specified for SIFT"))
 
 
 class LensCorrectionOutput(DefaultSchema):
