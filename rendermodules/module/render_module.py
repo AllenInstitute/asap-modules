@@ -80,8 +80,9 @@ class StackOutputModule(RenderModule):
                 self.logger.error(e)
 
     def output_tilespecs_to_stack(self, tilespecs, output_stack=None,
-                                  close_stack=None, overwrite_zlayer=None,
-                                  render=None, pool_size=None, **kwargs):
+                                  sharedTransforms=None, close_stack=None,
+                                  overwrite_zlayer=None, render=None,
+                                  pool_size=None, **kwargs):
         # TODO decorator to handle kwarg/attribute overrides?
         output_stack = (self.output_stack if output_stack is None
                         else output_stack)
@@ -105,8 +106,8 @@ class StackOutputModule(RenderModule):
             self.delete_zValues(output_stack=output_stack, render=render,
                                 **kwargs)
         renderapi.client.import_tilespecs_parallel(
-            output_stack, tilespecs, pool_size=pool_size,
-            close_stack=close_stack, render=render)
+            output_stack, tilespecs, sharedTransforms=sharedTransforms,
+            pool_size=pool_size, close_stack=close_stack, render=render)
 
 
 class StackTransitionModule(StackOutputModule, StackInputModule):

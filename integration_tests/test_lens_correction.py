@@ -134,7 +134,9 @@ def test_calc_lens_correction(example_tform_dict, test_points,tmpdir):
 
     compute_lc_norm_and_max(test_example_tform, test_new_tform)
 
-def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_tform_dict, test_points):
+
+def test_apply_lens_correction(render, stack_no_lc, stack_lc,
+                               example_tform_dict, test_points):
     params = {
         "render": render_params,
         "inputStack": stack_no_lc,
@@ -146,23 +148,35 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc, example_tform_dict
         "overwrite_zlayer": True
     }
 
-    mod = ApplyLensCorrection(input_data=params, args=['--output_json', 'test_ALC_out.json'])
+    out_fn = 'test_ALC_out.json'
+    mod = ApplyLensCorrection(input_data=params,
+                              args=['--output_json', out_fn])
     mod.run()
 
-    example_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=params['transform']['dataString'])
+    with open(out_fn, 'r') as f:
+        refId = json.load(f)['refId']
+
+    example_tform = renderapi.transform.NonLinearCoordinateTransform(
+        dataString=params['transform']['dataString'], transformId=refId)
 
     test_example_tform = example_tform.tform(test_points)
 
     for z in params['zs']:
-        tspecs = renderapi.tilespec.get_tile_specs_from_z(params['output_stack'], z, render=render)
-
-        for ts in tspecs:
-            new_tform_dict = ts.tforms[0].to_dict()
-            new_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=new_tform_dict['dataString'])
-
-            assert np.array_equal([example_tform.height, example_tform.width, example_tform.length, example_tform.dimension],
-                                  [new_tform.height, new_tform.width, new_tform.length, new_tform.dimension])
-
-            test_new_tform = new_tform.tform(test_points)
-
-            compute_lc_norm_and_max(test_example_tform, test_new_tform)
+        resolvedtiles = renderapi.resolvedtiles.get_resolved_tiles_from_z(
+            params['output_stack'], z, render=render)
+        tspecs = resolvedtiles.tilespecs
+        tforms = resolvedtiles.transforms
+        # all tiles in z should be given same ref tform
+        assert all([ts.tforms[0].refId == refId for ts in tspecs])
+        # should only be one ref tform
+        assert len(tforms) == 1
+        new_tform = tforms[0]
+        print(new_tform.to_dict())
+        assert new_tform.transformId == refId
+        assert np.array_equal(
+            [example_tform.height, example_tform.width, example_tform.length,
+                example_tform.dimension],
+            [new_tform.height, new_tform.width, new_tform.length,
+                new_tform.dimension])
+        test_new_tform = new_tform.tform(test_points)
+        compute_lc_norm_and_max(test_example_tform, test_new_tform)
