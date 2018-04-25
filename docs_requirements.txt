@@ -2,3 +2,16 @@ sphinxcontrib-napoleon
 numpy
 marshmallow
 argschema>=1.15.2
+render-python>=1.9.1
+argschema>=1.15.17
+numpy
+pillow
+tifffile
+pathlib
+scipy
+rtree
+networkx
+bokeh
+matplotlib
+opencv-python
+jinja2
