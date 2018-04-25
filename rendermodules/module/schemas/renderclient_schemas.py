@@ -132,7 +132,7 @@ class FeatureStorageParameters(argschema.schemas.DefaultSchema):
         "Root directory for saved feature lists. "
         "Features extracted from dynamically rendered canvases "
         "if excluded or None."))
-    requireStoredFeatures = Boolean(required=False, description=(
+    requireStoredFeature = Boolean(required=False, description=(
         "Whether to throw an exception in case features stored in "
         "rootFeatureDirectory cannot be found. "
         "Missing features are extracted from dynamically rendered canvases "

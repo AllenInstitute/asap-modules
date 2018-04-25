@@ -71,10 +71,8 @@ def render_json_template(env, template_file, **kwargs):
 # test data for dataimport testing
 METADATA_FILE = os.path.join(example_dir, 'TEMCA_mdfile.json')
 
-MIPMAP_TILESPECS_JSON = render_json_template(
-    example_env, 'mipmap_tilespecs_ref.json', test_data_root=TEST_DATA_ROOT)
-MIPMAP_TRANSFORMS_JSON = render_json_template(
-    example_env, 'mipmap_ref_tforms.json', test_data_root=TEST_DATA_ROOT)
+MIPMAP_TILESPECS_JSON = render_json_template(example_env, 'mipmap_tilespecs.json',
+                                             test_data_root=TEST_DATA_ROOT)
 
 cons_ex_tilespec_json = render_json_template(example_env, 'cycle1_step1_acquire_tiles.json',
                                              test_data_root=TEST_DATA_ROOT)
@@ -166,12 +164,8 @@ test_em_montage_parameters = render_json_template(example_env,
     montage_z = montage_z)
 
 # rough alignment parameters' data
-ROUGH_MONTAGE_TILESPECS_JSON = render_json_template(
-    example_env, 'rough_align_montage_tilespecs_ref.json',
-    test_data_root=TEST_DATA_ROOT)
-ROUGH_MONTAGE_TRANSFORM_JSON = render_json_template(
-    example_env, 'rough_align_montage_ref_transforms.json',
-    test_data_root=TEST_DATA_ROOT)
+ROUGH_MONTAGE_TILESPECS_JSON = render_json_template(example_env, 'rough_align_montage_tilespecs.json',
+                                                    test_data_root=TEST_DATA_ROOT)
 
 ROUGH_DS_TEST_TILESPECS_JSON = render_json_template(example_env, 'rough_align_downsample_test_tilespecs.json',
                                                     test_data_root=TEST_DATA_ROOT)
@@ -234,3 +228,5 @@ montage_qc_project = "em_montage_qc_test"
 # Point match optimization
 PT_MATCH_STACK_TILESPECS = render_json_template(example_env, 'pt_match_optimization_tilespecs.json',
                                                 test_data_root=TEST_DATA_ROOT)
+
+

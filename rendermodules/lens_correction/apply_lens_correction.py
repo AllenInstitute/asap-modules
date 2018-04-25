@@ -72,9 +72,6 @@ class ApplyLensCorrection(StackTransitionModule):
 
         lc_tform = renderapi.transform.load_transform_json(
             self.args['transform'])
-        lc_tform.transformId = refId
-        ref_lc = renderapi.transform.ReferenceTransform(
-            refId=lc_tform.transformId)
         # new tile specs for each z selected
         new_tspecs = []
         for z in self.zValues:
@@ -82,13 +79,13 @@ class ApplyLensCorrection(StackTransitionModule):
                 self.input_stack, z, render=r)
 
             for ts in tspecs:
-                ts.tforms = [ref_lc] + ts.tforms
+                ts.tforms = [lc_tform] + ts.tforms
                 new_tspecs.append(ts)
 
         renderapi.stack.create_stack(outputStack, render=r)
         renderapi.stack.set_stack_state(outputStack, 'LOADING', render=r)
 
-        self.output_tilespecs_to_stack(new_tspecs, sharedTransforms=[lc_tform])
+        self.output_tilespecs_to_stack(new_tspecs)
         # output dict
         output = {}
         output['stack'] = outputStack

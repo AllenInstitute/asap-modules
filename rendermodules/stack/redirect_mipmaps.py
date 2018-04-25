@@ -51,10 +51,8 @@ class RedirectMipMapsModule(StackTransitionModule):
                      self.args['new_mipmap_directories']}
         zs = self.get_overlapping_inputstack_zvalues()
         for z in zs:
-            resolvedtiles = renderapi.resolvedtiles.get_resolved_tiles_from_z(
+            tspecs = renderapi.tilespec.get_tile_specs_from_z(
                 self.input_stack, z, render=self.render)
-            tspecs = resolvedtiles.tilespecs
-            tforms = resolvedtiles.transforms
 
             new_tspecs = []
             for ts in tspecs:
@@ -65,8 +63,7 @@ class RedirectMipMapsModule(StackTransitionModule):
                     for mmL in ts_new.ip.mipMapLevels]
                 new_tspecs.append(ts_new)
 
-            self.output_tilespecs_to_stack(
-                new_tspecs, sharedTransforms=tforms, zValues=[z])
+            self.output_tilespecs_to_stack(new_tspecs, zValues=[z])
 
         self.output({
             "zValues": zs,

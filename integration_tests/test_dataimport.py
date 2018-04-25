@@ -12,11 +12,9 @@ from rendermodules.dataimport import generate_EM_tilespecs_from_metafile
 from rendermodules.dataimport import generate_mipmaps
 from rendermodules.dataimport import apply_mipmaps_to_render
 from test_data import (render_params,
-                       METADATA_FILE, MIPMAP_TILESPECS_JSON,
-                       MIPMAP_TRANSFORMS_JSON, scratch_dir)
+                       METADATA_FILE, MIPMAP_TILESPECS_JSON, scratch_dir)
 import os
 import copy
-
 
 
 
@@ -111,61 +109,46 @@ def apply_generated_mipmaps(r, output_stack, generate_params,z=None):
     outfile_test_and_remove(mod.run, outfn)
 
     for zout in zapplied:
-        in_resolvedtiles = renderapi.resolvedtiles.get_resolved_tiles_from_z(
-            ex['input_stack'], zout, render=r)
         in_tileIdtotspecs = {
             ts.tileId: ts for ts
-            in in_resolvedtiles.tilespecs}
+            in renderapi.tilespec.get_tile_specs_from_z(
+                ex['input_stack'], zout, render=r)}
 
-        out_resolvedtiles = renderapi.resolvedtiles.get_resolved_tiles_from_z(
-            ex['output_stack'], zout, render=r)
         out_tileIdtotspecs = {
             ts.tileId: ts for ts
-            in out_resolvedtiles.tilespecs}
+            in renderapi.tilespec.get_tile_specs_from_z(
+                ex['output_stack'], zout, render=r)}
 
         # make sure all tileIds match
         assert not (in_tileIdtotspecs.viewkeys() ^ out_tileIdtotspecs.viewkeys())
         for tId, out_ts in out_tileIdtotspecs.iteritems():
             in_ts = in_tileIdtotspecs[tId]
             validate_mipmap_generated(in_ts,out_ts,ex['levels'])
-            # make sure reference transforms are intact
-            assert isinstance(in_ts.tforms[0],
-                              renderapi.transform.ReferenceTransform)
-            assert in_ts.tforms[0].to_dict() == out_ts.tforms[0].to_dict()
-        assert in_resolvedtiles.transforms
-        assert in_resolvedtiles.transforms == out_resolvedtiles.transforms
-
 
 @pytest.fixture(scope='module')
-def resolvedtiles_to_mipmap():
+def tspecs_to_mipmap():
     tilespecs = [renderapi.tilespec.TileSpec(json=d)
-                 for d in MIPMAP_TILESPECS_JSON]
-    tforms = [renderapi.transform.load_transform_json(tform_d)
-              for tform_d in MIPMAP_TRANSFORMS_JSON]
-    return renderapi.resolvedtiles.ResolvedTiles(
-        tilespecs, tforms)
-
+        for d in MIPMAP_TILESPECS_JSON]
+    return tilespecs
 
 @pytest.fixture(scope='module')
-def input_stack(render, resolvedtiles_to_mipmap):
+def input_stack(render,tspecs_to_mipmap):
     # TODO should maybe make this  fixture to separate tests
     test_input_stack='MIPMAPTEST'
 
     renderapi.stack.create_stack(test_input_stack, render=render)
-    tspecs = resolvedtiles_to_mipmap.tilespecs
-    tforms = resolvedtiles_to_mipmap.transforms
     renderapi.client.import_tilespecs_parallel(
-        test_input_stack, tspecs, sharedTransforms=tforms, render=render)
+        test_input_stack, tspecs_to_mipmap, render=render)
 
     # assure stack is built correctly
     assert len({tspec.tileId for tspec
-                in tspecs}.symmetric_difference(set(
+                in tspecs_to_mipmap}.symmetric_difference(set(
                     renderapi.stack.get_stack_tileIds(
                         test_input_stack, render=render)))) == 0
     yield test_input_stack
     renderapi.stack.delete_stack(test_input_stack, render=render)
 
-"""
+
 def addMipMapsToRender_test(render,generate_params):
     input_stack = generate_params['input_stack']
     imgformat=generate_params['imgformat']
@@ -191,21 +174,17 @@ def addMipMapsToRender_test(render,generate_params):
     for tId, out_ts in out_tileIdtotspecs.iteritems():
         in_ts = in_tileIdtotspecs[tId]
         validate_mipmap_generated(in_ts,out_ts,levels,imgformat)
-"""
 
-
-def test_mipmaps(render, input_stack, resolvedtiles_to_mipmap,
-                 output_stack=None):
+def test_mipmaps(render, input_stack, tspecs_to_mipmap, output_stack=None):
     assert isinstance(render, renderapi.render.RenderClient)
     output_stack = ('{}OUT'.format(input_stack) if output_stack
                     is None else output_stack)
 
-    tspecs = resolvedtiles_to_mipmap.tilespecs
     ex = copy.copy(generate_mipmaps.example)
     ex['render'] = render.make_kwargs()
     ex['input_stack'] = input_stack
-    ex['zstart'] = min([ts.z for ts in tspecs])
-    ex['zend'] = max([ts.z for ts in tspecs])
+    ex['zstart'] = min([ts.z for ts in tspecs_to_mipmap])
+    ex['zend'] = max([ts.z for ts in tspecs_to_mipmap])
     ex['output_dir'] = scratch_dir
 
     outfn = 'TEST_genmipmaps.json'
@@ -217,11 +196,10 @@ def test_mipmaps(render, input_stack, resolvedtiles_to_mipmap,
     apply_generated_mipmaps(render, output_stack, ex)
 
     renderapi.stack.delete_stack(output_stack, render=render)
-    # addMipMapsToRender_test(render, ex)
+    addMipMapsToRender_test(render, ex)
 
 
-def test_make_mipmaps_single_z(render, input_stack, resolvedtiles_to_mipmap,
-                               tmpdir, output_stack=None):
+def test_make_mipmaps_single_z(render, input_stack, tspecs_to_mipmap, tmpdir,output_stack=None):
     assert isinstance(render, renderapi.render.RenderClient)
     output_stack = ('{}OUTSINGLEZ'.format(input_stack) if output_stack
                     is None else output_stack)
@@ -229,9 +207,9 @@ def test_make_mipmaps_single_z(render, input_stack, resolvedtiles_to_mipmap,
     ex = copy.copy(generate_mipmaps.example)
     ex['render'] = render.make_kwargs()
     ex['input_stack'] = input_stack
-    ex['z'] = min([ts.z for ts in resolvedtiles_to_mipmap.tilespecs])
-    ex.pop('zstart', None)
-    ex.pop('zend', None)
+    ex['z'] = min([ts.z for ts in tspecs_to_mipmap])
+    ex.pop('zstart',None)
+    ex.pop('zend',None)
     ex['output_dir'] = scratch_dir
 
     outfn = str(tmpdir.join('TESTSINGLE_genmipmaps.json'))
@@ -262,9 +240,8 @@ def test_make_mipmaps_fail_no_z(render,input_stack,tmpdir):
         mod = generate_mipmaps.GenerateMipMaps(
         input_data=ex, args=['--output_json', outfn])
 
-
-def test_create_mipmap_from_tuple(resolvedtiles_to_mipmap, tmpdir):
-    ts = resolvedtiles_to_mipmap.tilespecs[0]
+def test_create_mipmap_from_tuple(tspecs_to_mipmap,tmpdir):
+    ts = tspecs_to_mipmap[0]
     filename=generate_mipmaps.get_filepath_from_tilespec(ts)
     mytuple = (filename,str(tmpdir))
     generate_mipmaps.create_mipmap_from_tuple(mytuple)
