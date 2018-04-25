@@ -3,7 +3,7 @@ numpy
 marshmallow
 render-python>=1.9.1
 argschema>=1.15.17
-numpy
+numpy>=1.11.1
 pillow
 tifffile
 pathlib
