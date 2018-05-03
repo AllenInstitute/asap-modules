@@ -129,6 +129,19 @@ class MakeMontageScapeSectionStackParameters(OutputStackParameters):
     scale = Float(
         required=True,
         metadata={'description':'scale of montage scapes'})
+    doFilter = Boolean(required=False, default=True, description=(
+        "whether to apply default filtering when generating "
+        "missing downsamples"))
+    level = Int(required=False, default=1, description=(
+        "integer mipMapLevel used to generate missing downsamples"))
+    fillWithNoise = Boolean(required=False, default=False, description=(
+        "Whether to fill the background pixels with noise when "
+        "generating missing downsamples"))
+    memGB_materialize = Str(required=False, default='12G', description=(
+        "Java heap size in GB for materialization"))
+    pool_size_materialize = Int(required=False, default=1, description=(
+        "number of processes to generate missing downsamples"))
+
 
     @post_load
     def validate_data(self, data):

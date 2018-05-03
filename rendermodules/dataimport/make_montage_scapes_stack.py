@@ -1,16 +1,15 @@
 from functools import partial
 import glob
 import os
-import json
 import numpy as np
-from PIL import Image
+import pathlib
 import renderapi
-import pathos.multiprocessing as mp
-from rendermodules.dataimport.schemas import MakeMontageScapeSectionStackParameters, MakeMontageScapeSectionStackOutput
+from rendermodules.utilities.pillow_utils import Image
+from rendermodules.materialize.render_downsample_sections import (
+    RenderSectionAtScale)
+from rendermodules.dataimport.schemas import (
+    MakeMontageScapeSectionStackParameters, MakeMontageScapeSectionStackOutput)
 from ..module.render_module import StackOutputModule, RenderModuleException
-
-
-
 
 example = {
     "render": {
@@ -53,11 +52,13 @@ example = {
 }
 '''
 
-def create_montage_scape_tile_specs(render, input_stack, image_directory, scale, project, tagstr, imgformat, Z):
 
+def create_montage_scape_tile_specs(render, input_stack, image_directory,
+                                    scale, project, tagstr, imgformat,
+                                    Z, **kwargs):
     z = Z[0]
     newz = Z[1]
-    
+
     # create the full path to the images
     # directory structure as per Render's RenderSectionClient output
     [q,r] = divmod(z,1000)
@@ -66,10 +67,10 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory, scale,
     filename = os.path.join(image_directory,
                             project,
                             input_stack,
-                            'sections_at_%s'%str(scale),
-                            '%03d'%q,
-                            '%d'%s,
-                            '%s.0.%s'%(str(z),imgformat))
+                            'sections_at_%s' % str(scale),
+                            '%03d' % q,
+                            '%d' % s,
+                            '%s.0.%s' % (str(z), imgformat))
 
     # get stack bounds to set the image width and height
     #stackbounds = render.run(
@@ -80,80 +81,101 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory, scale,
     # This is really a slow way of generating the downsample sections
     # need to submit the job in a cluster
     if not os.path.isfile(filename):
-        print "Montage scape does not exist for %d. Creating one now..."%z
-        render.run(renderapi.client.renderSectionClient,
-                   input_stack,
-                   image_directory,
-                   [z],
-                   scale=str(scale),
-                   format=imgformat,
-                   doFilter=True,
-                   fillWithNoise=False)
+        print("Montage scape does not exist for %d. Creating one now..." % z)
+        tempstack = RenderSectionAtScale.downsample_specific_mipmapLevel(
+            [z], input_stack, image_directory=image_directory,
+            scale=scale, render=render, imgformat=imgformat, **kwargs)
+        filename = os.path.join(image_directory,
+                                project,
+                                tempstack,
+                                'sections_at_%s' % str(scale),
+                                '%03d' % q,
+                                '%d' % s,
+                                '%s.0.%s' % (str(z), imgformat))
+        # render.run(renderapi.client.renderSectionClient,
+        #            input_stack,
+        #            image_directory,
+        #            [z],
+        #            scale=str(scale)
+        #            format=imgformat,
+        #            doFilter=True,
+        #            fillWithNoise=False)
 
     # get section bounds
-    sectionbounds = render.run(renderapi.stack.get_bounds_from_z,
-                               input_stack,
-                               z)
+    # sectionbounds = render.run(renderapi.stack.get_bounds_from_z,
+    #                            input_stack,
+    #                            z)
 
-    stackbounds = render.run(renderapi.stack.get_stack_bounds,
-                             input_stack)
+    # stackbounds = render.run(renderapi.stack.get_stack_bounds,
+    #                          input_stack)
 
     # generate tilespec for this z
     tilespecs = render.run(renderapi.tilespec.get_tile_specs_from_z,
                            input_stack,
                            z)
 
+    # generate tilespec for downsampled montage
+    # tileId is the first tileId from source z
     t = tilespecs[0]
-    d = t.to_dict()
+
+    with Image.open(filename) as im:
+        t.width, t.height = im.size
+    t.ip.mipMapLevels = [renderapi.image_pyramid.MipMapLevel(
+        0, imageUrl=pathlib.Path(filename).as_uri())]
+    t.minIntensity = 0
+    t.maxIntensity = 255
+    t.z = newz
+    t.layout.sectionId = "%s.0" % str(int(newz))
+    t.tforms = [renderapi.transform.AffineModel(
+        M00=(1./scale), M11=(1./scale))]
 
     # EM_aligner expects the level 0 to be filled regardless of other level mipmaps
-    d['mipmapLevels'][0] = {}
-    d['mipmapLevels'][0]['imageUrl'] = "file:" + filename
+    # d['mipmapLevels'][0] = {}
+    # d['mipmapLevels'][0]['imageUrl'] = "file:" + filename
 
     # remove all the mipmap levels that will disrupt the NDViz viewing
-    [d['mipmapLevels'].pop(k) for k in list(d['mipmapLevels'].keys()) if k != 0]
-    d['minIntensity'] = 0
-    d['maxIntensity'] = 255
-    d['minX'] = sectionbounds['minX']/scale
-    d['minY'] = sectionbounds['minY']/scale
-    d['maxX'] = sectionbounds['maxX']/scale
-    d['maxY'] = sectionbounds['maxY']/scale
-    im = Image.open(filename)
-    d['width'] = im.size[0]
-    d['height'] = im.size[1]
+    # [d['mipmapLevels'].pop(k) for k in list(d['mipmapLevels'].keys()) if k != 0]
+    # d['minIntensity'] = 0
+    # d['maxIntensity'] = 255
+    # d['minX'] = sectionbounds['minX']/scale
+    # d['minY'] = sectionbounds['minY']/scale
+    # d['maxX'] = sectionbounds['maxX']/scale
+    # d['maxY'] = sectionbounds['maxY']/scale
+    # with Image.open(filename) as im:
+    #     d['width'] = im.size[0]
+    #     d['height'] = im.size[1]
 
     # the scale is required by the AT team to view the downsampled section overlayed with the montage section
     # this scale is to be accounted later in the apply_rough_alignment_transform_to_montage script
-    #d['width'] = stackbounds['maxX']/scale
-    #d['height'] = stackbounds['maxY']/scale
-    d['z'] = newz
-    d['layout']['sectionId'] = "%s.0"%str(int(newz))
-    print(d['layout'])
-    v0 = 1.0 / scale
-    v1 = 0.0
-    v2 = 0.0
-    v3 = 1.0 / scale
-    v4 = 0.0
-    v5 = 0.0
-    #d['transforms']['specList'][-1]['dataString'] = "1.0000000000 0.0000000000 0.0000000000 1.0000000000 %d %d"%(0.0, 0.0)
-    d['transforms']['specList'][-1]['dataString'] = "%f %f %f %f %s %s"%(v0, v1, v2, v3, v4, v5)
+    # d['width'] = stackbounds['maxX']/scale
+    # d['height'] = stackbounds['maxY']/scale
+    # d['z'] = newz
+    # d['layout']['sectionId'] = "%s.0"%str(int(newz))
+    # print(d['layout'])
+    # v0 = 1.0 / scale
+    # v1 = 0.0
+    # v2 = 0.0
+    # v3 = 1.0 / scale
+    # v4 = 0.0
+    # v5 = 0.0
+    # d['transforms']['specList'][-1]['dataString'] = "1.0000000000 0.0000000000 0.0000000000 1.0000000000 %d %d"%(0.0, 0.0)
+    # d['transforms']['specList'][-1]['dataString'] = "%f %f %f %f %s %s"%(v0, v1, v2, v3, v4, v5)
 
     # if there is a lens correction transformation in the tilespecs remove that
-    if len(d['transforms']['specList']) > 1:
-        d['transforms']['specList'].pop(0)
-    t.from_dict(d)
+    # if len(d['transforms']['specList']) > 1:
+    #     d['transforms']['specList'].pop(0)
+    # t.from_dict(d)
     allts = [t]
 
     tilespecfilename = os.path.join(image_directory,
                                     project,
                                     input_stack,
-                                    'sections_at_%s'%str(scale),
-                                    'tilespecs_%s'%tagstr,
-                                    'tilespec_%04d.json'%z)
+                                    'sections_at_%s' % str(scale),
+                                    'tilespecs_%s' % tagstr,
+                                    'tilespec_%04d.json' % z)
 
-    fp = open(tilespecfilename, 'w')
-    json.dump([ts.to_dict() for ts in allts], fp, indent=4)
-    fp.close()
+    with open(tilespecfilename, 'w') as fp:
+        renderapi.utils.renderdump(allts, fp, indent=4)
 
 
 class MakeMontageScapeSectionStack(StackOutputModule):
@@ -200,22 +222,30 @@ class MakeMontageScapeSectionStack(StackOutputModule):
                                    'sections_at_%s'%str(self.args['scale']),
                                    'tilespecs_%s'%tagstr)
 
-        if not os.path.exists(tilespecdir):
+        try:
             os.makedirs(tilespecdir)
+        except OSError as e:
+            pass  # FIXME better handling
 
-
+        render_materialize = renderapi.connect(
+            **self.render.make_kwargs(memGB=self.args['memGB_materialize']))
         # process for each z
         mypartial = partial(
             create_montage_scape_tile_specs,
-            self.render,
+            render_materialize,
             self.args['montage_stack'],
             self.args['image_directory'],
             self.args['scale'],
             self.args['render']['project'],
             tagstr,
-            self.args['imgformat'])
+            self.args['imgformat'],
+            level=self.args['level'],
+            pool_size=1,
+            doFilter=self.args['doFilter'],
+            fillWithNoise=self.args['fillWithNoise'])
 
-        with renderapi.client.WithPool(self.args['pool_size']) as pool:
+        with renderapi.client.WithPool(
+                self.args['pool_size_materialize']) as pool:
             pool.map(mypartial, Z)
 
         #for zs in Z:
@@ -230,26 +260,27 @@ class MakeMontageScapeSectionStack(StackOutputModule):
 
         # get all the output tilespec json files
         tspath = os.path.join(self.args['image_directory'],
-                         self.args['render']['project'],
-                         self.args['montage_stack'],
-                         'sections_at_%s'%str(self.args['scale']),
-                         'tilespecs_%s'%tagstr)
+                              self.args['render']['project'],
+                              self.args['montage_stack'],
+                              'sections_at_%s' % str(self.args['scale']),
+                              'tilespecs_%s' % tagstr)
 
-        jsonfiles = glob.glob("%s/*.json"%tspath)
+        jsonfiles = glob.glob("%s/*.json" % tspath)
 
         if not jsonfiles:
             raise RenderModuleException('No tilespecs json files were generated')
 
         # create the stack if it doesn't exist
-        if self.output_stack not in self.render.run(renderapi.render.get_stacks_by_owner_project):
+        if self.output_stack not in self.render.run(
+                renderapi.render.get_stacks_by_owner_project):
             # stack does not exist
             # TODO configurable stack metadata
             self.render.run(renderapi.stack.create_stack,
                             self.output_stack,
                             cycleNumber=5,
                             cycleStepNumber=1,
-                            stackResolutionX = 1,
-                            stackResolutionY = 1)
+                            stackResolutionX=1,
+                            stackResolutionY=1)
 
         # import tilespecs to render
         self.render.run(renderapi.client.import_jsonfiles_parallel,
