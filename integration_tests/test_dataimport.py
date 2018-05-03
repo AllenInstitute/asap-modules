@@ -1,13 +1,13 @@
 import json
-import pytest
 import urllib
 import urlparse
 import tempfile
 import logging
-from PIL import Image
+import pytest
 import renderapi
-from rendermodules.module.render_module import RenderModuleException
 import marshmallow as mm
+from rendermodules.utilities.pillow_utils import Image
+from rendermodules.module.render_module import RenderModuleException
 from rendermodules.dataimport import generate_EM_tilespecs_from_metafile
 from rendermodules.dataimport import generate_mipmaps
 from rendermodules.dataimport import apply_mipmaps_to_render
