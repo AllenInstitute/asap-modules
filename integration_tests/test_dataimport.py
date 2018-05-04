@@ -1,13 +1,13 @@
 import json
-import pytest
 import urllib
 import urlparse
 import tempfile
 import logging
-from PIL import Image
+import pytest
 import renderapi
-from rendermodules.module.render_module import RenderModuleException
 import marshmallow as mm
+from rendermodules.utilities.pillow_utils import Image
+from rendermodules.module.render_module import RenderModuleException
 from rendermodules.dataimport import generate_EM_tilespecs_from_metafile
 from rendermodules.dataimport import generate_mipmaps
 from rendermodules.dataimport import apply_mipmaps_to_render
@@ -193,10 +193,11 @@ def addMipMapsToRender_test(render,generate_params):
 """
 
 
-def test_mipmaps(render, input_stack, resolvedtiles_to_mipmap,
+@pytest.mark.parametrize("method", ["PIL", "block_reduce"])
+def test_mipmaps(render, input_stack, resolvedtiles_to_mipmap, method, tmpdir,
                  output_stack=None):
     assert isinstance(render, renderapi.render.RenderClient)
-    output_stack = ('{}OUT'.format(input_stack) if output_stack
+    output_stack = ('{}_{}_OUT'.format(input_stack, method) if output_stack
                     is None else output_stack)
 
     tspecs = resolvedtiles_to_mipmap.tilespecs
@@ -205,7 +206,8 @@ def test_mipmaps(render, input_stack, resolvedtiles_to_mipmap,
     ex['input_stack'] = input_stack
     ex['zstart'] = min([ts.z for ts in tspecs])
     ex['zend'] = max([ts.z for ts in tspecs])
-    ex['output_dir'] = scratch_dir
+    ex['output_dir'] = str(tmpdir)
+    ex['method'] = method
 
     outfn = 'TEST_genmipmaps.json'
     mod = generate_mipmaps.GenerateMipMaps(

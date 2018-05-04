@@ -36,6 +36,14 @@ rendermodules\.dataimport\.generate\_mipmaps module
     :undoc-members:
     :show-inheritance:
 
+rendermodules\.dataimport\.make\_montage\_scapes\_stack module
+--------------------------------------------------------------
+
+.. automodule:: rendermodules.dataimport.make_montage_scapes_stack
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 rendermodules\.dataimport\.schemas module
 -----------------------------------------
 

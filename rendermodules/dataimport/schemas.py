@@ -18,13 +18,12 @@ class GenerateMipMapsParameters(InputStackParameters):
         description='directory to which the mipmaps will be stored')
     method = mm.fields.Str(
         required=True, default="block_reduce",
-        validator=mm.validate.OneOf(["PIL"]),
+        validator=mm.validate.OneOf(["PIL", "block_reduce"]),
         description=(
             "method to downsample mipmapLevels, "
             "'PIL' for PIL Image (currently NEAREST) filtered resize, "
-            "Currently only PIL is implemented"))
-        #"'render' for render-ws based rendering.  "
-        #"can be 'block_reduce' for skimage based area downsampling, "
+            "can be 'block_reduce' for skimage based area downsampling"))
+# "'render' for render-ws based rendering.  "
     convert_to_8bit = mm.fields.Boolean(
         required=False, default=True,
         description='convert the data from 16 to 8 bit (default True)')
@@ -40,6 +39,15 @@ class GenerateMipMapsParameters(InputStackParameters):
     force_redo = mm.fields.Boolean(
         required=False, default=True,
         description='force re-generation of existing mipmaps')
+    PIL_filter = Str(required=False, default='NEAREST',
+                     validator=mm.validate.OneOf([
+                         'NEAREST', 'BOX', 'BILINEAR',
+                         'HAMMING', 'BICUBIC', 'LANCZOS']),
+                     description=('filter to be used in PIL resize'))
+    block_func = Str(required=False, default='mean',
+                     validator=mm.validate.OneOf(['mean', 'median']),
+                     description=("function to represent blocks in "
+                                  "area downsampling with block_reduce"))
 
     @classmethod
     def validationOptions(cls, options):
@@ -121,6 +129,19 @@ class MakeMontageScapeSectionStackParameters(OutputStackParameters):
     scale = Float(
         required=True,
         metadata={'description':'scale of montage scapes'})
+    doFilter = Boolean(required=False, default=True, description=(
+        "whether to apply default filtering when generating "
+        "missing downsamples"))
+    level = Int(required=False, default=1, description=(
+        "integer mipMapLevel used to generate missing downsamples"))
+    fillWithNoise = Boolean(required=False, default=False, description=(
+        "Whether to fill the background pixels with noise when "
+        "generating missing downsamples"))
+    memGB_materialize = Str(required=False, default='12G', description=(
+        "Java heap size in GB for materialization"))
+    pool_size_materialize = Int(required=False, default=1, description=(
+        "number of processes to generate missing downsamples"))
+
 
     @post_load
     def validate_data(self, data):
