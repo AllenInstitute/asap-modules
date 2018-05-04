@@ -47,6 +47,7 @@ class RenderSectionAtScaleParameters(RenderParameters):
         missing=20,
         description='number of parallel threads to use')
 
+
 class RenderSectionAtScaleOutput(argschema.schemas.DefaultSchema):
     image_directory = InputDir(
         required=True,

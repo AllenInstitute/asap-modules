@@ -1,16 +1,15 @@
 #!/usr/bin/env python
 '''
 '''
-import json
 import os
 import imghdr
 import copy
 
 import pytest
 
-from PIL import Image
 
 import renderapi
+from rendermodules.utilities.pillow_utils import Image
 from rendermodules.materialize import materialize_sections
 from test_data import (render_params, MATERIALIZE_BOX_JSON)
 

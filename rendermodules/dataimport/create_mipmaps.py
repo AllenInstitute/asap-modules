@@ -1,9 +1,9 @@
 import os
 
 import numpy
-from PIL import Image
 from skimage.measure import block_reduce
 
+from rendermodules.utilities.pillow_utils import Image
 from rendermodules.module.render_module import RenderModuleException
 
 
