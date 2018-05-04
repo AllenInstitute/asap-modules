@@ -1,6 +1,7 @@
 import os
+import argschema
 from EMaligner import EMaligner
-from EMaligner.EM_aligner_python_schema import *
+from EMaligner.EM_aligner_python_schema import EMA_Schema
 
 montage_example = {
    "first_section": 1020, 

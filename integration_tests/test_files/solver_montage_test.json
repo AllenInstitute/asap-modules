@@ -1,0 +1,60 @@
+{
+    "first_section": 1015, 
+    "last_section": 1015,
+    "solve_type": "montage",
+    "close_stack": "True",
+    "transformation": "affine",
+    "output_mode": "stack",
+    "start_from_file": "",
+    "input_stack": {
+        "owner": "{{render_owner}}",
+        "project": "{{render_project}}",
+        "name": "{{render_input_stack}}",
+        "host": "{{render_host}}",
+        "port": {{render_port}},
+        "mongo_host": "{{render_mongo_host}}",
+        "mongo_port": {{mongo_port}},
+        "client_scripts": "{{render_client_scripts}}",
+        "collection_type": "stack",
+        "db_interface": "mongo"
+    }, 
+    "pointmatch": {
+        "owner": "{{render_owner}}", 
+        "name": "{{render_point_match_collection}}",
+        "host": "{{render_host}}", 
+        "port": {{render_port}}, 
+        "mongo_host": "{{render_mongo_host}}", 
+        "mongo_port": {{mongo_port}},
+        "client_scripts": "{{render_client_scripts}}",
+        "collection_type": "pointmatch",
+        "db_interface": "mongo"
+    },
+    "output_stack": {
+        "owner": "{{render_output_owner}}",
+        "project": "{{render_project}}",
+        "name": "python_montage_results",
+        "host": "{{render_host}}",
+        "port": {{render_port}},
+        "mongo_host": "{{render_mongo_host}}",
+        "mongo_port": {{mongo_port}},
+        "client_scripts": "{{render_client_scripts}}",
+        "collection_type": "stack",
+        "db_interface": "render"
+    }, 
+    "hdf5_options": {
+        "output_dir": "{{solver_output_dir}}",
+        "chunks_per_file": -1
+    },
+    "matrix_assembly": {
+        "depth": 2, 
+        "montage_pt_weight": 1.0,
+        "cross_pt_weight": 0.5,
+        "npts_min": 5,
+        "npts_max": 500,
+        "inverse_dz":"True"
+    },
+    "regularization": {
+        "default_lambda": 1.0e3,
+        "translation_factor": 1.0e-5 
+    }
+}
