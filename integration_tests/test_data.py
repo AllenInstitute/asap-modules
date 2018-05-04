@@ -238,7 +238,7 @@ PT_MATCH_STACK_TILESPECS = render_json_template(example_env, 'pt_match_optimizat
 
 # Solver testing
 solver_montage_parameters = render_json_template(example_env, 'solver_montage_test.json',
-                                                 render_project = "test_montage_project",
+                                                 render_project = "solver_montage_project",
                                                  render_host=render_host,
                                                  render_owner=render_test_owner,
                                                  render_port=render_port,

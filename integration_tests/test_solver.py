@@ -48,24 +48,21 @@ def test_solver_montage_test(render, montage_pointmatches, raw_stack):
     
     mod = Solve_stack(input_data=solver_montage_parameters, args=[])
     mod.run()
-    #assert mod.results['precision'] < 1e-7
-    mod = EMaligner.EMaligner(input_data=solver_montage_parameters, args=[])
-    mod.run()
-    assert mod.results['precision'] < 1e-7
-    assert mod.results['error'] < 200
+    assert mod.module.results['precision'] < 1e-7
+    assert mod.module.results['error'] < 200
 
     # try with affine_fullsize
     solver_montage_parameters['transformation'] = "affine_fullsize"
-    mod = EMaligner.EMaligner(input_data=solver_montage_parameters, args=[])
+    mod = Solve_stack(input_data=solver_montage_parameters, args=[])
     mod.run()
-    assert mod.results['precision'] < 1e-7
-    assert mod.results['error'] < 200
+    assert mod.module.results['precision'] < 1e-7
+    assert mod.module.results['error'] < 200
 
     # try with render interface
     solver_montage_parameters['input_stack']['db_interface'] = 'render'
     solver_montage_parameters['pointmatch']['db_interface'] = 'render'
-    mod = EMaligner.EMaligner(input_data=solver_montage_parameters, args=[])
+    mod = Solve_stack(input_data=solver_montage_parameters, args=[])
     mod.run()
-    assert mod.results['precision'] < 1e-7
-    assert mod.results['error'] < 200
+    assert mod.module.results['precision'] < 1e-7
+    assert mod.module.results['error'] < 200
  

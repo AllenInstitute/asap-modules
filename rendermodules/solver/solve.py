@@ -68,8 +68,8 @@ class Solve_stack(argschema.ArgSchemaParser):
     default_schema = EMA_Schema
 
     def run(self):
-        module = EMaligner.EMaligner(input_data=self.args, args=[])
-        module.run()
+        self.module = EMaligner.EMaligner(input_data=self.args, args=[])
+        self.module.run()
 
 
 if __name__ == "__main__":
