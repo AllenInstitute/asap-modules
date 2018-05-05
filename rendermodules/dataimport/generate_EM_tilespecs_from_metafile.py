@@ -8,8 +8,8 @@ import os
 import pathlib
 import numpy
 import renderapi
-import argschema
-from rendermodules.module.render_module import StackOutputModule
+from rendermodules.module.render_module import (
+    StackOutputModule, RenderModuleException)
 from rendermodules.dataimport.schemas import (GenerateEMTileSpecsOutput,
                                               GenerateEMTileSpecsParameters)
 
@@ -75,8 +75,8 @@ class GenerateEMTileSpecsModule(StackOutputModule):
                 renderapi.tilespec.MipMapLevel(
                     0, imageUrl=imageUrl, maskUrl=maskUrl)],
             sectionId=sectionId, scopeId=scopeId, cameraId=cameraId,
-            imageRow=imgdata['img_meta']['raster_pos'][0],
-            imageCol=imgdata['img_meta']['raster_pos'][1],
+            imageCol=imgdata['img_meta']['raster_pos'][0],
+            imageRow=imgdata['img_meta']['raster_pos'][1],
             stageX=imgdata['img_meta']['stage_pos'][0],
             stageY=imgdata['img_meta']['stage_pos'][1],
             rotation=imgdata['img_meta']['angle'], pixelsize=pixelsize)
@@ -91,6 +91,11 @@ class GenerateEMTileSpecsModule(StackOutputModule):
             img['img_meta']['pixel_size_x_move'],
             img['img_meta']['pixel_size_y_move'],
             numpy.radians(img['img_meta']['angle'])) for img in imgdata}
+
+        if not imgdata:
+            raise RenderModuleException(
+                "No relevant image metadata found for metafile {}".format(
+                    self.args['metafile']))
 
         minX, minY = numpy.min(numpy.array(img_coords.values()), axis=0)
         # assume isotropic pixels
