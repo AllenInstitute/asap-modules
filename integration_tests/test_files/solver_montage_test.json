@@ -16,7 +16,7 @@
         "mongo_port": {{mongo_port}},
         "client_scripts": "{{render_client_scripts}}",
         "collection_type": "stack",
-        "db_interface": "render"
+        "db_interface": "mongo"
     }, 
     "pointmatch": {
         "owner": "{{render_owner}}", 
@@ -27,7 +27,7 @@
         "mongo_port": {{mongo_port}},
         "client_scripts": "{{render_client_scripts}}",
         "collection_type": "pointmatch",
-        "db_interface": "render"
+        "db_interface": "mongo"
     },
     "output_stack": {
         "owner": "{{render_output_owner}}",

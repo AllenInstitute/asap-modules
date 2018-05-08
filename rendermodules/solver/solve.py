@@ -21,7 +21,7 @@ montage_example = {
        "mongo_port": 27017,
        "client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts",
        "collection_type": "stack",
-       "db_interface": "render"
+       "db_interface": "mongo"
    }, 
    "pointmatch": {
        "owner": "gayathri_MM2", 
@@ -32,7 +32,7 @@ montage_example = {
        "mongo_port": 27017,
        "client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts",
        "collection_type": "pointmatch",
-       "db_interface": "render"
+       "db_interface": "mongo"
    },
    "output_stack": {
        "owner": "danielk",
