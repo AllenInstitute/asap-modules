@@ -6,11 +6,15 @@ from EMaligner import EMaligner
 from rendermodules.solver.solve import Solve_stack
 from test_data import (render_params, 
                        render_json_template, 
-                       example_env, 
+                       example_env,
+                       example_dir, 
                        solver_montage_parameters)
 
-FILE_RAW_TILES = './integration_tests/test_files/solver_raw_tiles_for_montage.json'
-FILE_PMS = './integration_tests/test_files/solver_montage_pointmatches.json'
+#FILE_RAW_TILES = './integration_tests/test_files/solver_raw_tiles_for_montage.json'
+#FILE_PMS = './integration_tests/test_files/solver_montage_pointmatches.json'
+
+FILE_RAW_TILES = os.path.join(example_dir, 'solver_raw_tiles_for_montage.json')
+FILE_PMS = os.path.join(example_dir, 'solver_montage_pointmatches.json')
 
 @pytest.fixture(scope='module')
 def render():
