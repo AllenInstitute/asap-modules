@@ -234,3 +234,18 @@ montage_qc_project = "em_montage_qc_test"
 # Point match optimization
 PT_MATCH_STACK_TILESPECS = render_json_template(example_env, 'pt_match_optimization_tilespecs.json',
                                                 test_data_root=TEST_DATA_ROOT)
+
+
+# Solver testing
+solver_montage_parameters = render_json_template(example_env, 'solver_montage_test.json',
+                                                 render_project = "solver_montage_project",
+                                                 render_host=render_host,
+                                                 render_owner=render_test_owner,
+                                                 render_port=render_port,
+                                                 mongo_port=os.environ.get('MONGO_PORT', 27017),
+                                                 render_mongo_host=os.environ.get('RENDER_MONGO_HOST', 'localhost'),
+                                                 render_output_owner=render_test_owner,
+                                                 render_client_scripts=client_script_location,
+                                                 solver_output_dir=tempfile.mkdtemp())
+
+                                                                                                                                                                                                                                                                                                                             
