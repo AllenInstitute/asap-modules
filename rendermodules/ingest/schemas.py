@@ -1,5 +1,7 @@
+
+
 import argschema
-from argschema.fields import DateTime, Nested, InputDir, Str, Int
+from argschema.fields import DateTime, Nested, InputDir, Str, Float, Int, InputFile
 
 
 class Camera(argschema.schemas.DefaultSchema):
@@ -12,37 +14,62 @@ class Camera(argschema.schemas.DefaultSchema):
 class AcquisitionData(argschema.schemas.DefaultSchema):
     camera = Nested(Camera, required=False)
     microscope = Str(required=False, description="")
-    overlap = Int(required=False)
-    acquisition_time = DateTime(required=True)
+    microscope_type = Str(required=False, description="")
+    overlap = Float(required=False)
+    acquisition_time = DateTime(required=True, format="iso")
 
 
 class Section(argschema.schemas.DefaultSchema):
-    z_index = Int(required=False, default=True)
+    z_index = Int(required=False, default=None, allow_none=True)
     # metadata = Nested(TAOid())
-    specimen = Int(required=True, description="LIMS id of tissue block")
+    specimen = Str(required=True, description="LIMS id of tissue block")
+    # TODO specimen should be integer, but imaging metadata does not conform
+    # specimen = Int(required=True, description="LIMS id of tissue block")
     sample_holder = Str(required=False)
 
 
 class TileSetIngestSchema(argschema.ArgSchema):
     storage_directory = InputDir(
         required=True, description="")
-    section = Nested(Section, required=False,
-                     description="")
     acquisition_data = Nested(AcquisitionData, required=False)
+    metafile = InputFile(required=False, default=None,
+                         allow_none=True, description="")
 
 
 class EMMontageSetIngestSchema(TileSetIngestSchema):
-    reference_set_id = Str(required=False, default=None)
+    reference_set_id = Str(required=False, default=None, allow_none=True)
+    section = Nested(Section, required=False,
+                     description="")
 
 
 class ReferenceSetIngestSchema(TileSetIngestSchema):
-    pass
+    manifest_path = InputFile(required=True)
+
+
+class IngestParams(argschema.schemas.DefaultSchema):
+    app_key = Str(required=True)
+    workflow_name = Str(required=True)
+
+
+class IngestTileSetParams(argschema.ArgSchema):
+    tile_dir = InputDir(required=True)
+    metafile = InputFile(
+        required=False, allow_none=True, missing=None)
+    ingest_params = Nested(IngestParams, required=True)
+    reference_set_id = Str(required=False, allow_none=True, missing=None)
+
+class ATIngestTileSetParams(argschema.ArgSchema):
+    inputdir = InputDir(required=True)
+    host = Str(required=True)
+    port  = Int(required=True)
+    workflow = Str(required=True)
 
 
 example = {
     "reference_set_id": "DEADBEEF",
     "acquisition_data": {
         "microscope": "temca2",
+        "microscope_type": "TEMCA",
         "camera": {
             "camera_id": "4450428",
             "height": 3840,
