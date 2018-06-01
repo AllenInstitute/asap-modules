@@ -5,6 +5,7 @@ import datetime
 import pytz
 import argschema
 from marshmallow import ValidationError
+import subprocess
 
 
 def set_dict_values(metadata,list_key,list_val):
@@ -28,10 +29,11 @@ def get_img_and_metafiles(sessiondir, metadata):
     return imgfiles, metafiles
 
 def get_session_number(sessiondir):
+    sessiondir = sessiondir.replace('/','')
     tokens = sessiondir.split("session")
     return int(tokens[1])
 
-def create_metafile(sessiondir):
+def create_metafile(sessiondir, project):
 
     metadata = {}
 
@@ -81,5 +83,30 @@ def create_metafile(sessiondir):
     metadata['acquisition_data'] = acq
     metadata['all_channels'] = d_channels
     metadata['data'] = data
+    metadata['project'] = project
+    
     with open(os.path.join(sessiondir, "metadata.json"), 'w') as fp:
         json.dump(metadata, fp, indent=4)
+
+
+def get_used_space_percentage(d):
+    return 1. - get_available_space_percentage(d)
+
+def get_available_space_percentage(d):
+    s = os.statvfs(d)
+    return float(s.f_bavail) / float(s.f_blocks)
+
+def get_copy_command(cls,src, dst):
+    return cls.copy_cmd + [src, dst]
+
+def run_copy_command(cls,src, dst, **kwargs):
+    print ("Now copying")
+    print(src)
+    print(dst)
+    cpcmd = get_copy_command(cls,src, dst)
+    print(cpcmd)
+    return subprocess.check_call(cpcmd)
+
+def parse_inputdir(dirname):
+    tokens = dirname.split('raw')
+    return 'raw'+tokens[1]

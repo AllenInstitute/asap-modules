@@ -19,6 +19,7 @@ example_input= {
         'host': 'ibs-sharmi-ux1',
         'port': 9002,
         'workflow': 'at_2d_montage'
+
     }
 
 
@@ -35,11 +36,13 @@ class ATIngestTileSetModule(argschema.ArgSchemaParser):
     def run(self):
 
         #not decided if we want this here or in the monitor
-        create_metafile(self.args['inputdir'])
+        #create_metafile(self.args['inputdir'])
 
         #read metafile - find json file in input directory
         matchstr = ".*\.json"
         inputdir = self.args['inputdir']
+        print("This is inputdir")
+        print(inputdir)
         metafile = [os.path.join(inputdir, f) for f in os.listdir(inputdir) if os.path.isfile(os.path.join(inputdir, f)) and re.match(matchstr, f) ][0]
         with open(metafile, 'r') as f:
             md = json.load(f)
@@ -50,6 +53,7 @@ class ATIngestTileSetModule(argschema.ArgSchemaParser):
         body['acquisition_data'] = md['acquisition_data']
         body['metafile'] = metafile
         body['reference_set_id'] = None
+
 
         self.ingest_message(self.args['host'], self.args['port'],self.args['workflow'],body)
 

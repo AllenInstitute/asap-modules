@@ -1,7 +1,8 @@
 
 
 import argschema
-from argschema.fields import DateTime, Nested, InputDir, Str, Float, Int, InputFile
+from argschema.fields import DateTime, Nested, InputDir, Str, Float, Int, InputFile,List,OutputDir
+import marshmallow
 
 
 class Camera(argschema.schemas.DefaultSchema):
@@ -64,6 +65,22 @@ class ATIngestTileSetParams(argschema.ArgSchema):
     port  = Int(required=True)
     workflow = Str(required=True)
 
+
+class SendAcquisitionParameters(argschema.ArgSchema):
+    project = Str(required=True)
+    indirs = List(InputDir, required=True, description=(
+        "directories to monitor for new acquisition directories"))
+    outdir = OutputDir(required=True, description=(
+        "directory to which aquisition directories will be copied"))
+    fillpercentage = Float(
+        required=False, default=0.7,
+        validator=marshmallow.validate.Range(min=0.0, max=0.85),
+        description=("Fraction of disk containing outdir which can "
+                     "maximally be filled."))
+    copy_method = Str(required=False, default="gsutil",
+                      validator=marshmallow.validate.OneOf(
+                          ["gsutil", "shutil"]))
+    ingest_client = Nested(ATIngestTileSetParams, required=True)
 
 example = {
     "reference_set_id": "DEADBEEF",
