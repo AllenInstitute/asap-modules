@@ -21,6 +21,22 @@ class url_options(DefaultSchema):
         default=False,
         missing=False,
         description='Render without mask')
+    excludeAllTransforms = Bool(
+        required=False,
+        default=False,
+        missing=False,
+        description="Exclude all transforms")
+    excludeFirstTransformAndAllAfter = Bool(
+        required=False,
+        default=False,
+        missing=False,
+        description="Exclude first transfrom and all after")
+    excludeTransformsAfterLast = Bool(
+        required=False,
+        default=False,
+        missing=False,
+        description="Exclude transforms after last")
+
 
 class SIFT_options(DefaultSchema):
     SIFTfdSize = List(

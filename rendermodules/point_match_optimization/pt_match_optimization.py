@@ -68,7 +68,10 @@ ex = {
     "url_options":{
         "normalizeForMatching": "true",
         "renderWithFilter": "true",
-        "renderWithoutMask": "true"
+        "renderWithoutMask": "true",
+        "excludeAllTransforms": "false",
+        "excludeFirstTransformAndAllAfter": "false",
+        "excludeTransformsAfterLast": "false"
     },
     "outputDirectory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch/ptmatch",
     "tile_stack": "point_match_optimization_test",
@@ -145,32 +148,47 @@ def render_from_template(directory, template_name, **kwargs):
     template = env.get_template(template_name)
     return template.render(**kwargs)
 
-def draw_matches(render, stack, tile1, tile2, ptmatches, scale, outdir, color=None):
+def draw_matches(render, stack, tile1, tile2, ptmatches, scale, outdir, url_options, color=None):
     
-    im1_url = "%s:%d/render-ws/v1/owner/%s/project/%s/stack/%s/tile/%s/png-image?scale=%f&filter=false&normalizeForMatchin=true"%(render.DEFAULT_HOST,
-                    render.DEFAULT_PORT,
-                    render.DEFAULT_OWNER,
-                    render.DEFAULT_PROJECT,
-                    stack,
-                    tile1,
-                    scale)
-    im2_url = "%s:%d/render-ws/v1/owner/%s/project/%s/stack/%s/tile/%s/png-image?scale=%f&filter=false&normalizeForMatchin=true"%(render.DEFAULT_HOST,
-                    render.DEFAULT_PORT,
-                    render.DEFAULT_OWNER,
-                    render.DEFAULT_PROJECT,
-                    stack,
-                    tile2,
-                    scale)
+    #im1_url = "%s:%d/render-ws/v1/owner/%s/project/%s/stack/%s/tile/%s/png-image?scale=%f&filter=%s&normalizeForMatching=%s"%(render.DEFAULT_HOST,
+    #                render.DEFAULT_PORT,
+    #                render.DEFAULT_OWNER,
+    #                render.DEFAULT_PROJECT,
+    #                stack,
+    #                tile1,
+    #                scale,
+    #                url_options['renderWithFilter'],
+    #                url_options['normalizeForMatching'])
+    #im2_url = "%s:%d/render-ws/v1/owner/%s/project/%s/stack/%s/tile/%s/png-image?scale=%f&filter=%s&normalizeForMatching=%s"%(render.DEFAULT_HOST,
+    #                render.DEFAULT_PORT,
+    #                render.DEFAULT_OWNER,
+    #                render.DEFAULT_PROJECT,
+    #                stack,
+    #                tile2,
+    #                scale,
+    #                url_options['renderWithFilter'],
+    #                url_options['normalizeForMatching'])
 
-    print(im1_url)
-    print(im2_url)
-    r = urllib.urlopen(im1_url)
-    img1 = np.asarray(bytearray(r.read()), dtype="uint8")
-    img1 = cv2.imdecode(img1, cv2.IMREAD_COLOR)
+    #r = urllib.urlopen(im1_url)
+    #img1 = np.asarray(bytearray(r.read()), dtype="uint8")
+    #img1 = cv2.imdecode(img1, cv2.IMREAD_COLOR)
 
-    r = urllib.urlopen(im2_url)
-    img2 = np.asarray(bytearray(r.read()), dtype="uint8")
-    img2 = cv2.imdecode(img2, cv2.IMREAD_COLOR)
+    #r = urllib.urlopen(im2_url)
+    #img2 = np.asarray(bytearray(r.read()), dtype="uint8")
+    #img2 = cv2.imdecode(img2, cv2.IMREAD_COLOR)
+
+    img1 = render.run(renderapi.image.get_tile_image_data, 
+                      stack, 
+                      tile1, 
+                      normalizeForMatching=url_options['normalizeForMatching'],
+                      scale=scale,
+                      filter=url_options['renderWithFilter'])
+    img2 = render.run(renderapi.image.get_tile_image_data,
+                      stack,
+                      tile2,
+                      normalizeForMatching=url_options['normalizeForMatching'],
+                      scale=scale,
+                      filter=url_options['renderWithFilter'])
 
     if img1.shape > img2.shape:
         img2 = cv2.resize(img2, img1.shape)
@@ -226,7 +244,7 @@ def draw_matches(render, stack, tile1, tile2, ptmatches, scale, outdir, color=No
 
 
 
-def get_tile_pair_matched_image(render, stack, tileId1, tileId2, pGroupId, qGroupId, outdir, matchCollectionOwner, matchCollection, renderScale=0.1):
+def get_tile_pair_matched_image(render, stack, tileId1, tileId2, pGroupId, qGroupId, outdir, matchCollectionOwner, matchCollection, url_options, renderScale=0.1):
     im1 = '%s.jpg'%tileId1
     im2 = '%s.jpg'%tileId2
     im1 = os.path.join(outdir, "%s"%(renderScale), im1)
@@ -251,7 +269,7 @@ def get_tile_pair_matched_image(render, stack, tileId1, tileId2, pGroupId, qGrou
     if (len(ptmatches) > 0):
         ptmatch_count = len(ptmatches[0]['matches']['p'][0])
     
-    match_img_filename = draw_matches(render, stack, tileId1, tileId2, ptmatches, renderScale, outdir)
+    match_img_filename = draw_matches(render, stack, tileId1, tileId2, ptmatches, renderScale, outdir, url_options)
     return match_img_filename, ptmatch_count
 
 '''
@@ -385,6 +403,11 @@ def compute_point_matches(render, stack, tileID, output_dir, url_options, option
                                       matchModelType=ops['matchModelType'],
                                       matchRod=ops['matchRod'],
                                       renderScale=ops['renderScale'],
+                                      filter=url_options['renderWithFilter'],
+                                      renderWithoutMask=url_options['renderWithoutMask'],
+                                      excludeAllTransforms=url_options['excludeAllTransforms'],
+                                      excludeTransformsAfterLast=url_options['excludeTransformsAfterLast'],
+                                      excludeFirstTransformAndAllAfter=url_options['excludeFirstTransformAndAllAfter'],
                                       host=render.DEFAULT_HOST,
                                       port=render.DEFAULT_PORT,
                                       owner=render.DEFAULT_OWNER,
@@ -411,6 +434,7 @@ def compute_point_matches(render, stack, tileID, output_dir, url_options, option
                                                         output_dir,
                                                         render.DEFAULT_KWARGS['owner'],
                                                         collection_name,
+                                                        url_options, 
                                                         ops['renderScale'])
 
         # create the tilepair url for this parameter setting
