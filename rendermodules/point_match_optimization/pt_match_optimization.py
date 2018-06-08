@@ -91,36 +91,6 @@ def polys_overlap(ts, buffer=0):
     return p1.intersects(p2)
 
 
-'''
-def get_canvas_url(render_args, stack, tile1, tile2, url_options):
-    base_data_url = '%s:%d/render-ws/v1'%(render_args['host'], render_args['port'])
-    tile_base_url = "%s/owner/%s/project/%s/stack/%s/tile"%(base_data_url,
-                                                            render_args['owner'],
-                                                            render_args['project'],
-                                                            stack)
-    url_suffix = "render-parameters"
-    if url_options['renderWithFilter'] is False:
-        url_suffix += '?filter=false'
-    else:
-        url_suffix += '?filter=true'
-    if url_options['normalizeForMatching'] is False:
-        url_suffix += '&normalizeForMatching=false'
-    else:
-        url_suffix += '&normalizeForMatching=true'
-    if url_options['renderWithoutMask'] is False:
-        url_suffix += '&renderWithoutMask=false'
-    else:
-        url_suffix += '&renderWithoutMask=true'
-
-    canvas_urls = "%s/%s/%s %s/%s/%s"%(tile_base_url,
-                                        tile1,
-                                        url_suffix,
-                                        tile_base_url,
-                                        tile2,
-                                        url_suffix)
-    return canvas_urls
-'''
-
 def get_parameter_sets_and_strings(SIFT_options):
     #length = [len(x) for x in SIFT_options]
     #maxlen = np.max(length)
