@@ -1,0 +1,53 @@
+{
+    "renderParametersUrlTemplate": "{baseDataUrl}/owner/{owner}/project/{project}/stack/{stack}/tile/{id}/render-parameters",
+    "neighborPairs": [
+      {
+        "p": {
+          "groupId": "29.0",
+          "id": "20180530162626437_17797_1R_Tape149_TEMCA4_01_000029_0_29_58.29.0",
+          "relativePosition": "LEFT"
+        },
+        "q": {
+          "groupId": "29.0",
+          "id": "20180530162626671_17797_1R_Tape149_TEMCA4_01_000029_0_30_58.29.0",
+          "relativePosition": "RIGHT"
+        }
+      },
+      {
+        "p": {
+          "groupId": "29.0",
+          "id": "20180530162626671_17797_1R_Tape149_TEMCA4_01_000029_0_30_58.29.0",
+          "relativePosition": "TOP"
+        },
+        "q": {
+          "groupId": "29.0",
+          "id": "20180530162649606_17797_1R_Tape149_TEMCA4_01_000029_0_30_59.29.0",
+          "relativePosition": "BOTTOM"
+        }
+      },
+      {
+        "p": {
+          "groupId": "29.0",
+          "id": "20180530162626671_17797_1R_Tape149_TEMCA4_01_000029_0_30_58.29.0",
+          "relativePosition": "LEFT"
+        },
+        "q": {
+          "groupId": "29.0",
+          "id": "20180530162626909_17797_1R_Tape149_TEMCA4_01_000029_0_31_58.29.0",
+          "relativePosition": "RIGHT"
+        }
+      },
+      {
+        "p": {
+          "groupId": "29.0",
+          "id": "20180530162604122_17797_1R_Tape149_TEMCA4_01_000029_0_30_57.29.0",
+          "relativePosition": "TOP"
+        },
+        "q": {
+          "groupId": "29.0",
+          "id": "20180530162626671_17797_1R_Tape149_TEMCA4_01_000029_0_30_58.29.0",
+          "relativePosition": "BOTTOM"
+        }
+      }
+    ]
+  }

@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+<title>Point Match Optimization Results</title>
+</head>
+<body>
+  <table>
+    {% for rs in return_struct %}
+      <tr>
+        <td>
+          <ol>
+          {% for item in rs['zipped'] %}
+            <li>{{ item[0] }}: {{ item[1] }}</li>
+          {% endfor %}
+          </ol>
+        </td>
+        {% for item in rs['img_url_count_zipped'] %}
+            {% set hovertext %}
+              {% for it in item[3] %}
+                {{ it[0] }}: {{ it[1] }}&#13;
+              {% endfor %}
+            {% endset %}
+            <td>
+            <a href="{{ item[1] }}" target="_blank">Tilepair URL</a>
+            <br><br>
+            <b>Number of point matches: {{ item[2] }}</b>
+            <br><br>
+            <img src="{{ item[0] }}", width="600",height="400">
+            <br>
+            </td>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+  </table>
+</body>
+</html>
