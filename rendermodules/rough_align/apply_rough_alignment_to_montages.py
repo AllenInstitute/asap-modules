@@ -71,7 +71,7 @@ def apply_rough_alignment(render,
                           consolidateTransforms=True):
     z = Z[0] # z value from the montage stack - to be mapped to the newz values in lowres stack
     newz = Z[1] # z value in the lowres stack for this montage
-    print(z, newz)
+    
     session=requests.session()
     try:
         # get lowres stack tile specs
@@ -138,7 +138,7 @@ def apply_rough_alignment(render,
             #t.z = z
             t.layout.sectionId = "%s.0"%str(int(newz))
         
-        renderapi.client.import_tilespecs_parallel(
+        renderapi.client.import_tilespecs(
             output_stack, highres_ts1,
             sharedTransforms=sharedTransforms_highrests1, render=render)
         print('getting tilespecs from')
