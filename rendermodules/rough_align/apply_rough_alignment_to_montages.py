@@ -201,20 +201,9 @@ class ApplyRoughAlignmentTransform(RenderModule):
                             self.args['output_stack'],
                             'LOADING')
 
-        #with renderapi.client.WithPool(self.args['pool_size']) as pool:
-        #    results=pool.map(mypartial, Z)
-        results = []
-        for zz in Z:
-            results.append(apply_rough_alignment(self.render,
-                                                 self.args['montage_stack'],
-                                                 self.args['prealigned_stack'],
-                                                 self.args['lowres_stack'],
-                                                 self.args['output_stack'],
-                                                 self.args['tilespec_directory'],
-                                                 self.args['scale'],
-                                                 zz,
-                                                 consolidateTransforms=self.args['consolidate_transforms']))
-
+        with renderapi.client.WithPool(self.args['pool_size']) as pool:
+            results=pool.map(mypartial, Z)
+        
         #raise an exception if all the z values to apply alignment were not
         if not all([r is None for r in results]):
             failed_zs = [(result,z) for result,z in zip(results,Z) if result is not None]
