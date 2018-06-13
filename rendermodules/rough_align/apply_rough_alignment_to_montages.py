@@ -141,7 +141,6 @@ def apply_rough_alignment(render,
         renderapi.client.import_tilespecs(
             output_stack, highres_ts1,
             sharedTransforms=sharedTransforms_highrests1, render=render)
-        print('getting tilespecs from')
         session.close()
         return None
     except Exception as e:
@@ -153,30 +152,11 @@ class ApplyRoughAlignmentTransform(RenderModule):
     default_output_schema = ApplyRoughAlignmentOutputParameters
     
     def run(self):
-        #if self.args['minZ'] > self.args['maxZ']:
-        #    raise RenderModuleException("First section z cannot be greater or equal to last section z")
-
         allzvalues = self.render.run(renderapi.stack.get_z_values_for_stack,
                                      self.args['montage_stack'])
         allzvalues = np.array(allzvalues)
 
-        #self.args['minZ'] = self.args['minZ'] if self.args['minZ'] > min(allzvalues) else min(allzvalues)
-        #self.args['maxZ'] = max(allzvalues) if self.args['maxZ'] > max(allzvalues) else self.args['maxZ']
-        #zvalues = allzvalues[(allzvalues >= self.args['minZ']) & (allzvalues <= self.args['maxZ'])]
-
         Z = [[a,b] for a,b in zip(self.args['old_z'], self.args['new_z']) if a in allzvalues]
-
-
-        #if self.args['map_z']:
-        #    zvalues = list(np.sort(np.array(zvalues)))
-        #    diffarray = [x-zvalues[0] for x in zvalues]
-        #    newzvalues = [self.args['map_z_start']+x for x in diffarray]
-        #    #newzvalues = range(0, len(zvalues))
-        #else:
-        #    newzvalues = zvalues
-
-        # the old and new z values are required for the AT team
-        #Z = [[a,b] for a,b in zip(zvalues, newzvalues)]
 
         mypartial = partial(
                         apply_rough_alignment,

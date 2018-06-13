@@ -59,7 +59,7 @@ class ApplyRoughAlignmentTransformParameters(RenderParameters):
     new_z = List(
         Int,
         required=False,
-        default=[-1],
+        default=None,
         cli_as_single_argument=True,
         description="List of new z values to be mapped to")
     old_z = List(
@@ -74,23 +74,12 @@ class ApplyRoughAlignmentTransformParameters(RenderParameters):
         if data['prealigned_stack'] is None:
             data['prealigned_stack'] = data['montage_stack']
         if data['map_z']:
-            if data['new_z'][0] == -1:
+            if data['new_z'] is None:
                 raise ValidationError("new_z is invalid. You need to specify new_z as a list of values")
             elif abs(len(data['new_z']) - len(data['old_z'])) != 0:
                 raise ValidationError("new_z list count does not match with old_z list count")
         else:
             data['new_z'] = data['old_z']
-
-
-    #@post_load
-    #def validate_data(self, data):
-    #    if data['prealigned_stack'] is None:
-    #        data['prealigned_stack'] = data['montage_stack']
-    #    if data['map_z']:
-    #        if data['map_z_start'] == -1:
-    #            raise ValidationError("map_z_start is invalid")
-    #    else:
-    #        data['map_z_start'] = data['minZ']
 
 
 class LowresStackParameters(DefaultSchema):
