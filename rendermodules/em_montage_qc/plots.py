@@ -1,27 +1,38 @@
 import numpy as np
-#import matplotlib.pyplot as plt
-#import matplotlib as mpl
-#from matplotlib.collections import PatchCollection
-#from matplotlib.patches import Polygon
-#import matplotlib.cm as cm
 import tempfile
 import renderapi
 import requests
 from functools import partial
 from bokeh.plotting import figure, output_file, show, save
-from bokeh.layouts import column
-from bokeh.models import HoverTool, ColumnDataSource
+from bokeh.layouts import column, row
+from bokeh.models import HoverTool, ColumnDataSource, CustomJS, CategoricalColorMapper, TapTool, OpenURL, Div
 
 
+def display_event(div, attributes=[], style = 'float:left;clear:left;font_size=0.5pt'):
+    "Build a suitable CustomJS to display the current event in the div model."
+    return CustomJS(args=dict(div=div), code="""
+        var attrs = %s; var args = [];
+        for (var i=0; i<attrs.length; i++ ) {
+            args.push(attrs[i] + '=' + Number(cb_obj[attrs[i]]).toFixed(2));
+        }
+        var line = "<span style=%r><b>" + cb_obj.event_name + "</b>(" + args.join(", ") + ")</span>\\n";
+        var text = div.text.concat(line);
+        var lines = text.split("\\n")
+        if ( lines.length > 35 ) { lines.shift(); }
+        div.text = lines.join("\\n");
+    """ % (attributes, style))
 
-def get_tile_ids_and_tile_boundaries(render, input_stack, z):
-    session = requests.session()
-    # read the tilespecs for the z
-    tilespecs = render.run(renderapi.tilespec.get_tile_specs_from_z, input_stack, z, session=session)
+
+def plot_defects(render, stack, out_html_dir, args):
+    tspecs = args[0]
+    dis_tiles = args[1]
+    gap_tiles = args[2]
+    seam_centroids = np.array(args[3])
+    z = args[4]
+
     tile_positions = []
     tile_ids = []
-
-    for ts in tilespecs:
+    for ts in tspecs:
         tile_ids.append(ts.tileId)
         pts = []
         pts.append([ts.minX, ts.minY])
@@ -30,65 +41,89 @@ def get_tile_ids_and_tile_boundaries(render, input_stack, z):
         pts.append([ts.minX, ts.maxY])
         pts.append([ts.minX, ts.minY])
         tile_positions.append(pts)
+    
+    out_html = tempfile.NamedTemporaryFile(suffix=".html", delete=False, mode='w', dir=out_html_dir)
+    out_html.close()
 
-    #print(tile_positions)
-    return {'tile_ids':tile_ids, 'tile_positions':tile_positions, 'z':z}
+    output_file(out_html.name)
+    xs = []
+    ys = []
+    alphas = []
+    for tp in tile_positions:
+        sp = np.array(tp)
+        x = list(sp[:,0])
+        y = list(sp[:,1])
+        xs.append(x)
+        ys.append(y)
+        alphas.append(0.5)
+    
+    fill_color = []
+    label = []
+    for t in tile_ids:
+        if t in gap_tiles:
+            label.append("Gap tiles")
+            fill_color.append("red")
+        elif t in dis_tiles:
+            label.append("Disconnected tiles")
+            fill_color.append("yellow")
+        else:
+            label.append("Stitched tiles")
+            fill_color.append("blue")
 
-def plot_bokeh_section_maps(tile_data, out_html):
-    # tile_positions and tile_ids are list of lists
-    output_file(out_html)
+    color_mapper = CategoricalColorMapper(factors=['Gap tiles', 'Disconnected tiles', 'Stitched tiles'], palette=["red", "yellow", "blue"])
+    source = ColumnDataSource(data=dict(x=xs, y=ys, alpha=alphas, names=tile_ids, fill_color=fill_color, labels=label))
 
-    # bokeh plot options
-    TOOLS = "pan,wheel_zoom,box_zoom,reset,hover,save"
+    seam_source = ColumnDataSource(data=dict(x=seam_centroids[:,0], y=seam_centroids[:,1], lbl=["Seam Centroids" for s in xrange(len(seam_centroids))]))
 
-    plots = []
-    for ts in tile_data:
-        z = ts['z']
-        tpos = ts['tile_positions']
-        tids = ts['tile_ids']
-        f1 = figure(title=str(z),width=1000, height=1000, tools=TOOLS)
+    TOOLS = "pan,box_zoom,reset,hover,tap,save"
 
-        xs = []
-        ys = []
-        alphas = []
-        for tp in tpos:
-            sp = np.array(tp)
-            x = list(sp[:,0])
-            y = list(sp[:,1])
-            xs.append(x)
-            ys.append(y)
-            alphas.append(0.5)
+    p = figure(title=str(z), width=1000, height=1000, tools=TOOLS, match_aspect=True)
+    pp = p.patches('x', 'y', source=source, alpha='alpha', line_width=2, color={'field':'labels', 'transform': color_mapper}, legend='labels')
+    cp = p.circle('x', 'y', source=seam_source, legend='lbl', size=11)
 
-        source = ColumnDataSource(data=dict(x=xs, y=ys, alpha=alphas, names=tids,))
-        f1.patches('x', 'y', source=source, alpha='alpha', line_width=2)
-        hover = f1.select_one(HoverTool)
-        hover.point_policy = "follow_mouse"
-        hover.tooltips = [("tileId", "@names"),]
-        plots.append(f1)
+    jscode = """
+        var inds = cb_obj.selected['1d'].indices;
+        var d = cb_obj.data;
+        var line = "<span style='float:left;clear:left;font_size=0.5pt'><br>" + d['%s'][inds[0]] + "</b></span>\\n";
+        var text = div.text.concat(line);
+        var lines = text.split("\\n")
+        if ( lines.length > 35 ) { lines.shift(); }
+        div.text = lines.join("\\n");
+    """
+    div = Div(width=1000)
+    layout = row(p, div)
 
-    p = column(*plots)
-    save(p)
+    urls = "%s:%d/render-ws/v1/owner/%s/project/%s/stack/%s/tile/@names/png-image?scale=0.1"%(render.DEFAULT_HOST, render.DEFAULT_PORT, render.DEFAULT_OWNER, render.DEFAULT_PROJECT, stack)
+    urls = "%s:%d/render-ws/v1/owner/%s/project/%s/stack/%s/tile/@names/withNeighbors/jpeg-image?scale=0.1"%(render.DEFAULT_HOST, render.DEFAULT_PORT, render.DEFAULT_OWNER, render.DEFAULT_PROJECT, stack)
+    
+    taptool = p.select(type=TapTool)
+    taptool.renderers = [pp]
+    taptool.callback = OpenURL(url=urls)
+
+    hover = p.select(dict(type=HoverTool))
+    hover.renderers = [pp]
+    hover.point_policy = "follow_mouse"
+    hover.tooltips = [("tileId", "@names"), ("x", "$x{int}"), ("y", "$y{int}")]
+    
+    source.callback = CustomJS(args=dict(div=div), code=jscode%('names'))
+    save(layout)
+
+    return out_html.name
 
 
-def plot_section_maps(render, stack, zvalues, out_html_dir=None, pool_size=5):
+def plot_section_maps(render, stack, post_tspecs, disconnected_tiles, gap_tiles, seam_centroids, zvalues, out_html_dir=None, pool_size=5):
     if out_html_dir is None:
-        out_html_dir = tempfile.NamedTemporaryFile(suffix=".html",
-                                            delete=False,
-                                            mode='w')
-        out_html_dir.close()
-    else:
-        out_html_dir = tempfile.NamedTemporaryFile(suffix=".html",
-                                                   delete=False,
-                                                   mode='w',
-                                                   dir=out_html_dir)
+        out_html_dir = tempfile.mkdtemp()
+    
+    mypartial = partial(plot_defects, render, stack, out_html_dir)
 
-    # Get the tileIds and tile bounds for each z
-    mypartial = partial(get_tile_ids_and_tile_boundaries, render, stack)
+    args = zip(post_tspecs, disconnected_tiles, gap_tiles, seam_centroids, zvalues)
 
     with renderapi.client.WithPool(pool_size) as pool:
-        tile_data = pool.map(mypartial, zvalues)
-    #for z in zvalues:
-    #    tile_data = get_tile_ids_and_tile_boundaries(render, stack, z)
+        html_files = pool.map(mypartial, args)
+    #html_files = []
+    #for arg in args:
+    #    html_files.append(plot_defects(render, stack, out_html_dir, arg))
 
-    plot_bokeh_section_maps(tile_data, out_html_dir.name)
-    return out_html_dir.name
+    return html_files
+

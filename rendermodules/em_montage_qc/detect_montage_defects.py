@@ -258,7 +258,7 @@ def run_analysis(render, prestitched_stack, poststitched_stack, match_collection
         z, residual_threshold=residual_threshold, distance=neighbor_distance,
         min_cluster_size=min_cluster_size, tspecs=post_tspecs)
 
-    return disconnected_tiles, gap_tiles, seam_centroids
+    return disconnected_tiles, gap_tiles, seam_centroids, post_tspecs
 
 
 def detect_stitching_mistakes(render, prestitched_stack, poststitched_stack, match_collection, match_collection_owner, residual_threshold, neighbor_distance, min_cluster_size, zvalues, pool_size=20):
@@ -284,7 +284,7 @@ def detect_stitching_mistakes(render, prestitched_stack, poststitched_stack, mat
     #                      min_cluster_size=min_cluster_size)
 
     with renderapi.client.WithPool(pool_size) as pool:
-        disconnected_tiles, gap_tiles, seam_centroids = zip(*pool.map(
+        disconnected_tiles, gap_tiles, seam_centroids, post_tspecs = zip(*pool.map(
             mypartial0, zvalues))
         # disconnected_tiles = pool.map(mypartial1, zvalues)
         # gap_tiles = pool.map(mypartial2, zvalues)
@@ -293,7 +293,7 @@ def detect_stitching_mistakes(render, prestitched_stack, poststitched_stack, mat
     #    disconnected_tiles.append(detect_disconnected_tiles(render, prestitched_stack, poststitched_stack, z))
     #    gap_tiles.append(detect_stitching_gaps(render, prestitched_stack, poststitched_stack, z))
     #    seam_centroids.append(detect_seams(render, poststitched_stack, match_collection, match_collection_owner, z, distance=80))
-    return disconnected_tiles, gap_tiles, seam_centroids
+    return disconnected_tiles, gap_tiles, seam_centroids, post_tspecs
 
 
 def check_status_of_stack(render, stack, zvalues):
@@ -336,7 +336,7 @@ class DetectMontageDefectsModule(RenderModule):
         status2, new_poststitched = check_status_of_stack(self.render,
                                                  self.args['poststitched_stack'],
                                                  zvalues)
-        disconnected_tiles, gap_tiles, seam_centroids = detect_stitching_mistakes(
+        disconnected_tiles, gap_tiles, seam_centroids, post_tspecs = detect_stitching_mistakes(
                                                             self.render,
                                                             new_prestitched,
                                                             new_poststitched,
@@ -362,9 +362,12 @@ class DetectMontageDefectsModule(RenderModule):
         centroids = [seam_centroids[i] for i in seams_indices]
 
         self.args['output_html'] = self.args['out_html_dir']
-        if len(combinedz) > 0:
-            if self.args['plot_sections']:
-                self.args['output_html'] = plot_section_maps(self.render, new_poststitched, combinedz, out_html_dir=self.args['output_html'])
+        if self.args['plot_sections']:
+            self.args['output_html'] = plot_section_maps(self.render, self.args['poststitched_stack'], post_tspecs, disconnected_tiles, gap_tiles, seam_centroids, zvalues, out_html_dir=self.args['output_html'])
+
+        #if len(combinedz) > 0:
+        #    if self.args['plot_sections']:
+        #        self.args['output_html'] = plot_section_maps(self.render, new_poststitched, combinedz, out_html_dir=self.args['output_html'])
 
         self.output({'output_html':self.args['output_html'],
                      'qc_passed_sections': qc_passed_sections,
@@ -380,6 +383,7 @@ class DetectMontageDefectsModule(RenderModule):
         #if status2.find('LOADING') >= 0:
         if status2 == 'LOADING':
             self.render.run(renderapi.stack.delete_stack, new_poststitched)
+
 if __name__ == "__main__":
     mod = DetectMontageDefectsModule(input_data=example)
     mod.run()
