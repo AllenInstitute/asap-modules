@@ -1,6 +1,6 @@
 from argschema import InputFile, InputDir
 import marshmallow as mm
-from argschema.fields import Bool, Float, Int, Nested, Str, InputFile
+from argschema.fields import Bool, Float, Int, Nested, Str, InputFile, List
 from argschema.schemas import DefaultSchema
 from ..module.schemas import RenderParameters
 from marshmallow import validates_schema, post_load, ValidationError
@@ -32,11 +32,17 @@ class ApplyRoughAlignmentTransformParameters(RenderParameters):
         default=False,
         missing=False,
         metadata={'description':'map the montage Z indices to the rough alignment indices (default - False)'})
-    map_z_start = mm.fields.Int(
-        required=False,
-        default=-1,
-        missing=-1,
-        metadata={'description':'the starting index of the z in the montage stack'})
+    #map_z_start = mm.fields.Int(
+    #    required=False,
+    #    default=-1,
+    #    missing=-1,
+    #    metadata={'description':'the starting index of the z in the montage stack'})
+    #minZ = mm.fields.Int(
+    #    required=True,
+    #    metadata={'description':'Minimum Z value'})
+    #maxZ = mm.fields.Int(
+    #    required=True,
+    #    metadata={'description':'Maximum Z value'})
     consolidate_transforms = mm.fields.Boolean(
         required=False,
         default=True,
@@ -50,22 +56,30 @@ class ApplyRoughAlignmentTransformParameters(RenderParameters):
         default=10,
         missing=10,
         metadata={'description':'pool size for parallel processing'})
-    minZ = mm.fields.Int(
+    new_z = List(
+        Int,
+        required=False,
+        default=None,
+        cli_as_single_argument=True,
+        description="List of new z values to be mapped to")
+    old_z = List(
+        Int,
         required=True,
-        metadata={'description':'Minimum Z value'})
-    maxZ = mm.fields.Int(
-        required=True,
-        metadata={'description':'Maximum Z value'})
+        cli_as_single_argument=True,
+        description="List of z values to apply rough alignment to")  
+    
 
     @post_load
     def validate_data(self, data):
         if data['prealigned_stack'] is None:
             data['prealigned_stack'] = data['montage_stack']
         if data['map_z']:
-            if data['map_z_start'] == -1:
-                raise ValidationError("map_z_start is invalid")
+            if data['new_z'] is None:
+                raise ValidationError("new_z is invalid. You need to specify new_z as a list of values")
+            elif abs(len(data['new_z']) - len(data['old_z'])) != 0:
+                raise ValidationError("new_z list count does not match with old_z list count")
         else:
-            data['map_z_start'] = data['minZ']
+            data['new_z'] = data['old_z']
 
 
 class LowresStackParameters(DefaultSchema):

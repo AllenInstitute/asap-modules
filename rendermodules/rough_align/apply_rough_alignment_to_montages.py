@@ -13,7 +13,7 @@ import requests
 
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.rough_align.apply_rough_alignment_to_montages"
-
+'''
 example = {
     "render": {
         "host": "http://em-131fs",
@@ -35,44 +35,29 @@ example = {
     "scale": 0.1,
     "pool_size": 20
 }
-
 '''
-# Another way is to use ConsolidateTransforms module
-def consolidate_transforms(tforms, verbose=False, makePolyDegree=0):
-    # Adapted from consolidate_transforms module
+example = {
+    "render": {
+        "host": "http://em-131fs",
+        "port": 8080,
+        "owner": "gayathri",
+        "project": "Tests",
+        "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts"
+    },
+    "montage_stack": "rough_test_montage_stack",
+    "prealigned_stack": "rough_test_montage_stack",
+    "lowres_stack": "rough_test_downsample_rough_stack",
+    "output_stack": "rough_test_rough_stack",
+    "tilespec_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch",
+    "map_z": "False",
+    "new_z": [251, 252, 253],
+    "consolidate_transforms": "True",
+    "old_z": [1020, 1021, 1022],
+    "scale": 0.1,
+    "pool_size": 20
+}
 
-    tform_total = AffineModel()
-    start_index = 0
-    total_affines = 0
-    new_tform_list = []
 
-    for i,tform in enumerate(tforms):
-        #print tform.className
-        if 'AffineModel2D' in tform.className:
-            total_affines+=1
-            tform_total = tform.concatenate(tform_total)
-            #tform_total.M=tform.M.dot(tform_total.M)
-        else:
-            if total_affines>0:
-                if makePolyDegree>0:
-                    polyTform = Polynomial2DTransform()._fromAffine(tform_total)
-                    polyTform=polyTform.asorder(makePolyDegree)
-                    new_tform_list.append(polyTform)
-                else:
-                    new_tform_list.append(tform_total)
-                tform_total = AffineModel()
-                total_affines =0
-            new_tform_list.append(tform)
-    if total_affines>0:
-        if makePolyDegree>0:
-            polyTform = Polynomial2DTransform()._fromAffine(tform_total)
-            polyTform=polyTform.asorder(makePolyDegree)
-            new_tform_list.append(polyTform)
-        else:
-            new_tform_list.append(tform_total)
-
-    return new_tform_list
-'''
 logger = logging.getLogger()
 
 def apply_rough_alignment(render,
@@ -86,6 +71,7 @@ def apply_rough_alignment(render,
                           consolidateTransforms=True):
     z = Z[0] # z value from the montage stack - to be mapped to the newz values in lowres stack
     newz = Z[1] # z value in the lowres stack for this montage
+    
     session=requests.session()
     try:
         # get lowres stack tile specs
@@ -151,7 +137,7 @@ def apply_rough_alignment(render,
             t.z = newz
             #t.z = z
             t.layout.sectionId = "%s.0"%str(int(newz))
-
+        
         renderapi.client.import_tilespecs(
             output_stack, highres_ts1,
             sharedTransforms=sharedTransforms_highrests1, render=render)
@@ -164,28 +150,13 @@ def apply_rough_alignment(render,
 class ApplyRoughAlignmentTransform(RenderModule):
     default_schema = ApplyRoughAlignmentTransformParameters
     default_output_schema = ApplyRoughAlignmentOutputParameters
+    
     def run(self):
-        if self.args['minZ'] > self.args['maxZ']:
-            raise RenderModuleException("First section z cannot be greater or equal to last section z")
-
         allzvalues = self.render.run(renderapi.stack.get_z_values_for_stack,
                                      self.args['montage_stack'])
         allzvalues = np.array(allzvalues)
 
-        self.args['minZ'] = self.args['minZ'] if self.args['minZ'] > min(allzvalues) else min(allzvalues)
-        self.args['maxZ'] = max(allzvalues) if self.args['maxZ'] > max(allzvalues) else self.args['maxZ']
-        zvalues = allzvalues[(allzvalues >= self.args['minZ']) & (allzvalues <= self.args['maxZ'])]
-
-        if self.args['map_z']:
-            zvalues = list(np.sort(np.array(zvalues)))
-            diffarray = [x-zvalues[0] for x in zvalues]
-            newzvalues = [self.args['map_z_start']+x for x in diffarray]
-            #newzvalues = range(0, len(zvalues))
-        else:
-            newzvalues = zvalues
-
-        # the old and new z values are required for the AT team
-        Z = [[a,b] for a,b in zip(zvalues, newzvalues)]
+        Z = [[a,b] for a,b in zip(self.args['old_z'], self.args['new_z']) if a in allzvalues]
 
         mypartial = partial(
                         apply_rough_alignment,
@@ -212,7 +183,7 @@ class ApplyRoughAlignmentTransform(RenderModule):
 
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
             results=pool.map(mypartial, Z)
-
+        
         #raise an exception if all the z values to apply alignment were not
         if not all([r is None for r in results]):
             failed_zs = [(result,z) for result,z in zip(results,Z) if result is not None]

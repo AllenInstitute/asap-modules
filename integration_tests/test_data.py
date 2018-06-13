@@ -210,10 +210,9 @@ apply_rough_alignment_example = {
     "output_stack": "rough_test_rough_stack",
     "tilespec_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch/rough/jsonFiles",
     "map_z": "False",
-    "map_z_start": -1,
-    "consolidate_trasnforms": "True",
-    "minZ": 1020,
-    "maxZ": 1022,
+    "new_z": [251, 252, 253],
+    "consolidate_transforms": "True",
+    "old_z": [1020, 1021, 1022],
     "scale": 0.1,
     "pool_size": 20
 }
