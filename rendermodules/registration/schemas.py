@@ -27,7 +27,7 @@ class RegisterSectionSchema(RenderParameters):
         required=False,
         default="Affine",
         missing="Affine",
-        validate=mm.validate.OneOf(["Affine", "Rigid"]),
+        validate=mm.validate.OneOf(["Affine", "Rigid", "Similarity"]),
         description="Registration transformation model (Affine or Rigid) Default - Affine")
     reference_z = Int(
         required=True,

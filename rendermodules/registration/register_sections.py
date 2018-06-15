@@ -3,7 +3,7 @@ import numpy as np
 import renderapi
 import logging
 from functools import partial
-from renderapi.transform import AffineModel, RigidModel
+from renderapi.transform import AffineModel, RigidModel, SimilarityModel
 from ..module.render_module import RenderModule
 from schemas import RegisterSectionSchema, RegisterSectionOutputSchema
 from rendermodules.stack.consolidate_transforms import consolidate_transforms
@@ -21,7 +21,7 @@ example = {
     "moving_stack": "combined_133_pre_fix",
     "output_stack": "output_stack",
     "match_collection": "rough_align_fixes",
-    "regsitration_model": "Affine",
+    "registration_model": "Similarity",
     "reference_z": 1000,
     "moving_z": 1001,
     "overwrite_output": True,
@@ -72,9 +72,13 @@ class RegisterSectionByPointMatch(RenderModule):
     default_output_schema = RegisterSectionOutputSchema
 
     def run(self):
-        Transform = AffineModel
+        if self.args['registration_model'] == "Affine":
+            Transform = AffineModel
         if self.args['registration_model'] == "Rigid":
+            print("rigid")
             Transform = RigidModel
+        elif self.args['registration_model'] == "Similarity":
+            Transform = SimilarityModel
         
         tilespecs = fit_model_to_points(self.render,
                                         self.args['reference_stack'],
