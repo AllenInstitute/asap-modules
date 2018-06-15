@@ -114,3 +114,18 @@ def test_rough_registration(render, reference_stack, moving_stack, point_match_c
     # code coverage
     mod.run()
 
+    # rigid model
+    example['registration_model'] = "Rigid"
+    mod = RegisterSectionByPointMatch(input_data=example, args=['--output_json', out_json])
+    mod.run()
+    zvalues = renderapi.stack.get_z_values_for_stack(example['output_stack'], render=render)
+    assert(example['moving_z'] in zvalues)
+
+    example['reference_stack'] = moving_stack
+    example['moving_stack'] = reference_stack
+    mod = RegisterSectionByPointMatch(input_data=example, args=['--output_json', out_json])
+    mod.run()
+    zvalues = renderapi.stack.get_z_values_for_stack(example['output_stack'], render=render)
+    assert(example['moving_z'] in zvalues)
+
+
