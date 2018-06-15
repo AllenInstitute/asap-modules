@@ -161,6 +161,11 @@ def test_detect_montage_defects(render,
         assert(len(s) > 0)
 
     assert(len(data['gap_sections']) == 1)
+
+    # code coverage
+    ex['out_html_dir'] = None
+    mod = DetectMontageDefectsModule(input_data=ex, args=[])
+    mod.run()
     
    
 
