@@ -262,9 +262,16 @@ class DetectMontageDefectsModule(RenderModule):
         qc_passed_sections = set(zvalues) - set(combinedz)
         centroids = [seam_centroids[i] for i in seams_indices]
 
-        self.args['output_html'] = self.args['out_html_dir']
+        self.args['output_html'] = None
         if self.args['plot_sections']:
-            self.args['output_html'] = plot_section_maps(self.render, self.args['poststitched_stack'], post_tspecs, disconnected_tiles, gap_tiles, seam_centroids, zvalues, out_html_dir=self.args['output_html'])
+            self.args['output_html'] = plot_section_maps(self.render, 
+                                                         self.args['poststitched_stack'], 
+                                                         post_tspecs, 
+                                                         disconnected_tiles, 
+                                                         gap_tiles, 
+                                                         seam_centroids, 
+                                                         zvalues, 
+                                                         out_html_dir=self.args['out_html_dir'])
 
         self.output({'output_html':self.args['output_html'],
                      'qc_passed_sections': qc_passed_sections,

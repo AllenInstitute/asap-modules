@@ -107,9 +107,6 @@ def plot_section_maps(render, stack, post_tspecs, disconnected_tiles, gap_tiles,
 
     with renderapi.client.WithPool(pool_size) as pool:
         html_files = pool.map(mypartial, args)
-    #html_files = []
-    #for arg in args:
-    #    html_files.append(plot_defects(render, stack, out_html_dir, arg))
-
+    
     return html_files
 
