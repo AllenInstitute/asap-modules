@@ -38,8 +38,8 @@ class DetectMontageDefectsParameters(
         description='minimum number of point matches required in each cluster for taking it into account for seam detection (default = 7)')
     plot_sections = Bool(
         required=False,
-        default=False,
-        missing=False,
+        default=True,
+        missing=True,
         description="Do you want to plot the sections with defects (holes or gaps)?. Will plot Bokeh plots in a html file")
     out_html_dir = InputDir(
         required=False,
@@ -54,7 +54,8 @@ class DetectMontageDefectsParameters(
 
 
 class DetectMontageDefectsParametersOutput(argschema.schemas.DefaultSchema):
-    output_html = Str(
+    output_html = argschema.fields.List(
+        argschema.fields.Str,
         required=False,
         default=None,
         description='Output html file with Bokeh plots showing holes and stitching gaps')
@@ -78,8 +79,3 @@ class DetectMontageDefectsParametersOutput(argschema.schemas.DefaultSchema):
         dtype='object',
         required=True,
         description='An array of (x,y) positions of seams for each section with seams')
-
-    #seam_centroids = argschema.fields.List(
-    #    argschema.fields.List(argschema.fields.Float),
-    #    required=False,
-    #    description='List of (x,y) positions of seams for each section')
