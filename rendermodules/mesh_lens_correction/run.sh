@@ -45,7 +45,7 @@ python -m rendermodules.pointmatch.create_tilepairs --input_json ${master_json} 
 python -m rendermodules.mesh_lens_correction.LensPointMatches --input_json ${master_json} --tilepair_output ${tpairout} --output_json ${lpmout} --stack ${stack}
 
 #find the lens correction, write out to new stack
-python -m rendernodules.mesh_lens_correction.MeshAndSolveTransform --input_json ${master_json} --sectionId ${sectionid} --output_json ${meshout} --stack ${stack} --aligned_stack ${aligned_stack}
+python -m rendermodules.mesh_lens_correction.MeshAndSolveTransform --input_json ${master_json} --sectionId ${sectionid} --output_json ${meshout} --stack ${stack} --aligned_stack ${aligned_stack}
 
 #run montage qc on the new stack
 python -m rendermodules.em_montage_qc.detect_montage_defects --input_json ${master_json} --prestitched_stack ${stack} --poststitched_stack ${aligned_stack} --minZ ${z_set} --maxZ ${z_set} --output_json ${qcout}
