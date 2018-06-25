@@ -6,7 +6,7 @@ import scipy.sparse as sparse
 from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import factorized
 import argschema
-from schema import LensCorrectionSchema
+from rendermodules.mesh_lens_correction.schemas import LensCorrectionSchema
 import renderapi
 import copy
 import os
@@ -87,7 +87,7 @@ class MeshAndSolveTransform(argschema.ArgSchemaParser):
             # order is important
             self.tilespecs.append(
                     renderapi.tilespec.get_tile_spec_raw(
-                        self.args['stack'],
+                        self.args['input_stack'],
                         tid,
                         render=render))
         self.tile_width = self.tilespecs[0].width
@@ -146,8 +146,8 @@ class MeshAndSolveTransform(argschema.ArgSchemaParser):
     def write_montage_qc_json(self):
         j = {}
         j['render'] = self.args['render']
-        j['prestitched_stack'] = self.args['stack']
-        j['poststitched_stack'] = self.args['aligned_stack']
+        j['prestitched_stack'] = self.args['input_stack']
+        j['poststitched_stack'] = self.args['output_stack']
         j['match_collection'] = self.args['match_collection']
         j['out_html_dir'] = self.args['out_html_dir']
         j['output_json'] = os.path.join(

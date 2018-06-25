@@ -1,6 +1,6 @@
 import numpy as np
 import argschema
-from .schema import LensPointMatchSchema
+from rendermodules.mesh_lens_correction.schemas import LensPointMatchSchema
 import json
 import renderapi
 import cv2
@@ -200,7 +200,7 @@ class LensPointMatches(argschema.ArgSchemaParser):
             # order is important
             self.tilespecs.append(
                     renderapi.tilespec.get_tile_spec_raw(
-                        self.args['stack'], tid, render=render))
+                        self.args['input_stack'], tid, render=render))
         self.tilespecs = np.array(self.tilespecs)
 
     def match_image_pairs(self, ndiv=1, index_list=None):

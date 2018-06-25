@@ -1,121 +1,127 @@
 #!/usr/bin/env python
 
 from argschema import ArgSchema
-from argschema.fields import String, Int, Boolean, Nested, Float
+from argschema.schemas import DefaultSchema
+from argschema.fields import String, Int, Boolean, Nested, Float, Str, OutputDir
 from marshmallow import ValidationError
-
-
-class render(ArgSchema):
-    owner = String(
-        deafult="",
-        required=False,
-        description="owner")
-    project = String(
-        deafult="",
-        required=False,
-        description="project")
-    host = String(
-        default=None,
-        required=False,
-        description="render host")
-    port = Int(
-        default=8080,
-        required=False,
-        description="render port")
-    client_scripts = String(
-        deafult="/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts",
-        required=False,
-        description="render bin path")
-
-    def validate_data(self, data):
-        if data["host"] is None:
-            raise ValidationError("Need render host")
+from ..module.render_module import RenderParameters
 
 
 class regularization(ArgSchema):
     default_lambda = Float(
+        required=False,
         default=0.005,
+        missing=0.005,
         description="regularization factor")
     translation_factor = Float(
+        required=False,
         default=0.005,
+        missing=0.005,
         description="regularization factor")
     lens_lambda = Float(
+        required=False,
         default=0.005,
+        missing=0.005,
         description="regularization for lens parameters")
 
 
-class RawLensStackSchema(ArgSchema):
-    render = Nested(render)
-    stack = String(
-        deafult="",
-        description="nameof stack for writing raw tilespecs")
+class RawLensStackSchema(RenderParameters):
+    #render = Nested(render)
+    #stack = String(
+    #    required=True,
+    #    description="nameof stack for writing raw tilespecs")
     metafile = String(
-        deafult="",
+        required=True,
         description="fullpath of metadata file")
-    tilepair_dir = String(
-        deafult="",
-        description="os.path.basename of metadata file")
+    #tilepair_dir = OutputDir(
+    #    required=False,
+    #    default="",
+    #    description="os.path.basename of metadata file")
     overwrite_zlayer = Boolean(
+        required=False,
         default=True,
+        missing=True,
         description="")
     pool_size = Int(
+        required=False,
         default=10,
         description="")
     close_stack = Boolean(
+        required=False,
         default=True,
         description="")
-    z = Int(
-        default=1,
-        description="")
+    z_index = Int(
+        required=True,
+        description="z value for the lens correction data in stack")
 
 
 class LensPointMatchSchema(RawLensStackSchema):
+    input_stack = String(
+        required=True,
+        description="Name of raw input lens data stack")
     match_collection = String(
-        deafult="",
+        required=True,
         description="name of point match collection")
     tilepair_output = String(
-        deafult="",
+        required=False,
+        default="",
         description="path to tilepair json file")
     pairJson = String(
-        deafult="",
+        required=False,
+        default="",
         description="path to tilepair json file")
     nfeature_limit = Int(
-        default=10000,
         required=False,
+        default=10000,
         description="randomly choose this many features per tile")
     matchMax = Int(
-        default=1000,
         required=False,
+        default=1000,
+        missing=1000,
         description="maximum pointmatches per tile pair")
     ncpus = Int(
-        default=-1,
         required=False,
+        default=-1,
         description="max number of cpus to use")
     downsample_scale = Float(
-        default=0.3,
         required=False,
+        default=0.3,
+        missing=0.3,
         description="passed to cv2.resize fx,fy")
 
 
 class LensCorrectionSchema(LensPointMatchSchema):
-    aligned_stack = String(
-        deafult="",
-        description="name \
-        of stack after correction and alignment")
+    #aligned_stack = String(
+    #    required=True,
+    #    description="name of stack after correction and alignment")
     nvertex = Int(
+        required=False,
         default=1000,
-        required=True,
+        missinf=1000,
         description="maximum number of vertices to attempt")
     sectionId = String(
-        deafult="",
+        required=False,
+        default="",
+        missing="",
         description="sectionId for creating correction")
     render_output = String(
-        deafult="null",
+        defult=None,
         description="path, null, or stdout")
-    output_dir = String(
-        deafult="",
+    output_stack = String(
+        required=True,
+        description="Name of the lens corrected output stack")
+    output_dir = OutputDir(
+        required=False,
+        default=None,
         description="write lens correction tform jsons here")
-    out_html_dir = String(
-        deafult="",
+    out_html_dir = OutputDir(
+        required=False,
+        default=None,
         description="where to write some qc files")
     regularization = Nested(regularization)
+
+
+class LensCorrectionOutputSchema(DefaultSchema):
+    output_json = String(
+        required=True,
+        description="path to file")
