@@ -52,9 +52,6 @@ class RawLensStackSchema(ArgSchema):
     metafile = String(
         deafult="",
         description="fullpath of metadata file")
-    tilepair_dir = String(
-        deafult="",
-        description="os.path.basename of metadata file")
     overwrite_zlayer = Boolean(
         default=True,
         description="")
