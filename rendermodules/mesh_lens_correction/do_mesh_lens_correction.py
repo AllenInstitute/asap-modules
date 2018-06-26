@@ -151,7 +151,6 @@ class MeshLensCorrection(RenderModule):
 
     def run(self):
         self.sectionId = self.get_sectionId_from_z(self.args['z_index'])
-
         
         out_file = tempfile.NamedTemporaryFile(suffix=".json", delete=False)
         out_file.close()
@@ -192,7 +191,7 @@ class MeshLensCorrection(RenderModule):
         except AttributeError as e:
             self.logger.error(e)
 
-if __name__=="__main__":
-    mod = MeshLensCorrection(input_data=example, args=['--output_json', 'out.json'])
+if __name__ == "__main__":
+    mod = MeshLensCorrection(input_data=example)
     mod.run()
     
