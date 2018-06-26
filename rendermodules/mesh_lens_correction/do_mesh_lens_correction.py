@@ -89,6 +89,12 @@ class MeshLensCorrection(RenderModule):
             self.args['output_dir'] = ex['output_dir']
         else:
             ex['output_dir'] = self.args['output_dir']
+        
+        if self.args['outfile'] is None:
+            outfile = tempfile.NamedTemporaryFile(suffix=".json", delete=False, dir=self.args['output_dir'])
+            outfile.close()
+            self.args['outfile'] = outfile.name
+        ex['outfile'] = self.args['outfile']
         return ex
 
     def generate_ptmatch_example(self):
@@ -146,6 +152,7 @@ class MeshLensCorrection(RenderModule):
     def run(self):
         self.sectionId = self.get_sectionId_from_z(self.args['z_index'])
 
+        
         out_file = tempfile.NamedTemporaryFile(suffix=".json", delete=False)
         out_file.close()
         
@@ -181,7 +188,7 @@ class MeshLensCorrection(RenderModule):
         qc_mod.run()
 
         try:
-            self.output({'output_json': lens_output.name})
+            self.output({'output_json': lens_output.name, 'qc_json': out_file.name})
         except AttributeError as e:
             self.logger.error(e)
 

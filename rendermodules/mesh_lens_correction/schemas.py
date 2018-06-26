@@ -117,6 +117,8 @@ class LensCorrectionSchema(LensPointMatchSchema):
         description="write lens correction tform jsons here")
     outfile = Str(
         required=False,
+        default=None,
+        missing=None,
         description=("File to which json output of lens correction "
                      "(leaf TransformSpec) is written"))
     out_html_dir = OutputDir(
@@ -130,4 +132,7 @@ class LensCorrectionOutputSchema(DefaultSchema):
     output_json = String(
         required=True,
         description="path to file")
+    qc_json = String(
+        required=True,
+        description="path to qc json file")
 

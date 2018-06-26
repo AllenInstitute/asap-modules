@@ -66,20 +66,22 @@ def test_mesh_lens_correction(render, example_tform_dict, tmpdir_factory):
 
     mod = MeshLensCorrection(input_data=example, args=['--output_json', 'mesh_lens_out.json'])
     mod.run()
-
+    print(mod.args)
+    
     with open('mesh_lens_out.json', 'r') as f:
         js = json.load(f)
 
     with open(js['output_json'], 'r') as f:
         new_tform_dict = json.load(f)
 
-    #with open(js1, 'r') as fp:
-    #    new_tform_dict = json.load(fp)
+    with open(js['qc_json'], 'r') as f:
+        qc = json.load(f)
 
-    example_tform = renderapi.transform.ThinPlateSplineTransform(dataString=example_tform_dict['dataString'])
-    new_tform = renderapi.transform.ThinPlateSplineTransform(dataString=new_tform_dict['dataString'])
+    assert(not qc['hole_sections'] and not qc['gap_sections'])
+
+    #example_tform = renderapi.transform.ThinPlateSplineTransform(dataString=example_tform_dict['dataString'])
+    #new_tform = renderapi.transform.ThinPlateSplineTransform(dataString=new_tform_dict['dataString'])
 
     assert(new_tform_dict['className'] == "mpicbg.trakem2.transform.ThinPlateSplineTransform")
-    #assert(example_tform.dataString == new_tform.dataString)
-
+    
     

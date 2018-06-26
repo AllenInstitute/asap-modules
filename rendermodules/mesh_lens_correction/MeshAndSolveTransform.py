@@ -32,7 +32,6 @@ example = {
     "translation_factor": 1e-5,
     "lens_lambda": 1e-5
   },
-  "output_dir": "/allen/programs/celltypes/workgroups/em-connectomics/danielk/em_lens_correction/output",
   "out_html_dir": "/allen/programs/celltypes/workgroups/em-connectomics/danielk/em_lens_correction/qc"
 }
 
@@ -56,7 +55,7 @@ class MeshAndSolveTransform(argschema.ArgSchemaParser):
         self.create_A()
         print('solving...')
         self.solve()
-        self.report_solution()
+        #self.report_solution()
         print('calling ThinPlateClient to create dataString')
         self.create_thinplatespline_tf()
         print('saving new stack entry')
@@ -411,7 +410,7 @@ class MeshAndSolveTransform(argschema.ArgSchemaParser):
             fname = self.args['outfile']
 
         cmd = 'java -cp $RENDER_CLIENT_JAR '
-        cmd += 'org.janelia.render.client.ThinPlateSpline2DClient '
+        cmd += 'org.janelia.render.client.ThinPlateSplineClient '
         cmd += '--computeAffine false '
         cmd += '--numberOfDimensions 2 '
         cmd += '--outputFile %s ' % fname
