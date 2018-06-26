@@ -6,7 +6,7 @@ import scipy.sparse as sparse
 from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import factorized
 import argschema
-from rendermodules.mesh_lens_correction.schemas import LensCorrectionSchema
+from rendermodules.mesh_lens_correction.schemas import LensCorrectionSchema, LensCorrectionOutputSchema
 import renderapi
 import copy
 import os
@@ -39,6 +39,7 @@ example = {
 
 class MeshAndSolveTransform(argschema.ArgSchemaParser):
     default_schema = LensCorrectionSchema
+    default_output_schema = LensCorrectionOutputSchema
 
     def run(self):
         self.load_matches()
@@ -402,9 +403,12 @@ class MeshAndSolveTransform(argschema.ArgSchemaParser):
                 [pxp, pyp]]
 
     def create_thinplatespline_tf(self):
-        fname = '%s/%s.json' % (
-                self.args['output_dir'],
-                self.args['sectionId'])
+        if self.args['outfile'] is None:
+            fname = '%s/%s.json' % (
+                    self.args['output_dir'],
+                    self.args['sectionId'])
+        else:
+            fname = self.args['outfile']
 
         cmd = 'java -cp $RENDER_CLIENT_JAR '
         cmd += 'org.janelia.render.client.ThinPlateSpline2DClient '
@@ -436,7 +440,7 @@ class MeshAndSolveTransform(argschema.ArgSchemaParser):
         else:
             tf = self.tf_poly
 
-        sname = self.args['aligned_stack']
+        sname = self.args['output_stack']
         render_target = renderapi.connect(**self.args['render'])
         renderapi.stack.create_stack(sname, render=render_target)
 

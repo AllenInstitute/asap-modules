@@ -26,7 +26,7 @@ example = {
   "overwrite_zlayer":True,
   "input_stack":"raw_lens_stack",
   "close_stack":"True",
-  "metafile":"/allen/programs/celltypes/production/wijem/long_term/reference_2018_02_21_01_56_45_00_00/_metadata_20180220175645_247488_8R_tape070A_05_20180220175645_reference_0_.json",
+  "metafile":"/allen/programs/celltypes/workgroups/em-connectomics/danielk/em_lens_correction/test_data/_metadata_20180220175645_247488_8R_tape070A_05_20180220175645_reference_0_.json",
   "match_collection":"raw_lens_matches",
   "nfeature_limit": 20000,
   "regularization":{
@@ -47,6 +47,10 @@ class MeshLensCorrection(RenderModule):
         j = json.load(open(self.args['metafile'], 'r'))
         self.sectionId = j[0]['metadata']['grid']
         return self.sectionId
+    
+    @staticmethod
+    def get_sectionId_from_z(z):
+        return str(float(z))
 
     def generate_ts_example(self):
         ex = {}
@@ -61,7 +65,7 @@ class MeshLensCorrection(RenderModule):
         ex['overwrite_zlayer'] = self.args['overwrite_zlayer']
         ex['close_stack'] = self.args['close_stack']
         ex['output_stack'] = self.args['input_stack']
-        ex['z_index'] = self.args['z_index']
+        ex['z'] = self.args['z_index']
         return ex
     
     def generate_tilepair_example(self):
@@ -76,7 +80,7 @@ class MeshLensCorrection(RenderModule):
         ex['maxZ'] = self.args['z_index']
         ex['zNeighborDistance'] = 0
         ex['stack'] = self.args['input_stack']
-        ex['xyNeigborFactor'] = 0.1
+        ex['xyNeighborFactor'] = 0.1
         ex['excludeCornerNeighbors'] = False
         ex['excludeSameLayerNeighbors'] = False
         ex['excludeCompletelyObscuredTiles'] = True
@@ -117,6 +121,10 @@ class MeshLensCorrection(RenderModule):
         ex['sectionId'] = self.sectionId
         ex['output_stack'] = self.args['output_stack']
         ex['input_stack'] = self.args['input_stack']
+
+        ex['metafile'] = self.args['metafile']
+        ex['z_index'] = self.args['z_index']
+        ex['out_html_dir'] = self.args['out_html_dir']
         return ex
         
     def get_qc_example(self):
@@ -136,7 +144,10 @@ class MeshLensCorrection(RenderModule):
         return ex
 
     def run(self):
-        out_file = tempfile.NamedTemporaryFile(suffix="json")
+        self.sectionId = self.get_sectionId_from_z(self.args['z_index'])
+
+        out_file = tempfile.NamedTemporaryFile(suffix=".json", delete=False)
+        out_file.close()
         
         # create a stack with the lens correction tiles
         ts_example = self.generate_ts_example()
@@ -149,7 +160,6 @@ class MeshLensCorrection(RenderModule):
         tp_mod.run()
         with open(tp_mod.args['output_json'], 'r') as f:
             js = json.load(f)
-        print(js)
         self.args['pairJson'] = js['tile_pair_file']
 
         # generate mesh point matches
@@ -159,7 +169,9 @@ class MeshLensCorrection(RenderModule):
 
         # find the lens correction, write out to new stack
         ls_example = self.get_lens_correction_example()
-        lens_output = tempfile.mkdtemp(suffix="json", dir=self.args['output_dir'])
+        lens_output = tempfile.NamedTemporaryFile(suffix=".json", dir=self.args['output_dir'], delete=False)
+        lens_output.close()
+        ls_example['outfile'] = lens_output.name
         mesh_mod = MeshAndSolveTransform(input_data=ls_example, args=['--output_json', lens_output.name])
         mesh_mod.run()
 
@@ -169,11 +181,11 @@ class MeshLensCorrection(RenderModule):
         qc_mod.run()
 
         try:
-            self.output({'output_json': lens_output})
+            self.output({'output_json': lens_output.name})
         except AttributeError as e:
             self.logger.error(e)
 
 if __name__=="__main__":
-    mod = MeshLensCorrection(input_data=example)
+    mod = MeshLensCorrection(input_data=example, args=['--output_json', 'out.json'])
     mod.run()
     

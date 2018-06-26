@@ -72,7 +72,8 @@ class LensPointMatchSchema(RawLensStackSchema):
         description="path to tilepair json file")
     nfeature_limit = Int(
         required=False,
-        default=10000,
+        default=20000,
+        missing=20000,
         description="randomly choose this many features per tile")
     matchMax = Int(
         required=False,
@@ -114,6 +115,10 @@ class LensCorrectionSchema(LensPointMatchSchema):
         required=False,
         default=None,
         description="write lens correction tform jsons here")
+    outfile = Str(
+        required=False,
+        description=("File to which json output of lens correction "
+                     "(leaf TransformSpec) is written"))
     out_html_dir = OutputDir(
         required=False,
         default=None,
@@ -125,3 +130,4 @@ class LensCorrectionOutputSchema(DefaultSchema):
     output_json = String(
         required=True,
         description="path to file")
+
