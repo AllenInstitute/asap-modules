@@ -17,7 +17,6 @@ example = {
   },
   "close_stack": "True",
   "metafile": "/allen/programs/celltypes/production/wijem/long_term/reference_2018_02_21_01_56_45_00_00/_metadata_20180220175645_247488_8R_tape070A_05_20180220175645_reference_0_.json",
-  "tilepair_dir": "/allen/programs/celltypes/workgroups/em-connectomics/danielk/em_lens_correction/tpjsons",
   "match_collection": "raw_lens_matches",
   "regularization": {
     "default_lambda": 1e5,
