@@ -329,7 +329,7 @@ class MeshAndSolveTransform:
         self.args['regularization']['lens_lambda'] = tmp
         self.solve()
         self.report_solution(pre='with lens correction')
-    '''
+    
     def estimate_polynomial(self, nx=500, ny=500, ndim=5):
         [xp, yp, idx, idy] = self.interpolate(nx=nx, ny=ny, flatten=True)
         src = np.transpose(np.vstack((xp, yp)))
@@ -348,7 +348,7 @@ class MeshAndSolveTransform:
         return [[xp.reshape(nx, ny), yp.reshape(nx, ny)],
                 [dxp, dyp],
                 [pxp, pyp]]
-
+    '''
     def create_thinplatespline_tf(self):
         if self.args['outfile'] is None:
             fname = '%s/%s.json' % (
@@ -369,7 +369,7 @@ class MeshAndSolveTransform:
         #cmd += '--outputFile %s ' % fname
         #cmd += '--numberOfLandmarks %d ' % self.mesh.points.shape[0]
 
-        cmd = ""
+        #cmd = ""
 
         for i in range(self.mesh.points.shape[0]):
             argvs += ['%0.6f ' % self.mesh.points[i, 0]]
@@ -435,7 +435,7 @@ class MeshAndSolveTransform:
                 sname,
                 'COMPLETE',
                 render=render_target)
-
+    '''
     def interpolate(self, xlim=None, ylim=None, nx=500, ny=500, flatten=False):
         if xlim is None:
             xlim = [0, self.tile_width]
@@ -458,7 +458,7 @@ class MeshAndSolveTransform:
             return [xp.flatten(), yp.flatten(), idx.flatten(), idy.flatten()]
         else:
             return [xp, yp, idx, idy]
-
+    '''
     def solve(self):
         self.create_regularization()
         ATW = self.A.transpose().dot(self.weights)

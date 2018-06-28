@@ -31,7 +31,7 @@ example = {
         "lens_lambda":1e-5
   },
   "output_stack": "lens_corrected_stack",
-  "outfile":"/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch/lens_out.json"
+  "outfile":"/allen/aibs/pipeline/image_processing/volume_assembly/scratch/lens_out.json"
 }
 
 render_params['project'] = "mesh_lens_correction_test"
@@ -93,6 +93,6 @@ def test_mesh_lens_correction(render, example_tform_dict, tmpdir_factory):
                            mod.args['input_stack'],
                            mod.args['match_collection'],
                            mod.args['matchMax'])
-                           
+
     
     
