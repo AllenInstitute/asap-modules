@@ -1,32 +1,9 @@
-import numpy as np
-import argschema
-from rendermodules.mesh_lens_correction.schemas import LensPointMatchSchema
-import json
-import renderapi
-import cv2
-import multiprocessing
-
-example = {
-  "render": {
-    "host": "em-131snb1",
-    "port": 8080,
-    "owner": "danielk",
-    "project": "lens_corr",
-    "client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts",
-    "memGB": "2G"
-  },
-  "close_stack": "True",
-  "metafile": "/allen/programs/celltypes/production/wijem/long_term/reference_2018_02_21_01_56_45_00_00/_metadata_20180220175645_247488_8R_tape070A_05_20180220175645_reference_0_.json",
-  "match_collection": "raw_lens_matches",
-  "regularization": {
-    "default_lambda": 1e5,
-    "translation_factor": 1e-5,
-    "lens_lambda": 1e-5
-  },
-  "output_dir": "/allen/programs/celltypes/workgroups/em-connectomics/danielk/em_lens_correction/output",
-  "out_html_dir": "/allen/programs/celltypes/workgroups/em-connectomics/danielk/em_lens_correction/qc"
-}
-
+import numpy as np 
+import argschema 
+import json 
+import renderapi 
+import cv2 
+import multiprocessing 
 
 def ransac_chunk(fargs):
     [k1xy, k2xy, des1, des2, k1ind] = fargs
@@ -78,6 +55,84 @@ def read_and_downsample(impath, scale):
                     interpolation=cv2.INTER_CUBIC)
     return im
 
+'''
+def find_matches(render, match_collection, downsample_scale, nfeature_limit, matchMax, ndiv, tile_data):
+    (impath, id, gid) = tile_data
+    
+    pim = read_and_downsample(impath[0], downsample_scale)
+    qim = read_and_downsample(impath[1], downsample_scale)
+
+    # Initiate SIFT detector
+    sift = cv2.xfeatures2d.SIFT_create()
+
+    # find the keypoints and descriptors with SIFT
+    kp1, des1 = sift.detectAndCompute(pim, None)
+    kp2, des2 = sift.detectAndCompute(qim, None)
+    
+    print('found %d and %d features for 2 images' %
+            (len(kp1), len(kp2)))
+    
+    # limit to 50K random
+    i1 = np.arange(len(kp1))
+    i2 = np.arange(len(kp2))
+
+    if len(kp1) > nfeature_limit:
+        np.random.shuffle(i1)
+        i1 = i1[0:nfeature_limit]
+    
+    if len(kp2) > nfeature_limit:
+        np.random.shuffle(i2)
+        i2 = i2[0:nfeature_limit]
+
+    k1xy = np.array([np.array(k.pt) for k in kp1])[i1, :]
+    k2xy = np.array([np.array(k.pt) for k in kp2])[i2, :]
+    des1 = des1[i1, :]
+    des2 = des2[i2, :]
+    print('limiting to %d each' % args['nfeature_limit'])
+
+    nr, nc = pim.shape
+    k1 = []
+    k2 = []
+    fargs = []
+    results = []
+    for i in range(ndiv):
+        r = np.arange(nr*i/ndiv, nr*(i+1)/ndiv)
+        for j in range(ndiv):
+            c = np.arange(nc*j/ndiv, nc*(j+1)/ndiv)
+            k1ind = np.argwhere(
+                    (k1xy[:, 0] >= r.min()) &
+                    (k1xy[:, 0] <= r.max()) &
+                    (k1xy[:, 1] >= c.min()) &
+                    (k1xy[:, 1] <= c.max())).flatten()
+            fargs.append([k1xy, k2xy, des1, des2, k1ind])
+            results.append(ransac_chunk(fargs[-1]))
+
+    for result in results:
+        k1 += result[0]
+        k2 += result[1]
+
+    for result in results:
+        k1 += result[0]
+        k2 += result[1]
+
+    k1 = np.array(k1) / downsample_scale
+    k2 = np.array(k2) / downsample_scale
+    print('found %d matches' % k1.shape[0])
+
+    if k1.shape[0] > matchMax:
+        a = np.arange(k1.shape[0])
+        np.random.shuffle(a)
+        k1 = k1[a[0: matchMax], :]
+        k2 = k2[a[0: matchMax], :]
+        print('  keeping %d' % k1.shape[0])
+
+    pm_dict = make_pm(id, gid, k1, k2)
+    renderapi.pointmatch.import_matches(
+      match_collection,
+      [pm_dict],
+      render=render)
+
+'''
 
 def find_matches(fargs):
     [impaths, ids, gids, ndiv, args] = fargs
@@ -140,7 +195,8 @@ def find_matches(fargs):
         k2 = k2[a[0: args['matchMax']], :]
         print('  keeping %d' % k1.shape[0])
 
-    render = renderapi.connect(**args['render'])
+    #render = renderapi.connect(**args['render'])
+    render = args['render']
     pm_dict = make_pm(ids, gids, k1, k2)
     renderapi.pointmatch.import_matches(
       args['match_collection'],
@@ -162,66 +218,79 @@ def make_pm(ids, gids, k1, k2):
     pm['matches']['w'] = np.ones(k1.shape[0]).tolist()
     return pm
 
-
-class LensPointMatches(argschema.ArgSchemaParser):
-    default_schema = LensPointMatchSchema
-
-    def run(self):
-        self.load_pairjson()
-        self.load_tilespecs()
-        self.match_image_pairs(ndiv=8)
-
-    def load_pairjson(self):
-        if self.args["tilepair_output"] != "":
-            tmp = json.load(open(self.args['tilepair_output'], 'r'))
-            self.args['pairJson'] = tmp['tile_pair_file']
-        self.tpjson = json.load(open(self.args['pairJson'], 'r'))
-        self.parse_tileids()
-
-    def parse_tileids(self):
-        self.tile_ids = np.array(
+def parse_tileids(tpjson):
+    tile_ids = np.array(
                 [[m['p']['id'], m['q']['id']]
-                    for m in self.tpjson['neighborPairs']])
-        self.unique_ids = np.unique(self.tile_ids.flatten())
-        # determine tile index per tile pair
-        self.tile_index = np.zeros(
-                (self.tile_ids.shape[0], self.tile_ids.shape[1])
-                ).astype('int')
-        for i in range(self.tile_ids.shape[0]):
-            for j in range(self.tile_ids.shape[1]):
-                self.tile_index[i, j] = \
-                  np.argwhere(self.unique_ids == self.tile_ids[i, j])
+                    for m in tpjson['neighborPairs']])
+    
+    unique_ids = np.unique(tile_ids.flatten())
 
-    def load_tilespecs(self):
-        render = renderapi.render.connect(**self.args['render'])
-        self.tilespecs = []
-        for tid in self.unique_ids:
-            # order is important
-            self.tilespecs.append(
-                    renderapi.tilespec.get_tile_spec_raw(
-                        self.args['input_stack'], tid, render=render))
-        self.tilespecs = np.array(self.tilespecs)
-
-    def match_image_pairs(self, ndiv=1, index_list=None):
-        ncpus = self.args['ncpus']
-        if self.args['ncpus'] == -1:
-            ncpus = multiprocessing.cpu_count()
-        pool = multiprocessing.Pool(ncpus)
-        fargs = []
-        if index_list is None:
-            index_list = range(self.tile_index.shape[0])
-        for i in index_list:
-            impaths = [
-                    t.ip.mipMapLevels[0].imageUrl.split('file://')[-1]
-                    for t in self.tilespecs[self.tile_index[i]]]
-            ids = [t.tileId
-                   for t in self.tilespecs[self.tile_index[i]]]
-            gids = [t.layout.sectionId
-                    for t in self.tilespecs[self.tile_index[i]]]
-            fargs.append([impaths, ids, gids, ndiv, self.args])
-        pool.map(find_matches, fargs)
+    # determine tile index per tile pair
+    tile_index = np.zeros(
+                    (tile_ids.shape[0], tile_ids.shape[1])
+                    ).astype('int')
+    for i in range(tile_ids.shape[0]):
+        for j in range(tile_ids.shape[1]):
+            tile_index[i,j] = np.argwhere(unique_ids == tile_ids[i,j])
+    
+    return unique_ids, tile_index
 
 
-if __name__ == '__main__':
-    mod = LensPointMatches(input_data=example)
-    mod.run()
+def load_pairjson(tilepair_file):
+    tpjson = []
+    if tilepair_file is not None:
+        tpjson = json.load(open(tilepair_file, 'r'))
+    return tpjson
+
+
+def load_tilespecs(render, input_stack, unique_ids):
+    tilespecs = []
+    for tid in unique_ids:
+        tilespecs.append(
+            renderapi.tilespec.get_tile_spec_raw(
+                input_stack, tid, render=render))
+    
+    return np.array(tilespecs)
+
+
+def match_image_pairs(render, tilespecs, match_collection, downsample_scale, nfeature_limit, matchMax, tile_index, ncpus=-1, ndiv=1, index_list=None):
+    if ncpus == -1:
+        ncpus = multiprocessing.cpu_count()
+    
+    args = {}
+    args['downsample_scale'] = downsample_scale
+    args['render'] = render 
+    args['match_collection'] = match_collection
+    args['nfeature_limit'] = nfeature_limit
+    args['matchMax'] = matchMax
+
+    pool = multiprocessing.Pool(ncpus)
+    
+    fargs = []
+
+    if index_list is None:
+        index_list = range(tile_index.shape[0])
+    
+    for i in index_list:
+        impaths = [t.ip.mipMapLevels[0].imageUrl.split('file://')[-1]
+                        for t in tilespecs[tile_index[i]]]
+        ids = [t.tileId for t in tilespecs[tile_index[i]]]
+        gids = [t.layout.sectionId
+                    for t in tilespecs[tile_index[i]]]
+        fargs.append([impaths, ids, gids, ndiv, args])
+    pool.map(find_matches, fargs)
+
+
+def generate_point_matches(render, tilepair_file, input_stack, match_collection, matchMax, downsample_scale=0.3, nfeature_limit=20000):
+    # load the tilepair file
+    tpjson = load_pairjson(tilepair_file)
+
+    # extract the unique_ids
+    unique_ids, tile_index = parse_tileids(tpjson)
+
+    # load the tilespecs
+    tilespecs = load_tilespecs(render, input_stack, unique_ids)
+
+    match_image_pairs(render, tilespecs, match_collection, downsample_scale, nfeature_limit, matchMax, tile_index, ndiv=8)
+
+

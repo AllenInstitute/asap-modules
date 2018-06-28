@@ -1,3 +1,4 @@
+
 import numpy as np
 import triangle
 import scipy.optimize
@@ -5,8 +6,6 @@ from scipy.spatial import Delaunay
 import scipy.sparse as sparse
 from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import factorized
-import argschema
-from rendermodules.mesh_lens_correction.schemas import LensCorrectionSchema, LensCorrectionOutputSchema
 import renderapi
 import copy
 import os
@@ -14,56 +13,10 @@ import subprocess
 import json
 import datetime
 
-example = {
-  "render": {
-    "host": "em-131snb1",
-    "port": 8080,
-    "owner": "danielk",
-    "project": "lens_corr",
-    "client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts",
-    "memGB": "2G"
-  },
-  "close_stack": "True",
-  "metafile": "/allen/programs/celltypes/production/wijem/long_term/reference_2018_02_21_01_56_45_00_00/_metadata_20180220175645_247488_8R_tape070A_05_20180220175645_reference_0_.json",
-  "tilepair_dir": "/allen/programs/celltypes/workgroups/em-connectomics/danielk/em_lens_correction/tpjsons",
-  "match_collection": "raw_lens_matches",
-  "regularization": {
-    "default_lambda": 1e5,
-    "translation_factor": 1e-5,
-    "lens_lambda": 1e-5
-  },
-  "out_html_dir": "/allen/programs/celltypes/workgroups/em-connectomics/danielk/em_lens_correction/qc"
-}
 
-
-class MeshAndSolveTransform(argschema.ArgSchemaParser):
-    default_schema = LensCorrectionSchema
-    default_output_schema = LensCorrectionOutputSchema
-
-    def run(self):
-        self.load_matches()
-        self.load_tilespecs()
-        self.condense_coords()
-        self.create_PSLG()
-        print('asked for %d vertices...' % self.args['nvertex'])
-        self.find_delaunay_with_max_vertices()
-        self.force_vertices_with_npoints(3)
-        if self.has_hole:
-            self.add_center_point()
-        print('returned  %d vertices' % self.mesh.npoints)
-        print('creating A...')
-        self.create_A()
-        print('solving...')
-        self.solve()
-        #self.report_solution()
-        print('calling ThinPlateClient to create dataString')
-        self.create_thinplatespline_tf()
-        print('saving new stack entry')
-        self.new_stack_with_tf()
-        self.write_montage_qc_json()
-
+class MeshAndSolveTransform:
     def load_matches(self):
-        render = renderapi.render.connect(**self.args['render'])
+        render = self.args['render']
         self.matches = \
             renderapi.pointmatch.get_matches_within_group(
                     self.args['match_collection'],
@@ -81,7 +34,7 @@ class MeshAndSolveTransform(argschema.ArgSchemaParser):
                         self.unique_ids == self.tile_ids[i, j])
 
     def load_tilespecs(self):
-        render = renderapi.render.connect(**self.args['render'])
+        render = self.args['render']
         self.tilespecs = []
         for tid in self.unique_ids:
             # order is important
@@ -145,7 +98,7 @@ class MeshAndSolveTransform(argschema.ArgSchemaParser):
 
     def write_montage_qc_json(self):
         j = {}
-        j['render'] = self.args['render']
+        #j['render'] = self.args['render']
         j['prestitched_stack'] = self.args['input_stack']
         j['poststitched_stack'] = self.args['output_stack']
         j['match_collection'] = self.args['match_collection']
@@ -224,11 +177,6 @@ class MeshAndSolveTransform(argschema.ArgSchemaParser):
         self.bbox['segments'] = segments
         if self.has_hole:
             self.bbox['holes'] = np.array([[hw, hh]])
-
-    def set_regularization(self, a, b, c):
-        self.args['regularization']['default_lambda'] = a
-        self.args['regularization']['translation_factor'] = b
-        self.args['regularization']['lens_lambda'] = c
 
     def calculate_mesh(self, a, target, get_t=False):
         t = triangle.triangulate(self.bbox, 'pqa%0.1f' % a)
@@ -325,7 +273,7 @@ class MeshAndSolveTransform(argschema.ArgSchemaParser):
           self.args['regularization']['lens_lambda'])
         self.reg = sparse.eye(reg.size, format='csr')
         self.reg.data = reg
-
+    '''
     def report_solution(self, pre='', x=None):
         def message(err, pre):
             m = pre + ':\n'
@@ -381,7 +329,7 @@ class MeshAndSolveTransform(argschema.ArgSchemaParser):
         self.args['regularization']['lens_lambda'] = tmp
         self.solve()
         self.report_solution(pre='with lens correction')
-
+    '''
     def estimate_polynomial(self, nx=500, ny=500, ndim=5):
         [xp, yp, idx, idy] = self.interpolate(nx=nx, ny=ny, flatten=True)
         src = np.transpose(np.vstack((xp, yp)))
@@ -440,7 +388,7 @@ class MeshAndSolveTransform(argschema.ArgSchemaParser):
             tf = self.tf_poly
 
         sname = self.args['output_stack']
-        render_target = renderapi.connect(**self.args['render'])
+        render_target = self.args['render']
         renderapi.stack.create_stack(sname, render=render_target)
 
         refId = (self.args['sectionId'] +
@@ -608,7 +556,58 @@ class MeshAndSolveTransform(argschema.ArgSchemaParser):
         self.weights.data = weights
         self.create_x0(self.A.shape[1], self.unique_ids.size)
 
+    def MeshAndSolve(self, render, 
+                     input_stack, output_stack, 
+                     match_collection, sectionId, 
+                     nvertex, output_dir, outfile, default_lambda, 
+                     translation_factor, lens_lambda):
+        self.args = {}
+        self.args['render'] = render
+        self.args['input_stack'] = input_stack
+        self.args['output_stack'] = output_stack
+        self.args['match_collection'] = match_collection
+        self.args['sectionId'] = sectionId
+        self.args['nvertex'] = nvertex
+        self.args['output_dir'] = output_dir
+        self.args['out_html_dir'] = output_dir
+        self.args['outfile'] = outfile
+        self.args['regularization'] = {}
+        self.args['regularization']['default_lambda'] = default_lambda
+        self.args['regularization']['translation_factor'] = translation_factor
+        self.args['regularization']['lens_lambda'] = lens_lambda
 
-if __name__ == '__main__':
-    mod = MeshAndSolveTransform(input_data=example)
-    mod.run()
+        # load the matches
+        self.load_matches()
+
+        # load tilespecs
+        self.load_tilespecs()
+
+        # condense coordinates
+        self.condense_coords()
+
+        # create PSLG
+        self.create_PSLG()
+
+        # find delaunay with max vertices
+        self.find_delaunay_with_max_vertices()
+
+        self.force_vertices_with_npoints(3)
+        if self.has_hole:
+            self.add_center_point()
+
+        print('returned  %d vertices' % self.mesh.npoints)
+        print('creating A...')
+        self.create_A()
+        
+        print('solving...')
+        self.solve()
+        
+        #self.report_solution()
+        print('calling ThinPlateClient to create dataString')
+        self.create_thinplatespline_tf()
+        
+        print('saving new stack entry')
+        self.new_stack_with_tf()
+        self.write_montage_qc_json()
+
+        return self.args['outfile']
