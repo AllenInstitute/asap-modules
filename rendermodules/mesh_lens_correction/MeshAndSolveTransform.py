@@ -384,7 +384,7 @@ class MeshAndSolveTransform:
         #self.cmd = cmd
         #subprocess.check_call(cmd, shell=True)
 
-        argvs += ["", cmd]
+        argvs += [cmd]
 
         renderapi.client.call_run_ws_client('org.janelia.render.client.ThinPlateSplineClient',
                                             add_args=argvs,
