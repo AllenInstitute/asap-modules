@@ -64,6 +64,9 @@ def test_mesh_lens_correction(render, example_tform_dict, tmpdir_factory):
     example['out_html_dir'] = out_html_dir
     example['z_index'] = 100
 
+    outfile = tmpdir_factory.mktemp("mesh_lens").join("lens_output.json")
+    ex['outfile'] = outfile
+
     mod = MeshLensCorrection(input_data=example, args=['--output_json', 'mesh_lens_out.json'])
     mod.run()
     
