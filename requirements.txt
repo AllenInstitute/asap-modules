@@ -10,7 +10,6 @@ networkx
 bokeh
 EMaligner>=0.1.2
 matplotlib
-opencv-python
 opencv-contrib-python
 jinja2
 scikit-image

@@ -361,7 +361,7 @@ class MeshAndSolveTransform:
         argvs += ['--numberOfDimensions', '2']
         argvs += ['--outputFile', fname]
         argvs += ['--numberOfLandmarks', self.mesh.points.shape[0]]
-
+        
         #cmd = 'java -cp $RENDER_CLIENT_JAR '
         #cmd += 'org.janelia.render.client.ThinPlateSplineClient '
         #cmd += '--computeAffine false '
@@ -372,24 +372,25 @@ class MeshAndSolveTransform:
         cmd = ""
 
         for i in range(self.mesh.points.shape[0]):
-            cmd += '%0.6f ' % self.mesh.points[i, 0]
-            cmd += '%0.6f ' % self.mesh.points[i, 1]
+            argvs += ['%0.6f ' % self.mesh.points[i, 0]]
+            argvs += ['%0.6f ' % self.mesh.points[i, 1]]
         for i in range(self.mesh.points.shape[0]):
-            cmd += '%0.6f ' % (
+            argvs += ['%0.6f ' % (
                     self.mesh.points[i, 0] +
-                    self.solution[0][self.lens_dof_start + i])
-            cmd += '%0.6f ' % (
+                    self.solution[0][self.lens_dof_start + i])]
+            argvs += ['%0.6f ' % (
                     self.mesh.points[i, 1] +
-                    self.solution[1][self.lens_dof_start + i])
+                    self.solution[1][self.lens_dof_start + i])]
         #self.cmd = cmd
         #subprocess.check_call(cmd, shell=True)
 
-        argvs += [cmd]
+        #argvs += [cmd]
 
         renderapi.client.call_run_ws_client('org.janelia.render.client.ThinPlateSplineClient',
                                             add_args=argvs,
                                             renderclient=self.args['render'],
-                                            memGB='2G')
+                                            memGB='2G',
+                                            subprocess_mode='check_call')
 
         j = json.load(open(fname, 'r'))
         self.tf_thinplate = (
