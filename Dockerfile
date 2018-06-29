@@ -9,7 +9,7 @@ RUN conda create -n render-modules --clone root && source activate render-module
 RUN source activate render-modules &&\
  conda install -y pip &&\
  conda install -y -c conda-forge fast-histogram &&\
- pip uninstall -y opencv-python&&\
+ pip uninstall -y opencv-python &&\
  pip install -r requirements.txt &&\
  python setup.py install
 ENTRYPOINT ["/bin/bash","/shared/render-modules/entrypoint.sh"]
