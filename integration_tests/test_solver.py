@@ -4,10 +4,10 @@ import json
 import os
 from EMaligner import EMaligner
 from rendermodules.solver.solve import Solve_stack
-from test_data import (render_params, 
-                       render_json_template, 
+from test_data import (render_params,
+                       render_json_template,
                        example_env,
-                       example_dir, 
+                       example_dir,
                        solver_montage_parameters)
 
 #FILE_RAW_TILES = './integration_tests/test_files/solver_raw_tiles_for_montage.json'
@@ -46,27 +46,37 @@ def montage_pointmatches(render):
     renderapi.pointmatch.import_matches(test_montage_collection, pms_from_json, render=render)
     yield test_montage_collection
 
-def test_solver_montage_test(render, montage_pointmatches, raw_stack):
+def test_solver_montage_test(render, montage_pointmatches, raw_stack, tmpdir):
+    output_dir = str(tmpdir)
     solver_montage_parameters['input_stack']['name'] = raw_stack
     solver_montage_parameters['pointmatch']['name'] = montage_pointmatches
-    
-    mod = Solve_stack(input_data=solver_montage_parameters, args=[])
+
+    montage_fn = os.path.join(output_dir, "montage_solve.json")
+    mod = Solve_stack(input_data=solver_montage_parameters,
+                      args=['--output_json', montage_fn])
     mod.run()
     assert mod.module.results['precision'] < 1e-7
     assert mod.module.results['error'] < 200
 
     # try with affine_fullsize
+    afffull_fn = os.path.join(output_dir, "affine_fullsize.json")
     solver_montage_parameters['transformation'] = "affine_fullsize"
-    mod = Solve_stack(input_data=solver_montage_parameters, args=[])
+    mod = Solve_stack(input_data=solver_montage_parameters,
+                      args=["--output_json", afffull_fn])
     mod.run()
     assert mod.module.results['precision'] < 1e-7
     assert mod.module.results['error'] < 200
 
     # try with render interface
+    renderinterface_fn = os.path.join(output_dir, 'renderinterface.json')
     solver_montage_parameters['input_stack']['db_interface'] = 'render'
     solver_montage_parameters['pointmatch']['db_interface'] = 'render'
-    mod = Solve_stack(input_data=solver_montage_parameters, args=[])
+    mod = Solve_stack(input_data=solver_montage_parameters,
+                      args=["--output_json", renderinterface_fn])
     mod.run()
     assert mod.module.results['precision'] < 1e-7
     assert mod.module.results['error'] < 200
- 
+
+    with open(renderinterface_fn, 'r') as f:
+        output_d = json.load(f)
+    assert output_d['stack'] == solver_montage_parameters['output_stack']['name']
