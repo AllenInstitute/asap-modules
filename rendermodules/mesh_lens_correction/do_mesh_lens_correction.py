@@ -87,7 +87,7 @@ class MeshLensCorrection(RenderModule):
         ex['excludeSameLayerNeighbors'] = False
         ex['excludeCompletelyObscuredTiles'] = True
         ex['output_dir'] = self.args['output_dir']
-        
+
         ex['outfile'] = self.args['outfile']
         return ex
 
@@ -112,9 +112,9 @@ class MeshLensCorrection(RenderModule):
 
         if self.args['output_dir'] is None:
             self.args['output_dir'] = tempfile.mkdtemp()
-        
+
         if self.args['outfile'] is None:
-            outfile = tempfile.NamedTemporaryFile(suffix=".json", 
+            outfile = tempfile.NamedTemporaryFile(suffix=".json",
                                                   delete=False,
                                                   dir=self.args['output_dir'])
             outfile.close()
@@ -130,10 +130,10 @@ class MeshLensCorrection(RenderModule):
                                                                         str(float(self.args['z_index'])),
                                                                         str(float(self.args['z_index'])),
                                                                         render=self.render)
-            
+
         out_file = tempfile.NamedTemporaryFile(suffix=".json", delete=False)
         out_file.close()
-        
+
         # create a stack with the lens correction tiles
         ts_example = self.generate_ts_example()
         mod = GenerateEMTileSpecsModule(input_data=ts_example,
@@ -157,7 +157,7 @@ class MeshLensCorrection(RenderModule):
                                self.args['match_collection'],
                                self.args['matchMax'],
                                nfeature_limit=self.args['nfeature_limit'])
-        
+
         meshclass = MeshAndSolveTransform()
         # find the lens correction, write out to new stack
         lens_correction_json = meshclass.MeshAndSolve(self.render,
@@ -170,8 +170,9 @@ class MeshLensCorrection(RenderModule):
                                             self.args['outfile'],
                                             self.args['regularization']['default_lambda'],
                                             self.args['regularization']['translation_factor'],
-                                            self.args['regularization']['lens_lambda'])
-        
+                                            self.args['regularization']['lens_lambda'],
+                                            self.args['close_stack'])
+
         # run montage qc on the new stack
         qc_example = self.get_qc_example()
         qc_mod = DetectMontageDefectsModule(input_data=qc_example, args=['--output_json', out_file.name])
@@ -185,6 +186,3 @@ class MeshLensCorrection(RenderModule):
 if __name__=="__main__":
     mod = MeshLensCorrection(input_data=example)
     mod.run()
-
-        
-
