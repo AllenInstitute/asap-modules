@@ -184,7 +184,7 @@ def find_matches(fargs):
         k1 += result[0]
         k2 += result[1]
 
-    if len(k1 >= 1):
+    if len(k1) >= 1:
         k1 = np.array(k1) / args['downsample_scale']
         k2 = np.array(k2) / args['downsample_scale']
         print('found %d matches' % k1.shape[0])
