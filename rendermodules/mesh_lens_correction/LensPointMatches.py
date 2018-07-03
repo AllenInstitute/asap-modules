@@ -184,24 +184,29 @@ def find_matches(fargs):
         k1 += result[0]
         k2 += result[1]
 
-    k1 = np.array(k1) / args['downsample_scale']
-    k2 = np.array(k2) / args['downsample_scale']
-    print('found %d matches' % k1.shape[0])
+    if len(k1 >= 1):
+        k1 = np.array(k1) / args['downsample_scale']
+        k2 = np.array(k2) / args['downsample_scale']
+        print('found %d matches' % k1.shape[0])
 
-    if k1.shape[0] > args['matchMax']:
-        a = np.arange(k1.shape[0])
-        np.random.shuffle(a)
-        k1 = k1[a[0: args['matchMax']], :]
-        k2 = k2[a[0: args['matchMax']], :]
-        print('  keeping %d' % k1.shape[0])
+        if k1.shape[0] > args['matchMax']:
+            a = np.arange(k1.shape[0])
+            np.random.shuffle(a)
+            k1 = k1[a[0: args['matchMax']], :]
+            k2 = k2[a[0: args['matchMax']], :]
+            print('  keeping %d' % k1.shape[0])
 
-    #render = renderapi.connect(**args['render'])
-    render = args['render']
-    pm_dict = make_pm(ids, gids, k1, k2)
-    renderapi.pointmatch.import_matches(
-      args['match_collection'],
-      [pm_dict],
-      render=render)
+        #render = renderapi.connect(**args['render'])
+        render = args['render']
+        pm_dict = make_pm(ids, gids, k1, k2)
+        renderapi.pointmatch.import_matches(
+          args['match_collection'],
+          [pm_dict],
+          render=render)
+    else:
+        print('no pointmatches found for tilepair:')
+        print(' %s'%impaths[0])
+        print(' %s'%impaths[1])
 
 
 def make_pm(ids, gids, k1, k2):
