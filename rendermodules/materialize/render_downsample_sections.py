@@ -59,8 +59,6 @@ def create_tilespecs_without_mipmaps(render, montage_stack, level, z):
     for t in ts:
         t.ip.mipMapLevels = [mmL for mmL in t.ip.mipMapLevels
                              if mmL.level == level]
-    # tempjson = renderapi.utils.renderdump_temp(ts, indent=4)
-    # return tempjson
     return ts
 
 
@@ -99,13 +97,6 @@ class RenderSectionAtScale(RenderModule):
             render.run(renderapi.stack.set_stack_state,
                        temp_no_mipmap_stack, state='LOADING')
 
-            # import json files into temp_no_mipmap_stack
-            # this also sets the stack's state to COMPLETE
-            # render.run(renderapi.client.import_jsonfiles_parallel,
-            #            temp_no_mipmap_stack,
-            #            jsonfiles,
-            #            poolsize=pool_size,
-            #            close_stack=True)
             render.run(renderapi.client.import_tilespecs_parallel,
                        temp_no_mipmap_stack,
                        all_tilespecs,
