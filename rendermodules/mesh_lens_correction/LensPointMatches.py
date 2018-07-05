@@ -190,23 +190,22 @@ def match_image_pairs(render, tilespecs, match_collection, downsample_scale, nfe
     args['match_collection'] = match_collection
     args['nfeature_limit'] = nfeature_limit
     args['matchMax'] = matchMax
-
-    pool = multiprocessing.Pool(ncpus)
     
-    fargs = []
-
-    if index_list is None:
-        index_list = range(tile_index.shape[0])
+    with renderapi.client.WithPool(ncpus) as pool:
     
-    for i in index_list:
-        impaths = [t.ip.mipMapLevels[0].imageUrl.split('file://')[-1]
+        fargs = []
+
+        if index_list is None:
+            index_list = range(tile_index.shape[0])
+    
+        for i in index_list:
+            impaths = [t.ip.mipMapLevels[0].imageUrl.split('file://')[-1]
+                            for t in tilespecs[tile_index[i]]]
+            ids = [t.tileId for t in tilespecs[tile_index[i]]]
+            gids = [t.layout.sectionId
                         for t in tilespecs[tile_index[i]]]
-        ids = [t.tileId for t in tilespecs[tile_index[i]]]
-        gids = [t.layout.sectionId
-                    for t in tilespecs[tile_index[i]]]
-        fargs.append([impaths, ids, gids, ndiv, args])
-    pool.map(find_matches, fargs)
-    pool.join()
+            fargs.append([impaths, ids, gids, ndiv, args])
+        pool.map(find_matches, fargs)
 
 
 def generate_point_matches(render, tilepair_file, input_stack, match_collection, matchMax, downsample_scale=0.3, nfeature_limit=20000):
