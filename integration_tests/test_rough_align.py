@@ -542,7 +542,8 @@ def test_make_montage_stack_without_downsamples(render, one_tile_montage, tmpdir
                                     render_params['project'],
                                     tagstr,
                                     params['imgformat'],
-                                    Z)
+                                    Z,
+                                    pool_size=pool_size)
 
 
 

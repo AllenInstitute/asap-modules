@@ -59,8 +59,9 @@ def create_tilespecs_without_mipmaps(render, montage_stack, level, z):
     for t in ts:
         t.ip.mipMapLevels = [mmL for mmL in t.ip.mipMapLevels
                              if mmL.level == level]
-    tempjson = renderapi.utils.renderdump_temp(ts, indent=4)
-    return tempjson
+    # tempjson = renderapi.utils.renderdump_temp(ts, indent=4)
+    # return tempjson
+    return ts
 
 
 class RenderSectionAtScale(RenderModule):
@@ -69,7 +70,7 @@ class RenderSectionAtScale(RenderModule):
 
     @classmethod
     def downsample_specific_mipmapLevel(
-            cls, zvalues, input_stack=None, level=1, pool_size=None,
+            cls, zvalues, input_stack=None, level=1, pool_size=1,
             image_directory=None, scale=None, imgformat=None, doFilter=None,
             fillWithNoise=None, render=None, **kwargs):
         stack_has_mipmaps = check_stack_for_mipmaps(
@@ -87,7 +88,9 @@ class RenderSectionAtScale(RenderModule):
                                 render, input_stack, level)
 
             with renderapi.client.WithPool(pool_size) as pool:
-                jsonfiles = pool.map(mypartial, zvalues)
+                # jsonfiles = pool.map(mypartial, zvalues)
+                all_tilespecs = [i for l in pool.map(mypartial, zvalues)
+                                 for i in l]
 
             # create stack - overwrites existing one
             render.run(renderapi.stack.create_stack, temp_no_mipmap_stack)
@@ -98,9 +101,14 @@ class RenderSectionAtScale(RenderModule):
 
             # import json files into temp_no_mipmap_stack
             # this also sets the stack's state to COMPLETE
-            render.run(renderapi.client.import_jsonfiles_parallel,
+            # render.run(renderapi.client.import_jsonfiles_parallel,
+            #            temp_no_mipmap_stack,
+            #            jsonfiles,
+            #            poolsize=pool_size,
+            #            close_stack=True)
+            render.run(renderapi.client.import_tilespecs_parallel,
                        temp_no_mipmap_stack,
-                       jsonfiles,
+                       all_tilespecs,
                        poolsize=pool_size,
                        close_stack=True)
             ds_source = temp_no_mipmap_stack
