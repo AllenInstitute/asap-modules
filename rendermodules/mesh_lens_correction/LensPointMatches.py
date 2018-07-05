@@ -206,6 +206,7 @@ def match_image_pairs(render, tilespecs, match_collection, downsample_scale, nfe
                     for t in tilespecs[tile_index[i]]]
         fargs.append([impaths, ids, gids, ndiv, args])
     pool.map(find_matches, fargs)
+    pool.join()
 
 
 def generate_point_matches(render, tilepair_file, input_stack, match_collection, matchMax, downsample_scale=0.3, nfeature_limit=20000):
