@@ -9,7 +9,6 @@ from scipy.sparse.linalg import factorized
 import renderapi
 import copy
 import os
-import subprocess
 import json
 import datetime
 
@@ -98,7 +97,6 @@ class MeshAndSolveTransform:
 
     def write_montage_qc_json(self):
         j = {}
-        #j['render'] = self.args['render']
         j['prestitched_stack'] = self.args['input_stack']
         j['poststitched_stack'] = self.args['output_stack']
         j['match_collection'] = self.args['match_collection']
@@ -362,15 +360,6 @@ class MeshAndSolveTransform:
         argvs += ['--outputFile', fname]
         argvs += ['--numberOfLandmarks', self.mesh.points.shape[0]]
 
-        #cmd = 'java -cp $RENDER_CLIENT_JAR '
-        #cmd += 'org.janelia.render.client.ThinPlateSplineClient '
-        #cmd += '--computeAffine false '
-        #cmd += '--numberOfDimensions 2 '
-        #cmd += '--outputFile %s ' % fname
-        #cmd += '--numberOfLandmarks %d ' % self.mesh.points.shape[0]
-
-        #cmd = ""
-
         for i in range(self.mesh.points.shape[0]):
             argvs += ['%0.6f ' % self.mesh.points[i, 0]]
             argvs += ['%0.6f ' % self.mesh.points[i, 1]]
@@ -381,10 +370,6 @@ class MeshAndSolveTransform:
             argvs += ['%0.6f ' % (
                     self.mesh.points[i, 1] +
                     self.solution[1][self.lens_dof_start + i])]
-        #self.cmd = cmd
-        #subprocess.check_call(cmd, shell=True)
-
-        #argvs += [cmd]
 
         renderapi.client.call_run_ws_client('org.janelia.render.client.ThinPlateSplineClient',
                                             add_args=argvs,
@@ -418,13 +403,7 @@ class MeshAndSolveTransform:
             newspecs[-1].tforms.insert(0,
                                        renderapi.transform.ReferenceTransform(
                                         refId=refId))
-            newspecs[-1].tforms[1].M00 = self.solution[0][i*3+0]
-            newspecs[-1].tforms[1].M01 = self.solution[0][i*3+1]
-            newspecs[-1].tforms[1].B0 = self.solution[0][i*3+2]
-            newspecs[-1].tforms[1].M10 = self.solution[1][i*3+0]
-            newspecs[-1].tforms[1].M11 = self.solution[1][i*3+1]
-            newspecs[-1].tforms[1].B1 = self.solution[1][i*3+2]
-            newspecs[-1].tforms[1].load_M()
+            newspecs[-1].tforms[1] = self.transforms[i]
 
         renderapi.client.import_tilespecs(
                 sname,
@@ -482,6 +461,23 @@ class MeshAndSolveTransform:
                                     M10=self.solution[1][i*3+0],
                                     M11=self.solution[1][i*3+1],
                                     B1=self.solution[1][i*3+2]))
+        self.report_solution()
+
+    def report_solution(self):
+        message = ''
+        for e, v in [[self.errx, 'dx'], [self.erry, 'dy']]:
+            message += (
+                  ' %s: [%8.2f,%8.2f] %8.2f+/-%8.2f pixels\n' %
+                  (v, e.min(), e.max(), e.mean(), e.std()))
+
+        scale = np.array([tf.scale for tf in self.transforms])
+        message += ('xscale: [%8.2f,%8.2f] %8.2f+/-%8.2f\n' %
+                    (scale[:, 0].min(), scale[:, 0].max(),
+                     scale[:, 0].mean(), scale[:, 0].std()))
+        message += ('yscale: [%8.2f,%8.2f] %8.2f+/-%8.2f\n' %
+                    (scale[:, 1].min(), scale[:, 1].max(),
+                     scale[:, 1].mean(), scale[:, 1].std()))
+        print(message)
 
     def create_x0(self, nrows, ntiles):
         self.x0 = []
@@ -620,7 +616,6 @@ class MeshAndSolveTransform:
         print('solving...')
         self.solve()
 
-        #self.report_solution()
         print('calling ThinPlateClient to create dataString')
         self.create_thinplatespline_tf()
 
