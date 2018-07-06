@@ -242,7 +242,8 @@ class MakeMontageScapeSectionStack(StackOutputModule):
             level=self.args['level'],
             pool_size=1,
             doFilter=self.args['doFilter'],
-            fillWithNoise=self.args['fillWithNoise'])
+            fillWithNoise=self.args['fillWithNoise'],
+            do_mp=False)
 
         with renderapi.client.WithPool(
                 self.args['pool_size_materialize']) as pool:

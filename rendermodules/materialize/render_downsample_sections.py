@@ -1,5 +1,6 @@
 from functools import partial
 import time
+from multiprocessing.pool import ThreadPool
 import numpy as np
 import renderapi
 from rendermodules.materialize.schemas import (RenderSectionAtScaleParameters,
@@ -59,8 +60,20 @@ def create_tilespecs_without_mipmaps(render, montage_stack, level, z):
     for t in ts:
         t.ip.mipMapLevels = [mmL for mmL in t.ip.mipMapLevels
                              if mmL.level == level]
-    tempjson = renderapi.utils.renderdump_temp(ts, indent=4)
-    return tempjson
+    return ts
+
+
+# FIXME this should be provided in render-python external
+class WithThreadPool(ThreadPool):
+    def __init__(self, *args, **kwargs):
+        super(WithThreadPool, self).__init__(*args, **kwargs)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args, **kwargs):
+        self.close()
+        self.join()
 
 
 class RenderSectionAtScale(RenderModule):
@@ -69,9 +82,12 @@ class RenderSectionAtScale(RenderModule):
 
     @classmethod
     def downsample_specific_mipmapLevel(
-            cls, zvalues, input_stack=None, level=1, pool_size=None,
+            cls, zvalues, input_stack=None, level=1, pool_size=1,
             image_directory=None, scale=None, imgformat=None, doFilter=None,
-            fillWithNoise=None, render=None, **kwargs):
+            fillWithNoise=None, render=None, do_mp=True, **kwargs):
+        # temporary hack for nested pooling woes
+        poolclass = (renderapi.client.WithPool if do_mp else WithThreadPool)
+
         stack_has_mipmaps = check_stack_for_mipmaps(
             render, input_stack, zvalues)
 
@@ -86,8 +102,10 @@ class RenderSectionAtScale(RenderModule):
             mypartial = partial(create_tilespecs_without_mipmaps,
                                 render, input_stack, level)
 
-            with renderapi.client.WithPool(pool_size) as pool:
-                jsonfiles = pool.map(mypartial, zvalues)
+            with poolclass(pool_size) as pool:
+                # jsonfiles = pool.map(mypartial, zvalues)
+                all_tilespecs = [i for l in pool.map(mypartial, zvalues)
+                                 for i in l]
 
             # create stack - overwrites existing one
             render.run(renderapi.stack.create_stack, temp_no_mipmap_stack)
@@ -96,13 +114,12 @@ class RenderSectionAtScale(RenderModule):
             render.run(renderapi.stack.set_stack_state,
                        temp_no_mipmap_stack, state='LOADING')
 
-            # import json files into temp_no_mipmap_stack
-            # this also sets the stack's state to COMPLETE
-            render.run(renderapi.client.import_jsonfiles_parallel,
+            render.run(renderapi.client.import_tilespecs_parallel,
                        temp_no_mipmap_stack,
-                       jsonfiles,
+                       all_tilespecs,
                        poolsize=pool_size,
-                       close_stack=True)
+                       close_stack=True,
+                       mpPool=poolclass)
             ds_source = temp_no_mipmap_stack
 
         render.run(renderapi.client.renderSectionClient,

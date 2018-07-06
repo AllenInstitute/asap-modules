@@ -7,6 +7,8 @@ import json
 import glob
 import copy
 import marshmallow as mm
+import urllib
+import urlparse
 from test_data import (ROUGH_MONTAGE_TILESPECS_JSON,
                        ROUGH_MONTAGE_TRANSFORM_JSON,
                        ROUGH_POINT_MATCH_COLLECTION,
@@ -504,8 +506,7 @@ def test_render_downsample_with_mipmaps(render, one_tile_montage, tmpdir_factory
         assert(1021 not in zvalues)
 
 
-
-def test_make_montage_stack_without_downsamples(render, one_tile_montage, tmpdir_factory):
+def make_montage_stack_without_downsamples(render, one_tile_montage, tmpdir_factory):
     # testing for make montage scape stack without having downsamples generated
     tmp_dir = str(tmpdir_factory.mktemp('downsample'))
     output_stack = '{}_Downsample'.format(one_tile_montage)
@@ -542,7 +543,40 @@ def test_make_montage_stack_without_downsamples(render, one_tile_montage, tmpdir
                                     render_params['project'],
                                     tagstr,
                                     params['imgformat'],
-                                    Z)
+                                    Z,
+                                    pool_size=pool_size)
+
+
+def test_make_montage_stack_module_without_downsamples(
+        render, one_tile_montage, tmpdir_factory):
+    # testing for make montage scape stack without having downsamples generated
+    tmp_dir = str(tmpdir_factory.mktemp('downsample'))
+    output_stack = '{}_Downsample'.format(one_tile_montage)
+    params = {
+        "render": render_params,
+        "montage_stack": one_tile_montage,
+        "output_stack": output_stack,
+        "image_directory": tmp_dir,
+        "imgformat": "png",
+        "scale": 0.1,
+        "zstart": 1020,
+        "zend": 1020
+    }
+
+    outjson = 'test_montage_scape_output.json'
+    mod = MakeMontageScapeSectionStack(
+        input_data=params, args=['--output_json', outjson])
+    mod.run()
+
+    tspecs = render.run(
+        renderapi.tilespec.get_tile_specs_from_stack, output_stack)
+
+    tsfn = urllib.unquote(urlparse.urlparse(
+        tspecs[0].ip.get(0)['imageUrl']).path)
+    assert os.path.isfile(tsfn)
+    assert os.path.basename(tsfn) == '1020.0.png'
+
+
 
 
 
