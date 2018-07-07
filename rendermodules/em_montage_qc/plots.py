@@ -27,7 +27,7 @@ def plot_defects(render, stack, out_html_dir, args):
         pts.append([ts.minX, ts.maxY])
         pts.append([ts.minX, ts.minY])
         tile_positions.append(pts)
-    
+
     out_html = tempfile.NamedTemporaryFile(suffix=".html", delete=False, mode='w', dir=out_html_dir)
     out_html.close()
 
@@ -42,7 +42,7 @@ def plot_defects(render, stack, out_html_dir, args):
         xs.append(x)
         ys.append(y)
         alphas.append(0.5)
-    
+
     fill_color = []
     label = []
     for t in tile_ids:
@@ -59,7 +59,10 @@ def plot_defects(render, stack, out_html_dir, args):
     color_mapper = CategoricalColorMapper(factors=['Gap tiles', 'Disconnected tiles', 'Stitched tiles'], palette=["red", "yellow", "blue"])
     source = ColumnDataSource(data=dict(x=xs, y=ys, alpha=alphas, names=tile_ids, fill_color=fill_color, labels=label))
 
-    seam_source = ColumnDataSource(data=dict(x=seam_centroids[:,0], y=seam_centroids[:,1], lbl=["Seam Centroids" for s in xrange(len(seam_centroids))]))
+    seam_source = ColumnDataSource(data=dict(
+        x=(seam_centroids[:, 0] if len(seam_centroids) else []),
+        y=(seam_centroids[:, 1] if len(seam_centroids) else []),
+        lbl=["Seam Centroids" for s in xrange(len(seam_centroids))]))
 
     TOOLS = "pan,box_zoom,reset,hover,tap,save"
 
@@ -81,7 +84,7 @@ def plot_defects(render, stack, out_html_dir, args):
 
     urls = "%s:%d/render-ws/v1/owner/%s/project/%s/stack/%s/tile/@names/png-image?scale=0.1"%(render.DEFAULT_HOST, render.DEFAULT_PORT, render.DEFAULT_OWNER, render.DEFAULT_PROJECT, stack)
     urls = "%s:%d/render-ws/v1/owner/%s/project/%s/stack/%s/tile/@names/withNeighbors/jpeg-image?scale=0.1"%(render.DEFAULT_HOST, render.DEFAULT_PORT, render.DEFAULT_OWNER, render.DEFAULT_PROJECT, stack)
-    
+
     taptool = p.select(type=TapTool)
     taptool.renderers = [pp]
     taptool.callback = OpenURL(url=urls)
@@ -90,7 +93,7 @@ def plot_defects(render, stack, out_html_dir, args):
     hover.renderers = [pp]
     hover.point_policy = "follow_mouse"
     hover.tooltips = [("tileId", "@names"), ("x", "$x{int}"), ("y", "$y{int}")]
-    
+
     source.callback = CustomJS(args=dict(div=div), code=jscode%('names'))
     save(layout)
 
@@ -100,13 +103,12 @@ def plot_defects(render, stack, out_html_dir, args):
 def plot_section_maps(render, stack, post_tspecs, disconnected_tiles, gap_tiles, seam_centroids, zvalues, out_html_dir=None, pool_size=5):
     if out_html_dir is None:
         out_html_dir = tempfile.mkdtemp()
-    
+
     mypartial = partial(plot_defects, render, stack, out_html_dir)
 
     args = zip(post_tspecs, disconnected_tiles, gap_tiles, seam_centroids, zvalues)
 
     with renderapi.client.WithPool(pool_size) as pool:
         html_files = pool.map(mypartial, args)
-    
-    return html_files
 
+    return html_files
