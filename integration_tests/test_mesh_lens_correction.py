@@ -41,6 +41,26 @@ def render():
     return render
 
 
+def test_coarse_mesh_failure(render, tmpdir_factory):
+    outdir = str(tmpdir_factory.mktemp("mesh_lens"))
+    out_html_dir = outdir
+    example['render'] = render_params
+    example['metafile'] = os.path.join(TEST_DATA_ROOT,
+                                       "em_modules_test_data",
+                                       "mesh_lens_correction_3",
+                                       "mesh_lens_metafile_3.json")
+    example['output_dir'] = outdir
+    example['out_html_dir'] = out_html_dir
+    example['z_index'] = 101
+
+    mod = MeshLensCorrection(
+            input_data=example,
+            args=['--output_json', 'mesh_lens_out.json'])
+
+    with pytest.raises(AssertionError):
+        mod.run()
+
+
 def test_mesh_lens_correction(render, tmpdir_factory):
     outdir = str(tmpdir_factory.mktemp("mesh_lens"))
     out_html_dir = outdir
