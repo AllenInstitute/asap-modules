@@ -11,29 +11,31 @@ import copy
 import os
 import json
 import datetime
+from argchema import ArgSchemaParser
 
 
-class MeshAndSolveTransform:
-    def load_matches(self):
-        render = self.args['render']
-        self.matches = \
+class MeshAndSolveTransform(ArgSchemaParser):
+    default_schema = MeshLensCorrectionSchema
+
+    def load_matches(self, render, collection, sectionId):
+        matches = \
             renderapi.pointmatch.get_matches_within_group(
-                    self.args['match_collection'],
-                    self.args['sectionId'],
+                    collection,
+                    sectionId,
                     render=render)
-        self.tile_ids = np.array([[m['pId'], m['qId']] for m in self.matches])
-        self.unique_ids = np.unique(self.tile_ids.flatten())
+        tile_ids = np.array([[m['pId'], m['qId']] for m in matches])
+        unique_ids = np.unique(tile_ids.flatten())
         # determine tile index per tile pair
-        self.tile_index = np.zeros((
-            self.tile_ids.shape[0],
-            self.tile_ids.shape[1])).astype('int')
-        for i in range(self.tile_ids.shape[0]):
-            for j in range(self.tile_ids.shape[1]):
-                self.tile_index[i, j] = np.argwhere(
-                        self.unique_ids == self.tile_ids[i, j])
+        tile_index = np.zeros((
+            tile_ids.shape[0],
+            tile_ids.shape[1])).astype('int')
+        for i in range(tile_ids.shape[0]):
+            for j in range(tile_ids.shape[1]):
+                tile_index[i, j] = np.argwhere(
+                        unique_ids == tile_ids[i, j])
+        return matches, tile_ids, unique_ids, tile_index
 
     def load_tilespecs(self):
-        render = self.args['render']
         self.tilespecs = []
         for tid in self.unique_ids:
             # order is important
@@ -41,7 +43,7 @@ class MeshAndSolveTransform:
                     renderapi.tilespec.get_tile_spec_raw(
                         self.args['input_stack'],
                         tid,
-                        render=render))
+                        render=self.render))
         self.tile_width = self.tilespecs[0].width
         self.tile_height = self.tilespecs[0].height
 
@@ -100,16 +102,16 @@ class MeshAndSolveTransform:
         j['prestitched_stack'] = self.args['input_stack']
         j['poststitched_stack'] = self.args['output_stack']
         j['match_collection'] = self.args['match_collection']
-        j['out_html_dir'] = self.args['out_html_dir']
+        j['out_html_dir'] = self.args['output_dir']
         j['output_json'] = os.path.join(
-                self.args['out_html_dir'],
+                self.args['output_dir'],
                 self.args['sectionId']+'_output.json')
         j['plot_sections'] = "True"
         j['pool_size'] = 40
         j['minZ'] = int(self.tilespecs[0].z)
         j['maxZ'] = int(self.tilespecs[0].z)
         qcname = os.path.join(
-                self.args['out_html_dir'],
+                self.args['output_dir'],
                 self.args['sectionId'] + "_input.json")
         json.dump(j, open(qcname, 'w'), indent=2)
 
@@ -373,7 +375,7 @@ class MeshAndSolveTransform:
 
         renderapi.client.call_run_ws_client('org.janelia.render.client.ThinPlateSplineClient',
                                             add_args=argvs,
-                                            renderclient=self.args['render'],
+                                            renderclient=self.render,
                                             memGB='2G',
                                             subprocess_mode='check_call')
 
@@ -389,8 +391,7 @@ class MeshAndSolveTransform:
             tf = self.tf_poly
 
         sname = self.args['output_stack']
-        render_target = self.args['render']
-        renderapi.stack.create_stack(sname, render=render_target)
+        renderapi.stack.create_stack(sname, render=self.render)
 
         refId = (self.args['sectionId'] +
                  datetime.datetime.now().strftime("_%Y%m%d%H%M%S"))
@@ -409,12 +410,12 @@ class MeshAndSolveTransform:
                 sname,
                 newspecs,
                 sharedTransforms=[tf],
-                render=render_target)
+                render=self.render)
         if self.args['close_stack']:
             renderapi.stack.set_stack_state(
                     sname,
                     'COMPLETE',
-                    render=render_target)
+                    render=self.render)
     '''
     def interpolate(self, xlim=None, ylim=None, nx=500, ny=500, flatten=False):
         if xlim is None:
@@ -569,29 +570,16 @@ class MeshAndSolveTransform:
         self.weights.data = weights
         self.create_x0(self.A.shape[1], self.unique_ids.size)
 
-    def MeshAndSolve(self, render,
-                     input_stack, output_stack,
-                     match_collection, sectionId,
-                     nvertex, output_dir, outfile, default_lambda,
-                     translation_factor, lens_lambda, close_stack=True):
-        self.args = {}
-        self.args['render'] = render
-        self.args['input_stack'] = input_stack
-        self.args['output_stack'] = output_stack
-        self.args['match_collection'] = match_collection
-        self.args['sectionId'] = sectionId
-        self.args['nvertex'] = nvertex
-        self.args['output_dir'] = output_dir
-        self.args['out_html_dir'] = output_dir
-        self.args['outfile'] = outfile
-        self.args['regularization'] = {}
-        self.args['regularization']['default_lambda'] = default_lambda
-        self.args['regularization']['translation_factor'] = translation_factor
-        self.args['regularization']['lens_lambda'] = lens_lambda
-        self.args['close_stack'] = close_stack
+    def MeshAndSolve(self):
+        self.render = renderapi.connect(**self.args['render'])
 
         # load the matches
-        self.load_matches()
+        self.matches, self.tile_ids,
+            self.unique_ids, self.tile_index =
+                self.load_matches(
+                        self.args['render'],
+                        self.args['match_collection'],
+                        self.args['sectionId'])
 
         # load tilespecs
         self.load_tilespecs()

@@ -160,18 +160,7 @@ class MeshLensCorrection(RenderModule):
 
         meshclass = MeshAndSolveTransform()
         # find the lens correction, write out to new stack
-        lens_correction_json = meshclass.MeshAndSolve(self.render,
-                                            self.args['input_stack'],
-                                            self.args['output_stack'],
-                                            self.args['match_collection'],
-                                            self.args['sectionId'],
-                                            self.args['nvertex'],
-                                            self.args['output_dir'],
-                                            self.args['outfile'],
-                                            self.args['regularization']['default_lambda'],
-                                            self.args['regularization']['translation_factor'],
-                                            self.args['regularization']['lens_lambda'],
-                                            self.args['close_stack'])
+        lens_correction_json = meshclass.MeshAndSolve(input_data = self.args)
 
         # check that the mesh did not become coarse
         # (from poor pointmatch coverage)
