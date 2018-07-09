@@ -176,8 +176,8 @@ class MeshLensCorrection(RenderModule):
         # check that the mesh did not become coarse
         # (from poor pointmatch coverage)
         try:
-            assert meshclass.mesh.points.shape[0] > 0.5*self.args['nvertex'],
-                   "mesh coarser than intended"
+            assert meshclass.mesh.points.shape[0] > 0.5*self.args['nvertex'], \
+                "mesh coarser than intended"
         except AssertionError as e:
             self.logger.error(e)
 
