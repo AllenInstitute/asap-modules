@@ -173,6 +173,14 @@ class MeshLensCorrection(RenderModule):
                                             self.args['regularization']['lens_lambda'],
                                             self.args['close_stack'])
 
+        # check that the mesh did not become coarse
+        # (from poor pointmatch coverage)
+        try:
+            assert meshclass.mesh.points.shape[0] > 0.5*self.args['nvertex'],
+                   "mesh coarser than intended"
+        except AssertionError as e:
+            self.logger.error(e)
+
         # run montage qc on the new stack
         qc_example = self.get_qc_example()
         qc_mod = DetectMontageDefectsModule(input_data=qc_example, args=['--output_json', out_file.name])
