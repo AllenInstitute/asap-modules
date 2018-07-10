@@ -6,7 +6,6 @@ from marshmallow import ValidationError, post_load
 from argschema.schemas import DefaultSchema
 
 
-
 class GenerateMipMapsOutput(DefaultSchema):
     levels = Int(required=True)
     output_dir = Str(required=True)
@@ -108,7 +107,7 @@ class MakeMontageScapeSectionStackParameters(OutputStackParameters):
     montage_stack = Str(
         required=True,
         metadata={'description':'stack to make a downsample version of'})
-    image_directory = InputDir(
+    image_directory = Str(
         required=True,
         metadata={'description':'directory that stores the montage scapes'})
     set_new_z = Boolean(
