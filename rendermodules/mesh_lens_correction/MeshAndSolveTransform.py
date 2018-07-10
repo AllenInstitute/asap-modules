@@ -446,7 +446,7 @@ class MeshAndSolveTransform(ArgSchemaParser):
                                B1=solution[1][i*3+2]))
         return transforms
 
-    def MeshAndSolve(self):
+    def run(self):
         self.render = renderapi.connect(**self.args['render'])
 
         self.tilespecs, self.matches = self.get_tspecs_and_matches(

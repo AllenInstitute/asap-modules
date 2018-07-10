@@ -167,7 +167,7 @@ class MeshLensCorrection(RenderModule):
 
         meshclass = MeshAndSolveTransform(input_data=self.args,args=[])
         # find the lens correction, write out to new stack
-        lens_correction_json = meshclass.MeshAndSolve()
+        lens_correction_json = meshclass.run()
 
         # run montage qc on the new stack
         qc_example = self.get_qc_example()
