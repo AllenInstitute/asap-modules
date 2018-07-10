@@ -146,6 +146,8 @@ class MeshLensCorrection(RenderModule):
         out_file = tempfile.NamedTemporaryFile(suffix=".json", delete=False)
         out_file.close()
 
+        args_for_input = dict(self.args)
+
         # create a stack with the lens correction tiles
         ts_example = self.generate_ts_example()
         mod = GenerateEMTileSpecsModule(input_data=ts_example,
@@ -183,7 +185,7 @@ class MeshLensCorrection(RenderModule):
         self.logger.setLevel(self.args['log_level'])
 
         meshclass = MeshAndSolveTransform(
-                input_data=self.args,
+                input_data=args_for_input,
                 args=['--output_json', out_file.name])
         # find the lens correction, write out to new stack
         meshclass.run()

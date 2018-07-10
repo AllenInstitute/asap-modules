@@ -53,10 +53,11 @@ def test_coarse_mesh_failure(render, tmpdir_factory):
     example_for_input['output_dir'] = outdir
     example_for_input['out_html_dir'] = out_html_dir
     example_for_input['z_index'] = 101
+    outjson = os.path.join(outdir, 'mesh_lens_out0.json')
 
     mod = MeshLensCorrection(
             input_data=example_for_input,
-            args=['--output_json', 'mesh_lens_out.json'])
+            args=['--output_json', outjson])
 
     with pytest.raises(MeshLensCorrectionException):
         mod.run()
@@ -74,11 +75,12 @@ def test_mesh_lens_correction(render, tmpdir_factory):
     example_for_input['output_dir'] = outdir
     example_for_input['out_html_dir'] = out_html_dir
     example_for_input['outfile'] = os.path.join(outdir, 'out.json')
+    outjson = os.path.join(outdir, 'mesh_lens_out.json')
     example_for_input['z_index'] = 100
 
     mod = MeshLensCorrection(
             input_data=example_for_input,
-            args=['--output_json', 'mesh_lens_out.json'])
+            args=['--output_json', outjson])
 
     # add collection and a match so we cover deletion
     sectionId = mod.get_sectionId_from_metafile(example_for_input['metafile'])
@@ -98,7 +100,7 @@ def test_mesh_lens_correction(render, tmpdir_factory):
 
     mod.run()
 
-    with open('mesh_lens_out.json', 'r') as f:
+    with open(outjson, 'r') as f:
         js = json.load(f)
 
     with open(js['output_json'], 'r') as f:
