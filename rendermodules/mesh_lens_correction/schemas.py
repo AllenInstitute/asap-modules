@@ -94,7 +94,12 @@ class MeshLensCorrectionSchema(RenderParameters):
     regularization = Nested(regularization)
 
 
-class MeshLensCorrectionOutputSchema(DefaultSchema):
+class MeshAndSolveOutputSchema(DefaultSchema):
+    output_json = Str(
+        required=True,
+        description="path to lens correction file")
+
+class DoMeshLensCorrectionOutputSchema(DefaultSchema):
     output_json = Str(
         required=True,
         description="path to lens correction file")

@@ -1,12 +1,11 @@
 import json
 import renderapi
 import tempfile
-import logging
 
 from ..module.render_module import RenderModule
 
 from rendermodules.mesh_lens_correction.schemas \
-        import MeshLensCorrectionSchema, MeshLensCorrectionOutputSchema
+        import MeshLensCorrectionSchema, DoMeshLensCorrectionOutputSchema
 from rendermodules.dataimport.generate_EM_tilespecs_from_metafile \
         import GenerateEMTileSpecsModule
 from rendermodules.pointmatch.create_tilepairs \
@@ -64,7 +63,7 @@ def delete_matches_if_exist(render, owner, collection, sectionId):
 
 class MeshLensCorrection(RenderModule):
     default_schema = MeshLensCorrectionSchema
-    default_output_schema = MeshLensCorrectionOutputSchema
+    default_output_schema = DoMeshLensCorrectionOutputSchema
 
     @staticmethod
     def get_sectionId_from_z(z):
@@ -183,9 +182,11 @@ class MeshLensCorrection(RenderModule):
 
         self.logger.setLevel(self.args['log_level'])
 
-        meshclass = MeshAndSolveTransform(input_data=self.args, args=[])
+        meshclass = MeshAndSolveTransform(
+                input_data=self.args,
+                args=['--output_json', out_file.name])
         # find the lens correction, write out to new stack
-        lens_correction_json = meshclass.run()
+        meshclass.run()
 
         # run montage qc on the new stack
         qc_example = self.get_qc_example()
@@ -196,7 +197,7 @@ class MeshLensCorrection(RenderModule):
 
         try:
             self.output(
-                    {'output_json': lens_correction_json,
+                    {'output_json': meshclass.args['outfile'],
                      'qc_json': out_file.name})
         except AttributeError as e:
             self.logger.error(e)

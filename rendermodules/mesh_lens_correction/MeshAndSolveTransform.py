@@ -12,7 +12,8 @@ import os
 import json
 import datetime
 from argschema import ArgSchemaParser
-from rendermodules.mesh_lens_correction.schemas import MeshLensCorrectionSchema
+from rendermodules.mesh_lens_correction.schemas \
+        import MeshLensCorrectionSchema, MeshAndSolveOutputSchema
 from rendermodules.module.render_module import RenderModuleException
 
 
@@ -109,7 +110,7 @@ def even_distribution(coords, tile_width, tile_height, n):
     return np.concatenate(new_coords)
 
 
-def write_montage_qc_json(args, tilespecs):
+def create_montage_qc_dict(args, tilespecs):
     j = {}
     j['prestitched_stack'] = args['input_stack']
     j['poststitched_stack'] = args['output_stack']
@@ -125,7 +126,7 @@ def write_montage_qc_json(args, tilespecs):
     qcname = os.path.join(
             args['output_dir'],
             args['sectionId'] + "_input.json")
-    json.dump(j, open(qcname, 'w'), indent=2)
+    return qcname, j
 
 
 def create_PSLG(tile_width, tile_height):
@@ -462,6 +463,7 @@ def create_transforms(ntiles, solution):
 
 class MeshAndSolveTransform(ArgSchemaParser):
     default_schema = MeshLensCorrectionSchema
+    default_output_schema = MeshAndSolveOutputSchema
 
     def run(self):
         self.render = renderapi.connect(**self.args['render'])
@@ -576,6 +578,17 @@ class MeshAndSolveTransform(ArgSchemaParser):
                 self.transforms,
                 self.args['close_stack'])
 
-        write_montage_qc_json(self.args, self.tilespecs)
+        self.qc_path, self.qc_dict = create_montage_qc_dict(
+                self.args,
+                self.tilespecs)
 
-        return self.args['outfile']
+        try:
+            self.output(
+                {'output_json': self.args['outfile']})
+        except AttributeError as e:
+            self.logger.error(e)
+
+        with open(self.qc_path, 'w') as f:
+            json.dump(self.qc_dict, f)
+
+        return
