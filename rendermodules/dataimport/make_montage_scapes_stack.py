@@ -1,3 +1,4 @@
+import errno
 from functools import partial
 import glob
 import os
@@ -225,7 +226,9 @@ class MakeMontageScapeSectionStack(StackOutputModule):
         try:
             os.makedirs(tilespecdir)
         except OSError as e:
-            pass  # FIXME better handling
+            if e.errno != errno.EEXIST:
+                raise
+            pass
 
         render_materialize = renderapi.connect(
             **self.render.make_kwargs(memGB=self.args['memGB_materialize']))
