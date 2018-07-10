@@ -335,7 +335,7 @@ def solve(A, weights, reg, x0):
 
 
 def report_solution(errx, erry, transforms):
-    message = ''
+    message = '\n'
     for e, v in [[errx, 'dx'], [erry, 'dy']]:
         message += (
               ' %s: [%8.2f,%8.2f] %8.2f+/-%8.2f pixels\n' %
@@ -558,6 +558,8 @@ class MeshAndSolveTransform(ArgSchemaParser):
         except AssertionError as e:
             raise MeshLensCorrectionException(
                     "Solve not good: %s\n%s" % (str(e), message))
+
+        self.logger.debug(message)
 
         self.new_ref_transform = create_thinplatespline_tf(
                 self.render,

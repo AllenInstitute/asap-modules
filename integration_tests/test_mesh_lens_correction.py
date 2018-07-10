@@ -44,17 +44,18 @@ def render():
 def test_coarse_mesh_failure(render, tmpdir_factory):
     outdir = str(tmpdir_factory.mktemp("mesh_lens"))
     out_html_dir = outdir
-    example['render'] = render_params
-    example['metafile'] = os.path.join(TEST_DATA_ROOT,
-                                       "em_modules_test_data",
-                                       "mesh_lens_correction_3",
-                                       "mesh_lens_metafile_3.json")
-    example['output_dir'] = outdir
-    example['out_html_dir'] = out_html_dir
-    example['z_index'] = 101
+    example_for_input = dict(example)
+    example_for_input['render'] = render_params
+    example_for_input['metafile'] = os.path.join(TEST_DATA_ROOT,
+                                                 "em_modules_test_data",
+                                                 "mesh_lens_correction_3",
+                                                 "mesh_lens_metafile_3.json")
+    example_for_input['output_dir'] = outdir
+    example_for_input['out_html_dir'] = out_html_dir
+    example_for_input['z_index'] = 101
 
     mod = MeshLensCorrection(
-            input_data=example,
+            input_data=example_for_input,
             args=['--output_json', 'mesh_lens_out.json'])
 
     with pytest.raises(MeshLensCorrectionException):
@@ -64,22 +65,23 @@ def test_coarse_mesh_failure(render, tmpdir_factory):
 def test_mesh_lens_correction(render, tmpdir_factory):
     outdir = str(tmpdir_factory.mktemp("mesh_lens"))
     out_html_dir = outdir
-    example['render'] = render_params
-    example['metafile'] = os.path.join(TEST_DATA_ROOT,
-                                       "em_modules_test_data",
-                                       "mesh_lens_correction_2",
-                                       "mesh_lens_metafile_2.json")
-    example['output_dir'] = outdir
-    example['out_html_dir'] = out_html_dir
-    example['outfile'] = os.path.join(outdir,'out.json')
-    example['z_index'] = 100
+    example_for_input = dict(example)
+    example_for_input['render'] = render_params
+    example_for_input['metafile'] = os.path.join(TEST_DATA_ROOT,
+                                                 "em_modules_test_data",
+                                                 "mesh_lens_correction_2",
+                                                 "mesh_lens_metafile_2.json")
+    example_for_input['output_dir'] = outdir
+    example_for_input['out_html_dir'] = out_html_dir
+    example_for_input['outfile'] = os.path.join(outdir, 'out.json')
+    example_for_input['z_index'] = 100
 
     mod = MeshLensCorrection(
-            input_data=example,
+            input_data=example_for_input,
             args=['--output_json', 'mesh_lens_out.json'])
 
     # add collection and a match so we cover deletion
-    sectionId = mod.get_sectionId_from_metafile(example['metafile'])
+    sectionId = mod.get_sectionId_from_metafile(example_for_input['metafile'])
     match = {}
     match['qId'] = 'qid'
     match['pId'] = 'pid'
@@ -90,7 +92,7 @@ def test_mesh_lens_correction(render, tmpdir_factory):
     match['matches']['p'] = [[2], [3]]
     match['matches']['w'] = [0]
     renderapi.pointmatch.import_matches(
-            example['match_collection'],
+            example_for_input['match_collection'],
             [match],
             render=mod.render)
 

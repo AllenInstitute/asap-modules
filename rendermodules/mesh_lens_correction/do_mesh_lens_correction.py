@@ -1,6 +1,7 @@
 import json
 import renderapi
 import tempfile
+import logging
 
 from ..module.render_module import RenderModule
 
@@ -23,7 +24,7 @@ example = {
         "port": 8080,
         "owner": "gayathrim",
         "project": "lens_corr",
-        "client_sxripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts",
+        "client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts",
         "memGB": "2G"
     },
     "regularization": {
@@ -162,6 +163,8 @@ class MeshLensCorrection(RenderModule):
             js = json.load(f)
         self.args['pairJson'] = js['tile_pair_file']
 
+        self.logger.setLevel(self.args['log_level'])
+
         if self.args['rerun_pointmatch']:
             delete_matches_if_exist(
                     self.render,
@@ -175,7 +178,10 @@ class MeshLensCorrection(RenderModule):
                                    self.args['input_stack'],
                                    self.args['match_collection'],
                                    self.args['matchMax'],
-                                   nfeature_limit=self.args['nfeature_limit'])
+                                   nfeature_limit=self.args['nfeature_limit'],
+                                   logger=self.logger)
+
+        self.logger.setLevel(self.args['log_level'])
 
         meshclass = MeshAndSolveTransform(input_data=self.args, args=[])
         # find the lens correction, write out to new stack
