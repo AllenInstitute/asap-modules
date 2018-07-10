@@ -155,7 +155,7 @@ class MeshAndSolveTransform(ArgSchemaParser):
             return Delaunay(t['vertices'])
         return target - len(t['vertices'])
 
-    def force_vertices_with_npoints(self, area_par, bbox, npts):
+    def force_vertices_with_npoints(self, area_par, bbox, npts, coords):
         fac = 1.05
         count = 0
         while True:
@@ -164,7 +164,7 @@ class MeshAndSolveTransform(ArgSchemaParser):
                     bbox,
                     None,
                     get_t=True)
-            pt_count = self.count_points_near_vertices(t)
+            pt_count = self.count_points_near_vertices(t, coords)
             if pt_count.min() >= npts:
                 break
             area_par *= fac
@@ -201,30 +201,30 @@ class MeshAndSolveTransform(ArgSchemaParser):
         mesh = self.calculate_mesh(a, bbox, None, get_t=True)
         return mesh, a
 
-    def compute_barycentrics(self, coords):
+    def compute_barycentrics(self, coords, mesh):
         # https://en.wikipedia.org/wiki/Barycentric_coordinate_system#Conversion_between_barycentric_and_Cartesian_coordinates
-        triangle_indices = self.mesh.find_simplex(coords)
+        triangle_indices = mesh.find_simplex(coords)
         vt = np.vstack((
-            np.transpose(self.mesh.points),
-            np.ones(self.mesh.points.shape[0])))
+            np.transpose(mesh.points),
+            np.ones(mesh.points.shape[0])))
         mt = np.vstack((np.transpose(coords), np.ones(coords.shape[0])))
         bary = np.zeros((3, coords.shape[0]))
-        self.Rinv = []
-        for tri in self.mesh.simplices:
-            self.Rinv.append(np.linalg.inv(vt[:, tri]))
-        for i in range(self.mesh.nsimplex):
+        Rinv = []
+        for tri in mesh.simplices:
+            Rinv.append(np.linalg.inv(vt[:, tri]))
+        for i in range(mesh.nsimplex):
             ind = np.argwhere(triangle_indices == i).flatten()
-            bary[:, ind] = self.Rinv[i].dot(mt[:, ind])
+            bary[:, ind] = Rinv[i].dot(mt[:, ind])
         return np.transpose(bary), triangle_indices
 
-    def count_points_near_vertices(self, t):
+    def count_points_near_vertices(self, t, coords):
         flat_tri = t.simplices.flatten()
         flat_ind = np.repeat(np.arange(t.nsimplex), 3)
         v_touches = []
         for i in range(t.npoints):
             v_touches.append(flat_ind[np.argwhere(flat_tri == i)])
         pt_count = np.zeros(t.npoints)
-        found = t.find_simplex(self.coords, bruteforce=True)
+        found = t.find_simplex(coords, bruteforce=True)
         for i in range(t.npoints):
             for j in v_touches[i]:
                 pt_count[i] += np.count_nonzero(found == j)
@@ -390,8 +390,8 @@ class MeshAndSolveTransform(ArgSchemaParser):
                         (m['matches']['q'][0],
                          m['matches']['q'][1])
                         )).astype('float64')
-            pbary = self.compute_barycentrics(pcoords)
-            qbary = self.compute_barycentrics(qcoords)
+            pbary = self.compute_barycentrics(pcoords, mesh)
+            qbary = self.compute_barycentrics(qcoords, mesh)
 
             mstep = np.arange(npoint_pairs) * nnz_per_row + offset
 
@@ -488,6 +488,7 @@ class MeshAndSolveTransform(ArgSchemaParser):
             self.force_vertices_with_npoints(
                 self.area_triangle_par,
                 self.bbox,
+                self.coords,
                 3)
         try:
             assert self.mesh.points.shape[0] > 0.5*self.args['nvertex'], \
