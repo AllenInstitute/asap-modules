@@ -44,6 +44,23 @@ example = {
 }
 
 
+def delete_matches_if_exist(render, owner, collection, sectionId):
+    collections = renderapi.pointmatch.get_matchcollections(
+            render=render,
+            owner=owner)
+    collection_names = [c['collectionId']['name'] for c in collections]
+    if collection in collection_names:
+        groupids = renderapi.pointmatch.get_match_groupIds(
+                collection,
+                render=render)
+        if sectionId in groupids:
+            renderapi.pointmatch.delete_point_matches_between_groups(
+                    collection,
+                    sectionId,
+                    sectionId,
+                    render=render)
+
+
 class MeshLensCorrection(RenderModule):
     default_schema = MeshLensCorrectionSchema
     default_output_schema = MeshLensCorrectionOutputSchema
@@ -146,20 +163,11 @@ class MeshLensCorrection(RenderModule):
         self.args['pairJson'] = js['tile_pair_file']
 
         if self.args['rerun_pointmatch']:
-            # check if match_collection exists
-            collections = renderapi.pointmatch.get_matchcollections(
-                    render=self.render)
-            if self.args['match_collection'] in collections:
-                # check if the point match exists
-                groupids = renderapi.pointmatch.get_match_groupIds(
-                        self.args['match_collection'],
-                        render=self.render)
-                if self.args['sectionId'] in groupids:
-                    renderapi.pointmatch.delete_point_matches_between_groups(
-                            self.args['match_collection'],
-                            self.args['sectionId'],
-                            self.args['sectionId'],
-                            render=self.render)
+            delete_matches_if_exist(
+                    self.render,
+                    self.args['render']['owner'],
+                    self.args['match_collection'],
+                    self.args['sectionId'])
 
             # generate point matches
             generate_point_matches(self.render,

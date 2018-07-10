@@ -71,6 +71,7 @@ def test_mesh_lens_correction(render, tmpdir_factory):
                                        "mesh_lens_metafile_2.json")
     example['output_dir'] = outdir
     example['out_html_dir'] = out_html_dir
+    example['outfile'] = os.path.join(outdir,'out.json')
     example['z_index'] = 100
 
     mod = MeshLensCorrection(
