@@ -92,14 +92,22 @@ def test_mesh_lens_correction(render, tmpdir_factory):
             new_tform_dict['className'] ==
             "mpicbg.trakem2.transform.ThinPlateSplineTransform")
 
-    # run again for code coverage
+#    # run again for code coverage
+#    mod.run()
+
+#    # more code coverage due,
+#    # code coverage software not detecting parallel processes
+#
+#    generate_point_matches(mod.render,
+#                           mod.args['pairJson'],
+#                           mod.args['input_stack'],
+#                           mod.args['match_collection'],
+#                           mod.args['matchMax'])
+
+    # some little bits of coverage
+    mod.args['rerun_pointmatch'] = False
+    mod.args['output_dir'] = None
+    mod.args['outfile'] = None
     mod.run()
 
-    # more code coverage due,
-    # code coverage software not detecting parallel processes
 
-    generate_point_matches(mod.render,
-                           mod.args['pairJson'],
-                           mod.args['input_stack'],
-                           mod.args['match_collection'],
-                           mod.args['matchMax'])
