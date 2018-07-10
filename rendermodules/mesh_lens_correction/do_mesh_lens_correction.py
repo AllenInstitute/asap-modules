@@ -70,6 +70,12 @@ class MeshLensCorrection(RenderModule):
         return ex
 
 
+    def generate_mc_example(self):
+        ex = self.generate_ts_example()
+        print(ex['sectionId'])
+        return ex
+
+
     def generate_tilepair_example(self):
         ex = {}
         ex['render'] = {}
@@ -150,6 +156,7 @@ class MeshLensCorrection(RenderModule):
             js = json.load(f)
         self.args['pairJson'] = js['tile_pair_file']
 
+
         # generate point matches
         generate_point_matches(self.render,
                                self.args['pairJson'],
@@ -158,17 +165,9 @@ class MeshLensCorrection(RenderModule):
                                self.args['matchMax'],
                                nfeature_limit=self.args['nfeature_limit'])
 
-        meshclass = MeshAndSolveTransform()
+        meshclass = MeshAndSolveTransform(input_data=self.args,args=[])
         # find the lens correction, write out to new stack
-        lens_correction_json = meshclass.MeshAndSolve(input_data = self.args)
-
-        # check that the mesh did not become coarse
-        # (from poor pointmatch coverage)
-        try:
-            assert meshclass.mesh.points.shape[0] > 0.5*self.args['nvertex'], \
-                "mesh coarser than intended"
-        except AssertionError as e:
-            self.logger.error(e)
+        lens_correction_json = meshclass.MeshAndSolve()
 
         # run montage qc on the new stack
         qc_example = self.get_qc_example()

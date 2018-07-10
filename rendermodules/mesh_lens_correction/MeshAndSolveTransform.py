@@ -11,175 +11,143 @@ import copy
 import os
 import json
 import datetime
-from argchema import ArgSchemaParser
+from argschema import ArgSchemaParser
+from rendermodules.mesh_lens_correction.schemas import MeshLensCorrectionSchema
+from rendermodules.module.render_module import RenderModuleException
+
+
+class MeshLensCorrectionException(RenderModuleException):
+    """Exception raised when there is a \
+            problem creating a mesh lens correction"""
+    pass
 
 
 class MeshAndSolveTransform(ArgSchemaParser):
     default_schema = MeshLensCorrectionSchema
 
-    def load_matches(self, render, collection, sectionId):
-        matches = \
-            renderapi.pointmatch.get_matches_within_group(
-                    collection,
-                    sectionId,
-                    render=render)
-        tile_ids = np.array([[m['pId'], m['qId']] for m in matches])
-        unique_ids = np.unique(tile_ids.flatten())
-        # determine tile index per tile pair
-        tile_index = np.zeros((
-            tile_ids.shape[0],
-            tile_ids.shape[1])).astype('int')
-        for i in range(tile_ids.shape[0]):
-            for j in range(tile_ids.shape[1]):
-                tile_index[i, j] = np.argwhere(
-                        unique_ids == tile_ids[i, j])
-        return matches, tile_ids, unique_ids, tile_index
+    def get_tspecs_and_matches(self, render, collection, stack, z, sectionId):
+        # load the specs and matches
+        tspecs = np.array(
+                renderapi.tilespec.get_tile_specs_from_z(
+                    stack,
+                    z,
+                    render=render))
+        stack_ids = np.array([t.tileId for t in tspecs])
 
-    def load_tilespecs(self):
-        self.tilespecs = []
-        for tid in self.unique_ids:
-            # order is important
-            self.tilespecs.append(
-                    renderapi.tilespec.get_tile_spec_raw(
-                        self.args['input_stack'],
-                        tid,
-                        render=self.render))
-        self.tile_width = self.tilespecs[0].width
-        self.tile_height = self.tilespecs[0].height
+        matches = renderapi.pointmatch.get_matches_within_group(
+                collection,
+                sectionId,
+                render=render)
+        match_ids = np.array(
+                    [[m['pId'], m['qId']] for m in matches]).flatten()
 
-    def condense_coords(self):
+        unique_ids = np.intersect1d(stack_ids, match_ids)
+        if unique_ids.size == 0:
+            raise MeshLensCorrectionException(
+                    "no tileId overlap between stack %s and collection %s" %
+                    (stack, collection))
+
+        utspecs = []
+        for uid in unique_ids:
+            ind = np.argwhere(stack_ids == uid).flatten()[0]
+            utspecs.append(tspecs[ind])
+
+        umatches = []
+        for m in matches:
+            if (m['pId'] in unique_ids) & (m['qId'] in unique_ids):
+                umatches.append(m)
+
+        return utspecs, umatches
+
+    def condense_coords(self, matches):
         # condense point match structure into Nx2
         x = []
         y = []
-        for m in self.matches:
+        for m in matches:
             x += m['matches']['p'][0]
             x += m['matches']['q'][0]
             y += m['matches']['p'][1]
             y += m['matches']['q'][1]
-        self.coords = np.transpose(np.vstack((np.array(x), np.array(y))))
-        self.even_distribution()
+        coords = np.transpose(np.vstack((np.array(x), np.array(y))))
+        return coords
 
-    def even_distribution(self):
-        n = 10
+    def even_distribution(self, coords, tile_width, tile_height, n):
+        # n: area divided into nxn
         min_count = np.Inf
         for i in range(n):
             r = np.arange(
-                    (i*self.tile_width/n),
-                    ((i+1)*self.tile_width/n))
+                    (i*tile_width/n),
+                    ((i+1)*tile_width/n))
             for j in range(n):
                 c = np.arange(
-                        (j*self.tile_height/n),
-                        ((j+1)*self.tile_height/n))
+                        (j*tile_height/n),
+                        ((j+1)*tile_height/n))
                 ind = np.argwhere(
-                        (self.coords[:, 0] >= r.min()) &
-                        (self.coords[:, 0] <= r.max()) &
-                        (self.coords[:, 1] >= c.min()) &
-                        (self.coords[:, 1] <= c.max())).flatten()
+                        (coords[:, 0] >= r.min()) &
+                        (coords[:, 0] <= r.max()) &
+                        (coords[:, 1] >= c.min()) &
+                        (coords[:, 1] <= c.max())).flatten()
                 if ind.size < min_count:
                     min_count = ind.size
-        self.new_coords = []
+        new_coords = []
         for i in range(n):
             r = np.arange(
-                    (i*self.tile_width/n),
-                    ((i+1)*self.tile_width/n))
+                    (i*tile_width/n),
+                    ((i+1)*tile_width/n))
             for j in range(n):
                 c = np.arange(
-                        (j*self.tile_height/n),
-                        ((j+1)*self.tile_height/n))
+                        (j*tile_height/n),
+                        ((j+1)*tile_height/n))
                 ind = np.argwhere(
-                        (self.coords[:, 0] >= r.min()) &
-                        (self.coords[:, 0] <= r.max()) &
-                        (self.coords[:, 1] >= c.min()) &
-                        (self.coords[:, 1] <= c.max())).flatten()
+                        (coords[:, 0] >= r.min()) &
+                        (coords[:, 0] <= r.max()) &
+                        (coords[:, 1] >= c.min()) &
+                        (coords[:, 1] <= c.max())).flatten()
                 a = np.arange(ind.size)
                 np.random.shuffle(a)
                 ind = ind[a[0:min_count]]
-                self.new_coords.append(self.coords[ind])
-        self.coords = np.concatenate(self.new_coords)
+                new_coords.append(coords[ind])
+        return np.concatenate(new_coords)
 
-    def write_montage_qc_json(self):
+    def write_montage_qc_json(self, args, tilespecs):
         j = {}
-        j['prestitched_stack'] = self.args['input_stack']
-        j['poststitched_stack'] = self.args['output_stack']
-        j['match_collection'] = self.args['match_collection']
-        j['out_html_dir'] = self.args['output_dir']
+        j['prestitched_stack'] = args['input_stack']
+        j['poststitched_stack'] = args['output_stack']
+        j['match_collection'] = args['match_collection']
+        j['out_html_dir'] = args['output_dir']
         j['output_json'] = os.path.join(
-                self.args['output_dir'],
-                self.args['sectionId']+'_output.json')
+                args['output_dir'],
+                args['sectionId']+'_output.json')
         j['plot_sections'] = "True"
         j['pool_size'] = 40
-        j['minZ'] = int(self.tilespecs[0].z)
-        j['maxZ'] = int(self.tilespecs[0].z)
+        j['minZ'] = int(tilespecs[0].z)
+        j['maxZ'] = int(tilespecs[0].z)
         qcname = os.path.join(
-                self.args['output_dir'],
-                self.args['sectionId'] + "_input.json")
+                args['output_dir'],
+                args['sectionId'] + "_input.json")
         json.dump(j, open(qcname, 'w'), indent=2)
 
-    def add_center_point(self):
-        # maybe don't need it
-        return
-
-    def create_PSLG(self):
+    def create_PSLG(self, tile_width, tile_height):
         # define a PSLG for triangle
         # http://dzhelil.info/triangle/definitions.html
         # https://www.cs.cmu.edu/~quake/triangle.defs.html#pslg
         vertices = np.array([
                 [0, 0],
-                [0, self.tile_height],
-                [self.tile_width, self.tile_height],
-                [self.tile_width, 0]])
+                [0, tile_height],
+                [tile_width, tile_height],
+                [tile_width, 0]])
         segments = np.array([
                 [0, 1],
                 [1, 2],
                 [2, 3],
                 [3, 0]])
-        # check if there is a hole (focuses elements for montage sets)
-        self.has_hole = False
-        hw = 0.5 * self.tile_width
-        hh = 0.5 * self.tile_height
-        r = np.sqrt(
-                np.power(self.coords[:, 0] - hw, 2.0) +
-                np.power(self.coords[:, 1] - hh, 2.0))
-        if r.min() > 0.05 * 0.5 * (self.tile_width + self.tile_height):
-            inbx = 50
-            inby = 50
-            while np.count_nonzero(
-                    (np.abs(self.coords[:, 0] - hw) < inbx) &
-                    (np.abs(self.coords[:, 1] - hh) < inby)
-                                  ) == 0:
-                inbx += 50
-            inbx -= 50
-            while np.count_nonzero(
-                    (np.abs(self.coords[:, 0]-hw) < inbx) &
-                    (np.abs(self.coords[:, 1]-hh) < inby)
-                                   ) == 0:
-                inby += 50
-            inby -= 50
-            vertices = np.append(
-                        vertices,
-                        np.array([
-                            [hw - inbx, hh - inby],
-                            [hw - inbx, hh + inby],
-                            [hw + inbx, hh + inby],
-                            [hw + inbx, hh - inby]])
-                                ).reshape(8, 2)
-            segments = np.append(
-                        segments,
-                        np.array([
-                                  [4, 5],
-                                  [5, 6],
-                                  [6, 7],
-                                  [7, 4]])
-                                ).reshape(8, 2)
-            self.has_hole = True
-        self.bbox = {}
-        self.bbox['vertices'] = vertices
-        self.bbox['segments'] = segments
-        if self.has_hole:
-            self.bbox['holes'] = np.array([[hw, hh]])
+        bbox = {}
+        bbox['vertices'] = vertices
+        bbox['segments'] = segments
+        return bbox
 
-    def calculate_mesh(self, a, target, get_t=False):
-        t = triangle.triangulate(self.bbox, 'pqa%0.1f' % a)
+    def calculate_mesh(self, a, bbox, target, get_t=False):
+        t = triangle.triangulate(bbox, 'pqa%0.1f' % a)
         if get_t:
             # scipy.Delaunay has nice find_simplex method,
             # but, no obvious way to iteratively refine meshes, like triangle
@@ -187,52 +155,51 @@ class MeshAndSolveTransform(ArgSchemaParser):
             return Delaunay(t['vertices'])
         return target - len(t['vertices'])
 
-    def force_vertices_with_npoints(self, npts):
+    def force_vertices_with_npoints(self, area_par, bbox, npts):
         fac = 1.05
         count = 0
         while True:
             t = self.calculate_mesh(
-                    self.area_triangle_par,
+                    area_par,
+                    bbox,
                     None,
                     get_t=True)
             pt_count = self.count_points_near_vertices(t)
             if pt_count.min() >= npts:
                 break
-            self.area_triangle_par *= fac
+            area_par *= fac
             count += 1
             if np.mod(count, 2) == 0:
                 fac += 0.5
             if np.mod(count, 20) == 0:
                 print('did not meet vertex requirement after 1000 iterations')
                 break
-        self.mesh = t
-        return
+        return t, area_par
 
-    def find_delaunay_with_max_vertices(self):
+    def find_delaunay_with_max_vertices(self, bbox, nvertex):
         # find bracketing values
         a1 = a2 = 1e6
-        t1 = self.calculate_mesh(a1, self.args['nvertex'])
+        t1 = self.calculate_mesh(a1, bbox, nvertex)
         afac = np.power(10., -np.sign(t1))
         while (
                 np.sign(t1) ==
-                np.sign(self.calculate_mesh(a2, self.args['nvertex']))
+                np.sign(self.calculate_mesh(a2, bbox, nvertex))
               ):
             a2 *= afac
         val_at_root = -1
-        nvtweak = self.args['nvertex']
+        nvtweak = nvertex
         while val_at_root < 0:
             a = scipy.optimize.brentq(
                     self.calculate_mesh,
                     a1,
                     a2,
-                    args=(nvtweak, ))
-            val_at_root = self.calculate_mesh(a, self.args['nvertex'])
+                    args=(bbox, nvtweak, ))
+            val_at_root = self.calculate_mesh(a, bbox, nvertex)
             a1 = a * 2
             a2 = a * 0.5
             nvtweak -= 1
-        self.mesh = self.calculate_mesh(a, None, get_t=True)
-        self.area_triangle_par = a
-        return
+        mesh = self.calculate_mesh(a, bbox, None, get_t=True)
+        return mesh, a
 
     def compute_barycentrics(self, coords):
         # https://en.wikipedia.org/wiki/Barycentric_coordinate_system#Conversion_between_barycentric_and_Cartesian_coordinates
@@ -263,242 +230,137 @@ class MeshAndSolveTransform(ArgSchemaParser):
                 pt_count[i] += np.count_nonzero(found == j)
         return pt_count
 
-    def create_regularization(self):
+    def create_regularization(self, ncols, ntiles, defaultL, transL, lensL):
         # regularizations: [affine matrix, translation, lens]
-        reg = np.ones(self.A.shape[1]).astype('float64') * (
-          self.args['regularization']['default_lambda'])
-        reg[0:self.unique_ids.size*3][2::3] *= (
-          self.args['regularization']['translation_factor'])
-        reg[self.unique_ids.size*3:] *= (
-          self.args['regularization']['lens_lambda'])
-        self.reg = sparse.eye(reg.size, format='csr')
-        self.reg.data = reg
-    '''
-    def report_solution(self, pre='', x=None):
-        def message(err, pre):
-            m = pre + ':\n'
-            for e, v in [[err[0], 'dx'], [err[1], 'dy']]:
-                m += (
-                      ' %s: [%8.2f,%8.2f] %8.2f+/-%8.2f pixels\n' %
-                      (v, e.min(), e.max(), e.mean(), e.std()))
-            return m
-        err = []
-        if x is None:
-            x = self.solution
-        for x0 in x:
-            err.append(self.A.dot(x0))
-        m = message(err, pre)
-        if x is not None:
-            scale = np.array([tf.scale for tf in self.transforms])
-            m += ('xscale: [%8.2f,%8.2f] %8.2f+/-%8.2f\n' %
-                  (scale[:, 0].min(), scale[:, 0].max(),
-                   scale[:, 0].mean(), scale[:, 0].std()))
-            m += ('yscale: [%8.2f,%8.2f] %8.2f+/-%8.2f\n' %
-                  (scale[:, 1].min(), scale[:, 1].max(),
-                   scale[:, 1].mean(), scale[:, 1].std()))
-        print(m)
+        reg = np.ones(ncols).astype('float64') * defaultL
+        reg[0:ntiles*3][2::3] *= transL
+        reg[ntiles*3:] *= lensL
+        rmat = sparse.eye(reg.size, format='csr')
+        rmat.data = reg
+        return rmat
 
-    def transform_pq(self):
-        p = []
-        q = []
-        p_transf = []
-        q_transf = []
-        for mi in range(len(self.matches)):
-            ip = np.transpose(
-                  np.array(self.matches[mi]['matches']['p']))
-            iq = np.transpose(
-                  np.array(self.matches[mi]['matches']['q']))
-            ip_transf = self.transforms[self.tile_index[mi, 0]].tform(ip)
-            iq_transf = self.transforms[self.tile_index[mi, 1]].tform(iq)
-            p.append(ip)
-            q.append(iq)
-            p_transf.append(ip_transf)
-            q_transf.append(iq_transf)
-        return [p, q, p_transf, q_transf]
+    def create_thinplatespline_tf(
+            self, render, args,
+            mesh, solution, lens_dof_start):
 
-    def compare_solutions(self):
-        self.report_solution(pre='stage only', x=self.x0)
-
-        # try without lens correction
-        tmp = self.args['regularization']['lens_lambda']
-        self.args['regularization']['lens_lambda'] = 1e10
-        self.solve()
-        self.report_solution(pre='affine only')
-
-        # try with lens correction
-        self.args['regularization']['lens_lambda'] = tmp
-        self.solve()
-        self.report_solution(pre='with lens correction')
-
-    def estimate_polynomial(self, nx=500, ny=500, ndim=5):
-        [xp, yp, idx, idy] = self.interpolate(nx=nx, ny=ny, flatten=True)
-        src = np.transpose(np.vstack((xp, yp)))
-        dst = np.transpose(np.vstack((xp+idx, yp+idy)))
-        self.tf_poly = renderapi.transform.NonLinearCoordinateTransform()
-        self.tf_poly.width = self.tile_width
-        self.tf_poly.height = self.tile_height
-        self.tf_poly.dimension = ndim
-        self.tf_poly.length = (ndim+1)*(ndim+2)/2
-        self.tf_poly.estimate(src, dst)
-        dst_poly = self.tf_poly.tform(src)
-        dxp = dst[:, 0].reshape(nx, ny)
-        dyp = dst[:, 1].reshape(nx, ny)
-        pxp = dst_poly[:, 0].reshape(nx, ny)
-        pyp = dst_poly[:, 1].reshape(nx, ny)
-        return [[xp.reshape(nx, ny), yp.reshape(nx, ny)],
-                [dxp, dyp],
-                [pxp, pyp]]
-    '''
-    def create_thinplatespline_tf(self):
-        if self.args['outfile'] is None:
+        if args['outfile'] is None:
             fname = '%s/%s.json' % (
-                    self.args['output_dir'],
-                    self.args['sectionId'])
+                    args['output_dir'],
+                    args['sectionId'])
         else:
-            fname = self.args['outfile']
+            fname = args['outfile']
 
         argvs = ['--computeAffine', 'false']
         argvs += ['--numberOfDimensions', '2']
         argvs += ['--outputFile', fname]
-        argvs += ['--numberOfLandmarks', self.mesh.points.shape[0]]
+        argvs += ['--numberOfLandmarks', mesh.points.shape[0]]
 
-        for i in range(self.mesh.points.shape[0]):
-            argvs += ['%0.6f ' % self.mesh.points[i, 0]]
-            argvs += ['%0.6f ' % self.mesh.points[i, 1]]
-        for i in range(self.mesh.points.shape[0]):
+        for i in range(mesh.points.shape[0]):
+            argvs += ['%0.6f ' % mesh.points[i, 0]]
+            argvs += ['%0.6f ' % mesh.points[i, 1]]
+        for i in range(mesh.points.shape[0]):
             argvs += ['%0.6f ' % (
-                    self.mesh.points[i, 0] +
-                    self.solution[0][self.lens_dof_start + i])]
+                    mesh.points[i, 0] +
+                    solution[0][lens_dof_start + i])]
             argvs += ['%0.6f ' % (
-                    self.mesh.points[i, 1] +
-                    self.solution[1][self.lens_dof_start + i])]
+                    mesh.points[i, 1] +
+                    solution[1][lens_dof_start + i])]
 
-        renderapi.client.call_run_ws_client('org.janelia.render.client.ThinPlateSplineClient',
-                                            add_args=argvs,
-                                            renderclient=self.render,
-                                            memGB='2G',
-                                            subprocess_mode='check_call')
+        renderapi.client.call_run_ws_client(
+                'org.janelia.render.client.ThinPlateSplineClient',
+                add_args=argvs,
+                renderclient=render,
+                memGB='2G',
+                subprocess_mode='check_call')
 
         j = json.load(open(fname, 'r'))
-        self.tf_thinplate = (
+        transform = (
                 renderapi.transform.ThinPlateSplineTransform(
                     dataString=j['dataString']))
+        transform.transformId = (
+                args['sectionId'] +
+                datetime.datetime.now().strftime("_%Y%m%d%H%M%S"))
+        transform.labels = None
+        return transform
 
-    def new_stack_with_tf(self, tfchoice='thinplate'):
-        if tfchoice == 'thinplate':
-            tf = self.tf_thinplate
-        else:
-            tf = self.tf_poly
+    def new_stack_with_tf(
+            self, render, stack,
+            ref_transform, tilespecs,
+            transforms, close_stack):
 
-        sname = self.args['output_stack']
-        renderapi.stack.create_stack(sname, render=self.render)
-
-        refId = (self.args['sectionId'] +
-                 datetime.datetime.now().strftime("_%Y%m%d%H%M%S"))
-        tf.transformId = refId
-        tf.labels = None
+        renderapi.stack.create_stack(stack, render=render)
 
         newspecs = []
-        for i in range(len(self.tilespecs)):
-            newspecs.append(copy.deepcopy(self.tilespecs[i]))
+        for i in range(len(tilespecs)):
+            newspecs.append(copy.deepcopy(tilespecs[i]))
             newspecs[-1].tforms.insert(0,
                                        renderapi.transform.ReferenceTransform(
-                                        refId=refId))
-            newspecs[-1].tforms[1] = self.transforms[i]
+                                        refId=ref_transform.transformId))
+            newspecs[-1].tforms[1] = transforms[i]
 
         renderapi.client.import_tilespecs(
-                sname,
+                stack,
                 newspecs,
-                sharedTransforms=[tf],
-                render=self.render)
-        if self.args['close_stack']:
+                sharedTransforms=[ref_transform],
+                render=render)
+        if close_stack:
             renderapi.stack.set_stack_state(
-                    sname,
+                    stack,
                     'COMPLETE',
-                    render=self.render)
-    '''
-    def interpolate(self, xlim=None, ylim=None, nx=500, ny=500, flatten=False):
-        if xlim is None:
-            xlim = [0, self.tile_width]
-        if ylim is None:
-            ylim = [0, self.tile_height]
-        x = np.linspace(xlim[0], xlim[1], nx)
-        y = np.linspace(ylim[0], ylim[1], ny)
-        xp, yp = np.meshgrid(x, y)
-        xyint = np.transpose(np.vstack((xp.flatten(), yp.flatten())))
-        z = self.compute_barycentrics(xyint)
-        idx = (
-            self.solution[0][self.lens_dof_start:][self.mesh.simplices[z[1]]] *
-            z[0]
-              ).sum(1).reshape(nx, ny)
-        idy = (
-            self.solution[1][self.lens_dof_start:][self.mesh.simplices[z[1]]] *
-            z[0]
-              ).sum(1).reshape(nx, ny)
-        if flatten:
-            return [xp.flatten(), yp.flatten(), idx.flatten(), idy.flatten()]
-        else:
-            return [xp, yp, idx, idy]
-    '''
-    def solve(self):
-        self.create_regularization()
-        ATW = self.A.transpose().dot(self.weights)
-        K = ATW.dot(self.A) + self.reg
+                    render=render)
+
+    def solve(self, A, weights, reg, x0):
+        ATW = A.transpose().dot(weights)
+        K = ATW.dot(A) + reg
         K_factorized = factorized(K)
-        self.solution = []
-        for x0 in self.x0:
-            Lm = self.reg.dot(x0)
-            self.solution.append(K_factorized(Lm))
+        solution = []
+        for x in x0:
+            Lm = self.reg.dot(x)
+            solution.append(K_factorized(Lm))
 
-        self.errx = self.A.dot(self.solution[0])
-        self.erry = self.A.dot(self.solution[1])
+        errx = self.A.dot(solution[0])
+        erry = self.A.dot(solution[1])
 
-        self.transforms = []
-        for i in range(len(self.unique_ids)):
-            self.transforms.append(renderapi.transform.AffineModel(
-                                    M00=self.solution[0][i*3+0],
-                                    M01=self.solution[0][i*3+1],
-                                    B0=self.solution[0][i*3+2],
-                                    M10=self.solution[1][i*3+0],
-                                    M11=self.solution[1][i*3+1],
-                                    B1=self.solution[1][i*3+2]))
-        self.report_solution()
+        return solution, errx, erry
 
-    def report_solution(self):
+    def report_solution(self, errx, erry, transforms):
         message = ''
-        for e, v in [[self.errx, 'dx'], [self.erry, 'dy']]:
+        for e, v in [[errx, 'dx'], [erry, 'dy']]:
             message += (
                   ' %s: [%8.2f,%8.2f] %8.2f+/-%8.2f pixels\n' %
                   (v, e.min(), e.max(), e.mean(), e.std()))
 
-        scale = np.array([tf.scale for tf in self.transforms])
+        scale = np.array([tf.scale for tf in transforms])
         message += ('xscale: [%8.2f,%8.2f] %8.2f+/-%8.2f\n' %
                     (scale[:, 0].min(), scale[:, 0].max(),
                      scale[:, 0].mean(), scale[:, 0].std()))
         message += ('yscale: [%8.2f,%8.2f] %8.2f+/-%8.2f\n' %
                     (scale[:, 1].min(), scale[:, 1].max(),
                      scale[:, 1].mean(), scale[:, 1].std()))
-        print(message)
+        self.logger.debug(message)
+        return scale, message
 
-    def create_x0(self, nrows, ntiles):
-        self.x0 = []
-        self.x0.append(np.zeros(nrows).astype('float64'))
-        self.x0.append(np.zeros(nrows).astype('float64'))
-        self.x0[0][0:(3*ntiles)] = np.tile([1.0, 0.0, 0.0], ntiles)
-        self.x0[1][0:(3*ntiles)] = np.tile([0.0, 1.0, 0.0], ntiles)
+    def create_x0(self, nrows, tilespecs):
+        ntiles = len(tilespecs)
+        x0 = []
+        x0.append(np.zeros(nrows).astype('float64'))
+        x0.append(np.zeros(nrows).astype('float64'))
+        x0[0][0:(3*ntiles)] = np.tile([1.0, 0.0, 0.0], ntiles)
+        x0[1][0:(3*ntiles)] = np.tile([0.0, 1.0, 0.0], ntiles)
         for i in range(ntiles):
-            self.x0[0][3*i+2] = self.tilespecs[i].minX
-            self.x0[1][3*i+2] = self.tilespecs[i].minY
+            x0[0][3*i+2] = tilespecs[i].minX
+            x0[1][3*i+2] = tilespecs[i].minY
+        return x0
 
-    def create_A(self):
-        # let's assume affine_halfsize for now
+    def create_A(self, matches, tilespecs, mesh):
+        # let's assume affine_halfsize
         dof_per_tile = 3
         dof_per_vertex = 1
         vertex_per_patch = 3
         nnz_per_row = 2*(dof_per_tile + vertex_per_patch * dof_per_vertex)
-        nrows = sum([len(m['matches']['p'][0]) for m in self.matches])
+        nrows = sum([len(m['matches']['p'][0]) for m in matches])
         nd = nnz_per_row*nrows
-        self.lens_dof_start = dof_per_tile*self.unique_ids.size
+        lens_dof_start = dof_per_tile*len(tilespecs)
 
         data = np.zeros(nd).astype('float64')
         indices = np.zeros(nd).astype('int64')
@@ -506,10 +368,16 @@ class MeshAndSolveTransform(ArgSchemaParser):
         indptr[1:] = np.arange(1, nrows+1)*nnz_per_row
         weights = np.ones(nrows).astype('float64')
 
+        unique_ids = np.array(
+                [t.tileId for t in tilespecs])
+
         # nothing fancy here, row-by-row
         offset = 0
-        for mi in range(len(self.matches)):
-            m = self.matches[mi]
+        for mi in range(len(matches)):
+            m = matches[mi]
+            pindex = np.argwhere(unique_ids == m['pId'])
+            qindex = np.argwhere(unique_ids == m['qId'])
+
             npoint_pairs = len(m['matches']['q'][0])
             # get barycentric coordinates ready
             pcoords = np.transpose(
@@ -540,75 +408,153 @@ class MeshAndSolveTransform(ArgSchemaParser):
             data[mstep+10] = -qbary[0][:, 1]
             data[mstep+11] = -qbary[0][:, 2]
 
-            indices[mstep+0] = self.tile_index[mi, 0]*dof_per_tile+0
-            indices[mstep+1] = self.tile_index[mi, 0]*dof_per_tile+1
-            indices[mstep+2] = self.tile_index[mi, 0]*dof_per_tile+2
-            indices[mstep+3] = self.tile_index[mi, 1]*dof_per_tile+0
-            indices[mstep+4] = self.tile_index[mi, 1]*dof_per_tile+1
-            indices[mstep+5] = self.tile_index[mi, 1]*dof_per_tile+2
-            indices[mstep+6] = (self.lens_dof_start +
-                                self.mesh.simplices[pbary[1][:]][:, 0])
-            indices[mstep+7] = (self.lens_dof_start +
-                                self.mesh.simplices[pbary[1][:]][:, 1])
-            indices[mstep+8] = (self.lens_dof_start +
-                                self.mesh.simplices[pbary[1][:]][:, 2])
-            indices[mstep+9] = (self.lens_dof_start +
-                                self.mesh.simplices[qbary[1][:]][:, 0])
-            indices[mstep+10] = (self.lens_dof_start +
-                                 self.mesh.simplices[qbary[1][:]][:, 1])
-            indices[mstep+11] = (self.lens_dof_start +
-                                 self.mesh.simplices[qbary[1][:]][:, 2])
+            indices[mstep+0] = pindex*dof_per_tile+0
+            indices[mstep+1] = pindex*dof_per_tile+1
+            indices[mstep+2] = pindex*dof_per_tile+2
+            indices[mstep+3] = qindex*dof_per_tile+0
+            indices[mstep+4] = qindex*dof_per_tile+1
+            indices[mstep+5] = qindex*dof_per_tile+2
+            indices[mstep+6] = (lens_dof_start +
+                                mesh.simplices[pbary[1][:]][:, 0])
+            indices[mstep+7] = (lens_dof_start +
+                                mesh.simplices[pbary[1][:]][:, 1])
+            indices[mstep+8] = (lens_dof_start +
+                                mesh.simplices[pbary[1][:]][:, 2])
+            indices[mstep+9] = (lens_dof_start +
+                                mesh.simplices[qbary[1][:]][:, 0])
+            indices[mstep+10] = (lens_dof_start +
+                                 mesh.simplices[qbary[1][:]][:, 1])
+            indices[mstep+11] = (lens_dof_start +
+                                 mesh.simplices[qbary[1][:]][:, 2])
 
             offset += npoint_pairs*nnz_per_row
 
-        self.data = data
-        self.indices = indices
-        self.indptr = indptr
+        A = csr_matrix((data, indices, indptr))
+        wts = sparse.eye(weights.size, format='csr')
+        wts.data = weights
+        return A, wts, lens_dof_start
 
-        self.A = csr_matrix((data, indices, indptr))
-        self.weights = sparse.eye(weights.size, format='csr')
-        self.weights.data = weights
-        self.create_x0(self.A.shape[1], self.unique_ids.size)
+    def create_transforms(self, ntiles, solution):
+        transforms = []
+        for i in range(ntiles):
+            transforms.append(renderapi.transform.AffineModel(
+                               M00=solution[0][i*3+0],
+                               M01=solution[0][i*3+1],
+                               B0=solution[0][i*3+2],
+                               M10=solution[1][i*3+0],
+                               M11=solution[1][i*3+1],
+                               B1=solution[1][i*3+2]))
+        return transforms
 
     def MeshAndSolve(self):
         self.render = renderapi.connect(**self.args['render'])
 
-        # load the matches
-        self.matches, self.tile_ids,
-            self.unique_ids, self.tile_index =
-                self.load_matches(
-                        self.args['render'],
-                        self.args['match_collection'],
-                        self.args['sectionId'])
+        self.tilespecs, self.matches = self.get_tspecs_and_matches(
+            self.render,
+            self.args['match_collection'],
+            self.args['input_stack'],
+            self.args['z_index'],
+            self.args['sectionId'])
 
-        # load tilespecs
-        self.load_tilespecs()
+        self.tile_width = self.tilespecs[0].width
+        self.tile_height = self.tilespecs[0].height
 
         # condense coordinates
-        self.condense_coords()
+        self.coords = self.condense_coords(self.matches)
+        self.coords = self.even_distribution(
+            self.coords,
+            self.tile_width,
+            self.tile_height,
+            10)
+
+        if self.coords.shape[0] == 0:
+            raise MeshLensCorrectionException(
+                    "no point matches left after evening distribution, \
+                     probably some sparse areas of matching")
 
         # create PSLG
-        self.create_PSLG()
+        self.bbox = self.create_PSLG(
+                self.tile_width,
+                self.tile_height)
 
         # find delaunay with max vertices
-        self.find_delaunay_with_max_vertices()
+        self.mesh, self.area_triangle_par = \
+            self.find_delaunay_with_max_vertices(
+                self.bbox,
+                self.args['nvertex'])
 
-        self.force_vertices_with_npoints(3)
-        if self.has_hole:
-            self.add_center_point()
+        # and enforce neighboring matches to vertices
+        self.mesh, self.area_triangle_par = \
+            self.force_vertices_with_npoints(
+                self.area_triangle_par,
+                self.bbox,
+                3)
+        try:
+            assert self.mesh.points.shape[0] > 0.5*self.args['nvertex'], \
+                "mesh coarser than intended"
+        except AssertionError as e:
+            raise MeshLensCorrectionException(str(e))
 
-        print('returned  %d vertices' % self.mesh.npoints)
-        print('creating A...')
-        self.create_A()
+        # prepare the linear algebra and solve
+        self.A, self.weights, self.lens_dof_start = \
+            self.create_A(
+                self.matches,
+                self.tilespecs,
+                self.mesh)
+        self.x0 = self.create_x0(
+                self.A.shape[1],
+                self.tilespecs)
+        self.reg = self.create_regularization(
+                self.A.shape[1],
+                len(self.tilespecs),
+                self.args['regularization']['default_lambda'],
+                self.args['regularization']['translation_factor'],
+                self.args['regularization']['lens_lambda'])
+        self.solution, self.errx, self.erry = self.solve(
+                self.A,
+                self.weights,
+                self.reg,
+                self.x0)
 
-        print('solving...')
-        self.solve()
+        self.transforms = self.create_transforms(
+                len(self.tilespecs), self.solution)
 
-        print('calling ThinPlateClient to create dataString')
-        self.create_thinplatespline_tf()
+        tf_scale, message = self.report_solution(
+                self.errx, self.erry, self.transforms)
 
-        print('saving new stack entry')
-        self.new_stack_with_tf()
-        self.write_montage_qc_json()
+        # check quality of solution
+        try:
+            assert self.errx.mean() < 0.2, \
+                "x error average non-zero"
+            assert self.erry.mean() < 0.2, \
+                "y error average non-zero"
+            assert self.errx.std() < 2.0, \
+                "x error std-dev > 2 pixels"
+            assert self.erry.std() < 2.0, \
+                "y error std-dev > 2 pixels"
+            assert np.abs(tf_scale[:, 0].mean() - 1.0) < 0.05, \
+                "more than 5% scale change in x"
+            assert np.abs(tf_scale[:, 1].mean() - 1.0) < 0.05, \
+                "more than 5% scale change in x"
+        except AssertionError as e:
+            raise MeshLensCorrectionException(
+                    "Solve not good: %s\n%s" % (str(e), message))
+
+        self.new_ref_transform = self.create_thinplatespline_tf(
+                self.render,
+                self.args,
+                self.mesh,
+                self.solution,
+                self.lens_dof_start)
+
+        self.new_stack_with_tf(
+                self.render,
+                self.args['output_stack'],
+                self.new_ref_transform,
+                self.tilespecs,
+                self.transforms,
+                self.args['close_stack'])
+
+        self.write_montage_qc_json(self.args, self.tilespecs)
 
         return self.args['outfile']

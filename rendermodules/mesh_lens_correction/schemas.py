@@ -80,6 +80,10 @@ class MeshLensCorrectionSchema(RenderParameters):
         required=True,
         description=("File to which json output of lens correction "
                      "(leaf TransformSpec) is written"))
+    sectionId = Str(
+        required=True,
+        default="xxx",
+        description="section Id")
     regularization = Nested(regularization)
     
 

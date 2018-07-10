@@ -4,6 +4,7 @@ import renderapi
 import os
 
 from rendermodules.mesh_lens_correction.do_mesh_lens_correction import MeshLensCorrection
+from rendermodules.mesh_lens_correction.MeshAndSolveTransform import MeshLensCorrectionException
 from rendermodules.mesh_lens_correction.LensPointMatches import generate_point_matches
 from test_data import render_params, TEST_DATA_ROOT
 
@@ -57,7 +58,7 @@ def test_coarse_mesh_failure(render, tmpdir_factory):
             input_data=example,
             args=['--output_json', 'mesh_lens_out.json'])
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(MeshLensCorrectionException):
         mod.run()
 
 
