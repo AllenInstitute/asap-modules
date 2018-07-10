@@ -89,7 +89,7 @@ def test_mesh_lens_correction(render, tmpdir_factory):
     match['matches']['p'] = [[2], [3]]
     match['matches']['w'] = [0]
     renderapi.pointmatch.import_matches(
-            example.args['match_collection'],
+            example['match_collection'],
             [match],
             render=renderapi.connect(**example['render_params']))
 
