@@ -5,7 +5,6 @@ import os
 
 from rendermodules.mesh_lens_correction.do_mesh_lens_correction import MeshLensCorrection
 from rendermodules.mesh_lens_correction.MeshAndSolveTransform import MeshLensCorrectionException
-from rendermodules.mesh_lens_correction.LensPointMatches import generate_point_matches
 from test_data import render_params, TEST_DATA_ROOT
 
 example = {
@@ -77,6 +76,23 @@ def test_mesh_lens_correction(render, tmpdir_factory):
     mod = MeshLensCorrection(
             input_data=example,
             args=['--output_json', 'mesh_lens_out.json'])
+
+    # add collection and a match so we cover deletion
+    sectionId = mod.get_sectionId_from_metafile(example['metafile'])
+    match = {}
+    match['qId'] = 'qid'
+    match['pId'] = 'pid'
+    match['pGroupId'] = sectionId
+    match['qGroupId'] = sectionId
+    match['matches'] = {}
+    match['matches']['q'] = [[0], [1]]
+    match['matches']['p'] = [[2], [3]]
+    match['matches']['w'] = [0]
+    renderapi.pointmatch.import_matches(
+            example.args['match_collection'],
+            [match],
+            render=renderapi.connect(**example['render_params']))
+
     mod.run()
 
     with open('mesh_lens_out.json', 'r') as f:
@@ -92,22 +108,8 @@ def test_mesh_lens_correction(render, tmpdir_factory):
             new_tform_dict['className'] ==
             "mpicbg.trakem2.transform.ThinPlateSplineTransform")
 
-#    # run again for code coverage
-#    mod.run()
-
-#    # more code coverage due,
-#    # code coverage software not detecting parallel processes
-#
-#    generate_point_matches(mod.render,
-#                           mod.args['pairJson'],
-#                           mod.args['input_stack'],
-#                           mod.args['match_collection'],
-#                           mod.args['matchMax'])
-
     # some little bits of coverage
     mod.args['rerun_pointmatch'] = False
     mod.args['output_dir'] = None
     mod.args['outfile'] = None
     mod.run()
-
-

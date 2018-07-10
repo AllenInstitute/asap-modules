@@ -154,11 +154,11 @@ class MeshLensCorrection(RenderModule):
                 groupids = renderapi.pointmatch.get_match_groupIds(
                         self.args['match_collection'],
                         render=self.render)
-                if str(float(self.args['z_index'])) in groupids:
+                if self.args['sectionId'] in groupids:
                     renderapi.pointmatch.delete_point_matches_between_groups(
                             self.args['match_collection'],
-                            str(float(self.args['z_index'])),
-                            str(float(self.args['z_index'])),
+                            self.args['sectionId'],
+                            self.args['sectionId'],
                             render=self.render)
 
             # generate point matches
