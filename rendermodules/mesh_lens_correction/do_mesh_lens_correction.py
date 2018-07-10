@@ -126,21 +126,6 @@ class MeshLensCorrection(RenderModule):
             outfile.close()
             self.args['outfile'] = outfile.name
 
-        # check if match_collection exists
-        collections = renderapi.pointmatch.get_matchcollections(
-                render=self.render)
-        if self.args['match_collection'] in collections:
-            # check if the point match exists
-            groupids = renderapi.pointmatch.get_match_groupIds(
-                    self.args['match_collection'],
-                    render=self.render)
-            if str(float(self.args['z_index'])) in groupids:
-                renderapi.pointmatch.delete_point_matches_between_groups(
-                        self.args['match_collection'],
-                        str(float(self.args['z_index'])),
-                        str(float(self.args['z_index'])),
-                        render=self.render)
-
         out_file = tempfile.NamedTemporaryFile(suffix=".json", delete=False)
         out_file.close()
 
@@ -160,13 +145,29 @@ class MeshLensCorrection(RenderModule):
             js = json.load(f)
         self.args['pairJson'] = js['tile_pair_file']
 
-        # generate point matches
-        generate_point_matches(self.render,
-                               self.args['pairJson'],
-                               self.args['input_stack'],
-                               self.args['match_collection'],
-                               self.args['matchMax'],
-                               nfeature_limit=self.args['nfeature_limit'])
+        if self.args['rerun_pointmatch']:
+            # check if match_collection exists
+            collections = renderapi.pointmatch.get_matchcollections(
+                    render=self.render)
+            if self.args['match_collection'] in collections:
+                # check if the point match exists
+                groupids = renderapi.pointmatch.get_match_groupIds(
+                        self.args['match_collection'],
+                        render=self.render)
+                if str(float(self.args['z_index'])) in groupids:
+                    renderapi.pointmatch.delete_point_matches_between_groups(
+                            self.args['match_collection'],
+                            str(float(self.args['z_index'])),
+                            str(float(self.args['z_index'])),
+                            render=self.render)
+
+            # generate point matches
+            generate_point_matches(self.render,
+                                   self.args['pairJson'],
+                                   self.args['input_stack'],
+                                   self.args['match_collection'],
+                                   self.args['matchMax'],
+                                   nfeature_limit=self.args['nfeature_limit'])
 
         meshclass = MeshAndSolveTransform(input_data=self.args, args=[])
         # find the lens correction, write out to new stack
