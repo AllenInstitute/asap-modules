@@ -226,7 +226,7 @@ class MakeMontageScapeSectionStack(StackOutputModule):
         try:
             os.makedirs(tilespecdir)
         except OSError as e:
-            if e != errno.EEXIST:
+            if e.errno != errno.EEXIST:
                 raise
             pass
 
