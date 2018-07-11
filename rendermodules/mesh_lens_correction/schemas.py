@@ -1,8 +1,9 @@
 
 from argschema import ArgSchema
 from argschema.schemas import DefaultSchema
-from argschema.fields import Str, Int, Bool, Nested, Float, OutputDir, OutputFile
+from argschema.fields import Str, Int, Bool, Nested, Float, OutputDir
 from ..module.render_module import RenderParameters
+
 
 class regularization(ArgSchema):
     default_lambda = Float(
@@ -16,10 +17,11 @@ class regularization(ArgSchema):
         missing=0.005,
         description="transaltion factor")
     lens_lambda = Float(
-        required = False,
+        required=False,
         default=0.005,
         missing=0.005,
         description="regularization for lens parameters")
+
 
 class MeshLensCorrectionSchema(RenderParameters):
     input_stack = Str(
@@ -33,6 +35,11 @@ class MeshLensCorrectionSchema(RenderParameters):
         default=True,
         missing=True,
         description="Overwrite z layer (default = True)")
+    rerun_pointmatch = Bool(
+        required=False,
+        default=True,
+        missing=True,
+        description="delete pointmatch values and rerun")
     close_stack = Bool(
         required=False,
         default=True,
@@ -80,14 +87,22 @@ class MeshLensCorrectionSchema(RenderParameters):
         required=True,
         description=("File to which json output of lens correction "
                      "(leaf TransformSpec) is written"))
+    sectionId = Str(
+        required=True,
+        default="xxx",
+        description="section Id")
     regularization = Nested(regularization)
-    
 
-class MeshLensCorrectionOutputSchema(DefaultSchema):
+
+class MeshAndSolveOutputSchema(DefaultSchema):
+    output_json = Str(
+        required=True,
+        description="path to lens correction file")
+
+class DoMeshLensCorrectionOutputSchema(DefaultSchema):
     output_json = Str(
         required=True,
         description="path to lens correction file")
     qc_json = Str(
         required=True,
         description="path to qc json file")
-

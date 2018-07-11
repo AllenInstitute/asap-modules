@@ -1,11 +1,11 @@
-import numpy as np 
-import argschema 
-import json 
-import renderapi 
-import cv2 
-import multiprocessing 
+import numpy as np
+import json
+import renderapi
+import cv2
+import multiprocessing
 import urllib
 import urlparse
+import logging
 
 
 def ransac_chunk(fargs):
@@ -68,8 +68,6 @@ def find_matches(fargs):
     # find the keypoints and descriptors with SIFT
     kp1, des1 = sift.detectAndCompute(pim, None)
     kp2, des2 = sift.detectAndCompute(qim, None)
-    print('found %d and %d features for 2 images' %
-          (len(kp1), len(kp2)))
 
     # limit to 50k random
     i1 = np.arange(len(kp1))
@@ -86,7 +84,6 @@ def find_matches(fargs):
     k2xy = np.array([np.array(k.pt) for k in kp2])[i2, :]
     des1 = des1[i1, :]
     des2 = des2[i2, :]
-    print('limiting to %d each' % args['nfeature_limit'])
 
     nr, nc = pim.shape
     k1 = []
@@ -112,14 +109,12 @@ def find_matches(fargs):
     if len(k1) >= 1:
         k1 = np.array(k1) / args['downsample_scale']
         k2 = np.array(k2) / args['downsample_scale']
-        print('found %d matches' % k1.shape[0])
 
         if k1.shape[0] > args['matchMax']:
             a = np.arange(k1.shape[0])
             np.random.shuffle(a)
             k1 = k1[a[0: args['matchMax']], :]
             k2 = k2[a[0: args['matchMax']], :]
-            print('  keeping %d' % k1.shape[0])
 
         render = args['render']
         pm_dict = make_pm(ids, gids, k1, k2)
@@ -127,10 +122,8 @@ def find_matches(fargs):
           args['match_collection'],
           [pm_dict],
           render=render)
-    else:
-        print('no pointmatches found for tilepair:')
-        print(' %s' % impaths[0])
-        print(' %s' % impaths[1])
+
+    return [impaths, len(kp1), len(kp2), len(k1), len(k2)]
 
 
 def make_pm(ids, gids, k1, k2):
@@ -148,7 +141,7 @@ def make_pm(ids, gids, k1, k2):
     return pm
 
 
-def parse_tileids(tpjson):
+def parse_tileids(tpjson, logger=logging.getLogger()):
     tile_ids = np.array(
                 [[m['p']['id'], m['q']['id']]
                     for m in tpjson['neighborPairs']])
@@ -156,9 +149,13 @@ def parse_tileids(tpjson):
     unique_ids = np.unique(tile_ids.flatten())
 
     # determine tile index per tile pair
-    tile_index = np.zeros(
-                    (tile_ids.shape[0], tile_ids.shape[1])
-                    ).astype('int')
+    try:
+        tile_index = np.zeros(
+                        (tile_ids.shape[0], tile_ids.shape[1])
+                        ).astype('int')
+    except IndexError as e:
+        logger.error('%s : probably no tilepairs' % str(e))
+
     for i in range(tile_ids.shape[0]):
         for j in range(tile_ids.shape[1]):
             tile_index[i, j] = np.argwhere(unique_ids == tile_ids[i, j])
@@ -166,10 +163,13 @@ def parse_tileids(tpjson):
     return unique_ids, tile_index
 
 
-def load_pairjson(tilepair_file):
+def load_pairjson(tilepair_file, logger=logging.getLogger()):
     tpjson = []
-    if tilepair_file is not None:
+    try:
         tpjson = json.load(open(tilepair_file, 'r'))
+    except TypeError as e:
+        logger.error(e)
+
     return tpjson
 
 
@@ -192,7 +192,8 @@ def match_image_pairs(render,
                       tile_index,
                       ncpus=-1,
                       ndiv=1,
-                      index_list=None):
+                      index_list=None,
+                      logger=logging.getLogger()):
     if ncpus == -1:
         ncpus = multiprocessing.cpu_count()
 
@@ -221,7 +222,12 @@ def match_image_pairs(render,
             gids = [t.layout.sectionId
                     for t in tilespecs[tile_index[i]]]
             fargs.append([impaths, ids, gids, ndiv, args])
-        pool.map(find_matches, fargs)
+
+        for r in pool.imap_unordered(find_matches, fargs):
+            log = "\n%s\n%s\n" % (r[0][0], r[0][1])
+            log += "  (%d, %d) features found" % (r[1], r[2])
+            log += "  (%d, %d) matches made" % (r[3], r[4])
+            logger.debug(log)
 
 
 def generate_point_matches(render,
@@ -230,12 +236,13 @@ def generate_point_matches(render,
                            match_collection,
                            matchMax,
                            downsample_scale=0.3,
-                           nfeature_limit=20000):
+                           nfeature_limit=20000,
+                           logger=logging.getLogger()):
     # load the tilepair file
-    tpjson = load_pairjson(tilepair_file)
+    tpjson = load_pairjson(tilepair_file, logger=logger)
 
     # extract the unique_ids
-    unique_ids, tile_index = parse_tileids(tpjson)
+    unique_ids, tile_index = parse_tileids(tpjson, logger=logger)
 
     # load the tilespecs
     tilespecs = load_tilespecs(render, input_stack, unique_ids)
@@ -247,4 +254,5 @@ def generate_point_matches(render,
                       nfeature_limit,
                       matchMax,
                       tile_index,
-                      ndiv=8)
+                      ndiv=8,
+                      logger=logger)
