@@ -510,11 +510,9 @@ class MeshAndSolveTransform(ArgSchemaParser):
                 self.coords,
                 3)
 
-        try:
-            assert self.mesh.points.shape[0] > 0.5*self.args['nvertex'], \
-                "mesh coarser than intended"
-        except AssertionError as e:
-            raise MeshLensCorrectionException(str(e))
+        if self.mesh.points.shape[0] < 0.5*self.args['nvertex']:
+            raise MeshLensCorrectionException(
+                    "mesh coarser than intended")
 
         # prepare the linear algebra and solve
         self.A, self.weights, self.lens_dof_start = \
@@ -544,22 +542,16 @@ class MeshAndSolveTransform(ArgSchemaParser):
                 self.errx, self.erry, self.transforms)
 
         # check quality of solution
-        try:
-            assert self.errx.mean() < 0.2, \
-                "x error average non-zero"
-            assert self.erry.mean() < 0.2, \
-                "y error average non-zero"
-            assert self.errx.std() < 2.0, \
-                "x error std-dev > 2 pixels"
-            assert self.erry.std() < 2.0, \
-                "y error std-dev > 2 pixels"
-            assert np.abs(tf_scale[:, 0].mean() - 1.0) < 0.05, \
-                "more than 5% scale change in x"
-            assert np.abs(tf_scale[:, 1].mean() - 1.0) < 0.05, \
-                "more than 5% scale change in x"
-        except AssertionError as e:
+        if not all([
+                    self.errx.mean() < 0.2,
+                    self.erry.mean() < 0.2,
+                    self.errx.std() < 2.0,
+                    self.erry.std() < 2.0,
+                    np.abs(tf_scale[:, 0].mean() - 1.0) < 0.05,
+                    np.abs(tf_scale[:, 1].mean() - 1.0) < 0.05]):
+
             raise MeshLensCorrectionException(
-                    "Solve not good: %s\n%s" % (str(e), message))
+                    "Solve not good: %s" % message)
 
         self.logger.debug(message)
 
