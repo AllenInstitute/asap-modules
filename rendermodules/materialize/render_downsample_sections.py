@@ -96,8 +96,9 @@ class RenderSectionAtScale(RenderModule):
         if stack_has_mipmaps:
             print("stack has mipmaps")
             # clone the input stack to a temporary one with level 1 mipmap alone
-            temp_no_mipmap_stack = "{}_no_mml_t{}".format(
-                input_stack, time.strftime("%m%d%y_%H%M%S"))
+            temp_no_mipmap_stack = "{}_no_mml_zs{}_ze{}_t{}".format(
+                input_stack, min(zvalues), max(zvalues),
+                time.strftime("%m%d%y_%H%M%S"))
 
             mypartial = partial(create_tilespecs_without_mipmaps,
                                 render, input_stack, level)
