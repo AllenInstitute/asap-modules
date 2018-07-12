@@ -72,7 +72,7 @@ class GenerateEMTileSpecsModule(StackOutputModule):
             minint=minint, maxint=maxint,
             tforms=raw_tforms,
             mipMapLevels=[
-                renderapi.tilespec.MipMapLevel(
+                renderapi.image_pyramid.MipMapLevel(
                     0, imageUrl=imageUrl, maskUrl=maskUrl)],
             sectionId=sectionId, scopeId=scopeId, cameraId=cameraId,
             imageCol=imgdata['img_meta']['raster_pos'][0],
