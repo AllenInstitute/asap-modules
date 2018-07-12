@@ -53,10 +53,10 @@ def intensity_corr(img, ff,clip,scale_factor,clip_min,clip_max):
     fac = np.divide(num * np.amax(ff), ff + 0.0001)
     result = np.multiply(img, fac)
     result = np.multiply(result, np.mean(img) / np.mean(result))
-    #add clipping or scaling
+    # add clipping or scaling
     result = result/scale_factor
     if (clip):
-	np.clip(result,clip_min,clip_max,out=result)
+        np.clip(result, clip_min, clip_max, out=result)
     # convert back to original type
     result_int = result.astype(img_type)
     return result_int
@@ -100,7 +100,7 @@ def process_tile(C, dirout, stackname, clip,scale_factor,clip_min,clip_max,input
         the tilespec with the tiles to be corrected
     """
     [N1, M1, I] = getImage(input_ts)
-    Res = intensity_corr(I, C,clip,scale_factor,clip_min,clip_max)
+    Res = intensity_corr(I, C, clip, scale_factor, clip_min, clip_max)
 
     [head, tail] = os.path.split(input_ts.ip[0].imageUrl)
     outImage = os.path.join("%s" % dirout, "%s_%04d_%s" %
@@ -111,7 +111,7 @@ def process_tile(C, dirout, stackname, clip,scale_factor,clip_min,clip_max,input
     mm = renderapi.image_pyramid.MipMap(imageUrl=outImage)
 
     output_ts.ip = renderapi.image_pyramid.ImagePyramid()
-    output_ts[0]=mm
+    output_ts.ip[0] = mm
 
     return output_ts
 
