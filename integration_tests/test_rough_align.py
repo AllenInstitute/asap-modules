@@ -572,7 +572,7 @@ def test_make_montage_stack_module_without_downsamples(
         renderapi.tilespec.get_tile_specs_from_stack, output_stack)
 
     tsfn = urllib.unquote(urlparse.urlparse(
-        tspecs[0].ip.get(0)['imageUrl']).path)
+        tspecs[0].ip[0].imageUrl).path)
     assert os.path.isfile(tsfn)
     assert os.path.basename(tsfn) == '1020.0.png'
 

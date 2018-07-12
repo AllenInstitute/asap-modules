@@ -78,9 +78,9 @@ def getImage(ts):
         2d numpy array of this image
     """
     d = ts.to_dict()
-    mml = ts.ip.get(0)
+    mml = ts.ip[0]
     url = urllib.unquote(urlparse.urlparse(
-        str(mml['imageUrl'])).path)
+        str(mml.imageUrl)).path)
     img0 = tifffile.imread(url)
     (N, M) = img0.shape
     return N, M, img0
@@ -110,7 +110,7 @@ def process_tile(C, dirout, stackname, clip,scale_factor,clip_min,clip_max,input
     [N1, M1, I] = getImage(input_ts)
     Res = intensity_corr(I, C,clip,scale_factor,clip_min,clip_max)
 
-    [head, tail] = os.path.split(input_ts.ip.get(0)['imageUrl'])
+    [head, tail] = os.path.split(input_ts.ip[0].imageUrl)
     outImage = os.path.join("%s" % dirout, "%s_%04d_%s" %
                             (stackname, input_ts.z, tail))
     tifffile.imsave(outImage, Res)

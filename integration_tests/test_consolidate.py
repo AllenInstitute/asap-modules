@@ -135,6 +135,6 @@ def test_redirect_mipMapLevels(render, test_stack, tmpdir):
         output_stack, z, render=render)
 
     assert all([os.path.abspath(urllib.unquote(urlparse.urlparse(
-        ts.ip.get(0)['imageUrl']).path)).startswith(
+        ts.ip[0].imageUrl).path)).startswith(
             os.path.abspath(str(tmpdir)))
                 for ts in modified_tspecs])

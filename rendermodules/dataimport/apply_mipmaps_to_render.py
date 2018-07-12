@@ -39,7 +39,7 @@ def addMipMapsToRender(render, input_stack, mipmap_dir, imgformat, levels, z):
         input_stack, z)
 
     for ts in resolvedtiles.tilespecs:
-        mm1 = ts.ip.mipMapLevels[0]
+        mm1 = ts.ip[0]
 
         oldUrl = mm1.imageUrl
         filepath = urllib.unquote(urlparse.urlparse(str(oldUrl)).path)
@@ -59,8 +59,8 @@ def addMipMapsToRender(render, input_stack, mipmap_dir, imgformat, levels, z):
             scUrl = 'file:' + os.path.join(
                 mipmap_dir, str(i), filepath.lstrip(os.sep)) + imgf
             print scUrl
-            mm1 = renderapi.tilespec.MipMapLevel(level=i, imageUrl=scUrl)
-            ts.ip.update(mm1)
+            mm1 = renderapi.image_pyramid.MipMap(imageUrl=scUrl)
+            ts.ip[i]=mm1
     return resolvedtiles
     # tilespecPaths.append(renderapi.utils.renderdump_temp(tilespecs))
     # return tilespecPaths
