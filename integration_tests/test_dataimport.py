@@ -57,7 +57,7 @@ def validate_mipmap_generated(in_ts,out_ts,levels,imgformat='tif'):
     assert inpath==outpath
 
     # make sure all levels have been assigned
-    assert sorted(out_ts.ip.levels) == range(levels + 1)
+    assert sorted(out_ts.ip.levels) == map(str, range(levels + 1))
 
     # make sure all assigned levels exist and are appropriately sized
     assert in_ts.width == out_ts.width
