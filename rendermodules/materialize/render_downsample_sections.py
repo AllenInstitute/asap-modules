@@ -50,7 +50,7 @@ def check_stack_for_mipmaps(render, input_stack, zvalues):
     tilespecs = render.run(renderapi.tilespec.get_tile_specs_from_z,
                            input_stack, z)
     for ts in tilespecs:
-        if len(ts.ip.mipMapLevels) > 1:
+        if len(ts.ip) > 1:
             return True
     return False
 
@@ -58,8 +58,7 @@ def check_stack_for_mipmaps(render, input_stack, zvalues):
 def create_tilespecs_without_mipmaps(render, montage_stack, level, z):
     ts = render.run(renderapi.tilespec.get_tile_specs_from_z, montage_stack, z)
     for t in ts:
-        t.ip.mipMapLevels = [mmL for mmL in t.ip.mipMapLevels
-                             if mmL.level == level]
+        t.ip = renderapi.tilespec.ImagePyramid({level: t[level]})
     return ts
 
 
