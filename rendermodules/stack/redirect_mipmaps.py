@@ -38,12 +38,12 @@ class RedirectMipMapsModule(StackTransitionModule):
     default_output_schema = RedirectMipMapsOutput
 
     @staticmethod
-    def get_replacement_mmL(mmL, d):
-        return renderapi.image_pyramid.MipMapLevel(
-            mmL.level,
-            pathlib.Path(os.path.join(
-                d, os.path.basename(mmL.imageUrl))).as_uri(),
-            mmL.maskUrl)
+    def get_replacement_ImagePyramid(ip, mml_d_map):
+        return renderapi.image_pyramid.ImagePyramid.from_dict(dict(ip.to_dict(), **{
+            lvl: dict(mml, **{'imageUrl': pathlib.Path(os.path.join(
+                mml_d_map[int(lvl)],
+                os.path.basename(mml.imageUrl))).as_uri()})
+            for lvl, mml in ip.items() if int(lvl) in mml_d_map}))
 
     def run(self):
         mmL_d_map = {i['level']: i['directory']
@@ -59,10 +59,7 @@ class RedirectMipMapsModule(StackTransitionModule):
             new_tspecs = []
             for ts in tspecs:
                 ts_new = copy.copy(ts)
-                ts_new.ip.mipMapLevels = [
-                    (mmL if (mmL.level not in mmL_d_map)
-                     else self.get_replacement_mmL(mmL, mmL_d_map[mmL.level]))
-                    for mmL in ts_new.ip.mipMapLevels]
+                ts_new.ip = self.get_replacement_ImagePyramid(ts.ip, mmL_d_map)
                 new_tspecs.append(ts_new)
 
             self.output_tilespecs_to_stack(

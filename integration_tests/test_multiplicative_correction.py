@@ -105,7 +105,7 @@ def test_apply_correction(test_median_stack, mini_raw_stack, render, tmpdir_fact
 
     for ts in output_tilespecs:
         N, M, out_image = getImage(ts)
-        out_filepath = ts.ip.get(0)['imageUrl']
+        out_filepath = ts.ip[0].imageUrl
         out_file = os.path.split(out_filepath)[1]
         exp_image = tifffile.imread(os.path.join(expected_directory, out_file))
         assert(np.max(np.abs(exp_image - out_image)) < 3)

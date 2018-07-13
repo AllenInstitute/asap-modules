@@ -121,8 +121,8 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory,
 
     with Image.open(filename) as im:
         t.width, t.height = im.size
-    t.ip.mipMapLevels = [renderapi.image_pyramid.MipMapLevel(
-        0, imageUrl=pathlib.Path(filename).as_uri())]
+    t.ip[0] = renderapi.image_pyramid.MipMap(
+        imageUrl=pathlib.Path(filename).as_uri())
     t.minIntensity = 0
     t.maxIntensity = 255
     t.z = newz

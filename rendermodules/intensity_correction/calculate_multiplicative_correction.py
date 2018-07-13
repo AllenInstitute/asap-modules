@@ -96,10 +96,10 @@ class MakeMedian(RenderModule):
             tifffile.imsave(outImage, med)
             ts = firstts[ind]
             ts.z = z
-            mmld = ts.ip.get(0)
-            mml = renderapi.tilespec.MipMapLevel(
-                level=0, imageUrl=outImage, maskUrl=mmld.get('maskUrl', None))
-            ts.ip.update(mml)
+            mml_o = ts.ip[0]
+            mml = renderapi.image_pyramid.MipMap(
+                 imageUrl=outImage, maskUrl=mml_o.maskUrl)
+            ts.ip[0] = mml
             outtilespecs.append(ts)
 
         # upload to render

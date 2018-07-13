@@ -57,7 +57,7 @@ def validate_mipmap_generated(in_ts,out_ts,levels,imgformat='tif'):
     assert inpath==outpath
 
     # make sure all levels have been assigned
-    assert sorted(out_ts.ip.levels) == range(levels + 1)
+    assert sorted(out_ts.ip.levels) == map(str, range(levels + 1))
 
     # make sure all assigned levels exist and are appropriately sized
     assert in_ts.width == out_ts.width
@@ -65,15 +65,15 @@ def validate_mipmap_generated(in_ts,out_ts,levels,imgformat='tif'):
     expected_width = out_ts.width
     expected_height = out_ts.height
 
-    for lvl, mmL in dict(out_ts.ip).iteritems():
-        fn = urllib.unquote(urlparse.urlparse(mmL['imageUrl']).path)
+    for lvl, mmL in out_ts.ip.iteritems():
+        fn = urllib.unquote(urlparse.urlparse(mmL.imageUrl).path)
         ext=os.path.splitext(fn)[1]
-        if (lvl != 0):
+        if (lvl != "0"):
             assert ext[1:] == imgformat
         with Image.open(fn) as im:
             w, h = im.size
-        assert w == expected_width // (2 ** lvl)
-        assert h == expected_height // (2 ** lvl)
+        assert w == expected_width // (2 ** int(lvl))
+        assert h == expected_height // (2 ** int(lvl))
 
 
 def outfile_test_and_remove(f, output_fn):

@@ -215,7 +215,7 @@ def match_image_pairs(render,
             impaths = [
                        urllib.unquote(
                            urlparse.urlparse(
-                                t.ip.get(0)['imageUrl']).path)
+                                t.ip[0].imageUrl).path)
                        for t in tilespecs[tile_index[i]]
                       ]
             ids = [t.tileId for t in tilespecs[tile_index[i]]]
