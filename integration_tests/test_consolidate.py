@@ -2,7 +2,10 @@ import json
 import logging
 import os
 import urllib
-import urlparse
+try:
+    import urlparse
+except ImportError:
+    import urllib.parse as urlparse
 import pytest
 import numpy as np
 
@@ -25,7 +28,7 @@ def render():
 def render_example_tilespec_and_transforms():
     tilespecs = [renderapi.tilespec.TileSpec(json=ts) for ts in cons_ex_tilespec_json]
     tforms = [renderapi.transform.load_transform_json(td) for td in cons_ex_transform_json]
-    print tforms
+    print(tforms)
     return (tilespecs, tforms)
 
 @pytest.fixture(scope='module')
@@ -43,7 +46,7 @@ def test_stack(render,render_example_tilespec_and_transforms):
 def test_consolidate_module(render,test_stack):
     output_stack = test_stack + "_CONS"
     input_z = np.array(renderapi.stack.get_z_values_for_stack(test_stack,render=render))
-    print input_z
+    print(input_z)
     params = {
         "render":render_params,
         "stack": test_stack,
@@ -77,9 +80,9 @@ def test_consolidate_module(render,test_stack):
     orig_tform = input_tilespec.tforms[2]
     cons_tform = output_tilespecs[0].tforms[2]
     expected_new=renderapi.transform.AffineModel(3.0,0,0,3.0,0,0).concatenate(orig_tform)
-    print input_tilespec.tforms
-    print orig_tform.M
-    print cons_tform.M
+    print(input_tilespec.tforms)
+    print(orig_tform.M)
+    print(cons_tform.M)
     for orig_elem,new_elem in zip(np.ravel(expected_new.M),np.ravel(cons_tform.M)):
         assert(np.abs(orig_elem - new_elem)<EPSILON)
 

@@ -9,7 +9,10 @@ from ..module.render_module import RenderModule
 from ..module.render_module import StackTransitionModule
 from rendermodules.intensity_correction.schemas import MultIntensityCorrParams
 import urllib
-import urlparse
+try:
+    import urlparse
+except ImportError:
+    import urllib.parse as urlparse
 
 example_input = {
     "render": {

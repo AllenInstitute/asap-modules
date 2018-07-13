@@ -104,13 +104,13 @@ def compute_lc_norm_and_max(test_example_tform, test_new_tform):
     tform_norm = np.linalg.norm(test_new_tform - test_example_tform) / math.sqrt(test_new_tform.size)
     tform_diff = np.power(test_new_tform - test_example_tform, 2)
     tform_max_diff = max(np.power(tform_diff[:,0] + tform_diff[:,1], 0.5))
-    print 'Norm: %s Max difference: %s' % (tform_norm, tform_max_diff)
+    print('Norm: %s Max difference: %s' % (tform_norm, tform_max_diff))
     assert tform_max_diff < 3
     assert tform_norm < 1
 
 def test_calc_lens_correction(example_tform_dict, test_points,tmpdir):
     outfile = str(tmpdir.join('test_LC_out.json'))
-    print outfile
+    print(outfile)
 
     mod = LensCorrectionModule(input_data=calc_lens_parameters, args=['--output_json', outfile])
     mod.logger.setLevel(logging.DEBUG)
