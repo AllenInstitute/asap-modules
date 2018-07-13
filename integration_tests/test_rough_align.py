@@ -8,7 +8,10 @@ import glob
 import copy
 import marshmallow as mm
 import urllib
-import urlparse
+try:
+    import urlparse
+except ImportError:
+    import urllib.parse as urlparse
 from test_data import (ROUGH_MONTAGE_TILESPECS_JSON,
                        ROUGH_MONTAGE_TRANSFORM_JSON,
                        ROUGH_POINT_MATCH_COLLECTION,

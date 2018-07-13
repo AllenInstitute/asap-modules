@@ -1,6 +1,9 @@
 import renderapi
 import urllib
-import urlparse
+try:
+    import urlparse
+except ImportError:
+    import urllib.parse as urlparse
 from rendermodules.dataimport.create_mipmaps import create_mipmaps
 from functools import partial
 from ..module.render_module import StackInputModule, RenderModuleException

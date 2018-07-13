@@ -4,7 +4,10 @@ import renderapi
 from ..module.render_module import StackTransitionModule
 from functools import partial
 import urllib
-import urlparse
+try:
+    import urlparse
+except ImportError:
+    import urllib.parse as urlparse
 from rendermodules.dataimport.schemas import (
     AddMipMapsToStackParameters, AddMipMapsToStackOutput)
 
@@ -58,7 +61,7 @@ def addMipMapsToRender(render, input_stack, mipmap_dir, imgformat, levels, z):
         for i in range(1, levels+1):
             scUrl = 'file:' + os.path.join(
                 mipmap_dir, str(i), filepath.lstrip(os.sep)) + imgf
-            print scUrl
+            print(scUrl)
             mm1 = renderapi.image_pyramid.MipMap(imageUrl=scUrl)
             ts.ip[i]=mm1
     return resolvedtiles

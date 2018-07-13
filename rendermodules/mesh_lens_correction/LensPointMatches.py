@@ -4,7 +4,10 @@ import renderapi
 import cv2
 import multiprocessing
 import urllib
-import urlparse
+try:
+    import urlparse
+except ImportError:
+    import urllib.parse as urlparse
 import logging
 
 
