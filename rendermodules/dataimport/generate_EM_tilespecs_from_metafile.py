@@ -65,15 +65,15 @@ class GenerateEMTileSpecsModule(StackOutputModule):
         imageUrl = pathlib.Path(
             os.path.abspath(os.path.join(
                 imgdir, imgdata['img_path']))).as_uri()
-
+        ip = renderapi.image_pyramid.ImagePyramid()
+        ip[0] = renderapi.image_pyramid.MipMap(imageUrl=imageUrl,
+                                               maskUrl=maskUrl)
         return renderapi.tilespec.TileSpec(
             tileId=tileId, z=z,
             width=width, height=height,
             minint=minint, maxint=maxint,
             tforms=raw_tforms,
-            mipMapLevels=[
-                renderapi.image_pyramid.MipMapLevel(
-                    0, imageUrl=imageUrl, maskUrl=maskUrl)],
+            imagePyramid=ip,
             sectionId=sectionId, scopeId=scopeId, cameraId=cameraId,
             imageCol=imgdata['img_meta']['raster_pos'][0],
             imageRow=imgdata['img_meta']['raster_pos'][1],
