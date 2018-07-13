@@ -60,6 +60,7 @@ class RedirectMipMapsModule(StackTransitionModule):
             for ts in tspecs:
                 ts_new = copy.copy(ts)
                 ts_new.ip = self.get_replacement_ImagePyramid(ts.ip, mmL_d_map)
+                new_tspecs.append(ts_new)
 
             self.output_tilespecs_to_stack(
                 new_tspecs, sharedTransforms=tforms, zValues=[z])
