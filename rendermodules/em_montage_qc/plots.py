@@ -7,6 +7,10 @@ from bokeh.plotting import figure, output_file, show, save
 from bokeh.layouts import column, row
 from bokeh.models import HoverTool, ColumnDataSource, CustomJS, CategoricalColorMapper, TapTool, OpenURL, Div
 
+try:
+    xrange
+except NameError:
+    xrange = range
 
 
 def plot_defects(render, stack, out_html_dir, args):
