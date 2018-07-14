@@ -1,9 +1,10 @@
 import json
-import urllib
-try:
-    import urlparse
-except ImportError:
-    import urllib.parse as urlparse
+from six.moves import urllib
+# import urllib
+# try:
+#     import urlparse
+# except ImportError:
+#     import urllib.parse as urlparse
 import tempfile
 import logging
 import pytest
@@ -69,7 +70,7 @@ def validate_mipmap_generated(in_ts,out_ts,levels,imgformat='tif'):
     expected_height = out_ts.height
 
     for lvl, mmL in out_ts.ip.iteritems():
-        fn = urllib.unquote(urlparse.urlparse(mmL.imageUrl).path)
+        fn = urllib.parse.unquote(urllib.parse.urlparse(mmL.imageUrl).path)
         ext=os.path.splitext(fn)[1]
         if (lvl != "0"):
             assert ext[1:] == imgformat

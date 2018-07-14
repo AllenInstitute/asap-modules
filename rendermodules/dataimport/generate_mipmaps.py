@@ -1,9 +1,10 @@
 import renderapi
-import urllib
-try:
-    import urlparse
-except ImportError:
-    import urllib.parse as urlparse
+from six.moves import urllib
+# import urllib
+# try:
+#     import urlparse
+# except ImportError:
+#     import urllib.parse as urlparse
 from rendermodules.dataimport.create_mipmaps import create_mipmaps
 from functools import partial
 from ..module.render_module import StackInputModule, RenderModuleException
@@ -48,7 +49,7 @@ def get_filepath_from_tilespec(ts):
     mml = ts.ip[0]
 
     old_url = mml.imageUrl
-    filepath_in = urllib.unquote(urlparse.urlparse(
+    filepath_in = urllib.parse.unquote(urllib.parse.urlparse(
         str(old_url)).path)
     return filepath_in
 

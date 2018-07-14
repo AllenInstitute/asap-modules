@@ -1,11 +1,12 @@
 import json
 import logging
 import os
-import urllib
-try:
-    import urlparse
-except ImportError:
-    import urllib.parse as urlparse
+from six.moves import urllib
+# import urllib
+# try:
+#     import urlparse
+# except ImportError:
+#     import urllib.parse as urlparse
 import pytest
 import numpy as np
 
@@ -137,7 +138,7 @@ def test_redirect_mipMapLevels(render, test_stack, tmpdir):
     modified_tspecs = renderapi.tilespec.get_tile_specs_from_z(
         output_stack, z, render=render)
 
-    assert all([os.path.abspath(urllib.unquote(urlparse.urlparse(
+    assert all([os.path.abspath(urllib.parse.unquote(urllib.parse.urlparse(
         ts.ip[0].imageUrl).path)).startswith(
             os.path.abspath(str(tmpdir)))
                 for ts in modified_tspecs])
