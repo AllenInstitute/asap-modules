@@ -80,7 +80,7 @@ def mipmap_PIL(im, levels_file_map, ds_filter="NEAREST",
 
     origsize = im.size
     for level, outpath in levels_file_map.items():
-        newsize = tuple(map(lambda x: x/(2**level), origsize))
+        newsize = tuple(map(lambda x: x//(2**level), origsize))
         dwnImage = im.resize(newsize, resample=PIL_filter)
         writeImage(dwnImage, outpath, force_redo)
 
@@ -131,7 +131,7 @@ def create_mipmaps(inputImage, outputDirectory='.', method="block_reduce",
     # Need to check if the level 0 image exists
     im = Image.open(inputImage)
     if convertTo8bit:
-        table = [i/256 for i in range(65536)]
+        table = [i//256 for i in range(65536)]
         im = im.convert('I')
         im = im.point(table, 'L')
 
