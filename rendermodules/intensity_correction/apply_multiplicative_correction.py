@@ -8,11 +8,12 @@ import tifffile
 from ..module.render_module import RenderModule
 from ..module.render_module import StackTransitionModule
 from rendermodules.intensity_correction.schemas import MultIntensityCorrParams
-import urllib
-try:
-    import urlparse
-except ImportError:
-    import urllib.parse as urlparse
+from six.moves import urllib
+# import urllib
+# try:
+#     import urlparse
+# except ImportError:
+#     import urllib.parse as urlparse
 
 example_input = {
     "render": {
@@ -82,7 +83,7 @@ def getImage(ts):
     """
     d = ts.to_dict()
     mml = ts.ip[0]
-    url = urllib.unquote(urlparse.urlparse(
+    url = urllib.parse.unquote(urllib.parse.urlparse(
         str(mml.imageUrl)).path)
     img0 = tifffile.imread(url)
     (N, M) = img0.shape

@@ -3,11 +3,12 @@ import os
 import renderapi
 from ..module.render_module import StackTransitionModule
 from functools import partial
-import urllib
-try:
-    import urlparse
-except ImportError:
-    import urllib.parse as urlparse
+from six.moves import urllib
+# import urllib
+# try:
+#     import urlparse
+# except ImportError:
+#     import urllib.parse as urlparse
 from rendermodules.dataimport.schemas import (
     AddMipMapsToStackParameters, AddMipMapsToStackOutput)
 
@@ -45,7 +46,7 @@ def addMipMapsToRender(render, input_stack, mipmap_dir, imgformat, levels, z):
         mm1 = ts.ip[0]
 
         oldUrl = mm1.imageUrl
-        filepath = urllib.unquote(urlparse.urlparse(str(oldUrl)).path)
+        filepath = urllib.parse.unquote(urllib.parse.urlparse(str(oldUrl)).path)
         # filepath = str(oldUrl).lstrip('file:/')
         # filepath = filepath.replace("%20", " ")
 

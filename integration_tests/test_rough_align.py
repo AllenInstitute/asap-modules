@@ -7,11 +7,12 @@ import json
 import glob
 import copy
 import marshmallow as mm
-import urllib
-try:
-    import urlparse
-except ImportError:
-    import urllib.parse as urlparse
+from six.moves import urllib
+# import urllib
+# try:
+#     import urlparse
+# except ImportError:
+#     import urllib.parse as urlparse
 from test_data import (ROUGH_MONTAGE_TILESPECS_JSON,
                        ROUGH_MONTAGE_TRANSFORM_JSON,
                        ROUGH_POINT_MATCH_COLLECTION,
@@ -574,7 +575,7 @@ def test_make_montage_stack_module_without_downsamples(
     tspecs = render.run(
         renderapi.tilespec.get_tile_specs_from_stack, output_stack)
 
-    tsfn = urllib.unquote(urlparse.urlparse(
+    tsfn = urllib.parse.unquote(urllib.parse.urlparse(
         tspecs[0].ip[0].imageUrl).path)
     assert os.path.isfile(tsfn)
     assert os.path.basename(tsfn) == '1020.0.png'
