@@ -97,7 +97,7 @@ class GenerateEMTileSpecsModule(StackOutputModule):
                 "No relevant image metadata found for metafile {}".format(
                     self.args['metafile']))
 
-        minX, minY = numpy.min(numpy.array(img_coords.values()), axis=0)
+        minX, minY = numpy.min(numpy.array(list(img_coords.values())), axis=0)
         # assume isotropic pixels
         pixelsize = roidata['calibration']['highmag']['x_nm_per_pix']
 
