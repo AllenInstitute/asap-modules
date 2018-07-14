@@ -133,11 +133,7 @@ def test_redirect_mipMapLevels(render, test_stack, tmpdir):
     modified_tspecs = renderapi.tilespec.get_tile_specs_from_z(
         output_stack, z, render=render)
 
-<<<<<<< HEAD
     assert all([os.path.abspath(urllib.parse.unquote(urllib.parse.urlparse(
-=======
-    assert all([os.path.abspath(urllib.unquote(urlparse.urlparse(
->>>>>>> af2864e012280fcd9e8f9ffb5b3d9cec83989ec0
         ts.ip[0].imageUrl).path)).startswith(
             os.path.abspath(str(tmpdir)))
                 for ts in modified_tspecs])
