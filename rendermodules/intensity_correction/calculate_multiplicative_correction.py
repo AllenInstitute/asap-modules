@@ -77,11 +77,11 @@ class MakeMedian(RenderModule):
         np.median(stack, axis=2, overwrite_input=True)
         (A, B, C) = stack.shape
         if (numtiles % 2 == 0):
-            med1 = stack[:, :, numtiles / 2 - 1]
-            med2 = stack[:, :, numtiles / 2 + 1]
-            med = (med1 + med2) / 2
+            med1 = stack[:, :, numtiles // 2 - 1]
+            med2 = stack[:, :, numtiles // 2 + 1]
+            med = (med1 + med2) // 2
         else:
-            med = stack[:, :, (numtiles - 1) / 2]
+            med = stack[:, :, (numtiles - 1) // 2]
         med = gaussian_filter(med, 10)
 
         # save image and create output tilespecs
