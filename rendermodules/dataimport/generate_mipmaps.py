@@ -1,10 +1,5 @@
 import renderapi
 from six.moves import urllib
-# import urllib
-# try:
-#     import urlparse
-# except ImportError:
-#     import urllib.parse as urlparse
 from rendermodules.dataimport.create_mipmaps import create_mipmaps
 from functools import partial
 from ..module.render_module import StackInputModule, RenderModuleException
@@ -68,7 +63,7 @@ def make_tilespecs_and_cmds(render, inputStack, output_dir, zvalues, levels,
             mipmap_args.append((filepath_in, output_dir))
 
     mypartial = partial(
-        create_mipmap_from_tuple, method=method, levels=range(1, levels + 1),
+        create_mipmap_from_tuple, method=method, levels=list(range(1, levels + 1)),
         convertTo8bit=convert_to_8bit, force_redo=force_redo,
         imgformat=imgformat)
 

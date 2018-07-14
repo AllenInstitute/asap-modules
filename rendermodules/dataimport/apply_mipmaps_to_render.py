@@ -4,11 +4,6 @@ import renderapi
 from ..module.render_module import StackTransitionModule
 from functools import partial
 from six.moves import urllib
-# import urllib
-# try:
-#     import urlparse
-# except ImportError:
-#     import urllib.parse as urlparse
 from rendermodules.dataimport.schemas import (
     AddMipMapsToStackParameters, AddMipMapsToStackOutput)
 
@@ -96,10 +91,10 @@ class AddMipMapsToStack(StackTransitionModule):
         tilespecs = [i for l in (
             resolvedtiles.tilespecs for resolvedtiles in allresolved)
                      for i in l]
-        identified_tforms = {tform.transformId: tform for tform in (
+        identified_tforms = list({tform.transformId: tform for tform in (
             i for l in (resolvedtiles.transforms
                         for resolvedtiles in allresolved)
-            for i in l)}.values()
+            for i in l)}.values())
 
         output_stack = (self.args['input_stack'] if
                         self.args['output_stack'] is None

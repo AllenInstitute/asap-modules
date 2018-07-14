@@ -1,10 +1,6 @@
 import json
 from six.moves import urllib
-# import urllib
-# try:
-#     import urlparse
-# except ImportError:
-#     import urllib.parse as urlparse
+from six import viewkeys, iteritems
 import tempfile
 import logging
 import pytest
@@ -61,7 +57,7 @@ def validate_mipmap_generated(in_ts,out_ts,levels,imgformat='tif'):
     assert inpath==outpath
 
     # make sure all levels have been assigned
-    assert sorted(out_ts.ip.levels) == map(str, range(levels + 1))
+    assert list(sorted(out_ts.ip.levels)) == list(map(str, range(levels + 1)))
 
     # make sure all assigned levels exist and are appropriately sized
     assert in_ts.width == out_ts.width
@@ -69,7 +65,7 @@ def validate_mipmap_generated(in_ts,out_ts,levels,imgformat='tif'):
     expected_width = out_ts.width
     expected_height = out_ts.height
 
-    for lvl, mmL in out_ts.ip.iteritems():
+    for lvl, mmL in iteritems(out_ts.ip):
         fn = urllib.parse.unquote(urllib.parse.urlparse(mmL.imageUrl).path)
         ext=os.path.splitext(fn)[1]
         if (lvl != "0"):
@@ -127,8 +123,8 @@ def apply_generated_mipmaps(r, output_stack, generate_params,z=None):
             in out_resolvedtiles.tilespecs}
 
         # make sure all tileIds match
-        assert not (in_tileIdtotspecs.viewkeys() ^ out_tileIdtotspecs.viewkeys())
-        for tId, out_ts in out_tileIdtotspecs.iteritems():
+        assert not (viewkeys(in_tileIdtotspecs) ^ viewkeys(out_tileIdtotspecs))
+        for tId, out_ts in iteritems(out_tileIdtotspecs):
             in_ts = in_tileIdtotspecs[tId]
             validate_mipmap_generated(in_ts,out_ts,ex['levels'])
             # make sure reference transforms are intact
