@@ -2,11 +2,6 @@ import json
 import logging
 import os
 from six.moves import urllib
-# import urllib
-# try:
-#     import urlparse
-# except ImportError:
-#     import urllib.parse as urlparse
 import pytest
 import numpy as np
 

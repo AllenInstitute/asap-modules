@@ -8,11 +8,6 @@ import glob
 import copy
 import marshmallow as mm
 from six.moves import urllib
-# import urllib
-# try:
-#     import urlparse
-# except ImportError:
-#     import urllib.parse as urlparse
 from test_data import (ROUGH_MONTAGE_TILESPECS_JSON,
                        ROUGH_MONTAGE_TRANSFORM_JSON,
                        ROUGH_POINT_MATCH_COLLECTION,
