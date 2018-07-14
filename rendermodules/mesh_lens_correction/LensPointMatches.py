@@ -4,11 +4,6 @@ import renderapi
 import cv2
 import multiprocessing
 from six.moves import urllib
-# import urllib
-# try:
-#     import urlparse
-# except ImportError:
-#     import urllib.parse as urlparse
 import logging
 
 
