@@ -62,7 +62,7 @@ def detect_seams(render, stack, match_collection, match_owner, z, residual_thres
     # get pts list for each filtered node list
     points_list = [new_pts[mm, :] for mm in fnodes]
     centroids = [[np.sum(pt[:,0])/len(pt), np.sum(pt[:,1])/len(pt)] for pt in points_list]
-    return centroids, allmatches
+    return centroids, allmatches, stats
 
 
 def detect_disconnected_tiles(render, prestitched_stack, poststitched_stack,
@@ -179,12 +179,12 @@ def run_analysis(render, prestitched_stack, poststitched_stack, match_collection
     gap_tiles = detect_stitching_gaps(
         render, prestitched_stack, poststitched_stack, z,
         pre_tspecs, post_tspecs)
-    seam_centroids, matches = detect_seams(
+    seam_centroids, matches, stats = detect_seams(
         render, poststitched_stack,  match_collection, match_collection_owner,
         z, residual_threshold=residual_threshold, distance=neighbor_distance,
         min_cluster_size=min_cluster_size, tspecs=post_tspecs)
 
-    return disconnected_tiles, gap_tiles, seam_centroids, post_tspecs, matches
+    return disconnected_tiles, gap_tiles, seam_centroids, post_tspecs, matches, stats
 
 
 def detect_stitching_mistakes(render, prestitched_stack, poststitched_stack, match_collection, match_collection_owner, residual_threshold, neighbor_distance, min_cluster_size, zvalues, pool_size=20):
@@ -194,10 +194,10 @@ def detect_stitching_mistakes(render, prestitched_stack, poststitched_stack, mat
         neighbor_distance, min_cluster_size)
     
     with renderapi.client.WithPool(pool_size) as pool:
-        disconnected_tiles, gap_tiles, seam_centroids, post_tspecs, matches = zip(*pool.map(
+        disconnected_tiles, gap_tiles, seam_centroids, post_tspecs, matches, stats = zip(*pool.map(
             mypartial0, zvalues))
     
-    return disconnected_tiles, gap_tiles, seam_centroids, post_tspecs, matches
+    return disconnected_tiles, gap_tiles, seam_centroids, post_tspecs, matches, stats
 
 
 def check_status_of_stack(render, stack, zvalues):
@@ -239,7 +239,7 @@ class DetectMontageDefectsModule(RenderModule):
         status2, new_poststitched = check_status_of_stack(self.render,
                                                  self.args['poststitched_stack'],
                                                  zvalues)
-        disconnected_tiles, gap_tiles, seam_centroids, post_tspecs, matches = detect_stitching_mistakes(
+        disconnected_tiles, gap_tiles, seam_centroids, post_tspecs, matches, stats = detect_stitching_mistakes(
                                                                                     self.render,
                                                                                     new_prestitched,
                                                                                     new_poststitched,
@@ -270,7 +270,8 @@ class DetectMontageDefectsModule(RenderModule):
                                                          matches,
                                                          disconnected_tiles, 
                                                          gap_tiles, 
-                                                         seam_centroids, 
+                                                         seam_centroids,
+                                                         stats, 
                                                          zvalues, 
                                                          out_html_dir=self.args['out_html_dir'])
 
