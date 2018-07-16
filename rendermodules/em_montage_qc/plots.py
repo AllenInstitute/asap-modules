@@ -3,18 +3,87 @@ import tempfile
 import renderapi
 import requests
 from functools import partial
+from bokeh.palettes import Plasma256
 from bokeh.plotting import figure, output_file, show, save
 from bokeh.layouts import column, row
-from bokeh.models import HoverTool, ColumnDataSource, CustomJS, CategoricalColorMapper, TapTool, OpenURL, Div
+from bokeh.models.widgets import Tabs, Panel
+from bokeh.models import (HoverTool, ColumnDataSource, 
+                          CustomJS, CategoricalColorMapper,
+                          LinearColorMapper, 
+                          TapTool, OpenURL, Div, ColorBar)
 
+def get_tile_centers(tilespecs):
+    xc = []
+    yc = []
+    tileId = []
+    for ts in tilespecs:
+        xc.append(0.5*(ts.bbox[0]+ts.bbox[2]))
+        yc.append(0.5*(ts.bbox[1]+ts.bbox[3]))
+        tileId.append(ts.tileId)
+    return np.array(xc), np.array(yc), np.array(tileId)
+
+
+def point_match_plot(tilespecsA, matches, tilespecsB=None):
+    if tilespecsB is None:
+        tilespecsB = tilespecsA
+    
+    if len(matches) > 0:
+        x1, y1, id1 = get_tile_centers(tilespecsA)
+        x2, y2, id2 = get_tile_centers(tilespecsB)
+
+        xs = [] 
+        ys = []
+        clist = []
+
+        # tiny line to make sure zero is in there for consistent color range
+        xs.append([0, 0])
+        ys.append([0, 0.1])
+        clist.append(0)
+
+        # tiny line to make sure max is in there for consistent color range
+        xs.append([0.1, 0])
+        ys.append([0.1, 0.1])
+        
+        if (set(x1) != set(x2)):
+            clist.append(500)
+        else:
+            clist.append(200)
+        
+        for k in np.arange(len(matches)):
+            t1 = np.argwhere(id1 == matches[k]['qId']).flatten()
+            t2 = np.argwhere(id2 == matches[k]['pId']).flatten()
+            if (t1.size != 0) & (t2.size != 0):
+                t1 = t1[0]
+                t2 = t2[0]
+                xs.append([x1[t1], x2[t2]])
+                ys.append([y1[t1], y2[t2]])
+                clist.append(len(matches[k]['matches']['q'][0]))
+        
+        mapper = LinearColorMapper(palette=Plasma256, low=min(clist), high=max(clist))
+        colorbar = ColorBar(color_mapper=mapper, label_standoff=12, location=(0,0))
+        source = ColumnDataSource(dict(xs=xs, ys=ys, colors=clist))
+
+        TOOLS = "pan,box_zoom,reset,hover,save"
+
+        plot = figure(plot_width=800, plot_height=700, background_fill_color='gray', tools=TOOLS)
+        plot.multi_line(xs="xs", ys="ys", source=source, color={'field':'colors', 'transform':mapper}, line_width=2)
+        plot.add_layout(colorbar, 'right')
+        plot.xgrid.visible = False
+        plot.ygrid.visible = False
+
+    else:
+        plot = figure(plot_width=800, plot_height=700, background_fill_color='gray')
+    
+    return plot
 
 
 def plot_defects(render, stack, out_html_dir, args):
     tspecs = args[0]
-    dis_tiles = args[1]
-    gap_tiles = args[2]
-    seam_centroids = np.array(args[3])
-    z = args[4]
+    matches = args[1]
+    dis_tiles = args[2]
+    gap_tiles = args[3]
+    seam_centroids = np.array(args[4])
+    z = args[5]
 
     tile_positions = []
     tile_ids = []
@@ -95,18 +164,28 @@ def plot_defects(render, stack, out_html_dir, args):
     hover.tooltips = [("tileId", "@names"), ("x", "$x{int}"), ("y", "$y{int}")]
 
     source.callback = CustomJS(args=dict(div=div), code=jscode%('names'))
-    save(layout)
+
+    # add point match plot in another tab
+    plot = point_match_plot(tspecs, matches)
+
+    tabs = []
+    tabs.append(Panel(child=layout, title="Defects"))
+    tabs.append(Panel(child=plot, title="Point match plot"))
+
+    plot_tabs = Tabs(tabs=tabs)
+
+    save(plot_tabs)
 
     return out_html.name
 
 
-def plot_section_maps(render, stack, post_tspecs, disconnected_tiles, gap_tiles, seam_centroids, zvalues, out_html_dir=None, pool_size=5):
+def plot_section_maps(render, stack, post_tspecs, matches, disconnected_tiles, gap_tiles, seam_centroids, zvalues, out_html_dir=None, pool_size=5):
     if out_html_dir is None:
         out_html_dir = tempfile.mkdtemp()
 
     mypartial = partial(plot_defects, render, stack, out_html_dir)
 
-    args = zip(post_tspecs, disconnected_tiles, gap_tiles, seam_centroids, zvalues)
+    args = zip(post_tspecs, matches, disconnected_tiles, gap_tiles, seam_centroids, zvalues)
 
     with renderapi.client.WithPool(pool_size) as pool:
         html_files = pool.map(mypartial, args)
