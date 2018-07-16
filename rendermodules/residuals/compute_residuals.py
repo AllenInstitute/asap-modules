@@ -71,4 +71,4 @@ def compute_residuals_within_group(render, stack, matchCollectionOwner, matchCol
 
     session.close()
 
-    return statistics
+    return statistics, allmatches
