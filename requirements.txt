@@ -12,6 +12,7 @@ EMaligner>=0.1.6
 matplotlib
 opencv-contrib-python
 jinja2
+six
 scikit-image
 shapely
 triangle

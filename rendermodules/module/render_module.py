@@ -129,7 +129,7 @@ class SparkModule(argschema.ArgSchemaParser):
         if any([i is None for i in cmd]):
             raise SparkModuleError(
                 'missing argument in command "{}"'.format(map(str, cmd)))
-        return map(jbool_str, cmd)
+        return list(map(jbool_str, cmd))
 
     @staticmethod
     def get_cmd_opt(v, flag=None):

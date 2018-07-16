@@ -3,8 +3,7 @@ import json
 import renderapi
 import cv2
 import multiprocessing
-import urllib
-import urlparse
+from six.moves import urllib
 import logging
 
 
@@ -213,8 +212,8 @@ def match_image_pairs(render,
 
         for i in index_list:
             impaths = [
-                       urllib.unquote(
-                           urlparse.urlparse(
+                       urllib.parse.unquote(
+                           urllib.parse.urlparse(
                                 t.ip[0].imageUrl).path)
                        for t in tilespecs[tile_index[i]]
                       ]

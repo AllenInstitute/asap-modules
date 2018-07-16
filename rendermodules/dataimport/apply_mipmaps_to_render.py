@@ -3,8 +3,7 @@ import os
 import renderapi
 from ..module.render_module import StackTransitionModule
 from functools import partial
-import urllib
-import urlparse
+from six.moves import urllib
 from rendermodules.dataimport.schemas import (
     AddMipMapsToStackParameters, AddMipMapsToStackOutput)
 
@@ -42,7 +41,7 @@ def addMipMapsToRender(render, input_stack, mipmap_dir, imgformat, levels, z):
         mm1 = ts.ip[0]
 
         oldUrl = mm1.imageUrl
-        filepath = urllib.unquote(urlparse.urlparse(str(oldUrl)).path)
+        filepath = urllib.parse.unquote(urllib.parse.urlparse(str(oldUrl)).path)
         # filepath = str(oldUrl).lstrip('file:/')
         # filepath = filepath.replace("%20", " ")
 
@@ -58,7 +57,7 @@ def addMipMapsToRender(render, input_stack, mipmap_dir, imgformat, levels, z):
         for i in range(1, levels+1):
             scUrl = 'file:' + os.path.join(
                 mipmap_dir, str(i), filepath.lstrip(os.sep)) + imgf
-            print scUrl
+            print(scUrl)
             mm1 = renderapi.image_pyramid.MipMap(imageUrl=scUrl)
             ts.ip[i]=mm1
     return resolvedtiles
@@ -92,10 +91,10 @@ class AddMipMapsToStack(StackTransitionModule):
         tilespecs = [i for l in (
             resolvedtiles.tilespecs for resolvedtiles in allresolved)
                      for i in l]
-        identified_tforms = {tform.transformId: tform for tform in (
+        identified_tforms = list({tform.transformId: tform for tform in (
             i for l in (resolvedtiles.transforms
                         for resolvedtiles in allresolved)
-            for i in l)}.values()
+            for i in l)}.values())
 
         output_stack = (self.args['input_stack'] if
                         self.args['output_stack'] is None
