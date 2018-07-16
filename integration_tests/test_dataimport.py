@@ -51,7 +51,7 @@ def test_generate_EM_metadata(render):
 
 
 def validate_mipmap_generated(in_ts, out_ts, levels, imgformat='tif',
-                              targetmode='L', **kwargs):
+                              targetmode=None, **kwargs):
     # make sure that the corresponding tiles' l0s match
     inpath = generate_mipmaps.get_filepath_from_tilespec(in_ts)
     outpath = generate_mipmaps.get_filepath_from_tilespec(out_ts)
@@ -66,6 +66,10 @@ def validate_mipmap_generated(in_ts, out_ts, levels, imgformat='tif',
     assert in_ts.height == out_ts.height
     expected_width = out_ts.width
     expected_height = out_ts.height
+
+    if targetmode is None:
+        with Image.open(inpath) as im:
+            targetmode = im.mode
 
     for lvl, mmL in iteritems(out_ts.ip):
         fn = urllib.parse.unquote(urllib.parse.urlparse(mmL.imageUrl).path)
@@ -130,7 +134,7 @@ def apply_generated_mipmaps(r, output_stack, generate_params,z=None):
         for tId, out_ts in iteritems(out_tileIdtotspecs):
             in_ts = in_tileIdtotspecs[tId]
             validate_mipmap_generated(
-                in_ts, out_ts, ex['levels'], targetmode='L')
+                in_ts, out_ts, ex['levels'])
             # make sure reference transforms are intact
             assert isinstance(in_ts.tforms[0],
                               renderapi.transform.ReferenceTransform)
