@@ -72,3 +72,32 @@ def compute_residuals_within_group(render, stack, matchCollectionOwner, matchCol
     session.close()
 
     return statistics, allmatches
+
+def compute_mean_tile_residuals(residuals):
+    tile_mean = {}
+    
+    # loop over each tile and compute the mean residual for each tile
+    # iteritems is specific to py2.7
+    #print(residuals)
+    maxes = [np.nanmean(v) for v in residuals.values() if len(v) > 0]
+    #print(maxes)
+    maximum = np.max(maxes)
+
+    for key in residuals:
+        if len(residuals[key]) == 0:
+            #tile_mean[key] = np.nan
+            tile_mean[key] = maximum
+        else:
+            tile_mean[key] = np.nanmean(residuals[key])
+
+    return tile_mean
+
+def get_tile_centers(tilespecs):
+    xc = []
+    yc = []
+    tileId = []
+    for ts in tilespecs:
+        xc.append(0.5*(ts.bbox[0]+ts.bbox[2]))
+        yc.append(0.5*(ts.bbox[1]+ts.bbox[3]))
+        tileId.append(ts.tileId)
+    return np.array(xc), np.array(yc), np.array(tileId)

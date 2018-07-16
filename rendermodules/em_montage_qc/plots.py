@@ -3,24 +3,18 @@ import tempfile
 import renderapi
 import requests
 from functools import partial
-from bokeh.palettes import Plasma256
+
+from rendermodules.residuals import compute_residuals as cr
+
+from bokeh.palettes import Plasma256, Viridis256
 from bokeh.plotting import figure, output_file, show, save
 from bokeh.layouts import column, row
 from bokeh.models.widgets import Tabs, Panel
 from bokeh.models import (HoverTool, ColumnDataSource, 
                           CustomJS, CategoricalColorMapper,
                           LinearColorMapper, 
-                          TapTool, OpenURL, Div, ColorBar)
-
-def get_tile_centers(tilespecs):
-    xc = []
-    yc = []
-    tileId = []
-    for ts in tilespecs:
-        xc.append(0.5*(ts.bbox[0]+ts.bbox[2]))
-        yc.append(0.5*(ts.bbox[1]+ts.bbox[3]))
-        tileId.append(ts.tileId)
-    return np.array(xc), np.array(yc), np.array(tileId)
+                          TapTool, OpenURL, Div, ColorBar,
+                          Slider, WidgetBox)
 
 
 def point_match_plot(tilespecsA, matches, tilespecsB=None):
@@ -28,8 +22,8 @@ def point_match_plot(tilespecsA, matches, tilespecsB=None):
         tilespecsB = tilespecsA
     
     if len(matches) > 0:
-        x1, y1, id1 = get_tile_centers(tilespecsA)
-        x2, y2, id2 = get_tile_centers(tilespecsB)
+        x1, y1, id1 = cr.get_tile_centers(tilespecsA)
+        x2, y2, id2 = cr.get_tile_centers(tilespecsB)
 
         xs = [] 
         ys = []
@@ -77,16 +71,43 @@ def point_match_plot(tilespecsA, matches, tilespecsB=None):
     return plot
 
 
+def plot_residual(xs, ys, residual):
+    p = figure(width=1000, height=1000)
+    color_mapper = LinearColorMapper(palette=Viridis256, low=min(residual), high=max(residual))
+
+    source = ColumnDataSource(data=dict(x=xs, y=ys, residual=residual))
+
+    pglyph = p.patches('x', 'y', source=source, fill_color={'field':'residual', 'transform':color_mapper}, fill_alpha=1.0, line_color="black", line_width=0.05)
+
+    color_bar = ColorBar(color_mapper=color_mapper, label_standoff=12, border_line_color=None, location=(0,0))
+
+    p.add_layout(color_bar, 'right')
+
+    p.xgrid.visible = False
+    p.ygrid.visible = False
+
+    #controls = WidgetBox(slider1, slider2)
+
+    #layout = column(slider1, slider2, p)
+    #layout = row(p, controls)
+    return p
+
+
 def plot_defects(render, stack, out_html_dir, args):
     tspecs = args[0]
     matches = args[1]
     dis_tiles = args[2]
     gap_tiles = args[3]
     seam_centroids = np.array(args[4])
-    z = args[5]
+    stats = args[5]
+    z = args[6]
+
+    # Tile residual mean
+    tile_residual_mean = cr.compute_mean_tile_residuals(stats['tile_residuals'])
 
     tile_positions = []
     tile_ids = []
+    residual = []
     for ts in tspecs:
         tile_ids.append(ts.tileId)
         pts = []
@@ -96,6 +117,11 @@ def plot_defects(render, stack, out_html_dir, args):
         pts.append([ts.minX, ts.maxY])
         pts.append([ts.minX, ts.minY])
         tile_positions.append(pts)
+        
+        if ts.tileId in tile_residual_mean.keys():
+            residual.append(tile_residual_mean[ts.tileId])
+        else:
+            residual.append(50) # a high value for residual for that tile
 
     out_html = tempfile.NamedTemporaryFile(suffix=".html", delete=False, mode='w', dir=out_html_dir)
     out_html.close()
@@ -168,9 +194,14 @@ def plot_defects(render, stack, out_html_dir, args):
     # add point match plot in another tab
     plot = point_match_plot(tspecs, matches)
 
+    # montage statistics plots in other tabs
+
+    stat_layout = plot_residual(xs, ys, residual)
+    
     tabs = []
     tabs.append(Panel(child=layout, title="Defects"))
     tabs.append(Panel(child=plot, title="Point match plot"))
+    tabs.append(Panel(child=stat_layout, title="Mean tile residual"))
 
     plot_tabs = Tabs(tabs=tabs)
 
@@ -179,13 +210,13 @@ def plot_defects(render, stack, out_html_dir, args):
     return out_html.name
 
 
-def plot_section_maps(render, stack, post_tspecs, matches, disconnected_tiles, gap_tiles, seam_centroids, zvalues, out_html_dir=None, pool_size=5):
+def plot_section_maps(render, stack, post_tspecs, matches, disconnected_tiles, gap_tiles, seam_centroids, stats, zvalues, out_html_dir=None, pool_size=5):
     if out_html_dir is None:
         out_html_dir = tempfile.mkdtemp()
 
     mypartial = partial(plot_defects, render, stack, out_html_dir)
 
-    args = zip(post_tspecs, matches, disconnected_tiles, gap_tiles, seam_centroids, zvalues)
+    args = zip(post_tspecs, matches, disconnected_tiles, gap_tiles, seam_centroids, stats, zvalues)
 
     with renderapi.client.WithPool(pool_size) as pool:
         html_files = pool.map(mypartial, args)
