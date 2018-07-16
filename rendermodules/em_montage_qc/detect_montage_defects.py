@@ -12,7 +12,6 @@ from rendermodules.em_montage_qc.schemas import DetectMontageDefectsParameters, 
 from ..module.render_module import RenderModule, RenderModuleException
 from rendermodules.em_montage_qc.plots import plot_section_maps
 
-
 example = {
     "render":{
         "host": "http://em-131fs",
@@ -31,6 +30,7 @@ example = {
     "pool_size": 20
 }
 
+
 def detect_seams(render, stack, match_collection, match_owner, z, residual_threshold=8, distance=60, min_cluster_size=15, tspecs=None):
     # seams will always be computed for montages using montage point matches
     # but the input stack can be either montage, rough, or fine
@@ -38,9 +38,9 @@ def detect_seams(render, stack, match_collection, match_owner, z, residual_thres
     stats, allmatches = cr.compute_residuals_within_group(render, stack, match_owner, match_collection, z, tilespecs=tspecs)
 
     # get mean positions of the point matches as numpy array
-    pt_match_positions = np.concatenate(stats['pt_match_positions'].values(), 0)
+    pt_match_positions = np.concatenate(list(stats['pt_match_positions'].values()), 0)
     # get the tile residuals
-    tile_residuals = np.concatenate(stats['tile_residuals'].values())
+    tile_residuals = np.concatenate(list(stats['tile_residuals'].values()))
 
     # threshold the points based on residuals
     new_pts = pt_match_positions[np.where(tile_residuals >= residual_threshold),:][0]
@@ -146,7 +146,7 @@ def detect_stitching_gaps(render, prestitched_stack, poststitched_stack,
     gap_tiles = []
     for n in G2.nodes():
         if G1.degree(n) > G2.degree(n):
-            tileId = pre_tileIds.keys()[pre_tileIds.values().index(n)]
+            tileId = list(pre_tileIds.keys())[list(pre_tileIds.values()).index(n)]
             gap_tiles.append(tileId)
     session.close()
     return gap_tiles
@@ -192,7 +192,7 @@ def detect_stitching_mistakes(render, prestitched_stack, poststitched_stack, mat
         run_analysis, render, prestitched_stack, poststitched_stack,
         match_collection, match_collection_owner, residual_threshold,
         neighbor_distance, min_cluster_size)
-    
+
     with renderapi.client.WithPool(pool_size) as pool:
         disconnected_tiles, gap_tiles, seam_centroids, post_tspecs, matches, stats = zip(*pool.map(
             mypartial0, zvalues))
@@ -281,7 +281,7 @@ class DetectMontageDefectsModule(RenderModule):
                      'gap_sections':gaps,
                      'seam_sections':seams,
                      'seam_centroids':np.array(centroids)})
-        
+
         # delete the stacks that were cloned
         if status1 == 'LOADING':
             self.render.run(renderapi.stack.delete_stack, new_prestitched)
