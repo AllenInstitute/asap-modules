@@ -146,7 +146,6 @@ def detect_stitching_gaps(render, prestitched_stack, poststitched_stack,
     gap_tiles = []
     for n in G2.nodes():
         if G1.degree(n) > G2.degree(n):
-            # FIXME is this correct for python2?
             tileId = list(pre_tileIds.keys())[list(pre_tileIds.values()).index(n)]
             gap_tiles.append(tileId)
     session.close()
