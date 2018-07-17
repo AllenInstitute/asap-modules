@@ -58,10 +58,12 @@ def mipmap_block_reduce(im, levels_file_map, block_func="mean",
             "invalid block_reduce function {}".format(e))
 
     tempimg = numpy.array(im)
+    target_dtype = tempimg.dtype
     lastlevel = 0
     for level, outpath in levels_file_map.items():
         for i in xrange(lastlevel, level):
-            tempimg = block_reduce(tempimg, (2, 2), func=reduce_func)
+            tempimg = block_reduce(tempimg, (2, 2), func=reduce_func).astype(
+                target_dtype)
 
         # is it okay to do non-progressive downsampling (below)?
         # tempimg = block_reduce(
