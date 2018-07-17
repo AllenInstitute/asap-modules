@@ -457,7 +457,14 @@ def test_render_downsample_with_mipmaps(render, one_tile_montage, tmpdir_factory
     ex3 = dict(ex2, **{'minZ': 1 , 'maxZ': 2})
 
     #stack_has_mipmaps = check_stack_for_mipmaps(render, ex['input_stack'], [1020])
-    tempjson = create_tilespecs_without_mipmaps(render, ex['input_stack'], 0, 1020)
+    # tempjson = create_tilespecs_without_mipmaps(render, ex['input_stack'], 0, 1020)
+
+    # generate tilespecs used for rendering stack input
+    maxlvl = 1
+    tspecs = create_tilespecs_without_mipmaps(render, ex['input_stack'], maxlvl, 1020)
+    ts_levels = {int(i) for l in (ts.ip.levels for ts in tspecs) for i in l}
+    # levels > maxlevel should not be included if
+    assert not ts_levels.difference(set(range(maxlvl + 1)))
 
     mod = RenderSectionAtScale(input_data=ex, args=[])
     mod.run()
