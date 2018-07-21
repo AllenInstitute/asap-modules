@@ -123,12 +123,13 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory,
         t.width, t.height = im.size
     t.ip[0] = renderapi.image_pyramid.MipMap(
         imageUrl=pathlib.Path(filename).as_uri())
+    [t.ip.pop(k) for k in list(t.ip.keys()) if k != 0]
     t.minIntensity = 0
     t.maxIntensity = 255
     t.z = newz
     t.layout.sectionId = "%s.0" % str(int(newz))
     t.tforms = [renderapi.transform.AffineModel(
-        M00=(1./scale), M11=(1./scale))]
+        M00=(1.0), M11=(1.0))]
 
     # EM_aligner expects the level 0 to be filled regardless of other level mipmaps
     # d['mipmapLevels'][0] = {}
