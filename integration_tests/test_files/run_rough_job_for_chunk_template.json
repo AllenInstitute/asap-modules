@@ -25,7 +25,7 @@
       "outside_group":0,
   		"pastix": {
   			"ncpus": 8,
-  			"parms_fn": "/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/allen_templates/parms_file.txt",
+  			"parms_fn": "/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/allen_templates/params_file.txt",
   			"split": 1
   		},
   		"matrix_only": 0,
