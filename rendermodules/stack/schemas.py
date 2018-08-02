@@ -49,3 +49,13 @@ class RedirectMipMapsParameters(StackTransitionParameters):
 class RedirectMipMapsOutput(DefaultSchema):
     zValues = List(Int, required=True)
     output_stack = Str(required=True)
+
+
+class RemapZsParameters(StackTransitionParameters):
+    remap_sectionId = Boolean(required=False)
+    new_zValues = List(Int, required=True)
+
+
+class RemapZsOutput(DefaultSchema):
+    zValues = List(Int, required=True)
+    output_stack = Str(required=True)
