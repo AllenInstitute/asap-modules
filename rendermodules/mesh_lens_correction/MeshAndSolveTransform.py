@@ -543,12 +543,23 @@ class MeshAndSolveTransform(ArgSchemaParser):
 
         # check quality of solution
         if not all([
-                    self.errx.mean() < 0.2,
-                    self.erry.mean() < 0.2,
-                    self.errx.std() < 2.0,
-                    self.erry.std() < 2.0,
-                    np.abs(tf_scale[:, 0].mean() - 1.0) < 0.05,
-                    np.abs(tf_scale[:, 1].mean() - 1.0) < 0.05]):
+                    self.errx.mean() <
+                    self.args['good_solve_criteria']['error_mean'],
+
+                    self.erry.mean() <
+                    self.args['good_solve_criteria']['error_mean'],
+
+                    self.errx.std() <
+                    self.args['good_solve_criteria']['error_std'],
+
+                    self.erry.std() <
+                    self.args['good_solve_criteria']['error_std'],
+
+                    np.abs(tf_scale[:, 0].mean() - 1.0) <
+                    self.args['good_solve_criteria']['scale_dev'],
+
+                    np.abs(tf_scale[:, 1].mean() - 1.0) <
+                    self.args['good_solve_criteria']['scale_dev']]):
 
             raise MeshLensCorrectionException(
                     "Solve not good: %s" % message)
