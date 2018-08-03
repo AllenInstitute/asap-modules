@@ -5,7 +5,7 @@ from argschema.fields import Str, Int, Bool, Nested, Float, OutputDir
 from ..module.render_module import RenderParameters
 
 
-class regularization(ArgSchema):
+class regularization(DefaultSchema):
     default_lambda = Float(
         required=False,
         default=0.005,
@@ -23,7 +23,7 @@ class regularization(ArgSchema):
         description="regularization for lens parameters")
 
 
-class good_solve_criteria(ArgSchema):
+class good_solve_criteria(DefaultSchema):
     error_mean = Float(
         required=False,
         default=0.2,

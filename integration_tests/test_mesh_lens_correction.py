@@ -119,7 +119,7 @@ def test_mesh_lens_correction(render, tmpdir_factory):
     mod.args['outfile'] = None
     mod.run()
 
-    #test for failure of good solve check
+    # test for failure of good solve check
     mod.args['good_solve']['error_std'] = 0.001
     with pytest.raises(MeshLensCorrectionException):
         mod.run()
