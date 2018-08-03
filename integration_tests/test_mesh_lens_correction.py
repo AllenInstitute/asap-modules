@@ -41,26 +41,26 @@ def render():
     return render
 
 
-#def test_coarse_mesh_failure(render, tmpdir_factory):
-#    outdir = str(tmpdir_factory.mktemp("mesh_lens"))
-#    out_html_dir = outdir
-#    example_for_input = dict(example)
-#    example_for_input['render'] = render_params
-#    example_for_input['metafile'] = os.path.join(TEST_DATA_ROOT,
-#                                                 "em_modules_test_data",
-#                                                 "mesh_lens_correction_3",
-#                                                 "mesh_lens_metafile_3.json")
-#    example_for_input['output_dir'] = outdir
-#    example_for_input['out_html_dir'] = out_html_dir
-#    example_for_input['z_index'] = 101
-#    outjson = os.path.join(outdir, 'mesh_lens_out0.json')
-#
-#    mod = MeshLensCorrection(
-#            input_data=example_for_input,
-#            args=['--output_json', outjson])
-#
-#    with pytest.raises(MeshLensCorrectionException):
-#        mod.run()
+def test_coarse_mesh_failure(render, tmpdir_factory):
+    outdir = str(tmpdir_factory.mktemp("mesh_lens"))
+    out_html_dir = outdir
+    example_for_input = dict(example)
+    example_for_input['render'] = render_params
+    example_for_input['metafile'] = os.path.join(TEST_DATA_ROOT,
+                                                 "em_modules_test_data",
+                                                 "mesh_lens_correction_3",
+                                                 "mesh_lens_metafile_3.json")
+    example_for_input['output_dir'] = outdir
+    example_for_input['out_html_dir'] = out_html_dir
+    example_for_input['z_index'] = 101
+    outjson = os.path.join(outdir, 'mesh_lens_out0.json')
+
+    mod = MeshLensCorrection(
+            input_data=example_for_input,
+            args=['--output_json', outjson])
+
+    with pytest.raises(MeshLensCorrectionException):
+        mod.run()
 
 
 def test_mesh_lens_correction(render, tmpdir_factory):

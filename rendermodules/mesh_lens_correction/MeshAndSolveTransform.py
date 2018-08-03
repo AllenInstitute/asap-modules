@@ -342,7 +342,7 @@ def report_solution(errx, erry, transforms, criteria):
               ' %s: [%8.2f,%8.2f] %8.2f +/-%8.2f pixels\n' %
               (v, e.min(), e.max(), e.mean(), e.std()))
     message += 'dx/dy criteria [ < %0.3f ] +/- [ < %0.3f ]' % \
-        (criteria['error_mean'], criteria['error std'])
+        (criteria['error_mean'], criteria['error_std'])
 
     scale = np.array([tf.scale for tf in transforms])
     message += ('xscale: [%8.2f,%8.2f] %8.2f +/-%8.2f\n' %
