@@ -25,17 +25,17 @@ class regularization(ArgSchema):
 
 class good_solve_criteria(ArgSchema):
     error_mean = Float(
-        required=False,
+        required=True,
         default=0.2,
         missing=0.2,
         description="maximum error mean [pixels]")
     error_std = Float(
-        required=False,
+        required=True,
         default=2.0,
         missing=2.0,
         description="maximum error std [pixels]")
     scale_dev = Float(
-        required=False,
+        required=True,
         default=0.1,
         missing=0.1,
         description="maximum allowed scale deviation from 1.0")
@@ -105,12 +105,12 @@ class MeshLensCorrectionSchema(RenderParameters):
         required=True,
         description=("File to which json output of lens correction "
                      "(leaf TransformSpec) is written"))
+    regularization = Nested(regularization)
+    good_solve = Nested(good_solve_criteria)
     sectionId = Str(
         required=True,
         default="xxx",
         description="section Id")
-    regularization = Nested(regularization)
-    good_solve_criteria = Nested(good_solve_criteria)
 
 
 class MeshAndSolveOutputSchema(DefaultSchema):

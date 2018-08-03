@@ -4,7 +4,7 @@ import tempfile
 
 from ..module.render_module import RenderModule
 
-from rendermodules.mesh_lens_correction.schemas \
+from .schemas \
         import MeshLensCorrectionSchema, DoMeshLensCorrectionOutputSchema
 from rendermodules.dataimport.generate_EM_tilespecs_from_metafile \
         import GenerateEMTileSpecsModule
