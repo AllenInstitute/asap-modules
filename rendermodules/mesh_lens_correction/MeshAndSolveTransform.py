@@ -12,9 +12,9 @@ import os
 import json
 import datetime
 from argschema import ArgSchemaParser
-from rendermodules.mesh_lens_correction.schemas \
+from .schemas \
         import MeshLensCorrectionSchema, MeshAndSolveOutputSchema
-from rendermodules.module.render_module import RenderModuleException
+from ..module.render_module import RenderModuleException
 
 
 class MeshLensCorrectionException(RenderModuleException):
@@ -335,20 +335,24 @@ def solve(A, weights, reg, x0):
     return solution, errx, erry
 
 
-def report_solution(errx, erry, transforms):
+def report_solution(errx, erry, transforms, criteria):
     message = '\n'
     for e, v in [[errx, 'dx'], [erry, 'dy']]:
         message += (
-              ' %s: [%8.2f,%8.2f] %8.2f+/-%8.2f pixels\n' %
+              ' %s: [%8.2f,%8.2f] %8.2f +/-%8.2f pixels\n' %
               (v, e.min(), e.max(), e.mean(), e.std()))
+    message += 'dx/dy criteria [ < %0.3f ] +/- [ < %0.3f ]' % \
+        (criteria['error_mean'], criteria['error_std'])
 
     scale = np.array([tf.scale for tf in transforms])
-    message += ('xscale: [%8.2f,%8.2f] %8.2f+/-%8.2f\n' %
+    message += ('xscale: [%8.2f,%8.2f] %8.2f +/-%8.2f\n' %
                 (scale[:, 0].min(), scale[:, 0].max(),
                  scale[:, 0].mean(), scale[:, 0].std()))
-    message += ('yscale: [%8.2f,%8.2f] %8.2f+/-%8.2f\n' %
+    message += ('yscale: [%8.2f,%8.2f] %8.2f +/-%8.2f\n' %
                 (scale[:, 1].min(), scale[:, 1].max(),
                  scale[:, 1].mean(), scale[:, 1].std()))
+    message += 'scale criteria [ < %0.3f ] +/- [ no criteria ]' % \
+        (criteria['scale_dev'])
     return scale, message
 
 
@@ -468,6 +472,8 @@ class MeshAndSolveTransform(ArgSchemaParser):
     def run(self):
         self.render = renderapi.connect(**self.args['render'])
 
+        print(self.args['good_solve'])
+
         self.tilespecs, self.matches = get_tspecs_and_matches(
             self.render,
             self.args['match_collection'],
@@ -539,16 +545,30 @@ class MeshAndSolveTransform(ArgSchemaParser):
                 len(self.tilespecs), self.solution)
 
         tf_scale, message = report_solution(
-                self.errx, self.erry, self.transforms)
+                self.errx,
+                self.erry,
+                self.transforms,
+                self.args['good_solve'])
 
         # check quality of solution
         if not all([
-                    self.errx.mean() < 0.2,
-                    self.erry.mean() < 0.2,
-                    self.errx.std() < 2.0,
-                    self.erry.std() < 2.0,
-                    np.abs(tf_scale[:, 0].mean() - 1.0) < 0.05,
-                    np.abs(tf_scale[:, 1].mean() - 1.0) < 0.05]):
+                    self.errx.mean() <
+                    self.args['good_solve']['error_mean'],
+
+                    self.erry.mean() <
+                    self.args['good_solve']['error_mean'],
+
+                    self.errx.std() <
+                    self.args['good_solve']['error_std'],
+
+                    self.erry.std() <
+                    self.args['good_solve']['error_std'],
+
+                    np.abs(tf_scale[:, 0].mean() - 1.0) <
+                    self.args['good_solve']['scale_dev'],
+
+                    np.abs(tf_scale[:, 1].mean() - 1.0) <
+                    self.args['good_solve']['scale_dev']]):
 
             raise MeshLensCorrectionException(
                     "Solve not good: %s" % message)

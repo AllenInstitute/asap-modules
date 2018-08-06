@@ -5,7 +5,7 @@ from argschema.fields import Str, Int, Bool, Nested, Float, OutputDir
 from ..module.render_module import RenderParameters
 
 
-class regularization(ArgSchema):
+class regularization(DefaultSchema):
     default_lambda = Float(
         required=False,
         default=0.005,
@@ -21,6 +21,24 @@ class regularization(ArgSchema):
         default=0.005,
         missing=0.005,
         description="regularization for lens parameters")
+
+
+class good_solve_criteria(DefaultSchema):
+    error_mean = Float(
+        required=False,
+        default=0.2,
+        missing=0.2,
+        description="maximum error mean [pixels]")
+    error_std = Float(
+        required=False,
+        default=2.0,
+        missing=2.0,
+        description="maximum error std [pixels]")
+    scale_dev = Float(
+        required=False,
+        default=0.1,
+        missing=0.1,
+        description="maximum allowed scale deviation from 1.0")
 
 
 class MeshLensCorrectionSchema(RenderParameters):
@@ -87,17 +105,19 @@ class MeshLensCorrectionSchema(RenderParameters):
         required=True,
         description=("File to which json output of lens correction "
                      "(leaf TransformSpec) is written"))
+    regularization = Nested(regularization, missing={})
+    good_solve = Nested(good_solve_criteria, missing={})
     sectionId = Str(
         required=True,
         default="xxx",
         description="section Id")
-    regularization = Nested(regularization)
 
 
 class MeshAndSolveOutputSchema(DefaultSchema):
     output_json = Str(
         required=True,
         description="path to lens correction file")
+
 
 class DoMeshLensCorrectionOutputSchema(DefaultSchema):
     output_json = Str(
