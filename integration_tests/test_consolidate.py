@@ -10,7 +10,7 @@ import renderapi
 from test_data import render_params, cons_ex_tilespec_json, cons_ex_transform_json
 from rendermodules.module.render_module import RenderModuleException
 from rendermodules.stack.consolidate_transforms import ConsolidateTransforms, process_z, consolidate_transforms
-from rendermodules.stack import redirect_mipmaps
+from rendermodules.stack import redirect_mipmaps, remap_zs
 
 EPSILON = .001
 render_params['project'] = "consolidate_test"
@@ -137,3 +137,46 @@ def test_redirect_mipMapLevels(render, test_stack, tmpdir):
         ts.ip[0].imageUrl).path)).startswith(
             os.path.abspath(str(tmpdir)))
                 for ts in modified_tspecs])
+
+
+@pytest.mark.parametrize("remap_sectionId", [True, False])
+def test_remap_zs(render, test_stack, remap_sectionId):
+    output_stack = "remap_zs_test"
+    out_fn = "remapzsout.json"
+    zValues = renderapi.stack.get_z_values_for_stack(test_stack, render=render)
+    new_zValues = [z + 25 for z in zValues]
+    input_d = dict(remap_zs.example_input, **{
+        "input_stack": test_stack,
+        "output_stack": output_stack,
+        "zValues": zValues,
+        "new_zValues": new_zValues,
+        "remap_sectionId": remap_sectionId,
+        "render": render.DEFAULT_KWARGS
+    })
+
+    in_tspecs = renderapi.tilespec.get_tile_specs_from_stack(
+        test_stack, render=render)
+    mod = remap_zs.RemapZsModule(
+        input_data=input_d, args=['--output_json', out_fn])
+    mod.run()
+
+    out_tspecs = renderapi.tilespec.get_tile_specs_from_stack(
+        output_stack, render=render)
+
+    assert new_zValues == renderapi.stack.get_z_values_for_stack(
+        output_stack, render=render)
+
+    # tileIds should be preserved
+    assert not ({ts.tileId for ts in in_tspecs} ^
+                {ts.tileId for ts in out_tspecs})
+
+    if remap_sectionId:
+        # should be symmetric difference
+        assert ({ts.layout.sectionId for ts in in_tspecs} ^
+                {ts.layout.sectionId for ts in out_tspecs})
+
+        assert ({ts.layout.sectionId for ts in out_tspecs} ==
+                {mod.sectionId_from_z(ts.z) for ts in out_tspecs})
+    else:
+        assert ({ts.layout.sectionId for ts in in_tspecs} ==
+                {ts.layout.sectionId for ts in out_tspecs})
