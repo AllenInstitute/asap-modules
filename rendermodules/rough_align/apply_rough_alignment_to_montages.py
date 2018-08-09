@@ -161,7 +161,7 @@ class ApplyRoughAlignmentTransform(RenderModule):
         allzvalues = self.render.run(renderapi.stack.get_z_values_for_stack,
                                      self.args['montage_stack'])
         allzvalues = np.array(allzvalues)
-
+        
         Z = [[a,b] for a,b in zip(self.args['old_z'], self.args['new_z']) if a in allzvalues]
 
         mypartial = partial(

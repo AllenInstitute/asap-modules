@@ -389,46 +389,6 @@ def test_point_match_collection(render, rough_point_match_collection):
     groupIds = render.run(renderapi.pointmatch.get_match_groupIds, rough_point_match_collection)
     assert(('1020.0' in groupIds) and ('1021.0' in groupIds) and ('1022.0' in groupIds))
 
-def test_apply_rough_alignment_transform_with_scale(render, montage_stack, test_do_rough_alignment_with_scale, tmpdir_factory, prealigned_stack=None, output_stack=None):
-    ex = dict(ex1, **{
-        'render': dict(ex1['render'], **render_params),
-        'montage_stack': montage_stack,
-        'lowres_stack': test_do_rough_alignment_with_scale,
-        'prealigned_stack': None,
-        'output_stack': '{}_Rough'.format(montage_stack),
-        'tilespec_directory': str(tmpdir_factory.mktemp('scratch')),
-        'old_z': [1020, 1021, 1022],
-        'scale': 0.1,
-        'apply_scale':"True",
-        'pool_size': pool_size,
-        'output_json': str(tmpdir_factory.mktemp('output').join('output.json')),
-        'loglevel': 'DEBUG'
-    })
-    mod = ApplyRoughAlignmentTransform(input_data=ex, args=[])
-    mod.run()
-
-    zstart = 1020
-    zend = 1022
-
-    zvalues = render.run(renderapi.stack.get_z_values_for_stack, ex['output_stack'])
-    zs = range(zstart, zend+1)
-
-    assert(set(zvalues) == set(zs))
-    for z in zs:
-        # WARNING: montage stack should be different than output stack
-        in_resolvedtiles = render.run(
-            renderapi.resolvedtiles.get_resolved_tiles_from_z,
-                ex['montage_stack'], z)
-        out_resolvedtiles = render.run(
-            renderapi.resolvedtiles.get_resolved_tiles_from_z,
-                ex['output_stack'], z)
-        assert in_resolvedtiles.transforms
-        assert in_resolvedtiles.transforms == out_resolvedtiles.transforms
-        assert all([isinstance(
-            ts.tforms[0], renderapi.transform.ReferenceTransform)
-                    for ts in out_resolvedtiles.tilespecs])
-
-
 
 def test_mapped_apply_rough_alignment_transform(render, montage_stack, test_do_mapped_rough_alignment, tmpdir_factory, prealigned_stack=None, output_stack=None):
     ex = dict(ex1, **{
@@ -650,6 +610,45 @@ def test_make_montage_stack_module_without_downsamples(
         tspecs[0].ip[0].imageUrl).path)
     assert os.path.isfile(tsfn)
     assert os.path.basename(tsfn) == '1020.0.png'
+
+def test_apply_rough_alignment_transform_with_scale(render, montage_stack, test_do_rough_alignment_with_scale, tmpdir_factory, prealigned_stack=None, output_stack=None):
+    ex = dict(ex1, **{
+        'render': dict(ex1['render'], **render_params),
+        'montage_stack': montage_stack,
+        'lowres_stack': test_do_rough_alignment_with_scale,
+        'prealigned_stack': None,
+        'output_stack': '{}_Rough_scaled'.format(montage_stack),
+        'tilespec_directory': str(tmpdir_factory.mktemp('scratch')),
+        'old_z': [1020, 1021, 1022],
+        'scale': 0.1,
+        'apply_scale':"True",
+        'pool_size': pool_size,
+        'output_json': str(tmpdir_factory.mktemp('output').join('output.json')),
+        'loglevel': 'DEBUG'
+    })
+    mod = ApplyRoughAlignmentTransform(input_data=ex, args=[])
+    mod.run()
+
+    zstart = 1020
+    zend = 1022
+
+    zvalues = render.run(renderapi.stack.get_z_values_for_stack, ex['output_stack'])
+    zs = range(zstart, zend+1)
+
+    assert(set(zvalues) == set(zs))
+    for z in zs:
+        # WARNING: montage stack should be different than output stack
+        in_resolvedtiles = render.run(
+            renderapi.resolvedtiles.get_resolved_tiles_from_z,
+                ex['montage_stack'], z)
+        out_resolvedtiles = render.run(
+            renderapi.resolvedtiles.get_resolved_tiles_from_z,
+                ex['output_stack'], z)
+        assert in_resolvedtiles.transforms
+        assert in_resolvedtiles.transforms == out_resolvedtiles.transforms
+        assert all([isinstance(
+            ts.tforms[0], renderapi.transform.ReferenceTransform)
+                    for ts in out_resolvedtiles.tilespecs])
 
 
 

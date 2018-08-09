@@ -190,7 +190,7 @@ class MakeMontageScapeSectionStack(StackOutputModule):
 
     def run(self):
         self.logger.debug('Montage scape stack generation module')
-
+        
         # get the list of z indices
         zvalues = self.render.run(
             renderapi.stack.get_z_values_for_stack,
