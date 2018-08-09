@@ -173,6 +173,7 @@ class ApplyRoughAlignmentTransform(RenderModule):
                         self.args['output_stack'],
                         self.args['tilespec_directory'],
                         self.args['scale'],
+                        apply_scale=self.args['apply_scale'],
                         consolidateTransforms=self.args['consolidate_transforms'])
 
         # Create the output stack if it doesn't exist

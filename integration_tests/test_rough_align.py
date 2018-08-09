@@ -328,7 +328,7 @@ def test_do_rough_alignment(render, montage_scape_stack, rough_point_match_colle
 @pytest.fixture(scope='module')
 def test_do_rough_alignment_with_scale(render, montage_scape_stack_with_scale, rough_point_match_collection, tmpdir_factory, output_lowres_stack=None):
     if output_lowres_stack == None:
-        output_lowres_stack = '{}_DS_Rough'.format(montage_scape_stack_with_scale)
+        output_lowres_stack = '{}_DS_Rough_scale'.format(montage_scape_stack_with_scale)
 
     output_directory = str(tmpdir_factory.mktemp('output_json'))
     solver_ex = dict(solver_example, **{
