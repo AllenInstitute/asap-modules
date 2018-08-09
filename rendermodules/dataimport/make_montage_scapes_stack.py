@@ -57,7 +57,7 @@ example = {
 
 def create_montage_scape_tile_specs(render, input_stack, image_directory,
                                     scale, project, tagstr, imgformat,
-                                    apply_scale=False, Z, **kwargs):
+                                    Z, apply_scale=False, **kwargs):
     z = Z[0]
     newz = Z[1]
 
