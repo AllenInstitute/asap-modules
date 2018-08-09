@@ -54,6 +54,7 @@ example = {
     "consolidate_transforms": "True",
     "old_z": [1020, 1021, 1022],
     "scale": 0.1,
+    "apply_scale": "False",
     "pool_size": 20
 }
 
@@ -68,6 +69,7 @@ def apply_rough_alignment(render,
                           output_dir,
                           scale,
                           Z,
+                          apply_scale=False,
                           consolidateTransforms=True):
     z = Z[0] # z value from the montage stack - to be mapped to the newz values in lowres stack
     newz = Z[1] # z value in the lowres stack for this montage
@@ -85,7 +87,9 @@ def apply_rough_alignment(render,
         # get the lowres stack rough alignment transformation
         tforms = lowres_ts[0].tforms
         tf = tforms[-1]
-        tf.M[0:2,0:2]*=scale
+        
+        if apply_scale:
+            tf.M[0:2,0:2]*=scale
 
 
         sectionbounds = render.run(
