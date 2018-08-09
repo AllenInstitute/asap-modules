@@ -90,6 +90,8 @@ def apply_rough_alignment(render,
         
         if apply_scale:
             tf.M[0:2,0:2]*=scale
+        else:
+            tf.M[:2, -1] /= scale
 
 
         sectionbounds = render.run(
