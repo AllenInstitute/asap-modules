@@ -54,6 +54,7 @@ example = {
     "consolidate_transforms": "True",
     "old_z": [1020, 1021, 1022],
     "scale": 0.1,
+    "apply_scale": "False",
     "pool_size": 20
 }
 
@@ -68,6 +69,7 @@ def apply_rough_alignment(render,
                           output_dir,
                           scale,
                           Z,
+                          apply_scale=False,
                           consolidateTransforms=True):
     z = Z[0] # z value from the montage stack - to be mapped to the newz values in lowres stack
     newz = Z[1] # z value in the lowres stack for this montage
@@ -85,7 +87,11 @@ def apply_rough_alignment(render,
         # get the lowres stack rough alignment transformation
         tforms = lowres_ts[0].tforms
         tf = tforms[-1]
-        tf.M[0:2,0:2]*=scale
+        
+        if apply_scale:
+            tf.M[0:2,0:2]*=scale
+        else:
+            tf.M[:2, -1] /= scale
 
 
         sectionbounds = render.run(
@@ -155,7 +161,7 @@ class ApplyRoughAlignmentTransform(RenderModule):
         allzvalues = self.render.run(renderapi.stack.get_z_values_for_stack,
                                      self.args['montage_stack'])
         allzvalues = np.array(allzvalues)
-
+        
         Z = [[a,b] for a,b in zip(self.args['old_z'], self.args['new_z']) if a in allzvalues]
 
         mypartial = partial(
@@ -167,6 +173,7 @@ class ApplyRoughAlignmentTransform(RenderModule):
                         self.args['output_stack'],
                         self.args['tilespec_directory'],
                         self.args['scale'],
+                        apply_scale=self.args['apply_scale'],
                         consolidateTransforms=self.args['consolidate_transforms'])
 
         # Create the output stack if it doesn't exist
