@@ -214,6 +214,7 @@ apply_rough_alignment_example = {
     "consolidate_transforms": "True",
     "old_z": [1020, 1021, 1022],
     "scale": 0.1,
+    "apply_scale": "False",
     "pool_size": 20
 }
 

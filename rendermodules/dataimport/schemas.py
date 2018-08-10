@@ -128,6 +128,11 @@ class MakeMontageScapeSectionStackParameters(OutputStackParameters):
     scale = Float(
         required=True,
         metadata={'description':'scale of montage scapes'})
+    apply_scale = Boolean(
+        required=False,
+        default=False,
+        missing=False,
+        metadata={'description':'Do you want to scale the downsample to the size of section? Default = False'})
     doFilter = Boolean(required=False, default=True, description=(
         "whether to apply default filtering when generating "
         "missing downsamples"))
