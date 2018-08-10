@@ -27,6 +27,7 @@ example = {
     "new_z_start": 1020,
     "imgformat":"png",
     "scale": 0.1,
+    "apply_scale": "False",
     "zstart": 1020,
     "zend": 1022,
     "pool_size": 20
@@ -56,7 +57,7 @@ example = {
 
 def create_montage_scape_tile_specs(render, input_stack, image_directory,
                                     scale, project, tagstr, imgformat,
-                                    Z, **kwargs):
+                                    Z, apply_scale=False, **kwargs):
     z = Z[0]
     newz = Z[1]
 
@@ -127,8 +128,12 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory,
     t.maxIntensity = 255
     t.z = newz
     t.layout.sectionId = "%s.0" % str(int(newz))
-    t.tforms = [renderapi.transform.AffineModel(
-        M00=(1./scale), M11=(1./scale))]
+    if apply_scale:
+        t.tforms = [renderapi.transform.AffineModel(
+            M00=(1./scale), M11=(1./scale))]
+    else:
+        t.tforms = [renderapi.transform.AffineModel(
+            M00=(1.), M11=(1.))]
 
     # EM_aligner expects the level 0 to be filled regardless of other level mipmaps
     # d['mipmapLevels'][0] = {}
@@ -185,7 +190,7 @@ class MakeMontageScapeSectionStack(StackOutputModule):
 
     def run(self):
         self.logger.debug('Montage scape stack generation module')
-
+        
         # get the list of z indices
         zvalues = self.render.run(
             renderapi.stack.get_z_values_for_stack,
@@ -242,6 +247,7 @@ class MakeMontageScapeSectionStack(StackOutputModule):
             self.args['render']['project'],
             tagstr,
             self.args['imgformat'],
+            apply_scale=self.args['apply_scale'],
             level=self.args['level'],
             pool_size=1,
             doFilter=self.args['doFilter'],
