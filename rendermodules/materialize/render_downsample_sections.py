@@ -86,7 +86,8 @@ class RenderSectionAtScale(RenderModule):
     def downsample_specific_mipmapLevel(
             cls, zvalues, input_stack=None, level=1, pool_size=1,
             image_directory=None, scale=None, imgformat=None, doFilter=None,
-            fillWithNoise=None, render=None, do_mp=True, **kwargs):
+            fillWithNoise=None, filterListName=None,
+            render=None, do_mp=True, **kwargs):
         # temporary hack for nested pooling woes
         poolclass = (renderapi.client.WithPool if do_mp else WithThreadPool)
 
@@ -132,7 +133,8 @@ class RenderSectionAtScale(RenderModule):
                    scale=scale,
                    format=imgformat,
                    doFilter=doFilter,
-                   fillWithNoise=fillWithNoise)
+                   fillWithNoise=fillWithNoise,
+                   filterListName=filterListName)
 
         if stack_has_mipmaps:
             # delete the temp stack
