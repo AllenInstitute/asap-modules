@@ -41,6 +41,8 @@ class MaterializedBoxParameters(argschema.schemas.DefaultSchema):
     numberOfRenderGroups = Int(required=False, description=(
         "used in conjunction with renderGroup, total number of groups "
         "being used"))
+    filterListName = Str(required=False, description=(
+        "Apply specified filter list to all renderings"))
 
 
 class ZRangeParameters(argschema.schemas.DefaultSchema):
