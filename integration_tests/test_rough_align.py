@@ -466,7 +466,7 @@ def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_al
             ts.tforms[0], renderapi.transform.ReferenceTransform)
                     for ts in out_resolvedtiles.tilespecs])
 
-    
+
 
 # additional tests for code coverage
 def test_render_downsample_with_mipmaps(render, one_tile_montage, tmpdir_factory, test_do_rough_alignment, montage_stack):
@@ -768,3 +768,34 @@ def test_solver_default_options(render, montage_scape_stack, rough_point_match_c
 
     with pytest.raises(mm.ValidationError):
         mod.run()
+
+
+def test_filterNameList_warning_makemontagescapes(tmpdir):
+    warn_input = {
+        "render": render_params,
+        "montage_stack": "montage_stack",
+        "output_stack": "output_stack",
+        "image_directory": str(tmpdir),
+        "imgformat": "png",
+        "set_new_z": False,
+        "new_z_start": 0,
+        "scale": 0.1,
+        "zstart": 1020,
+        "zend": 1022,
+        "filterListName": "notafilter"}
+    with pytest.warns(UserWarning):
+        mod = MakeMontageScapeSectionStack(input_data=warn_input, args=[])
+
+
+def test_filterNameList_warning_rendersection(tmpdir):
+    warn_input = {
+        "render": render_params,
+        "input_stack": "one_tile_montage",
+        "image_directory": str(tmpdir),
+        "imgformat": "png",
+        "scale": 0.1,
+        "minZ": -1,
+        "maxZ": -1,
+        "filterListName": "notafilter"}
+    with pytest.warns(UserWarning):
+        mod = RenderSectionAtScale(input_data=warn_input, args=[])
