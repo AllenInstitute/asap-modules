@@ -126,6 +126,8 @@ class FeatureRenderParameters(argschema.schemas.DefaultSchema):
     fillWithNoise = Boolean(required=False, description=(
         "Fill each canvas image with noise prior to rendering. "
         "True if excluded or None"))
+    renderFilterListName = Str(required=False, description=(
+        "Apply specified filter list to all renderings"))
 
 
 class FeatureStorageParameters(argschema.schemas.DefaultSchema):
