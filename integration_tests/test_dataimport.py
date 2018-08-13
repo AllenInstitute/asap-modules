@@ -49,12 +49,14 @@ def test_generate_EM_metadata(render):
     renderapi.stack.delete_stack(ex['stack'], render=render)
     assert len(expected_tileIds.symmetric_difference(delivered_tileIds)) == 0
 
-def validate_mipmap_generated(in_ts,out_ts,levels,imgformat='tif'):
+
+def validate_mipmap_generated(in_ts, out_ts, levels, imgformat='tif',
+                              targetmode=None, **kwargs):
     # make sure that the corresponding tiles' l0s match
     inpath = generate_mipmaps.get_filepath_from_tilespec(in_ts)
     outpath = generate_mipmaps.get_filepath_from_tilespec(out_ts)
 
-    assert inpath==outpath
+    assert inpath == outpath
 
     # make sure all levels have been assigned
     assert list(sorted(out_ts.ip.levels)) == list(map(str, range(levels + 1)))
@@ -65,12 +67,17 @@ def validate_mipmap_generated(in_ts,out_ts,levels,imgformat='tif'):
     expected_width = out_ts.width
     expected_height = out_ts.height
 
+    if targetmode is None:
+        with Image.open(inpath) as im:
+            targetmode = im.mode
+
     for lvl, mmL in iteritems(out_ts.ip):
         fn = urllib.parse.unquote(urllib.parse.urlparse(mmL.imageUrl).path)
-        ext=os.path.splitext(fn)[1]
+        ext = os.path.splitext(fn)[1]
         if (lvl != "0"):
             assert ext[1:] == imgformat
         with Image.open(fn) as im:
+            assert im.mode == targetmode
             w, h = im.size
         assert w == expected_width // (2 ** int(lvl))
         assert h == expected_height // (2 ** int(lvl))
@@ -126,7 +133,8 @@ def apply_generated_mipmaps(r, output_stack, generate_params,z=None):
         assert not (viewkeys(in_tileIdtotspecs) ^ viewkeys(out_tileIdtotspecs))
         for tId, out_ts in iteritems(out_tileIdtotspecs):
             in_ts = in_tileIdtotspecs[tId]
-            validate_mipmap_generated(in_ts,out_ts,ex['levels'])
+            validate_mipmap_generated(
+                in_ts, out_ts, ex['levels'])
             # make sure reference transforms are intact
             assert isinstance(in_ts.tforms[0],
                               renderapi.transform.ReferenceTransform)
