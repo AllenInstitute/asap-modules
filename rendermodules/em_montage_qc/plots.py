@@ -118,10 +118,15 @@ def plot_defects(render, stack, out_html_dir, args):
         pts.append([ts.minX, ts.minY])
         tile_positions.append(pts)
         
-        if ts.tileId in tile_residual_mean.keys():
+        try:
             residual.append(tile_residual_mean[ts.tileId])
-        else:
+        except KeyError:
             residual.append(50) # a high value for residual for that tile
+        
+        #if ts.tileId in tile_residual_mean.keys():
+        #    residual.append(tile_residual_mean[ts.tileId])
+        #else:
+        #    residual.append(50) # a high value for residual for that tile
 
     out_html = tempfile.NamedTemporaryFile(suffix=".html", delete=False, mode='w', dir=out_html_dir)
     out_html.close()
