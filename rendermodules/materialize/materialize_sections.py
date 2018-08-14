@@ -44,7 +44,8 @@ class MaterializeSectionsModule(SparkModule):
             fmt=None, maxOverviewWidthAndHeight=None,
             skipInterpolation=None, binaryMask=None, label=None,
             createIGrid=None, forceGeneration=None, renderGroup=None,
-            numberOfRenderGroups=None, cleanUpPriorRun=None, explainPlan=None,
+            numberOfRenderGroups=None, cleanUpPriorRun=None,
+            filterListName=None, explainPlan=None,
             maxImageCacheGb=None, zValues=None, **kwargs):
         get_cmd_opt = cls.get_cmd_opt
         get_flag_cmd = cls.get_flag_cmd
@@ -66,6 +67,7 @@ class MaterializeSectionsModule(SparkModule):
             get_flag_cmd(forceGeneration, '--forceGeneration') +
             get_cmd_opt(renderGroup, '--renderGroup') +
             get_cmd_opt(numberOfRenderGroups, '--numberOfRenderGroups') +
+            get_cmd_opt(filterListName, '--filterListName') +
             get_flag_cmd(cleanUpPriorRun, '--cleanUpPriorRun') +
             get_flag_cmd(explainPlan, '--explainPlan') +
             get_cmd_opt(maxImageCacheGb, '--maxImageCacheGb') +
