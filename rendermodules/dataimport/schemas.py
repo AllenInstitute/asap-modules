@@ -1,3 +1,4 @@
+import warnings
 import marshmallow as mm
 from argschema.fields import InputDir, InputFile, Str, Int, Boolean, Float
 from ..module.schemas import (StackTransitionParameters, InputStackParameters,
@@ -145,7 +146,8 @@ class MakeMontageScapeSectionStackParameters(OutputStackParameters):
         "Java heap size in GB for materialization"))
     pool_size_materialize = Int(required=False, default=1, description=(
         "number of processes to generate missing downsamples"))
-
+    filterListName = Str(required=False, description=(
+        "Apply specified filter list to all renderings"))
 
     @post_load
     def validate_data(self, data):
@@ -153,6 +155,11 @@ class MakeMontageScapeSectionStackParameters(OutputStackParameters):
             raise ValidationError('new Z start cannot be less than zero')
         elif not data['set_new_z']:
             data['new_z_start'] = min(data['zValues'])
+        # FIXME will be able to remove with render-python tweak
+        if data.get('filterListName') is not None:
+            warnings.warn(
+                "filterListName not implemented -- will use default behavior",
+                UserWarning)
 
 
 class MakeMontageScapeSectionStackOutput(DefaultSchema):

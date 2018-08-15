@@ -1,9 +1,11 @@
+import warnings
 import argschema
 from rendermodules.module.schemas import (
     RenderParameters, SparkParameters, MaterializedBoxParameters,
     ZRangeParameters, RenderParametersRenderWebServiceParameters)
 from argschema.fields import (Str, OutputDir, Int, Boolean, Float,
                               List, InputDir)
+from marshmallow import post_load
 
 
 class RenderSectionAtScaleParameters(RenderParameters):
@@ -41,11 +43,21 @@ class RenderSectionAtScaleParameters(RenderParameters):
         default=-1,
         missing=-1,
         description='max Z to create the downsample section from')
+    filterListName = Str(required=False, description=(
+        "Apply specified filter list to all renderings"))
     pool_size = Int(
         required=False,
         default=20,
         missing=20,
         description='number of parallel threads to use')
+
+    @post_load
+    def validate_data(self, data):
+        # FIXME will be able to remove with render-python tweak
+        if data.get('filterListName') is not None:
+            warnings.warn(
+                "filterListName not implemented -- will use default behavior",
+                UserWarning)
 
 
 class RenderSectionAtScaleOutput(argschema.schemas.DefaultSchema):
