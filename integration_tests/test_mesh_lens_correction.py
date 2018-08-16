@@ -29,7 +29,7 @@ example = {
         "lens_lambda": 1e-5
   },
   "output_stack": "lens_corrected_stack",
-  "outfile": "/allen/aibs/pipeline/image_processing/volume_assembly/scratch/lens_out.json"
+  "outfile": "/allen/aibs/pipeline/image_processing/volume_assembly/scratch/lens_out.json",
 }
 
 render_params['project'] = "mesh_lens_correction_test"
