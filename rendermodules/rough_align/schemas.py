@@ -53,6 +53,7 @@ class ApplyRoughAlignmentTransformParameters(RenderParameters):
         metadata={'description':'scale of montage scapes'})
     apply_scale = mm.fields.Boolean(
         required=False,
+        default=False,
         missing=False,
         metadata={'description':'do you want to apply scale'})
     pool_size = mm.fields.Int(
