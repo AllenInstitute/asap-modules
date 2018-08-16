@@ -202,8 +202,8 @@ class PointMatchOpenCVParameters(RenderParameters):
         description="ratio in Lowe's ratio test")
     CLAHE_grid = Int(
         required=False,
-        default=16,
-        missing=16,
+        default=None,
+        missing=None,
         description="tileGridSize for cv2 CLAHE")
     CLAHE_clip = Float(
         required=False,
