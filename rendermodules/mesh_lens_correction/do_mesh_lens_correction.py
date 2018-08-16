@@ -10,18 +10,18 @@ from rendermodules.dataimport.generate_EM_tilespecs_from_metafile \
         import GenerateEMTileSpecsModule
 from rendermodules.pointmatch.create_tilepairs \
         import TilePairClientModule
-from rendermodules.mesh_lens_correction.LensPointMatches \
-        import generate_point_matches
 from rendermodules.mesh_lens_correction.MeshAndSolveTransform \
         import MeshAndSolveTransform
 from rendermodules.em_montage_qc.detect_montage_defects \
         import DetectMontageDefectsModule
+from rendermodules.pointmatch.generate_pointmatches_opencv \
+        import GeneratePointMatchesOpenCV
 
 example = {
     "render": {
-        "host": "em-131snb1",
+        "host": "em-131db",
         "port": 8080,
-        "owner": "gayathrim",
+        "owner": "danielk",
         "project": "lens_corr",
         "client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts",
         "memGB": "2G"
@@ -39,10 +39,10 @@ example = {
     "metafile": "/allen/programs/celltypes/workgroups/em-connectomics/danielk/em_lens_correction/test_data/_metadata_20180220175645_247488_8R_tape070A_05_20180220175645_reference_0_.json",
     "match_collection": "raw_lens_matches",
     "nfeature_limit": 20000,
-    "output_dir": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch",
-    "outfile": "lens_out.json"
+    "output_dir": "/allen/programs/celltypes/workgroups/em-connectomics/danielk/tmp",
+    "outfile": "lens_out.json",
+    "output_json": "./mesh_lens_output.json"
 }
-
 
 def delete_matches_if_exist(render, owner, collection, sectionId):
     collections = renderapi.pointmatch.get_matchcollections(
@@ -129,6 +129,14 @@ class MeshLensCorrection(RenderModule):
         ex['maxZ'] = self.args['z_index']
         return ex
 
+    def get_pm_args(self):
+        args_for_pm = {}
+        args_for_pm['render'] = self.args['render']
+        args_for_pm['pairJson'] = self.args['pairJson']
+        args_for_pm['input_stack'] = self.args['input_stack']
+        args_for_pm['match_collection'] = self.args['match_collection']
+        return args_for_pm
+
     def run(self):
         self.args['sectionId'] = self.get_sectionId_from_metafile(
                 self.args['metafile'])
@@ -173,14 +181,11 @@ class MeshLensCorrection(RenderModule):
                     self.args['match_collection'],
                     self.args['sectionId'])
 
-            # generate point matches
-            generate_point_matches(self.render,
-                                   self.args['pairJson'],
-                                   self.args['input_stack'],
-                                   self.args['match_collection'],
-                                   self.args['matchMax'],
-                                   nfeature_limit=self.args['nfeature_limit'],
-                                   logger=self.logger)
+            args_for_pm = self.get_pm_args()
+            pmgen = GeneratePointMatchesOpenCV(
+                    input_data=args_for_pm,
+                    args=['--output_json', out_file.name])
+            pmgen.run()
 
         self.logger.setLevel(self.args['log_level'])
 
