@@ -14,7 +14,7 @@ from rendermodules.mesh_lens_correction.MeshAndSolveTransform \
         import MeshAndSolveTransform
 from rendermodules.em_montage_qc.detect_montage_defects \
         import DetectMontageDefectsModule
-from rendermodules.pointmatch.generate_pointmatches_opencv \
+from rendermodules.pointmatch.generate_point_matches_opencv \
         import GeneratePointMatchesOpenCV
 from rendermodules.pointmatch.schemas \
         import PointMatchOpenCVParameters
