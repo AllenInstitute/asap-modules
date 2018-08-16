@@ -16,6 +16,8 @@ from rendermodules.em_montage_qc.detect_montage_defects \
         import DetectMontageDefectsModule
 from rendermodules.pointmatch.generate_pointmatches_opencv \
         import GeneratePointMatchesOpenCV
+from rendermodules.pointmatch.schemas \
+        import PointMatchOpenCVParameters
 
 example = {
     "render": {
@@ -132,10 +134,16 @@ class MeshLensCorrection(RenderModule):
 
     def get_pm_args(self):
         args_for_pm = {}
-        args_for_pm['render'] = self.args['render']
-        args_for_pm['pairJson'] = self.args['pairJson']
-        args_for_pm['input_stack'] = self.args['input_stack']
-        args_for_pm['match_collection'] = self.args['match_collection']
+        p = PointMatchOpenCVParameters()
+        for pm_key in p.__dict__['declared_fields'].keys():
+            if pm_key in self.args.keys():
+                args_for_pm[pm_key] = self.args[pm_key]
+        #print(p.__dict__['declared_fields'].keys()
+        #args_for_pm['render'] = self.args['render']
+        #args_for_pm['pairJson'] = self.args['pairJson']
+        #args_for_pm['input_stack'] = self.args['input_stack']
+        #args_for_pm['match_collection'] = self.args['match_collection']
+
         return args_for_pm
 
     def run(self):
