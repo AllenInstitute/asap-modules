@@ -472,8 +472,6 @@ class MeshAndSolveTransform(ArgSchemaParser):
     def run(self):
         self.render = renderapi.connect(**self.args['render'])
 
-        print(self.args['good_solve'])
-
         self.tilespecs, self.matches = get_tspecs_and_matches(
             self.render,
             self.args['match_collection'],
