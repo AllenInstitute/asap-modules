@@ -3,6 +3,7 @@ from argschema import ArgSchema
 from argschema.schemas import DefaultSchema
 from argschema.fields import Str, Int, Bool, Nested, Float, OutputDir
 from ..module.render_module import RenderParameters
+from ..pointmatch.schemas import PointMatchOpenCVParameters
 
 
 class regularization(DefaultSchema):
@@ -41,7 +42,7 @@ class good_solve_criteria(DefaultSchema):
         description="maximum allowed scale deviation from 1.0")
 
 
-class MeshLensCorrectionSchema(RenderParameters):
+class MeshLensCorrectionSchema(PointMatchOpenCVParameters):
     input_stack = Str(
         required=True,
         description="Name of raw input lens data stack")
