@@ -5,7 +5,6 @@ import cv2
 import multiprocessing
 from six.moves import urllib
 import logging
-#from ..module.render_module import RenderModule
 from argschema import ArgSchemaParser
 from .schemas import \
         PointMatchOpenCVParameters, \
@@ -37,6 +36,7 @@ example = {
             },
         "ncpus": 7
         }
+
 
 def ransac_chunk(fargs):
     [k1xy, k2xy, des1, des2, k1ind, args] = fargs
@@ -84,6 +84,7 @@ def ransac_chunk(fargs):
 
     return k1, k2
 
+
 def read_equalize_downsample(impath, scale, CLAHE_grid=None, CLAHE_clip=None):
     im = cv2.imread(impath, 0)
     im = cv2.resize(im, (0, 0),
@@ -102,8 +103,6 @@ def read_equalize_downsample(impath, scale, CLAHE_grid=None, CLAHE_clip=None):
 
 def find_matches(fargs):
     [impaths, ids, gids, args] = fargs
-    print(impaths[0])
-    print(impaths[1])
 
     pim = read_equalize_downsample(
             impaths[0],
@@ -149,9 +148,6 @@ def find_matches(fargs):
     for result in results:
         k1 += result[0]
         k2 += result[1]
-
-
-    print(len(k1))
 
     if len(k1) >= 1:
         k1 = np.array(k1) / args['downsample_scale']
@@ -254,10 +250,10 @@ class GeneratePointMatchesOpenCV(ArgSchemaParser):
         ncpus = self.args['ncpus']
         if self.args['ncpus'] == -1:
             ncpus = multiprocessing.cpu_count()
-    
+
         with renderapi.client.WithPool(ncpus) as pool:
             index_list = range(tile_index.shape[0])
-    
+
             fargs = []
             for i in index_list:
                 impaths = [
@@ -270,7 +266,7 @@ class GeneratePointMatchesOpenCV(ArgSchemaParser):
                 gids = [t.layout.sectionId
                         for t in tilespecs[tile_index[i]]]
                 fargs.append([impaths, ids, gids, self.args])
-    
+
             for r in pool.imap_unordered(find_matches, fargs):
                 log = "\n%s\n%s\n" % (r[0][0], r[0][1])
                 log += "  (%d, %d) features found" % (r[1], r[2])

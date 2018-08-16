@@ -44,6 +44,7 @@ example = {
     "output_json": "./mesh_lens_output.json"
 }
 
+
 def delete_matches_if_exist(render, owner, collection, sectionId):
     collections = renderapi.pointmatch.get_matchcollections(
             render=render,
