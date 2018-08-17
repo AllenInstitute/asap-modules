@@ -178,7 +178,7 @@ def test_run_montage_job_for_section(render,
 
     # run this job again with same target collection to make sure that existing z in target stack gets deleted
     # also check for reimaged section handling 
-    solver_example['swap_section'] = "True"
+    solver_example['clone_section'] = "True"
     mod = SolveMontageSectionModule(input_data=solver_example, args=['--output_json', 'out.json'])
     mod.run()
 
@@ -196,7 +196,7 @@ def test_run_montage_job_for_section(render,
     renderapi.stack.delete_stack(js['backup_stack'], render=render)
 
     # check to overwrite the z if it exists
-    solver_example['swap_section'] = "False"
+    solver_example['clone_section'] = "False"
     solver_example['overwrite_z'] = "True"
     mod = SolveMontageSectionModule(input_data=solver_example, args=['--output_json', 'out.json'])
     mod.run()

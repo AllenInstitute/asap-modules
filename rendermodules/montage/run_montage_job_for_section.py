@@ -173,7 +173,7 @@ class SolveMontageSectionModule(RenderModule):
         if self.args['target_collection']['stack'] in list_of_stacks: 
             # copt the sections into their own stack in case of reimaging
             for z in xrange(int(self.args['first_section']), int(self.args['last_section'])+1):
-                if self.args['swap_section']:
+                if self.args['clone_section']:
                     temp_stack = "em_2d_montage_solved_backup_z_{}_t{}".format(z, time.strftime("%m%d%y_%H%M%S"))
         
                     renderapi.stack.clone_stack(self.args['target_collection']['stack'],

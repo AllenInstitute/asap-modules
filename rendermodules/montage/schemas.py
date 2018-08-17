@@ -366,7 +366,7 @@ class SolveMontageSectionParameters(RenderParameters):
         default=False,
         missing=False,
         description="Overwrite z in the output stack (default = True)")
-    swap_section = Bool(
+    clone_section = Bool(
         required=False,
         default=True,
         missing=True,
