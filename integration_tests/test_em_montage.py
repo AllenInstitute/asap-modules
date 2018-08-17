@@ -177,8 +177,36 @@ def test_run_montage_job_for_section(render,
     assert len(tilespecs) == 4
 
     # run this job again with same target collection to make sure that existing z in target stack gets deleted
-    mod = SolveMontageSectionModule(input_data=solver_example, args=[])
+    # also check for reimaged section handling 
+    solver_example['swap_section'] = "True"
+    mod = SolveMontageSectionModule(input_data=solver_example, args=['--output_json', 'out.json'])
     mod.run()
+
+    # check if the backup stack exists
+    js = []
+    with open('out.json', 'r') as f:
+        js = json.load(f)
+    
+    stacks = renderapi.render.get_stacks_by_owner_project(owner=render.DEFAULT_OWNER,
+                                                          project=render.DEFAULT_PROJECT,
+                                                          host=render.DEFAULT_HOST,
+                                                          port=render.DEFAULT_PORT,
+                                                          render=render)
+    assert js['backup_stack'] in stacks
+    renderapi.stack.delete_stack(js['backup_stack'], render=render)
+
+    # check to overwrite the z if it exists
+    solver_example['swap_section'] = "False"
+    solver_example['overwrite_z'] = "True"
+    mod = SolveMontageSectionModule(input_data=solver_example, args=['--output_json', 'out.json'])
+    mod.run()
+
+    js = []
+    with open('out.json', 'r') as f:
+        js = json.load(f)
+
+    assert js['backup_stack'] == solver_example['target_collection']['stack']
+    
 
 def test_fail_montage_job_for_section(render,
                                      raw_stack,

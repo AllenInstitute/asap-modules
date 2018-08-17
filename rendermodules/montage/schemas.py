@@ -1,4 +1,4 @@
-from argschema.fields import Bool, Float, Int, Nested, Str, InputDir, OutputDir
+from argschema.fields import Bool, Float, Int, Nested, Str, InputDir, OutputDir, List
 from argschema.schemas import DefaultSchema
 import marshmallow as mm
 from marshmallow import Schema, validates_schema, post_load
@@ -361,6 +361,16 @@ class SolveMontageSectionParameters(RenderParameters):
         default=0,
         missing=0,
         description="Verbose output from solver needed?")
+    overwrite_z = Bool(
+        required=False,
+        default=False,
+        missing=False,
+        description="Overwrite z in the output stack (default = True)")
+    swap_section = Bool(
+        required=False,
+        default=True,
+        missing=True,
+        description="If z already exists in output stack copy it to a backup stack")
     solver_options = Nested(
         SolverOptionsParameters,
         required=True,
@@ -416,3 +426,14 @@ class SolveMontageSectionParameters(RenderParameters):
             data['source_point_match_collection']['server'] = data['source_collection']['baseURL']
         if data['source_point_match_collection']['owner'] is None:
             data['source_point_match_collection']['owner'] = data['render']['owner']
+
+
+class SolveMontageSectionParametersOutput(DefaultSchema):
+    zs = List(
+        Float,
+        required=True,
+        description="Z index of the section")
+    backup_stack = Str(
+        required=True,
+        description="The name of the backup stack in case of a reimaged section")
+    
