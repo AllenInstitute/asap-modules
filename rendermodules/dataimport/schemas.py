@@ -1,10 +1,10 @@
+import warnings
 import marshmallow as mm
 from argschema.fields import InputDir, InputFile, Str, Int, Boolean, Float
 from ..module.schemas import (StackTransitionParameters, InputStackParameters,
                               OutputStackParameters)
 from marshmallow import ValidationError, post_load
 from argschema.schemas import DefaultSchema
-
 
 
 class GenerateMipMapsOutput(DefaultSchema):
@@ -108,7 +108,7 @@ class MakeMontageScapeSectionStackParameters(OutputStackParameters):
     montage_stack = Str(
         required=True,
         metadata={'description':'stack to make a downsample version of'})
-    image_directory = InputDir(
+    image_directory = Str(
         required=True,
         metadata={'description':'directory that stores the montage scapes'})
     set_new_z = Boolean(
@@ -129,6 +129,11 @@ class MakeMontageScapeSectionStackParameters(OutputStackParameters):
     scale = Float(
         required=True,
         metadata={'description':'scale of montage scapes'})
+    apply_scale = Boolean(
+        required=False,
+        default=False,
+        missing=False,
+        metadata={'description':'Do you want to scale the downsample to the size of section? Default = False'})
     doFilter = Boolean(required=False, default=True, description=(
         "whether to apply default filtering when generating "
         "missing downsamples"))
@@ -141,7 +146,8 @@ class MakeMontageScapeSectionStackParameters(OutputStackParameters):
         "Java heap size in GB for materialization"))
     pool_size_materialize = Int(required=False, default=1, description=(
         "number of processes to generate missing downsamples"))
-
+    filterListName = Str(required=False, description=(
+        "Apply specified filter list to all renderings"))
 
     @post_load
     def validate_data(self, data):
@@ -149,6 +155,11 @@ class MakeMontageScapeSectionStackParameters(OutputStackParameters):
             raise ValidationError('new Z start cannot be less than zero')
         elif not data['set_new_z']:
             data['new_z_start'] = min(data['zValues'])
+        # FIXME will be able to remove with render-python tweak
+        if data.get('filterListName') is not None:
+            warnings.warn(
+                "filterListName not implemented -- will use default behavior",
+                UserWarning)
 
 
 class MakeMontageScapeSectionStackOutput(DefaultSchema):

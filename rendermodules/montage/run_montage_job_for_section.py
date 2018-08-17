@@ -8,6 +8,11 @@ from rendermodules.montage.schemas import SolveMontageSectionParameters, SolveMo
 from marshmallow import ValidationError
 import time
 
+try:
+    xrange
+except NameError:
+    xrange = range
+
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.montage.run_montage_job_for_section"
 
@@ -156,7 +161,7 @@ class SolveMontageSectionModule(RenderModule):
             if target_host.find('http://') < 0:
                 target_host = 'http://%s'%(target_host)
             port = int(num)
-        
+
         list_of_stacks = renderapi.render.get_stacks_by_owner_project(owner=self.args['target_collection']['owner'],
                                                                       project=self.args['target_collection']['project'],
                                                                       host=target_host,
@@ -204,7 +209,7 @@ class SolveMontageSectionModule(RenderModule):
         with open(tempjson.name, 'w') as f:
             json.dump(self.args, f, indent=4)
             f.close()
-        
+
         #assumes that solver_executable is the shell script that sets the LD_LIBRARY path and calls the executable
         cmd = "%s %s %s"%(self.solver_executable, os.environ['MCRROOT'],tempjson.name)
         ret = os.system(cmd)
@@ -221,11 +226,11 @@ class SolveMontageSectionModule(RenderModule):
             self.output(d)
         except:
             raise RenderModuleException("unable to output json {}",d)
-        
+
         #if you made a tmp stack destroy it
         if self.clone_section_stack:
             renderapi.stack.delete_stack(tmp_stack,render=self.render)
-       
+
 
 if __name__ == "__main__":
     mod = SolveMontageSectionModule(input_data=example)

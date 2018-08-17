@@ -6,6 +6,10 @@ from skimage.measure import block_reduce
 from rendermodules.utilities.pillow_utils import Image
 from rendermodules.module.render_module import RenderModuleException
 
+try:
+    xrange
+except NameError:
+    xrange = range
 
 PIL_filters = {
     "NEAREST": Image.NEAREST,
@@ -54,10 +58,12 @@ def mipmap_block_reduce(im, levels_file_map, block_func="mean",
             "invalid block_reduce function {}".format(e))
 
     tempimg = numpy.array(im)
+    target_dtype = tempimg.dtype
     lastlevel = 0
     for level, outpath in levels_file_map.items():
         for i in xrange(lastlevel, level):
-            tempimg = block_reduce(tempimg, (2, 2), func=reduce_func)
+            tempimg = block_reduce(tempimg, (2, 2), func=reduce_func).astype(
+                target_dtype)
 
         # is it okay to do non-progressive downsampling (below)?
         # tempimg = block_reduce(
@@ -76,7 +82,7 @@ def mipmap_PIL(im, levels_file_map, ds_filter="NEAREST",
 
     origsize = im.size
     for level, outpath in levels_file_map.items():
-        newsize = tuple(map(lambda x: x/(2**level), origsize))
+        newsize = tuple(map(lambda x: x//(2**level), origsize))
         dwnImage = im.resize(newsize, resample=PIL_filter)
         writeImage(dwnImage, outpath, force_redo)
 
@@ -127,7 +133,7 @@ def create_mipmaps(inputImage, outputDirectory='.', method="block_reduce",
     # Need to check if the level 0 image exists
     im = Image.open(inputImage)
     if convertTo8bit:
-        table = [i/256 for i in range(65536)]
+        table = [i//256 for i in range(65536)]
         im = im.convert('I')
         im = im.point(table, 'L')
 

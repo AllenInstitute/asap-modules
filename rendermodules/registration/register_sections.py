@@ -1,11 +1,11 @@
 import os
-import numpy as np 
+import numpy as np
 import renderapi
 import logging
 from functools import partial
 from renderapi.transform import AffineModel, RigidModel, SimilarityModel
 from ..module.render_module import RenderModule
-from schemas import RegisterSectionSchema, RegisterSectionOutputSchema
+from .schemas import RegisterSectionSchema, RegisterSectionOutputSchema
 from rendermodules.stack.consolidate_transforms import consolidate_transforms
 
 example = {
@@ -34,7 +34,7 @@ def fit_model_to_points(render, ref_stack, moving_stack, match_collection, match
     # tilespecs for both sections
     ref_tspecs = renderapi.tilespec.get_tile_specs_from_z(ref_stack, ref_z, render=render)
     moving_tspecs = renderapi.tilespec.get_tile_specs_from_z(moving_stack, moving_z, render=render)
-    
+
     for i, tspec in enumerate(ref_tspecs):
         pid = tspec.tileId
         pgroup = tspec.layout.sectionId
@@ -79,7 +79,7 @@ class RegisterSectionByPointMatch(RenderModule):
             Transform = RigidModel
         elif self.args['registration_model'] == "Similarity":
             Transform = SimilarityModel
-        
+
         tilespecs = fit_model_to_points(self.render,
                                         self.args['reference_stack'],
                                         self.args['moving_stack'],
@@ -89,22 +89,21 @@ class RegisterSectionByPointMatch(RenderModule):
                                         self.args['reference_z'],
                                         self.args['moving_z'],
                                         self.args['consolidate_transforms'])
-        
+
         stacks = self.render.run(renderapi.render.get_stacks_by_owner_project, owner=self.render.DEFAULT_OWNER, project=self.render.DEFAULT_PROJECT)
         if not(self.args['output_stack'] in stacks):
             self.render.run(renderapi.stack.create_stack, self.args['output_stack'])
         elif self.args['overwrite_output']:
             self.render.run(renderapi.stack.set_stack_state, self.args['output_stack'], 'LOADING')
             self.render.run(renderapi.stack.delete_section, self.args['output_stack'], self.args['moving_z'])
-        
+
         renderapi.client.import_tilespecs_parallel(self.args['output_stack'],
                                                    tilespecs,
                                                    render=self.render,
                                                    close_stack=True)
         self.output({'out_stack': self.args['output_stack'], 'registered_z': self.args['moving_z']})
-        
+
 
 if __name__=="__main__":
     mod = RegisterSectionByPointMatch(input_data=example)
     mod.run()
-        

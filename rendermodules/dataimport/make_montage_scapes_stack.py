@@ -1,3 +1,4 @@
+import errno
 from functools import partial
 import glob
 import os
@@ -26,6 +27,7 @@ example = {
     "new_z_start": 1020,
     "imgformat":"png",
     "scale": 0.1,
+    "apply_scale": "False",
     "zstart": 1020,
     "zend": 1022,
     "pool_size": 20
@@ -55,7 +57,7 @@ example = {
 
 def create_montage_scape_tile_specs(render, input_stack, image_directory,
                                     scale, project, tagstr, imgformat,
-                                    Z, **kwargs):
+                                    Z, apply_scale=False, **kwargs):
     z = Z[0]
     newz = Z[1]
 
@@ -120,14 +122,19 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory,
 
     with Image.open(filename) as im:
         t.width, t.height = im.size
-    t.ip.mipMapLevels = [renderapi.image_pyramid.MipMapLevel(
-        0, imageUrl=pathlib.Path(filename).as_uri())]
+    t.ip[0] = renderapi.image_pyramid.MipMap(
+        imageUrl=pathlib.Path(filename).as_uri())
+    [t.ip.pop(k) for k in list(t.ip.keys()) if k != '0']
     t.minIntensity = 0
     t.maxIntensity = 255
     t.z = newz
     t.layout.sectionId = "%s.0" % str(int(newz))
-    t.tforms = [renderapi.transform.AffineModel(
-        M00=(1./scale), M11=(1./scale))]
+    if apply_scale:
+        t.tforms = [renderapi.transform.AffineModel(
+            M00=(1./scale), M11=(1./scale))]
+    else:
+        t.tforms = [renderapi.transform.AffineModel(
+            M00=(1.), M11=(1.))]
 
     # EM_aligner expects the level 0 to be filled regardless of other level mipmaps
     # d['mipmapLevels'][0] = {}
@@ -184,7 +191,7 @@ class MakeMontageScapeSectionStack(StackOutputModule):
 
     def run(self):
         self.logger.debug('Montage scape stack generation module')
-
+        
         # get the list of z indices
         zvalues = self.render.run(
             renderapi.stack.get_z_values_for_stack,
@@ -225,7 +232,9 @@ class MakeMontageScapeSectionStack(StackOutputModule):
         try:
             os.makedirs(tilespecdir)
         except OSError as e:
-            pass  # FIXME better handling
+            if e.errno != errno.EEXIST:
+                raise
+            pass
 
         render_materialize = renderapi.connect(
             **self.render.make_kwargs(memGB=self.args['memGB_materialize']))
@@ -239,10 +248,12 @@ class MakeMontageScapeSectionStack(StackOutputModule):
             self.args['render']['project'],
             tagstr,
             self.args['imgformat'],
+            apply_scale=self.args['apply_scale'],
             level=self.args['level'],
             pool_size=1,
             doFilter=self.args['doFilter'],
-            fillWithNoise=self.args['fillWithNoise'])
+            fillWithNoise=self.args['fillWithNoise'],
+            do_mp=False)
 
         with renderapi.client.WithPool(
                 self.args['pool_size_materialize']) as pool:

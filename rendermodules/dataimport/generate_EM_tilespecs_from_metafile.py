@@ -65,15 +65,15 @@ class GenerateEMTileSpecsModule(StackOutputModule):
         imageUrl = pathlib.Path(
             os.path.abspath(os.path.join(
                 imgdir, imgdata['img_path']))).as_uri()
-
+        ip = renderapi.image_pyramid.ImagePyramid()
+        ip[0] = renderapi.image_pyramid.MipMap(imageUrl=imageUrl,
+                                               maskUrl=maskUrl)
         return renderapi.tilespec.TileSpec(
             tileId=tileId, z=z,
             width=width, height=height,
             minint=minint, maxint=maxint,
             tforms=raw_tforms,
-            mipMapLevels=[
-                renderapi.tilespec.MipMapLevel(
-                    0, imageUrl=imageUrl, maskUrl=maskUrl)],
+            imagePyramid=ip,
             sectionId=sectionId, scopeId=scopeId, cameraId=cameraId,
             imageCol=imgdata['img_meta']['raster_pos'][0],
             imageRow=imgdata['img_meta']['raster_pos'][1],
@@ -97,7 +97,7 @@ class GenerateEMTileSpecsModule(StackOutputModule):
                 "No relevant image metadata found for metafile {}".format(
                     self.args['metafile']))
 
-        minX, minY = numpy.min(numpy.array(img_coords.values()), axis=0)
+        minX, minY = numpy.min(numpy.array(list(img_coords.values())), axis=0)
         # assume isotropic pixels
         pixelsize = roidata['calibration']['highmag']['x_nm_per_pix']
 

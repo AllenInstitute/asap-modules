@@ -1,6 +1,5 @@
 import renderapi
-import urllib
-import urlparse
+from six.moves import urllib
 from rendermodules.dataimport.create_mipmaps import create_mipmaps
 from functools import partial
 from ..module.render_module import StackInputModule, RenderModuleException
@@ -42,10 +41,10 @@ def create_mipmap_from_tuple(mipmap_tuple, levels=[1, 2, 3],
 
 
 def get_filepath_from_tilespec(ts):
-    mml = ts.ip.get(0)
+    mml = ts.ip[0]
 
-    old_url = mml['imageUrl']
-    filepath_in = urllib.unquote(urlparse.urlparse(
+    old_url = mml.imageUrl
+    filepath_in = urllib.parse.unquote(urllib.parse.urlparse(
         str(old_url)).path)
     return filepath_in
 
@@ -64,7 +63,7 @@ def make_tilespecs_and_cmds(render, inputStack, output_dir, zvalues, levels,
             mipmap_args.append((filepath_in, output_dir))
 
     mypartial = partial(
-        create_mipmap_from_tuple, method=method, levels=range(1, levels + 1),
+        create_mipmap_from_tuple, method=method, levels=list(range(1, levels + 1)),
         convertTo8bit=convert_to_8bit, force_redo=force_redo,
         imgformat=imgformat)
 

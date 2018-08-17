@@ -1,4 +1,4 @@
-render-python>=1.11.0
+render-python>=2.0.1
 argschema>=1.15.17
 numpy
 pillow
@@ -8,9 +8,11 @@ scipy
 rtree
 networkx
 bokeh
-EMaligner>=0.1.2
+EMaligner>=0.1.7
 matplotlib
-opencv-python
+opencv-contrib-python
 jinja2
+six
 scikit-image
 shapely
+triangle

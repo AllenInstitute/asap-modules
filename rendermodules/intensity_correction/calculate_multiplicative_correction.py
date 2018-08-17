@@ -77,11 +77,11 @@ class MakeMedian(RenderModule):
         np.median(stack, axis=2, overwrite_input=True)
         (A, B, C) = stack.shape
         if (numtiles % 2 == 0):
-            med1 = stack[:, :, numtiles / 2 - 1]
-            med2 = stack[:, :, numtiles / 2 + 1]
-            med = (med1 + med2) / 2
+            med1 = stack[:, :, numtiles // 2 - 1]
+            med2 = stack[:, :, numtiles // 2 + 1]
+            med = (med1 + med2) // 2
         else:
-            med = stack[:, :, (numtiles - 1) / 2]
+            med = stack[:, :, (numtiles - 1) // 2]
         med = gaussian_filter(med, 10)
 
         # save image and create output tilespecs
@@ -96,10 +96,10 @@ class MakeMedian(RenderModule):
             tifffile.imsave(outImage, med)
             ts = firstts[ind]
             ts.z = z
-            mmld = ts.ip.get(0)
-            mml = renderapi.tilespec.MipMapLevel(
-                level=0, imageUrl=outImage, maskUrl=mmld.get('maskUrl', None))
-            ts.ip.update(mml)
+            mml_o = ts.ip[0]
+            mml = renderapi.image_pyramid.MipMap(
+                 imageUrl=outImage, maskUrl=mml_o.maskUrl)
+            ts.ip[0] = mml
             outtilespecs.append(ts)
 
         # upload to render
