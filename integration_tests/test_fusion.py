@@ -4,6 +4,7 @@ Test stack fusion by affine-based registration and transform interpolation
 import copy
 import json
 import logging
+import os
 
 import numpy
 import pytest
@@ -145,7 +146,7 @@ def get_random_rigid_tform(max_translation_tuple=(10, 10)):
     return translate_tform.concatenate(rotate_tform)
 
 
-def test_register_first_stack(render, stack_DAG):
+def test_register_first_stack(render, stack_DAG, tmpdir):
     from rendermodules.fusion.register_adjacent_stack import (
         RegisterSubvolumeModule, example_parameters)
 
@@ -159,9 +160,10 @@ def test_register_first_stack(render, stack_DAG):
         'stack_a': parentstack,
         'stack_b': childstack})
 
+    outputfn = os.path.join(str(tmpdir), 'register_stack_out.json')
     rms = RegisterSubvolumeModule(
         input_data=test_input,
-        args=['--output_json', 'register_stack_out.json'])
+        args=['--output_json', outputfn])
     rms.run()
 
     with open(rms.args['output_json'], 'r') as f:
@@ -169,7 +171,7 @@ def test_register_first_stack(render, stack_DAG):
 
     estimated_tform = renderapi.transform.load_transform_json(
         outd['transform'])
-    tspecs = renderapi.tilespec.get_tile_specs_from_stack(
+    tspecs = renderapi.tilespec.get_tile_specs_from_stack(  # noqa: F841
         childstack, render=render)
     assert numpy.allclose(estimated_tform.M, tform.M)
     assert outd['stack_a'] == parentstack
@@ -200,7 +202,7 @@ def test_register_all_stacks(render, stack_DAG):
 
             estimated_tform = renderapi.transform.load_transform_json(
                 outd['transform'])
-            tspecs = renderapi.tilespec.get_tile_specs_from_stack(
+            tspecs = renderapi.tilespec.get_tile_specs_from_stack(  # noqa: F841, E501
                 childstack, render=render)
 
             assert outd['stack_a'] == parentstack
@@ -212,7 +214,7 @@ def test_register_all_stacks(render, stack_DAG):
     registerchildrentest(stack_DAG)
 
 
-def test_fuse_stacks(render, stack_DAG, validstack):
+def test_fuse_stacks(render, stack_DAG, validstack, tmpdir):
     from rendermodules.fusion.fuse_stacks import (
         FuseStacksModule, example_parameters)
     distance_thres = 1.  # central distance threshold in pixels
@@ -224,8 +226,10 @@ def test_fuse_stacks(render, stack_DAG, validstack):
         'render': render.make_kwargs(),
         'stacks': input_DAG,
         'output_stack': 'fuse_stacks_test'})
+
+    outputfn = os.path.join(str(tmpdir), "fuse_stack_out.json")
     fs = FuseStacksModule(input_data=test_input,
-                          args=['--output_json', 'fuse_stack_out.json'])
+                          args=['--output_json', outputfn])
     fs.run()
 
     with open(fs.args['output_json'], 'r') as f:
@@ -266,6 +270,7 @@ def test_fuse_stacks(render, stack_DAG, validstack):
             valid_centerpoint_l2w_in.append(
                 {'tileId': tileId, 'visible': False,
                  'local': [validtile.width // 2, validtile.height // 2]})
+        # using server-side batch coordinate processing
         wc_valid = renderapi.coordinate.local_to_world_coordinates_batch(
             validstack, valid_centerpoint_l2w_in, z, number_of_threads=5,
             render=render)
