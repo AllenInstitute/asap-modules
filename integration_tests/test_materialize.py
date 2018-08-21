@@ -11,7 +11,8 @@ import pytest
 import renderapi
 from rendermodules.utilities.pillow_utils import Image
 from rendermodules.materialize import materialize_sections
-from test_data import (render_params, MATERIALIZE_BOX_JSON)
+from test_data import (render_params, 
+                       MATERIALIZE_BOX_JSON)
 
 @pytest.fixture(scope='module')
 def render():
@@ -44,7 +45,6 @@ format_ext_mapping = {
     'PNG': 'png',
     'TIF': 'tif',
     'JPEG': 'jpg'}
-
 
 def test_materialize_boxes(render, input_materializeboxes_stack, tmpdir):
     # TODO model this after pm test w/ spark

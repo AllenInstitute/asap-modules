@@ -68,6 +68,11 @@ class RenderSectionAtScaleParameters(RenderParameters):
     filterListName = Str(required=False, description=(
         "Apply specified filter list to all renderings"))
     bounds = Nested(Bounds, required=False, default=None, missing=None)
+    use_stack_bounds = Boolean(
+        required=False,
+        default=False,
+        missing=False,
+        description='Do you want to use stack bounds while downsampling?. Default=False')
     pool_size = Int(
         required=False,
         default=20,
