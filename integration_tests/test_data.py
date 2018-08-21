@@ -248,4 +248,9 @@ solver_montage_parameters = render_json_template(example_env, 'solver_montage_te
                                                  render_client_scripts=client_script_location,
                                                  solver_output_dir=tempfile.mkdtemp())
 
-                                                                                                                                                                                                                                                                                                                             
+FUSION_TILESPEC_JSON = render_json_template(
+    example_env, 'fusion_test_tilespecs_ref.json',
+    test_data_root=TEST_DATA_ROOT)
+
+FUSION_TRANSFORM_JSON = render_json_template(
+    example_env, 'fusion_test_tform_ref.json', test_data_root=TEST_DATA_ROOT)
