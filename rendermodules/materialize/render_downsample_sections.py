@@ -160,7 +160,12 @@ class RenderSectionAtScale(RenderModule):
         zrange = range(int(self.args['minZ']), int(self.args['maxZ'])+1)
         zvalues = list(set(zvalues1).intersection(set(zrange)))
 
-        print(self.args['bounds'])
+        if self.args['bounds'] is None:
+            if self.args['use_stack_bounds']:
+                self.args['bounds'] = renderapi.stack.get_stack_bounds(self.args['input_stack'], render=self.render)
+                self.args['bounds'].pop('minZ')
+                self.args['bounds'].pop('maxZ')
+
         if not zvalues:
             raise RenderModuleException(
                 'No valid zvalues found in stack for '
