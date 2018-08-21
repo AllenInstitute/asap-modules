@@ -87,7 +87,7 @@ class RenderSectionAtScale(RenderModule):
             cls, zvalues, input_stack=None, level=1, pool_size=1,
             image_directory=None, scale=None, imgformat=None, doFilter=None,
             fillWithNoise=None, filterListName=None,
-            render=None, do_mp=True, **kwargs):
+            render=None, do_mp=True, bounds=None, **kwargs):
         # temporary hack for nested pooling woes
         poolclass = (renderapi.client.WithPool if do_mp else WithThreadPool)
 
@@ -134,7 +134,8 @@ class RenderSectionAtScale(RenderModule):
                    format=imgformat,
                    doFilter=doFilter,
                    fillWithNoise=fillWithNoise,
-                   filterListName=filterListName)
+                   filterListName=filterListName,
+                   bounds=bounds)
 
         if stack_has_mipmaps:
             # delete the temp stack
@@ -159,6 +160,7 @@ class RenderSectionAtScale(RenderModule):
         zrange = range(int(self.args['minZ']), int(self.args['maxZ'])+1)
         zvalues = list(set(zvalues1).intersection(set(zrange)))
 
+        print(self.args['bounds'])
         if not zvalues:
             raise RenderModuleException(
                 'No valid zvalues found in stack for '

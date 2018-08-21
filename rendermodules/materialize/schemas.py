@@ -4,10 +4,32 @@ from rendermodules.module.schemas import (
     RenderParameters, SparkParameters, MaterializedBoxParameters,
     ZRangeParameters, RenderParametersRenderWebServiceParameters)
 from argschema.fields import (Str, OutputDir, Int, Boolean, Float,
-                              List, InputDir)
+                              List, InputDir, Nested)
 from marshmallow import post_load
 
+class Bounds(argschema.schemas.DefaultSchema):
+    minX = Int(
+        required=False,
+        default=None,
+        missing=None,
+        description="minX of bounds")
+    maxX = Int(
+        required=False,
+        default=None,
+        missing=None,
+        description="maxX of bounds")
+    minY = Int(
+        required=False,
+        default=None,
+        missing=None,
+        description="minY of bounds")
+    maxY = Int(
+        required=False,
+        default=None,
+        missing=None,
+        description="maxY of bounds")
 
+    
 class RenderSectionAtScaleParameters(RenderParameters):
     input_stack = Str(
         required=True,
@@ -45,6 +67,7 @@ class RenderSectionAtScaleParameters(RenderParameters):
         description='max Z to create the downsample section from')
     filterListName = Str(required=False, description=(
         "Apply specified filter list to all renderings"))
+    bounds = Nested(Bounds, required=False, default=None, missing=None)
     pool_size = Int(
         required=False,
         default=20,
