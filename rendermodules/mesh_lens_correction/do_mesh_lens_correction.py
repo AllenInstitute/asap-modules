@@ -72,6 +72,35 @@ def delete_matches_if_exist(render, owner, collection, sectionId):
                     sectionId,
                     render=render)
 
+def make_mask(w, h, radii):
+    corners = [
+            [0, 0],
+            [w, 0],
+            [w, h],
+            [0, h]]
+    bbox = Polygon(np.array(corners))
+
+    circles = []
+    xsigns = [1, -1, -1, 1]
+    ysigns = [1, 1, -1, -1]
+    for i in range(len(radii)):
+        center = list(corners[i])
+        center[0] += xsigns[i] * radii[i]
+        center[1] += ysigns[i] * radii[i]
+        c = Point(
+            center[0],
+            center[1]).buffer(radii[i])
+        if not c.is_empty:
+            r = bbox.difference(c)
+            areas = np.array([ir.area for ir in r])
+            ind = np.argmax(areas)
+            bbox = r[ind].union(c)
+
+    xy = np.array(list(bbox.exterior.coords)).astype('int32')
+    mask = np.zeros((h, w)).astype('uint8')
+    mask = cv2.fillConvexPoly(mask, xy, color=255)
+    return mask
+
 
 def make_mask_from_coords(w, h, coords):
     cont = np.array(coords).astype('int32')
@@ -223,7 +252,7 @@ class MeshLensCorrection(RenderModule):
         args_for_input['mask_coords'] = None
 
         # create a stack with the lens correction tiles
-        ts_example = self.generate_ts_example()
+        ts_example = self.generate_ts_example(maskUrl)
         mod = GenerateEMTileSpecsModule(input_data=ts_example,
                                         args=['--output_json', out_file.name])
         mod.run()
