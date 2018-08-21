@@ -104,18 +104,20 @@ class GenerateEMTileSpecsModule(StackOutputModule):
         imgdir = self.args.get(
             'image_directory', os.path.dirname(self.args['metafile']))
 
-        tspecs = [self.ts_from_imgdata(
-            img, imgdir,
-            img_coords[img['img_path']][0] - minX,
-            img_coords[img['img_path']][1] - minY,
-            minint=self.args['minimum_intensity'],
-            maxint=self.args['maximum_intensity'],
-            width=roidata['camera_info']['width'],
-            height=roidata['camera_info']['height'],
-            z=self.zValues[0], sectionId=self.args.get('sectionId'),
-            scopeId=roidata['temca_id'],
-            cameraId=roidata['camera_info']['camera_id'],
-            pixelsize=pixelsize) for img in imgdata]
+        tspecs = [
+                self.ts_from_imgdata(
+                    img, imgdir,
+                    img_coords[img['img_path']][0] - minX,
+                    img_coords[img['img_path']][1] - minY,
+                    minint=self.args['minimum_intensity'],
+                    maxint=self.args['maximum_intensity'],
+                    width=roidata['camera_info']['width'],
+                    height=roidata['camera_info']['height'],
+                    z=self.zValues[0], sectionId=self.args.get('sectionId'),
+                    scopeId=roidata['temca_id'],
+                    cameraId=roidata['camera_info']['camera_id'],
+                    pixelsize=pixelsize,
+                    maskUrl = self.args['maskUrl']) for img in imgdata]
 
         self.output_tilespecs_to_stack(tspecs)
 

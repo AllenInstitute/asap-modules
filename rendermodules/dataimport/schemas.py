@@ -81,6 +81,11 @@ class GenerateEMTileSpecsParameters(OutputStackParameters):
     metafile = InputFile(
         required=True,
         description="metadata file containing TEMCA acquisition data")
+    maskUrl = InputFile(
+        required=False,
+        default = None,
+        missing = None,
+        description="absolute path to image mask to apply")
     image_directory = InputDir(
         required=False,
         description=("directory used in determining absolute paths to images. "

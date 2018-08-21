@@ -1,6 +1,10 @@
 import json
 import renderapi
 import tempfile
+import numpy as np
+from shapely.geometry import Polygon, Point
+import cv2
+import os
 
 from ..module.render_module import RenderModule
 
@@ -21,7 +25,7 @@ from rendermodules.pointmatch.schemas \
 
 example = {
     "render": {
-        "host": "em-131db",
+        "host": "em-131db.corp.alleninstitute.org",
         "port": 8080,
         "owner": "danielk",
         "project": "lens_corr",
@@ -43,7 +47,8 @@ example = {
     "nfeature_limit": 20000,
     "output_dir": "/allen/programs/celltypes/workgroups/em-connectomics/danielk/tmp",
     "outfile": "lens_out.json",
-    "output_json": "./mesh_lens_output.json"
+    "output_json": "./mesh_lens_output.json",
+    "corner_mask_radii": [200, 0, 0, 0]
 }
 
 
@@ -63,6 +68,35 @@ def delete_matches_if_exist(render, owner, collection, sectionId):
                     sectionId,
                     render=render)
 
+def make_mask(w, h, radii):
+    corners = [
+            [0, 0],
+            [w, 0],
+            [w, h],
+            [0, h]]
+    bbox = Polygon(np.array(corners))
+
+    circles = []
+    xsigns = [1, -1, -1, 1]
+    ysigns = [1, 1, -1, -1]
+    for i in range(len(radii)):
+        center = list(corners[i])
+        center[0] += xsigns[i] * radii[i]
+        center[1] += ysigns[i] * radii[i]
+        c = Point(
+            center[0],
+            center[1]).buffer(radii[i])
+        if not c.is_empty:
+            r = bbox.difference(c)
+            areas = np.array([ir.area for ir in r])
+            ind = np.argmax(areas)
+            bbox = r[ind].union(c)
+
+    xy = np.array(list(bbox.exterior.coords)).astype('int32')
+    mask = np.zeros((h, w)).astype('uint8')
+    mask = cv2.fillConvexPoly(mask, xy, color=255)
+    return mask
+
 
 class MeshLensCorrection(RenderModule):
     default_schema = MeshLensCorrectionSchema
@@ -78,7 +112,7 @@ class MeshLensCorrection(RenderModule):
         sectionId = j[0]['metadata']['grid']
         return sectionId
 
-    def generate_ts_example(self):
+    def generate_ts_example(self, maskUrl):
         ex = {}
         ex['render'] = {}
         ex['render']['host'] = self.render.DEFAULT_HOST
@@ -93,6 +127,7 @@ class MeshLensCorrection(RenderModule):
         ex['output_stack'] = self.args['input_stack']
         ex['z'] = self.args['z_index']
         ex['sectionId'] = self.args['sectionId']
+        ex['maskUrl'] = maskUrl
         return ex
 
     def generate_tilepair_example(self):
@@ -159,8 +194,24 @@ class MeshLensCorrection(RenderModule):
 
         args_for_input = dict(self.args)
 
+        maskUrl = None
+        if np.any(args_for_input['corner_mask_radii'] != 0):
+            with open(args_for_input['metafile'], 'r') as f:
+                    metafile = json.load(f)
+            w = metafile[0]['metadata']['camera_info']['width']
+            h = metafile[0]['metadata']['camera_info']['height']
+            mask = make_mask(w, h, args_for_input['corner_mask_radii'])
+
+            mdir = os.path.dirname(args_for_input['metafile'])
+            i = 0
+            maskUrl = os.path.join(mdir, 'mask%d.png' % i)
+            while os.path.isfile(maskUrl):
+                i += 1
+                maskUrl = os.path.join(mdir, 'mask%d.png' % i)
+            cv2.imwrite(maskUrl, mask)
+
         # create a stack with the lens correction tiles
-        ts_example = self.generate_ts_example()
+        ts_example = self.generate_ts_example(maskUrl)
         mod = GenerateEMTileSpecsModule(input_data=ts_example,
                                         args=['--output_json', out_file.name])
         mod.run()

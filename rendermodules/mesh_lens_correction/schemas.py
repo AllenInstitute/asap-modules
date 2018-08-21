@@ -1,7 +1,7 @@
 
 from argschema import ArgSchema
 from argschema.schemas import DefaultSchema
-from argschema.fields import Str, Int, Bool, Nested, Float, OutputDir
+from argschema.fields import Str, Int, Bool, Nested, Float, OutputDir, List
 from ..module.render_module import RenderParameters
 from ..pointmatch.schemas import PointMatchOpenCVParameters
 
@@ -97,6 +97,14 @@ class MeshLensCorrectionSchema(PointMatchOpenCVParameters):
         required=True,
         default="xxx",
         description="section Id")
+    corner_mask_radii = List(
+        Int,
+        required=False,
+        default=[0, 0, 0, 0],
+        missing=[0, 0, 0, 0],
+        cli_as_single_argument=True,
+        description="radius of image mask corners, "
+        "order (0, 0), (w, 0), (w, h), (0, h)")
 
 
 class MeshAndSolveOutputSchema(DefaultSchema):
