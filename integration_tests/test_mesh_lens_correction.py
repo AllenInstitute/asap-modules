@@ -3,8 +3,12 @@ import pytest
 import renderapi
 import os
 
-from rendermodules.mesh_lens_correction.do_mesh_lens_correction import MeshLensCorrection
-from rendermodules.mesh_lens_correction.MeshAndSolveTransform import MeshLensCorrectionException
+from rendermodules.mesh_lens_correction.do_mesh_lens_correction import \
+        MeshLensCorrection, MeshAndSolveTransform
+from rendermodules.mesh_lens_correction.MeshAndSolveTransform import \
+        MeshLensCorrectionException, \
+        find_delaunay_with_max_vertices, \
+        force_vertices_with_npoints
 from test_data import render_params, TEST_DATA_ROOT
 
 example = {
@@ -55,12 +59,12 @@ def test_coarse_mesh_failure(render, tmpdir_factory):
     example_for_input['z_index'] = 101
     outjson = os.path.join(outdir, 'mesh_lens_out0.json')
 
-    mod = MeshLensCorrection(
+    meshmod = MeshLensCorrection(
             input_data=example_for_input,
             args=['--output_json', outjson])
 
     with pytest.raises(MeshLensCorrectionException):
-        mod.run()
+        meshmod.run()
 
 
 def test_mesh_lens_correction(render, tmpdir_factory):
@@ -78,12 +82,13 @@ def test_mesh_lens_correction(render, tmpdir_factory):
     outjson = os.path.join(outdir, 'mesh_lens_out.json')
     example_for_input['z_index'] = 100
 
-    mod = MeshLensCorrection(
+    meshmod = MeshLensCorrection(
             input_data=example_for_input,
             args=['--output_json', outjson])
 
     # add collection and a match so we cover deletion
-    sectionId = mod.get_sectionId_from_metafile(example_for_input['metafile'])
+    sectionId = meshmod.get_sectionId_from_metafile(
+            example_for_input['metafile'])
     match = {}
     match['qId'] = 'qid'
     match['pId'] = 'pid'
@@ -96,9 +101,9 @@ def test_mesh_lens_correction(render, tmpdir_factory):
     renderapi.pointmatch.import_matches(
             example_for_input['match_collection'],
             [match],
-            render=mod.render)
+            render=meshmod.render)
 
-    mod.run()
+    meshmod.run()
 
     with open(outjson, 'r') as f:
         js = json.load(f)
@@ -114,12 +119,30 @@ def test_mesh_lens_correction(render, tmpdir_factory):
             "mpicbg.trakem2.transform.ThinPlateSplineTransform")
 
     # some little bits of coverage
-    mod.args['rerun_pointmatch'] = False
-    mod.args['output_dir'] = None
-    mod.args['outfile'] = None
-    mod.run()
+    meshmod.args['rerun_pointmatch'] = False
+    meshmod.args['output_dir'] = None
+    meshmod.args['outfile'] = None
+    meshmod.run()
 
     # test for failure of good solve check
-    mod.args['good_solve']['error_std'] = 0.001
+    meshmod.args['good_solve']['error_std'] = 0.001
     with pytest.raises(MeshLensCorrectionException):
-        mod.run()
+        meshmod.run()
+
+    meshmod.args['good_solve']['error_std'] = 3.0
+    meshclass = MeshAndSolveTransform(
+            input_data=dict(meshmod.args),
+            args=['--output_json', outjson])
+    meshclass.run()
+
+    # gets into the iterative areaadjustment in force_vertices
+    tmp_mesh, tmp_area_fac = \
+        find_delaunay_with_max_vertices(
+                meshclass.bbox,
+                4*meshclass.args['nvertex'])
+    tmp_mesh, tmp_area_fac = \
+        force_vertices_with_npoints(
+                tmp_area_fac,
+                meshclass.bbox,
+                meshclass.coords,
+                3)
