@@ -59,22 +59,3 @@ class RemapZsParameters(StackTransitionParameters):
 class RemapZsOutput(DefaultSchema):
     zValues = List(Int, required=True)
     output_stack = Str(required=True)
-
-class SwapZsParameters(RenderParameters):
-    source_stack = Str(required=True,
-                        description="List of stacks from which sections needs to be swapped")
-    target_stack = Str(required=True,
-                        description="List of stacks to which sections needs to be swapped")
-    zValues = List(Int, 
-                   required=True,
-                   description="List of z values to be swapped")
-    delete_source_stacks = Boolean(
-        required=False,
-        default=False,
-        missing=False,
-        description="Do you want to delete the temp source stacks after swapping to a new one - Default=False")
-    
-class SwapZsOutput(DefaultSchema):
-    zValues = List(Int, required=True)
-    output_stack = Str(required=True,
-                        description="List of newly swapped stacks")
