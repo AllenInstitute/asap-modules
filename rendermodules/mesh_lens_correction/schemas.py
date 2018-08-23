@@ -105,6 +105,11 @@ class MeshLensCorrectionSchema(PointMatchOpenCVParameters):
         cli_as_single_argument=True,
         description="radius of image mask corners, "
         "order (0, 0), (w, 0), (w, h), (0, h)")
+    mask_dir = OutputDir(
+        required=False,
+        default=None,
+        missing=None,
+        description="directory for saving masks")
 
 
 class MeshAndSolveOutputSchema(DefaultSchema):

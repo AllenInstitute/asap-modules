@@ -142,7 +142,6 @@ def approx_snap_contour(contour, width, height, epsilon=20, snap_dist=5):
         for j in [0, height]:
             if np.abs(approx[i, 0, 1] - j) <= snap_dist:
                 approx[i, 0, 1] = j
-    print(approx)
     return approx
 
 def create_PSLG(tile_width, tile_height, maskUrl):

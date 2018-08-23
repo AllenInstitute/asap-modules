@@ -48,7 +48,8 @@ example = {
     "output_dir": "/allen/programs/celltypes/workgroups/em-connectomics/danielk/tmp",
     "outfile": "lens_out.json",
     "output_json": "./mesh_lens_output.json",
-    "corner_mask_radii": [200, 0, 0, 0]
+    "corner_mask_radii": [200, 0, 0, 0],
+    "mask_dir": "/allen/programs/celltypes/workgroups/em-connectomics/danielk/masks_for_stacks"
 }
 
 
@@ -205,12 +206,19 @@ class MeshLensCorrection(RenderModule):
             h = metafile[0]['metadata']['camera_info']['height']
             mask = make_mask(w, h, args_for_input['corner_mask_radii'])
 
-            mdir = os.path.dirname(args_for_input['metafile'])
+            def get_mask_url(i):
+                mask_basename = os.path.basename(
+                    self.args['metafile'].replace(
+                        '.json',
+                        '_%d.png' % i))
+                return os.path.join(
+                        self.args['mask_dir'],
+                        mask_basename)
             i = 0
-            maskUrl = os.path.join(mdir, 'mask%d.png' % i)
+            maskUrl = get_mask_url(i)
             while os.path.isfile(maskUrl):
                 i += 1
-                maskUrl = os.path.join(mdir, 'mask%d.png' % i)
+                maskUrl = get_mask_url(i)
             cv2.imwrite(maskUrl, mask)
 
         # create a stack with the lens correction tiles
