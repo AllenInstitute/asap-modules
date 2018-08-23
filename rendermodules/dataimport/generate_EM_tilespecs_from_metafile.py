@@ -65,6 +65,9 @@ class GenerateEMTileSpecsModule(StackOutputModule):
         imageUrl = pathlib.Path(
             os.path.abspath(os.path.join(
                 imgdir, imgdata['img_path']))).as_uri()
+        if maskUrl is not None:
+                maskUrl = pathlib.Path(maskUrl).as_uri()
+
         ip = renderapi.image_pyramid.ImagePyramid()
         ip[0] = renderapi.image_pyramid.MipMap(imageUrl=imageUrl,
                                                maskUrl=maskUrl)

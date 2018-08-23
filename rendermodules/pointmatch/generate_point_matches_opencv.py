@@ -85,12 +85,14 @@ def ransac_chunk(fargs):
     return k1, k2
 
 
-def read_equalize_downsample(impath, scale, CLAHE_grid=None, CLAHE_clip=None):
-    im = cv2.imread(impath, 0)
+def read_downsample_equalize_mask(impath, scale, CLAHE_grid=None, CLAHE_clip=None):
+    im = cv2.imread(impath[0], 0)
+
     im = cv2.resize(im, (0, 0),
                     fx=scale,
                     fy=scale,
                     interpolation=cv2.INTER_CUBIC)
+
     if (CLAHE_grid is not None) & (CLAHE_clip is not None):
         clahe = cv2.createCLAHE(
             clipLimit=CLAHE_clip,
@@ -98,18 +100,27 @@ def read_equalize_downsample(impath, scale, CLAHE_grid=None, CLAHE_clip=None):
         im = clahe.apply(im)
     else:
         im = cv2.equalizeHist(im)
+
+    if impath[1] is not None:
+        mask = cv2.imread(impath[1], 0)
+        mask = cv2.resize(mask, (0, 0),
+                        fx=scale,
+                        fy=scale,
+                        interpolation=cv2.INTER_CUBIC)
+        im = cv2.bitwise_and(im, im, mask=mask)
+
     return im
 
 
 def find_matches(fargs):
     [impaths, ids, gids, args] = fargs
 
-    pim = read_equalize_downsample(
+    pim = read_downsample_equalize_mask(
             impaths[0],
             args['downsample_scale'],
             CLAHE_grid=args['CLAHE_grid'],
             CLAHE_clip=args['CLAHE_clip'])
-    qim = read_equalize_downsample(
+    qim = read_downsample_equalize_mask(
             impaths[1],
             args['downsample_scale'],
             CLAHE_grid=args['CLAHE_grid'],
@@ -257,9 +268,10 @@ class GeneratePointMatchesOpenCV(ArgSchemaParser):
             fargs = []
             for i in index_list:
                 impaths = [
-                           urllib.parse.unquote(
-                               urllib.parse.urlparse(
-                                    t.ip[0].imageUrl).path)
+                           [urllib.parse.unquote(
+                               urllib.parse.urlparse(url).path)
+                               if url is not None else None
+                               for url in [t.ip[0].imageUrl, t.ip[0].maskUrl]]
                            for t in tilespecs[tile_index[i]]
                           ]
                 ids = [t.tileId for t in tilespecs[tile_index[i]]]
