@@ -121,7 +121,30 @@ def downsample_sections_dir(montage_stack, tmpdir_factory):
         "maxZ": 1022,
     }
     ex['output_json'] = os.path.join(image_directory, 'output.json')
+    
+    # set bounds parameter to stack bounds
+    ex['use_stack_bounds'] = "True"
+    
+    mod = RenderSectionAtScale(input_data=ex, args=[])
+    mod.run()
 
+    out_dir = os.path.join(image_directory, render_params['project'], montage_stack, 'sections_at_0.1/001/0')
+    assert(os.path.exists(out_dir))
+
+    files = glob.glob(os.path.join(out_dir, '*.png'))
+
+    assert(len(files) == len(range(ex['minZ'], ex['maxZ']+1)))
+
+    for fil in files:
+        img = os.path.join(out_dir, fil)
+        assert(os.path.exists(img) and os.path.isfile(img) and os.path.getsize(img) > 0)
+
+    # remove files from the previous run
+    os.system("rm {}/*.png".format(out_dir))
+
+    # set bounds to section bounds
+    ex['use_stack_bounds'] = "False"
+    
     mod = RenderSectionAtScale(input_data=ex, args=[])
     mod.run()
 
