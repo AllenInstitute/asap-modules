@@ -239,6 +239,7 @@ class MeshLensCorrection(RenderModule):
 
         args_for_input = dict(self.args)
 
+<<<<<<< HEAD
         with open(self.args['metafile'], 'r') as f:
                 metafile = json.load(f)
         self.maskUrl = make_mask(
@@ -253,6 +254,30 @@ class MeshLensCorrection(RenderModule):
         # we don't need it after mask creation
         self.args['mask_coords'] = None
         args_for_input['mask_coords'] = None
+=======
+        maskUrl = None
+        if np.any(np.array(args_for_input['corner_mask_radii']) != 0):
+            with open(args_for_input['metafile'], 'r') as f:
+                    metafile = json.load(f)
+            w = metafile[0]['metadata']['camera_info']['width']
+            h = metafile[0]['metadata']['camera_info']['height']
+            mask = make_mask(w, h, args_for_input['corner_mask_radii'])
+
+            def get_mask_url(i):
+                mask_basename = os.path.basename(
+                    self.args['metafile'].replace(
+                        '.json',
+                        '_%d.png' % i))
+                return os.path.join(
+                        self.args['mask_dir'],
+                        mask_basename)
+            i = 0
+            maskUrl = get_mask_url(i)
+            while os.path.isfile(maskUrl):
+                i += 1
+                maskUrl = get_mask_url(i)
+            cv2.imwrite(maskUrl, mask)
+>>>>>>> adding mask_dir to schema
 
         # create a stack with the lens correction tiles
         ts_example = self.generate_ts_example(maskUrl)
