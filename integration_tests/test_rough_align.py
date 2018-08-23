@@ -143,7 +143,7 @@ def downsample_sections_dir(montage_stack, tmpdir_factory):
     os.system("rm {}/*.png".format(out_dir))
 
     # set bounds to section bounds
-    ex['user_stack_bounds'] = "False"
+    ex['use_stack_bounds'] = "False"
     
     mod = RenderSectionAtScale(input_data=ex, args=[])
     mod.run()
