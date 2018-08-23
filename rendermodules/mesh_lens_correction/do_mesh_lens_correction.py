@@ -16,7 +16,7 @@ from rendermodules.dataimport.generate_EM_tilespecs_from_metafile \
 from rendermodules.pointmatch.create_tilepairs \
         import TilePairClientModule
 from rendermodules.mesh_lens_correction.MeshAndSolveTransform \
-        import MeshAndSolveTransform
+        import MeshAndSolveTransform, approx_snap_contour
 from rendermodules.em_montage_qc.detect_montage_defects \
         import DetectMontageDefectsModule
 from rendermodules.pointmatch.generate_point_matches_opencv \
@@ -97,8 +97,11 @@ def make_mask(w, h, radii):
             bbox = r[ind].union(c)
 
     xy = np.array(list(bbox.exterior.coords)).astype('int32')
+    cont = np.reshape(xy, (xy.shape[0], 1, xy.shape[1]))
+    approx = approx_snap_contour(cont, w, h)
+
     mask = np.zeros((h, w)).astype('uint8')
-    mask = cv2.fillConvexPoly(mask, xy, color=255)
+    mask = cv2.fillConvexPoly(mask, approx, color=255)
     return mask
 
 
