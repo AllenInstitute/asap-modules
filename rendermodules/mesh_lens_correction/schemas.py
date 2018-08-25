@@ -3,6 +3,7 @@ from argschema import ArgSchema
 from argschema.schemas import DefaultSchema
 from argschema.fields import Str, Int, Bool, Nested, Float, OutputDir
 from ..module.render_module import RenderParameters
+from ..pointmatch.schemas import PointMatchOpenCVParameters
 
 
 class regularization(DefaultSchema):
@@ -41,7 +42,7 @@ class good_solve_criteria(DefaultSchema):
         description="maximum allowed scale deviation from 1.0")
 
 
-class MeshLensCorrectionSchema(RenderParameters):
+class MeshLensCorrectionSchema(PointMatchOpenCVParameters):
     input_stack = Str(
         required=True,
         description="Name of raw input lens data stack")
@@ -72,25 +73,10 @@ class MeshLensCorrectionSchema(RenderParameters):
     z_index = Int(
         required=True,
         description="z value for the lens correction data in stack")
-    nfeature_limit = Int(
-        required=False,
-        default=20000,
-        missing=20000,
-        description="randomly choose this many features per tile")
-    matchMax = Int(
-        required=False,
-        default=1000,
-        missing=1000,
-        description="maximum pointmatches per tile pair")
     ncpus = Int(
         required=False,
         default=-1,
         description="max number of cpus to use")
-    downsample_scale = Float(
-        required=False,
-        default=0.3,
-        missing=0.3,
-        description="passed to cv2.resize fx,fy")
     nvertex = Int(
         required=False,
         default=1000,
