@@ -69,7 +69,7 @@ def delete_matches_if_exist(render, owner, collection, sectionId):
                     sectionId,
                     render=render)
 
-def make_mask(w, h, radii):
+def make_mask(w, h, radii, docircles=True):
     corners = [
             [0, 0],
             [w, 0],
@@ -77,21 +77,42 @@ def make_mask(w, h, radii):
             [0, h]]
     bbox = Polygon(np.array(corners))
 
-    circles = []
-    xsigns = [1, -1, -1, 1]
-    ysigns = [1, 1, -1, -1]
-    for i in range(len(radii)):
-        center = list(corners[i])
-        center[0] += xsigns[i] * radii[i]
-        center[1] += ysigns[i] * radii[i]
-        c = Point(
-            center[0],
-            center[1]).buffer(radii[i])
-        if not c.is_empty:
-            r = bbox.difference(c)
-            areas = np.array([ir.area for ir in r])
-            ind = np.argmax(areas)
-            bbox = r[ind].union(c)
+    if docircles:
+        # radius the corner
+        circles = []
+        xsigns = [1, -1, -1, 1]
+        ysigns = [1, 1, -1, -1]
+        for i in range(len(radii)):
+            center = list(corners[i])
+            center[0] += xsigns[i] * radii[i]
+            center[1] += ysigns[i] * radii[i]
+            c = Point(
+                center[0],
+                center[1]).buffer(radii[i])
+            if not c.is_empty:
+                r = bbox.difference(c)
+                areas = np.array([ir.area for ir in r])
+                ind = np.argmax(areas)
+                bbox = r[ind].union(c)
+    else:
+        # triangle clip
+        newpts = []
+        addon = [
+                [[0, radii[0]], [radii[0], 0]],
+                [[-radii[1], 0], [0, radii[1]]],
+                [[0, -radii[2]], [-radii[2], 0]],
+                [[radii[3], 0], [0, -radii[3]]]]
+        for i in range(len(corners)):
+            if radii[i] == 0:
+                newpts.append(corners[i])
+            else:
+                for addpt in addon[i]:
+                    newpts.append(
+                            list(
+                                np.array(corners[i]) +
+                                np.array(addpt)))
+        bbox = Polygon(np.array(newpts))
+
 
     xy = np.array(list(bbox.exterior.coords)).astype('int32')
     cont = np.reshape(xy, (xy.shape[0], 1, xy.shape[1]))
@@ -204,7 +225,7 @@ class MeshLensCorrection(RenderModule):
                     metafile = json.load(f)
             w = metafile[0]['metadata']['camera_info']['width']
             h = metafile[0]['metadata']['camera_info']['height']
-            mask = make_mask(w, h, args_for_input['corner_mask_radii'])
+            mask = make_mask(w, h, args_for_input['corner_mask_radii'], docircles=False)
 
             def get_mask_url(i):
                 mask_basename = os.path.basename(

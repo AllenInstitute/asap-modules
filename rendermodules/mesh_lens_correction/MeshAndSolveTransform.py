@@ -188,7 +188,7 @@ def calculate_mesh(a, bbox, target, get_t=False):
 
 
 def force_vertices_with_npoints(area_par, bbox, coords, npts):
-    fac = 1.05
+    fac = 1.02
     count = 0
     max_iter = 20
     while True:
