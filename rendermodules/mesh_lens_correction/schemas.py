@@ -1,7 +1,7 @@
 
 from argschema import ArgSchema
 from argschema.schemas import DefaultSchema
-from argschema.fields import Str, Int, Bool, Nested, Float, OutputDir, List
+from argschema.fields import Str, Int, Bool, Nested, Float, OutputDir, List, InputFile
 from ..module.render_module import RenderParameters
 from ..pointmatch.schemas import PointMatchOpenCVParameters
 
@@ -110,6 +110,11 @@ class MeshLensCorrectionSchema(PointMatchOpenCVParameters):
         default=None,
         missing=None,
         description="directory for saving masks")
+    mask_file = InputFile(
+        required=False,
+        default=None,
+        missing=None,
+        description="explicit mask setting from file")
 
 
 class MeshAndSolveOutputSchema(DefaultSchema):

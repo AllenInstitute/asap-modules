@@ -5,6 +5,7 @@ import numpy as np
 from shapely.geometry import Polygon, Point
 import cv2
 import os
+from shutil import copyfile
 
 from ..module.render_module import RenderModule
 
@@ -220,7 +221,12 @@ class MeshLensCorrection(RenderModule):
         args_for_input = dict(self.args)
 
         maskUrl = None
-        if np.any(np.array(args_for_input['corner_mask_radii']) != 0):
+        if self.args['mask_file'] is not None:
+            maskUrl = os.path.join(
+                    self.args['mask_dir'],
+                    os.path.basename(self.args['mask_file']))
+            copyfile(self.args['mask_file'], maskUrl)
+        if (maskUrl is None) & np.any(np.array(args_for_input['corner_mask_radii']) != 0):
             with open(args_for_input['metafile'], 'r') as f:
                     metafile = json.load(f)
             w = metafile[0]['metadata']['camera_info']['width']
