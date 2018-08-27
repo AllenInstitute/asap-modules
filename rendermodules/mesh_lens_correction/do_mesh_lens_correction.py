@@ -277,7 +277,12 @@ class MeshLensCorrection(RenderModule):
         args_for_input['mask_coords'] = None
 =======
         maskUrl = None
-        if np.any(np.array(args_for_input['corner_mask_radii']) != 0):
+        if self.args['mask_file'] is not None:
+            maskUrl = os.path.join(
+                    self.args['mask_dir'],
+                    os.path.basename(self.args['mask_file']))
+            copyfile(self.args['mask_file'], maskUrl)
+        if (maskUrl is None) & np.any(np.array(args_for_input['corner_mask_radii']) != 0):
             with open(args_for_input['metafile'], 'r') as f:
                     metafile = json.load(f)
             w = metafile[0]['metadata']['camera_info']['width']
