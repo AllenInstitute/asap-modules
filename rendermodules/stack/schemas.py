@@ -59,3 +59,26 @@ class RemapZsParameters(StackTransitionParameters):
 class RemapZsOutput(DefaultSchema):
     zValues = List(Int, required=True)
     output_stack = Str(required=True)
+
+class SwapZsParameters(RenderParameters):
+    source_stack = Str(required=True)
+    complete_source_stack = Boolean(
+        required=False,
+        default=False,
+        missing=False,
+        description="set source stack state to complete after copying Default = False")
+    target_stack = Str(required=True)
+    complete_target_stack = Boolean(
+        required=False,
+        default=False,
+        missing=False,
+        description="set target stack state to complete after copying Default=False")
+    zValues = List(Int, required=True)
+    delete_source_stack = Boolean(
+        required=False,
+        default=False,
+        missing=False,
+        description="Do you want to delete source stack after copying its contents? Default=False")
+
+class SwapZsOutput(DefaultSchema):
+    zValues = List(Int, required=True)

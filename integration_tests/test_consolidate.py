@@ -7,10 +7,14 @@ import numpy as np
 
 import renderapi
 
-from test_data import render_params, cons_ex_tilespec_json, cons_ex_transform_json
+from test_data import (render_params, 
+                       cons_ex_tilespec_json, 
+                       cons_ex_transform_json,
+                       swap_z_tspecs1,
+                       swap_z_tspecs2)
 from rendermodules.module.render_module import RenderModuleException
 from rendermodules.stack.consolidate_transforms import ConsolidateTransforms, process_z, consolidate_transforms
-from rendermodules.stack import redirect_mipmaps, remap_zs
+from rendermodules.stack import redirect_mipmaps, remap_zs, swap_zs
 
 EPSILON = .001
 render_params['project'] = "consolidate_test"
@@ -24,8 +28,40 @@ def render():
 def render_example_tilespec_and_transforms():
     tilespecs = [renderapi.tilespec.TileSpec(json=ts) for ts in cons_ex_tilespec_json]
     tforms = [renderapi.transform.load_transform_json(td) for td in cons_ex_transform_json]
-    print(tforms)
     return (tilespecs, tforms)
+
+@pytest.fixture(scope='module')
+def source_tspecs():
+    source_ts = [renderapi.tilespec.TileSpec(json=d)
+                for d in swap_z_tspecs1]
+    return source_ts
+
+@pytest.fixture(scope='module')
+def target_tspecs():
+    target_ts = [renderapi.tilespec.TileSpec(json=d)
+                for d in swap_z_tspecs2]
+    return target_ts
+
+@pytest.fixture(scope='module')
+def source_stack(render, source_tspecs):
+    source_stack_name = "source_stack"
+    renderapi.stack.create_stack(source_stack_name, render=render)
+    renderapi.client.import_tilespecs(source_stack_name, source_tspecs, render=render)
+    renderapi.stack.set_stack_state(source_stack_name, 'COMPLETE', render=render)
+
+    yield source_stack_name
+    render.run(renderapi.stack.delete_stack, source_stack_name)
+
+@pytest.fixture(scope='module')
+def target_stack(render, target_tspecs):
+    target_stack_name = "target_stack"
+    renderapi.stack.create_stack(target_stack_name, render=render)
+    renderapi.client.import_tilespecs(target_stack_name, target_tspecs, render=render)
+    renderapi.stack.set_stack_state(target_stack_name, 'COMPLETE', render=render)
+
+    yield target_stack_name
+    render.run(renderapi.stack.delete_stack, target_stack_name)
+
 
 @pytest.fixture(scope='module')
 def test_stack(render,render_example_tilespec_and_transforms):
@@ -180,3 +216,34 @@ def test_remap_zs(render, test_stack, remap_sectionId):
     else:
         assert ({ts.layout.sectionId for ts in in_tspecs} ==
                 {ts.layout.sectionId for ts in out_tspecs})
+
+
+def test_swap_z_module(render, source_stack, target_stack, source_tspecs, target_tspecs):
+    ex = {
+        "render": render_params,
+        "source_stack": source_stack,
+        "target_stack": target_stack,
+        "zValues": [1015],
+        "delete_source_stack": "False"
+    }
+
+    mod = swap_zs.SwapZsModule(input_data=ex, args=['--output_json', 'output.json'])
+    mod.run()
+
+    # assert that both the stacks exist
+    list_of_stacks = renderapi.render.get_stacks_by_owner_project(host=render.DEFAULT_HOST,
+                                                                  port=render.DEFAULT_PORT,
+                                                                  owner=render.DEFAULT_OWNER,
+                                                                  project=render.DEFAULT_PROJECT,
+                                                                  render=render)
+    
+    assert(source_stack in list_of_stacks and target_stack in list_of_stacks)
+
+    source_tileids = [ts.tileId for ts in source_tspecs]
+    target_tileids = [ts.tileId for ts in target_tspecs]
+
+    tspecs1 = renderapi.stack.get_stack_tileIds(source_stack, render=render)
+    tspecs2 = renderapi.stack.get_stack_tileIds(target_stack, render=render)
+
+    assert(ts.tileId in target_tileids for ts in tspecs1)
+    assert(ts.tileId in source_tileids for ts in tspecs2)
