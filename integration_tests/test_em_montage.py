@@ -192,8 +192,8 @@ def test_run_montage_job_for_section(render,
                                                           host=render.DEFAULT_HOST,
                                                           port=render.DEFAULT_PORT,
                                                           render=render)
-    assert js['backup_stack'] in stacks
-    renderapi.stack.delete_stack(js['backup_stack'], render=render)
+    assert js['backup_stack'][0] in stacks
+    renderapi.stack.delete_stack(js['backup_stack'][0], render=render)
 
     # check to overwrite the z if it exists
     solver_example['clone_section'] = "False"
@@ -205,7 +205,7 @@ def test_run_montage_job_for_section(render,
     with open('out.json', 'r') as f:
         js = json.load(f)
 
-    assert js['backup_stack'] == solver_example['target_collection']['stack']
+    assert js['backup_stack'][0] == solver_example['target_collection']['stack']
     
 
 def test_fail_montage_job_for_section(render,

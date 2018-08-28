@@ -80,3 +80,16 @@ def test_solver_montage_test(render, montage_pointmatches, raw_stack, tmpdir):
     with open(renderinterface_fn, 'r') as f:
         output_d = json.load(f)
     assert output_d['stack'] == solver_montage_parameters['output_stack']['name']
+    assert output_d['backup_stack'][0] == solver_montage_parameters['output_stack']['name']
+
+    # run montaging again with clone section option
+    solver_montage_parameters['clone_section'] = "True"
+    solver_montage_parameters['overwrite_z'] = "False"
+
+    mod = Solve_stack(input_data=solver_montage_parameters, args=["--output_json", renderinterface_fn])
+    mod.run()
+
+    with open(renderinterface_fn, "r") as f:
+        output_d = json.load(f)
+    assert not (output_d['stack'] == output_d['backup_stack'][0])
+

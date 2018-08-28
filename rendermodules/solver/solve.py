@@ -1,7 +1,9 @@
 import argschema
+import renderapi
+import time
 from EMaligner import EMaligner
 
-from rendermodules.solver.schemas import EMA_Schema, EMA_Output_Schema
+from rendermodules.solver.schemas import EMA_Input_Schema, EMA_Output_Schema
 
 montage_example = {
    "first_section": 1020,
@@ -61,19 +63,65 @@ montage_example = {
    "regularization": {
        "default_lambda": 1.0e3,
        "translation_factor": 1.0e-5
-   }
+   },
+   "clone_section": "False",
+   "overwrite_z": "True"
 }
 
 
 class Solve_stack(argschema.ArgSchemaParser):
-    default_schema = EMA_Schema
+    default_schema = EMA_Input_Schema
     default_output_schema = EMA_Output_Schema
 
     def run(self):
+        render = renderapi.connect(**self.args['output_stack'])
+
+        list_of_stacks = renderapi.render.get_stacks_by_owner_project(host=render.DEFAULT_HOST,
+                                                                      port=render.DEFAULT_PORT,
+                                                                      owner=render.DEFAULT_OWNER,
+                                                                      project=render.DEFAULT_PROJECT,
+                                                                      render=render)
+        
+        backup_stack = []
+
+        if self.args['output_stack']['name'] in list_of_stacks:
+            for z in xrange(self.args['first_section'], self.args['last_section']+1):
+                renderapi.stack.set_stack_state(self.args['output_stack']['name'], 'LOADING', render=render)
+                    
+                if self.args['clone_section']:
+                    temp_stack = "em_2d_montage_solved_backup_z_{}_t{}".format(int(z), time.strftime("%m%d%y_%H%M%S"))
+
+                    renderapi.stack.clone_stack(self.args['output_stack']['name'],
+                                                temp_stack,
+                                                zs=[z],
+                                                render=render)
+                    backup_stack.append(temp_stack)
+                    
+                    renderapi.stack.delete_section(self.args['output_stack']['name'],
+                                                   z,
+                                                   host=render.DEFAULT_HOST,
+                                                   port=render.DEFAULT_PORT,
+                                                   owner=render.DEFAULT_OWNER,
+                                                   project=render.DEFAULT_PROJECT,
+                                                   render=render)
+                elif self.args['overwrite_z']:
+                    #renderapi.stack.set_stack_state(self.args['output_stack']['name'], 'LOADING', render=render)
+                    renderapi.stack.delete_section(self.args['output_stack']['name'],
+                                                   z,
+                                                   host=render.DEFAULT_HOST,
+                                                   port=render.DEFAULT_PORT,
+                                                   owner=render.DEFAULT_OWNER,
+                                                   project=render.DEFAULT_PROJECT,
+                                                   render=render)
+        
+        if not backup_stack:
+            backup_stack.append(self.args['output_stack']['name'])
+
+        
         self.module = EMaligner.EMaligner(input_data=self.args, args=[])
         self.module.run()
         self.output(
-            {"stack": self.args['output_stack']['name']})
+            {"stack": self.args['output_stack']['name'], "backup_stack": backup_stack})
 
 
 if __name__ == "__main__":

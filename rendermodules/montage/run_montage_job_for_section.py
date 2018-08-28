@@ -95,7 +95,7 @@ example = {
 	},
 	"verbose": 0,
     "overwrite_z":"False",
-    "swap_section":"True",
+    "clone_section":"True",
     "solver_executable": "/allen/aibs/pipeline/image_processing/volume_assembly/EMAligner/dev/allen_templates/run_em_solver.sh"
 }
 
@@ -103,24 +103,7 @@ class SolveMontageSectionModule(RenderModule):
     default_schema = SolveMontageSectionParameters
     default_output_schema = SolveMontageSectionParametersOutput
 
-    '''
-    def __init__(self, schema_type=None, *args, **kwargs):
-        if schema_type is None:
-            schema_type = SolveMontageSectionParameters
-        super(SolveMontageSectionModule, self).__init__(
-            schema_type=schema_type, *args, **kwargs)
-
-        # EM_aligner doesn't like extra parameters in the input json file
-        # Assigning the solver_executable to a different variable and removing it from args
-        self.solver_executable = self.args['solver_executable']
-        self.args.pop('solver_executable', None)
-        self.clone_section_stack = self.args['clone_section_stack']
-        self.args.pop('clone_section_stack')
-        # if self.clone_section_stack:
-        #     if (self.args['first_section']!=self.args['last_section']):
-        #         raise ValidationError("first section and last section not equal")
-    '''
-
+    
     def run(self):
         if "MCRROOT" not in os.environ:
             raise ValidationError("MCRROOT not set")
@@ -129,10 +112,18 @@ class SolveMontageSectionModule(RenderModule):
         # Assigning the solver_executable to a different variable and removing it from args
         self.solver_executable = self.args['solver_executable']
         self.args.pop('solver_executable', None)
-        self.clone_section_stack = self.args['clone_section_stack']
-        self.args.pop('clone_section_stack')
+        self.clone_section = self.args['clone_section']
+        self.args.pop('clone_section')
 
-        if self.clone_section_stack:
+        zvalues = renderapi.stack.get_z_values_for_stack(self.args['source_collection']['stack'], render=self.render)
+        zs = [z for z in zvalues if \
+            (z>=self.args['first_section']) \
+            and (z<=self.args['last_section'])]
+        self.args['first_section'] = min(zs)
+        self.args['last_section'] = max(zs)
+
+        '''
+        if self.clone_section:
             tmp_stack = "{}_zs{}_ze{}_t{}".format(self.args['source_collection']['stack'],
                                            self.args['first_section'],
                                            self.args['last_section'],
@@ -151,6 +142,7 @@ class SolveMontageSectionModule(RenderModule):
             # the clone stack option should also set the first and last section z appropriately in self.args for solver
             self.args['first_section'] = min(zs)
             self.args['last_section'] = max(zs)
+        '''
 
         # Check if the target stack exists and whether we need to overwrite the z
         target_host = self.args['target_collection']['service_host']
@@ -168,19 +160,21 @@ class SolveMontageSectionModule(RenderModule):
                                                                       port=port,
                                                                       render=self.render)
 
-        backup_stack = self.args['target_collection']['stack']
+        backup_stack = []
 
         if self.args['target_collection']['stack'] in list_of_stacks: 
-            # copt the sections into their own stack in case of reimaging
-            for z in xrange(int(self.args['first_section']), int(self.args['last_section'])+1):
-                if self.args['clone_section']:
-                    temp_stack = "em_2d_montage_solved_backup_z_{}_t{}".format(z, time.strftime("%m%d%y_%H%M%S"))
+            # copy the sections into their own stack in case of reimaging
+            for z in zs:
+                renderapi.stack.set_stack_state(self.args['target_collection']['stack'], 'LOADING', render=self.render)
+                
+                if self.clone_section:
+                    temp_stack = "em_2d_montage_solved_backup_z_{}_t{}".format(int(z), time.strftime("%m%d%y_%H%M%S"))
         
                     renderapi.stack.clone_stack(self.args['target_collection']['stack'],
                                                 temp_stack,
                                                 zs=[z],
                                                 render=self.render)
-                    backup_stack = temp_stack
+                    backup_stack.append(temp_stack)
                     
                     renderapi.stack.delete_section(self.args['target_collection']['stack'],
                                                 z,
@@ -197,7 +191,9 @@ class SolveMontageSectionModule(RenderModule):
                                                 owner=self.args['target_collection']['owner'],
                                                 project=self.args['target_collection']['project'],
                                                 render=self.render)
-                
+
+        if not backup_stack:
+            backup_stack.append(self.args['target_collection']['stack'])
 
         # generate a temporary json to feed in to the solver
         tempjson = tempfile.NamedTemporaryFile(
@@ -221,16 +217,13 @@ class SolveMontageSectionModule(RenderModule):
             raise RenderModuleException("solve failed with input_json {}",self.args)
 
         #try to return the z's solved in the output json
+        d={'zs':zs, 'backup_stack': backup_stack}
         try:
-            d={'zs':zs, 'backup_stack': backup_stack}
             self.output(d)
         except:
             raise RenderModuleException("unable to output json {}",d)
 
-        #if you made a tmp stack destroy it
-        if self.clone_section_stack:
-            renderapi.stack.delete_stack(tmp_stack,render=self.render)
-
+        
 
 if __name__ == "__main__":
     mod = SolveMontageSectionModule(input_data=example)

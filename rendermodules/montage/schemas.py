@@ -349,10 +349,6 @@ class SolveMontageSectionParameters(RenderParameters):
     last_section = Int(
         required=True,
         description="Z index of the last section")
-    clone_section_stack = Bool(
-        required=False,
-        default=True,
-        description="Whether to clone out a temporary single section stack from source_collection stack")
     solver_executable = Str(
         required=True,
         description="Matlab solver executable with full path")
@@ -363,13 +359,13 @@ class SolveMontageSectionParameters(RenderParameters):
         description="Verbose output from solver needed?")
     overwrite_z = Bool(
         required=False,
-        default=False,
-        missing=False,
+        default=True,
+        missing=True,
         description="Overwrite z in the output stack (default = True)")
     clone_section = Bool(
         required=False,
-        default=True,
-        missing=True,
+        default=False,
+        missing=False,
         description="If z already exists in output stack copy it to a backup stack")
     solver_options = Nested(
         SolverOptionsParameters,
@@ -433,7 +429,7 @@ class SolveMontageSectionParametersOutput(DefaultSchema):
         Float,
         required=True,
         description="Z index of the section")
-    backup_stack = Str(
+    backup_stack = List(Str,
         required=True,
         description="The name of the backup stack in case of a reimaged section")
     
