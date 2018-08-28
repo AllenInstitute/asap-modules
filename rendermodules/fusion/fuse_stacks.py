@@ -4,7 +4,6 @@ fuse overlapping render stacks registered by an Affine Homography transform
     similar to Parallel Elastic Alignment
 '''
 import copy
-import os
 
 import renderapi
 from six import viewkeys
@@ -61,17 +60,18 @@ class FuseStacksModule(RenderModule):
             renderapi.stack.get_z_values_for_stack, child))
         z_intersection = sorted(parent_zs.intersection(child_zs))
 
-        jsonfiles = []
+        resolved_tspecs = []
+        all_resolved_tform = []
         for z in uninterpolated_zs:
             section_tiles = []
-            tspecs = renderapi.tilespec.get_tile_specs_from_z(
+            resolved = renderapi.resolvedtiles.get_resolved_tiles_from_z(
                 child, z, render=self.render)
-            for ts in tspecs:
+            all_resolved_tform += resolved.transforms
+            for ts in resolved.tilespecs:
                 tsc = copy.deepcopy(ts)
                 # tsc.tforms.append(transform)  # TODO for nonconcat
                 tsc.tforms.extend(transform[::-1])
-                section_tiles.append(tsc)
-            jsonfiles.append(renderapi.utils.renderdump_temp(section_tiles))
+                resolved_tspecs.append(tsc)
 
         # can check order relation of child/parent stack
         positive = max(child_zs) > z_intersection[-1]
@@ -83,12 +83,17 @@ class FuseStacksModule(RenderModule):
             section_tiles = []
             lambda_ = float(i / float(len(z_intersection)))
 
+            p_resolved = renderapi.resolvedtiles.get_resolved_tiles_from_z(
+                parent, z, render=self.render)
+            c_resolved = renderapi.resolvedtiles.get_resolved_tiles_from_z(
+                child, z, render=self.render)
+
+            all_resolved_tform += p_resolved.transforms + c_resolved.transforms
+
             atiles = {ts.tileId: ts for ts
-                      in renderapi.tilespec.get_tile_specs_from_z(
-                          parent, z, render=self.render)}
+                      in p_resolved.tilespecs}
             btiles = {ts.tileId: ts for ts
-                      in renderapi.tilespec.get_tile_specs_from_z(
-                          child, z, render=self.render)}
+                      in c_resolved.tilespecs}
             # generate interpolated tiles for intersection of set of tiles
             for tileId in viewkeys(atiles) & viewkeys(btiles):
                 a = atiles[tileId]
@@ -104,8 +109,12 @@ class FuseStacksModule(RenderModule):
                         b=renderapi.transform.TransformList(b.tforms),
                         lambda_=lambda_)]
                 section_tiles.append(interp_tile)
-            jsonfiles.append(renderapi.utils.renderdump_temp(section_tiles))
-        return jsonfiles
+                resolved_tspecs.append(interp_tile)
+        resolved_tforms = list(
+            {tform.transformId: tform
+             for tform in all_resolved_tform}.values())
+        return renderapi.resolvedtiles.ResolvedTiles(
+            tilespecs=resolved_tspecs, transformList=resolved_tforms)
 
     def fuse_graph(self, node, parentstack=None, inputtransform=None,
                    create_nonoverlapping_zs=False):
@@ -116,9 +125,7 @@ class FuseStacksModule(RenderModule):
                      else renderapi.transform.load_transform_json(
                          node['transform']))
         # concatenate edge and input transform -- expected to work for Aff Hom
-        node_tformlist = inputtransform + [node_edge]  # TODO trial
-        # node_tform = node_edge.concatenate(inputtransform)
-        # node_tform = inputtransform.concatenate(node_edge)
+        node_tformlist = inputtransform + [node_edge]
 
         # determine zs which can be rendered uninterpolated (but tformed)
         # TODO maybe there's a better way to handle this
@@ -137,25 +144,28 @@ class FuseStacksModule(RenderModule):
         uninterpolated_zs = nodezs.difference(parentzs).difference(childzs)
 
         # generate and upload interpolated tiles
-        jfiles = self.fusetoparent(
+        resolvedtiles = self.fusetoparent(
             parentstack, node['stack'],
             uninterpolated_zs=uninterpolated_zs,
-            transform=node_tformlist)  # TODO trial
-        renderapi.stack.create_stack(
-            self.args['output_stack'], render=self.render)
-        renderapi.client.import_jsonfiles_parallel(
-            self.args['output_stack'], jfiles,
-            pool_size=self.args['pool_size'],
-            close_stack=False, render=self.render)
+            transform=node_tformlist)
 
-        # clean up temporary files
-        for jfile in jfiles:
-            os.remove(jfile)
+        if self.args['output_stack'] not in self.render.run(
+                renderapi.render.get_stacks_by_owner_project):
+            renderapi.stack.create_stack(
+                self.args['output_stack'], render=self.render)
+        self.render.run(renderapi.stack.set_stack_state,
+                        self.args['output_stack'], 'LOADING')
+
+        renderapi.client.import_tilespecs_parallel(
+            self.args['output_stack'], resolvedtiles.tilespecs,
+            resolvedtiles.transforms, pool_size=self.args['pool_size'],
+            close_stack=False, render=self.render)
 
         # recurse through depth of graph
         for child in node['children']:
             self.fuse_graph(
-                child, parentstack=node['stack'], inputtransform=node_tformlist)  # TODO nonconcat
+                child, parentstack=node['stack'],
+                inputtransform=node_tformlist)
 
     def run(self):
         self.fuse_graph(
