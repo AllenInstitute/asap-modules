@@ -72,57 +72,12 @@ def delete_matches_if_exist(render, owner, collection, sectionId):
                     sectionId,
                     render=render)
 
-def make_mask(w, h, radii, docircles=True):
-    corners = [
-            [0, 0],
-            [w, 0],
-            [w, h],
-            [0, h]]
-    bbox = Polygon(np.array(corners))
 
-    if docircles:
-        # radius the corner
-        circles = []
-        xsigns = [1, -1, -1, 1]
-        ysigns = [1, 1, -1, -1]
-        for i in range(len(radii)):
-            center = list(corners[i])
-            center[0] += xsigns[i] * radii[i]
-            center[1] += ysigns[i] * radii[i]
-            c = Point(
-                center[0],
-                center[1]).buffer(radii[i])
-            if not c.is_empty:
-                r = bbox.difference(c)
-                areas = np.array([ir.area for ir in r])
-                ind = np.argmax(areas)
-                bbox = r[ind].union(c)
-    else:
-        # triangle clip
-        newpts = []
-        addon = [
-                [[0, radii[0]], [radii[0], 0]],
-                [[-radii[1], 0], [0, radii[1]]],
-                [[0, -radii[2]], [-radii[2], 0]],
-                [[radii[3], 0], [0, -radii[3]]]]
-        for i in range(len(corners)):
-            if radii[i] == 0:
-                newpts.append(corners[i])
-            else:
-                for addpt in addon[i]:
-                    newpts.append(
-                            list(
-                                np.array(corners[i]) +
-                                np.array(addpt)))
-        bbox = Polygon(np.array(newpts))
-
-
-    xy = np.array(list(bbox.exterior.coords)).astype('int32')
-    cont = np.reshape(xy, (xy.shape[0], 1, xy.shape[1]))
-    approx = approx_snap_contour(cont, w, h)
-
+def make_mask_from_coords(w, h, coords):
+    cont = np.array(coords).astype('int32')
+    cont = np.reshape(cont, (cont.shape[0], 1, cont.shape[1]))
     mask = np.zeros((h, w)).astype('uint8')
-    mask = cv2.fillConvexPoly(mask, approx, color=255)
+    mask = cv2.fillConvexPoly(mask, cont, color=255)
     return mask
 
 
@@ -261,6 +216,7 @@ class MeshLensCorrection(RenderModule):
         args_for_input = dict(self.args)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         with open(self.args['metafile'], 'r') as f:
                 metafile = json.load(f)
         self.maskUrl = make_mask(
@@ -304,9 +260,16 @@ class MeshLensCorrection(RenderModule):
                 maskUrl = get_mask_url(i)
             cv2.imwrite(maskUrl, mask)
 >>>>>>> adding mask_dir to schema
+=======
+        self.maskUrl = make_mask(args_for_input)
+        # argshema doesn't like the NumpyArray after processing it once
+        # we don't need it after mask creation
+        self.args['mask_coords'] = None
+        args_for_input['mask_coords'] = None
+>>>>>>> test_mesh and test_pt_opencv passing with good coverage
 
         # create a stack with the lens correction tiles
-        ts_example = self.generate_ts_example(maskUrl)
+        ts_example = self.generate_ts_example(self.maskUrl)
         mod = GenerateEMTileSpecsModule(input_data=ts_example,
                                         args=['--output_json', out_file.name])
         mod.run()
