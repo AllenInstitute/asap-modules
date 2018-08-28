@@ -130,8 +130,9 @@ def create_montage_qc_dict(args, tilespecs):
             args['sectionId'] + "_input.json")
     return qcname, j
 
+
 def approx_snap_contour(contour, width, height, epsilon=20, snap_dist=5):
-    # approximate contour within epsilon pixels, 
+    # approximate contour within epsilon pixels,
     # so it isn't too fine in the corner
     # and snap to edges
     approx = cv2.approxPolyDP(contour, epsilon, True)
@@ -143,6 +144,7 @@ def approx_snap_contour(contour, width, height, epsilon=20, snap_dist=5):
             if np.abs(approx[i, 0, 1] - j) <= snap_dist:
                 approx[i, 0, 1] = j
     return approx
+
 
 def create_PSLG(tile_width, tile_height, maskUrl):
     # define a PSLG for triangle
@@ -163,12 +165,13 @@ def create_PSLG(tile_width, tile_height, maskUrl):
         mpath = urllib.parse.unquote(
                     urllib.parse.urlparse(maskUrl).path)
         im = cv2.imread(mpath, 0)
-        im2, contours, h = cv2.findContours(im, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        im2, contours, h = cv2.findContours(
+                im, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         approx = approx_snap_contour(contours[0], tile_width, tile_height)
         vertices = np.array(approx).squeeze()
         segments = np.zeros((vertices.shape[0], 2))
         segments[:, 0] = np.arange(vertices.shape[0])
-        segments[:, 1] = segments[:, 0] + 1 
+        segments[:, 1] = segments[:, 0] + 1
         segments[-1, 1] = 0
     bbox = {}
     bbox['vertices'] = vertices
@@ -207,7 +210,7 @@ def force_vertices_with_npoints(area_par, bbox, coords, npts):
             fac += 0.5
         if np.mod(count, max_iter) == 0:
             e = ("did not meet vertex requirement "
-                    "after %d iterations" % max_iter)
+                 "after %d iterations" % max_iter)
             raise MeshLensCorrectionException(e)
     return t, area_par
 

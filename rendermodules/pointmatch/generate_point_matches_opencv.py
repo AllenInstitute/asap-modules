@@ -104,9 +104,9 @@ def read_downsample_equalize_mask(impath, scale, CLAHE_grid=None, CLAHE_clip=Non
     if impath[1] is not None:
         mask = cv2.imread(impath[1], 0)
         mask = cv2.resize(mask, (0, 0),
-                        fx=scale,
-                        fy=scale,
-                        interpolation=cv2.INTER_CUBIC)
+                          fx=scale,
+                          fy=scale,
+                          interpolation=cv2.INTER_CUBIC)
         im = cv2.bitwise_and(im, im, mask=mask)
 
     return im

@@ -2,9 +2,10 @@ import json
 import pytest
 import renderapi
 import os
+from shutil import copyfile
 
 from rendermodules.mesh_lens_correction.do_mesh_lens_correction import \
-        MeshLensCorrection, MeshAndSolveTransform
+        MeshLensCorrection, MeshAndSolveTransform, make_mask
 from rendermodules.mesh_lens_correction.MeshAndSolveTransform import \
         MeshLensCorrectionException, \
         find_delaunay_with_max_vertices, \
@@ -65,6 +66,37 @@ def test_coarse_mesh_failure(render, tmpdir_factory):
 
     with pytest.raises(MeshLensCorrectionException):
         meshmod.run()
+
+
+def test_make_mask(tmpdir_factory):
+    # no mask
+    args = {}
+    args['mask_dir'] = str(tmpdir_factory.mktemp("make_mask"))
+    args['mask_file'] = None
+    args["mask_coords"] = None
+    args['metafile'] = os.path.join(
+            TEST_DATA_ROOT,
+            "em_modules_test_data",
+            "mesh_lens_correction_2",
+            "mesh_lens_metafile_2.json")
+    maskUrl = make_mask(args)
+    assert (maskUrl is None)
+
+    # mask from coords
+    args["mask_coords"] = [
+            [0, 100], [100, 0], [3840, 0], [3840, 3840], [0, 3840]]
+    maskUrl = make_mask(args)
+    assert os.path.exists(maskUrl)
+    # no overwrite of mask files
+    maskUrl2 = make_mask(args)
+    assert os.path.exists(maskUrl2)
+    assert (maskUrl2 != maskUrl)
+
+    # mask from file
+    args['mask_file'] = maskUrl2
+    args['mask_dir'] = str(tmpdir_factory.mktemp("make_mask2"))
+    maskUrl3 = make_mask(args)
+    assert os.path.exists(maskUrl3)
 
 
 def test_mesh_lens_correction(render, tmpdir_factory):
@@ -135,7 +167,7 @@ def test_mesh_lens_correction(render, tmpdir_factory):
             args=['--output_json', outjson])
     meshclass.run()
 
-    # gets into the iterative areaadjustment in force_vertices
+    # gets into the iterative area adjustment in force_vertices
     tmp_mesh, tmp_area_fac = \
         find_delaunay_with_max_vertices(
                 meshclass.bbox,
@@ -146,3 +178,40 @@ def test_mesh_lens_correction(render, tmpdir_factory):
                 meshclass.bbox,
                 meshclass.coords,
                 3)
+
+
+def test_mesh_with_mask(render, tmpdir_factory):
+    outdir = str(tmpdir_factory.mktemp("mesh_lens"))
+    out_html_dir = outdir
+    example_for_input = dict(example)
+    example_for_input['render'] = render_params
+    example_for_input['metafile'] = os.path.join(TEST_DATA_ROOT,
+                                                 "em_modules_test_data",
+                                                 "mesh_lens_correction_2",
+                                                 "mesh_lens_metafile_2.json")
+    example_for_input['output_dir'] = outdir
+    example_for_input['out_html_dir'] = out_html_dir
+    example_for_input['outfile'] = os.path.join(outdir, 'out.json')
+    outjson = os.path.join(outdir, 'mesh_lens_out.json')
+    example_for_input['z_index'] = 200
+    example_for_input["mask_coords"] = [
+            [0, 100], [100, 0], [3840, 0], [3840, 3840], [0, 3840]]
+    example_for_input["mask_dir"] = outdir
+
+    meshmod = MeshLensCorrection(
+            input_data=example_for_input,
+            args=['--output_json', outjson])
+    meshmod.run()
+    assert os.path.exists(meshmod.maskUrl)
+
+    outdir2 = str(tmpdir_factory.mktemp("somewhere"))
+    newfile = os.path.join(outdir2, 'mask_for_input.png')
+    copyfile(meshmod.maskUrl, newfile)
+
+    # read it from a file instead of making it
+    example_for_input['mask_file'] = newfile
+    example_for_input['rerun_pointmatch'] = False
+    meshmod = MeshLensCorrection(
+            input_data=example_for_input,
+            args=['--output_json', outjson])
+    meshmod.run()
