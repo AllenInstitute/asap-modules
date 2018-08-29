@@ -5,8 +5,9 @@ import numpy as np
 import cv2
 import os
 from shutil import copyfile
+import datetime
 
-from ..module.render_module import RenderModule
+from ..module.render_module import RenderModule, RenderModuleException
 
 from .schemas \
         import MeshLensCorrectionSchema, DoMeshLensCorrectionOutputSchema
@@ -15,13 +16,11 @@ from rendermodules.dataimport.generate_EM_tilespecs_from_metafile \
 from rendermodules.pointmatch.create_tilepairs \
         import TilePairClientModule
 from rendermodules.mesh_lens_correction.MeshAndSolveTransform \
-        import MeshAndSolveTransform, approx_snap_contour
+        import MeshAndSolveTransform
 from rendermodules.em_montage_qc.detect_montage_defects \
         import DetectMontageDefectsModule
 from rendermodules.pointmatch.generate_point_matches_opencv \
         import GeneratePointMatchesOpenCV
-from rendermodules.pointmatch.schemas \
-        import PointMatchOpenCVParameters
 
 example = {
     "render": {
@@ -53,6 +52,10 @@ example = {
 }
 
 
+class DoMeshException(RenderModuleException):
+    pass
+
+
 def delete_matches_if_exist(render, owner, collection, sectionId):
     collections = renderapi.pointmatch.get_matchcollections(
             render=render,
@@ -78,39 +81,38 @@ def make_mask_from_coords(w, h, coords):
     return mask
 
 
-def make_mask(args):
+def make_mask(mask_dir, w, h, coords, mask_file=None, basename=None):
+
+    def get_new_filename(fname):
+        noext, fext0 = os.path.splitext(fname)
+        fext = str(fext0)
+        while os.path.exists(noext + fext):
+            fext = '%s' % datetime.datetime.now().strftime("_%Y%m%d%H%M%S%f")
+            fext += fext0
+        return noext + fext
+
     maskUrl = None
-
-    if args['mask_file'] is not None:
+    if mask_file is not None:
         # copy the provided file directly over
-        maskUrl = os.path.join(
-                args['mask_dir'],
-                os.path.basename(args['mask_file']))
-        copyfile(args['mask_file'], maskUrl)
+        maskUrl = get_new_filename(
+                      os.path.join(
+                          mask_dir,
+                          os.path.basename(mask_file)))
+        copyfile(mask_file, maskUrl)
 
-    if (maskUrl is None) & (args['mask_coords'] is not None):
-        # make the mask from the coordinates
-        with open(args['metafile'], 'r') as f:
-                metafile = json.load(f)
-        mask = make_mask_from_coords(
-                metafile[0]['metadata']['camera_info']['width'],
-                metafile[0]['metadata']['camera_info']['height'],
-                args['mask_coords'])
-
-        def get_mask_url(i):
-            mask_basename = os.path.basename(
-                args['metafile'].replace(
-                    '.json',
-                    '_%d.png' % i))
-            return os.path.join(
-                    args['mask_dir'],
-                    mask_basename)
-        i = 0
-        maskUrl = get_mask_url(i)
-        while os.path.isfile(maskUrl):
-            i += 1
-            maskUrl = get_mask_url(i)
-        cv2.imwrite(maskUrl, mask)
+    if (maskUrl is None) & (coords is not None):
+        mask = make_mask_from_coords(w, h, coords)
+        if basename is None:
+            basename = 'lens_corr_mask.png'
+        maskUrl = get_new_filename(mask_dir, basename)
+        if not cv2.imwrite(maskUrl, mask):
+            with os.path.dirname(maskUrl) as dname:
+                if not os.access(dname, os.W_OK):
+                    raise PermissionError('no write access to %s' % dname)
+                else:
+                    raise DoMeshException(
+                            "file %s not written for unknown reasons" %
+                            maskUrl)
 
     return maskUrl
 
@@ -211,8 +213,17 @@ class MeshLensCorrection(RenderModule):
 
         args_for_input = dict(self.args)
 
-        self.maskUrl = make_mask(args_for_input)
-        # argshema doesn't like the NumpyArray after processing it once
+        with open(self.args['metafile'], 'r') as f:
+                metafile = json.load(f)
+        self.maskUrl = make_mask(
+                self.args['mask_dir'],
+                metafile[0]['metadata']['camera_info']['width'],
+                metafile[0]['metadata']['camera_info']['height'],
+                self.args['coords'],
+                mask_file=self.args['mask_file'],
+                basename=os.path.basename(self.args['metafile']))
+
+        # argschema doesn't like the NumpyArray after processing it once
         # we don't need it after mask creation
         self.args['mask_coords'] = None
         args_for_input['mask_coords'] = None
