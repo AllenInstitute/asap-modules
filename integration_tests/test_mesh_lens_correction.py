@@ -3,6 +3,8 @@ import pytest
 import renderapi
 import os
 from shutil import copyfile
+import cv2
+import numpy as np
 
 from rendermodules.mesh_lens_correction.do_mesh_lens_correction import \
         MeshLensCorrection, MeshAndSolveTransform, make_mask
@@ -70,33 +72,88 @@ def test_coarse_mesh_failure(render, tmpdir_factory):
 
 def test_make_mask(tmpdir_factory):
     # no mask
-    args = {}
-    args['mask_dir'] = str(tmpdir_factory.mktemp("make_mask"))
-    args['mask_file'] = None
-    args["mask_coords"] = None
-    args['metafile'] = os.path.join(
-            TEST_DATA_ROOT,
-            "em_modules_test_data",
-            "mesh_lens_correction_2",
-            "mesh_lens_metafile_2.json")
-    maskUrl = make_mask(args)
+    mask_dir = str(tmpdir_factory.mktemp("make_mask"))
+    mask_coords = None
+    basename = 'mymask.png'
+    width = 3840
+    height = 3840
+
+    maskUrl = make_mask(
+            mask_dir,
+            width,
+            height,
+            mask_coords,
+            mask_file=None,
+            basename=basename)
     assert (maskUrl is None)
 
     # mask from coords
-    args["mask_coords"] = [
-            [0, 100], [100, 0], [3840, 0], [3840, 3840], [0, 3840]]
-    maskUrl = make_mask(args)
+    dx = 100
+    dy = 100
+    mask_coords = [
+            [0, dy], [dx, 0], [width, 0], [width, height], [0, height]]
+    maskUrl = make_mask(
+            mask_dir,
+            width,
+            height,
+            mask_coords,
+            mask_file=None,
+            basename=basename)
     assert os.path.isfile(maskUrl)
+
+    im = cv2.imread(maskUrl, 0)
+    # is it the right shape?
+    assert (im.shape == (height, width))
+    # are the number of zero pixels close to correct?
+    hyp = np.sqrt(dx**2 + dy**2)
+    assert (np.abs(im.size - np.count_nonzero(im) - 0.5*dx*dy) < hyp)
+
     # no overwrite of mask files
-    maskUrl2 = make_mask(args)
+    maskUrl2 = make_mask(
+            mask_dir,
+            width,
+            height,
+            mask_coords,
+            mask_file=None,
+            basename=basename)
     assert os.path.isfile(maskUrl2)
     assert (maskUrl2 != maskUrl)
+    im2 = cv2.imread(maskUrl2, 0)
+    assert np.all(im2 == im)
 
     # mask from file
-    args['mask_file'] = maskUrl2
-    args['mask_dir'] = str(tmpdir_factory.mktemp("make_mask2"))
-    maskUrl3 = make_mask(args)
+    mask_file = maskUrl2
+    mask_dir = str(tmpdir_factory.mktemp("make_mask2"))
+    maskUrl3 = make_mask(
+            mask_dir,
+            width,
+            height,
+            mask_coords,
+            mask_file=mask_file,
+            basename=None)
     assert os.path.isfile(maskUrl3)
+    im3 = cv2.imread(maskUrl3, 0)
+    assert np.all(im3 == im)
+
+    # make the permissions of the mask_dir read-only
+    os.chmod(mask_dir, 0o444)
+    with pytest.raises(IOError):
+        maskUrl3 = make_mask(
+                mask_dir,
+                width,
+                height,
+                mask_coords,
+                mask_file=mask_file,
+                basename=None)
+
+    with pytest.raises(IOError):
+        maskUrl3 = make_mask(
+                mask_dir,
+                width,
+                height,
+                mask_coords,
+                mask_file=None,
+                basename=None)
 
 
 def test_mesh_lens_correction(render, tmpdir_factory):

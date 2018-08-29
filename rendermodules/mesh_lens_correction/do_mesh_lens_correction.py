@@ -104,15 +104,10 @@ def make_mask(mask_dir, w, h, coords, mask_file=None, basename=None):
         mask = make_mask_from_coords(w, h, coords)
         if basename is None:
             basename = 'lens_corr_mask.png'
-        maskUrl = get_new_filename(mask_dir, basename)
+        maskUrl = get_new_filename(os.path.join(mask_dir, basename))
         if not cv2.imwrite(maskUrl, mask):
-            with os.path.dirname(maskUrl) as dname:
-                if not os.access(dname, os.W_OK):
-                    raise PermissionError('no write access to %s' % dname)
-                else:
-                    raise DoMeshException(
-                            "file %s not written for unknown reasons" %
-                            maskUrl)
+            if not os.access(mask_dir, os.W_OK):
+                raise IOError('no write access to %s' % mask_dir)
 
     return maskUrl
 
@@ -146,7 +141,7 @@ class MeshLensCorrection(RenderModule):
         ex['output_stack'] = self.args['input_stack']
         ex['z'] = self.args['z_index']
         ex['sectionId'] = self.args['sectionId']
-        ex['maskUrl'] = maskUrl
+        ex['maskUrl'] = self.maskUrl
         return ex
 
     def generate_tilepair_example(self):
@@ -219,9 +214,9 @@ class MeshLensCorrection(RenderModule):
                 self.args['mask_dir'],
                 metafile[0]['metadata']['camera_info']['width'],
                 metafile[0]['metadata']['camera_info']['height'],
-                self.args['coords'],
+                self.args['mask_coords'],
                 mask_file=self.args['mask_file'],
-                basename=os.path.basename(self.args['metafile']))
+                basename=os.path.basename(self.args['metafile']) + '.png')
 
         # argschema doesn't like the NumpyArray after processing it once
         # we don't need it after mask creation
@@ -229,7 +224,7 @@ class MeshLensCorrection(RenderModule):
         args_for_input['mask_coords'] = None
 
         # create a stack with the lens correction tiles
-        ts_example = self.generate_ts_example(self.maskUrl)
+        ts_example = self.generate_ts_example()
         mod = GenerateEMTileSpecsModule(input_data=ts_example,
                                         args=['--output_json', out_file.name])
         mod.run()
