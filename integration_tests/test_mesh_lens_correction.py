@@ -250,11 +250,7 @@ def test_mesh_with_mask(render, tmpdir_factory):
             input_data=example_for_input,
             args=['--output_json', outjson])
     meshmod.run()
-<<<<<<< HEAD
     assert os.path.isfile(meshmod.maskUrl)
-=======
-    assert os.path.exists(meshmod.maskUrl)
->>>>>>> test_mesh and test_pt_opencv passing with good coverage
 
     outdir2 = str(tmpdir_factory.mktemp("somewhere"))
     newfile = os.path.join(outdir2, 'mask_for_input.png')
