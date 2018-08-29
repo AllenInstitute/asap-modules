@@ -135,16 +135,16 @@ def test_make_mask(tmpdir_factory):
     im3 = cv2.imread(maskUrl3, 0)
     assert np.all(im3 == im)
 
-    # make the permissions of the mask_dir read-only
-    #os.chmod(mask_dir, 0o444)
-    #with pytest.raises(IOError):
-    #    maskUrl3 = make_mask(
-    #            mask_dir,
-    #            width,
-    #            height,
-    #            mask_coords,
-    #            mask_file=None,
-    #            basename=None)
+    # try writing somewhere you can't
+    mask_dir = '/usr'
+    with pytest.raises(IOError):
+        maskUrl3 = make_mask(
+                mask_dir,
+                width,
+                height,
+                mask_coords,
+                mask_file=None,
+                basename=None)
 
 
 def test_mesh_lens_correction(render, tmpdir_factory):
