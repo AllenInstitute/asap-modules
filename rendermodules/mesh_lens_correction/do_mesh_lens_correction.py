@@ -232,7 +232,7 @@ class MeshLensCorrection(RenderModule):
         self.maskUrl = make_mask(args_for_input)
 
         # create a stack with the lens correction tiles
-        ts_example = self.generate_ts_example(self.maskUrl)
+        ts_example = self.generate_ts_example()
         mod = GenerateEMTileSpecsModule(input_data=ts_example,
                                         args=['--output_json', out_file.name])
         mod.run()
