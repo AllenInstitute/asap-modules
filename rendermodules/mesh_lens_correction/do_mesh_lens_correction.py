@@ -16,7 +16,7 @@ from rendermodules.dataimport.generate_EM_tilespecs_from_metafile \
 from rendermodules.pointmatch.create_tilepairs \
         import TilePairClientModule
 from rendermodules.mesh_lens_correction.MeshAndSolveTransform \
-        import MeshAndSolveTransform, approx_snap_contour
+        import MeshAndSolveTransform
 from rendermodules.em_montage_qc.detect_montage_defects \
         import DetectMontageDefectsModule
 from rendermodules.pointmatch.generate_point_matches_opencv \
@@ -215,8 +215,6 @@ class MeshLensCorrection(RenderModule):
 
         args_for_input = dict(self.args)
 
-<<<<<<< HEAD
-<<<<<<< HEAD
         with open(self.args['metafile'], 'r') as f:
                 metafile = json.load(f)
         self.maskUrl = make_mask(
@@ -231,42 +229,7 @@ class MeshLensCorrection(RenderModule):
         # we don't need it after mask creation
         self.args['mask_coords'] = None
         args_for_input['mask_coords'] = None
-=======
-        maskUrl = None
-        if self.args['mask_file'] is not None:
-            maskUrl = os.path.join(
-                    self.args['mask_dir'],
-                    os.path.basename(self.args['mask_file']))
-            copyfile(self.args['mask_file'], maskUrl)
-        if (maskUrl is None) & np.any(np.array(args_for_input['corner_mask_radii']) != 0):
-            with open(args_for_input['metafile'], 'r') as f:
-                    metafile = json.load(f)
-            w = metafile[0]['metadata']['camera_info']['width']
-            h = metafile[0]['metadata']['camera_info']['height']
-            mask = make_mask(w, h, args_for_input['corner_mask_radii'], docircles=False)
-
-            def get_mask_url(i):
-                mask_basename = os.path.basename(
-                    self.args['metafile'].replace(
-                        '.json',
-                        '_%d.png' % i))
-                return os.path.join(
-                        self.args['mask_dir'],
-                        mask_basename)
-            i = 0
-            maskUrl = get_mask_url(i)
-            while os.path.isfile(maskUrl):
-                i += 1
-                maskUrl = get_mask_url(i)
-            cv2.imwrite(maskUrl, mask)
->>>>>>> adding mask_dir to schema
-=======
         self.maskUrl = make_mask(args_for_input)
-        # argshema doesn't like the NumpyArray after processing it once
-        # we don't need it after mask creation
-        self.args['mask_coords'] = None
-        args_for_input['mask_coords'] = None
->>>>>>> test_mesh and test_pt_opencv passing with good coverage
 
         # create a stack with the lens correction tiles
         ts_example = self.generate_ts_example(self.maskUrl)
