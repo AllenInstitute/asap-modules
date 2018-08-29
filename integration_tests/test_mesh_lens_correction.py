@@ -143,15 +143,6 @@ def test_make_mask(tmpdir_factory):
                 width,
                 height,
                 mask_coords,
-                mask_file=mask_file,
-                basename=None)
-
-    with pytest.raises(IOError):
-        maskUrl3 = make_mask(
-                mask_dir,
-                width,
-                height,
-                mask_coords,
                 mask_file=None,
                 basename=None)
 
