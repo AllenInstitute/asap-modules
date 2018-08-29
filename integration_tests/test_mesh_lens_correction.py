@@ -86,17 +86,17 @@ def test_make_mask(tmpdir_factory):
     args["mask_coords"] = [
             [0, 100], [100, 0], [3840, 0], [3840, 3840], [0, 3840]]
     maskUrl = make_mask(args)
-    assert os.path.exists(maskUrl)
+    assert os.path.isfile(maskUrl)
     # no overwrite of mask files
     maskUrl2 = make_mask(args)
-    assert os.path.exists(maskUrl2)
+    assert os.path.isfile(maskUrl2)
     assert (maskUrl2 != maskUrl)
 
     # mask from file
     args['mask_file'] = maskUrl2
     args['mask_dir'] = str(tmpdir_factory.mktemp("make_mask2"))
     maskUrl3 = make_mask(args)
-    assert os.path.exists(maskUrl3)
+    assert os.path.isfile(maskUrl3)
 
 
 def test_mesh_lens_correction(render, tmpdir_factory):
@@ -202,7 +202,7 @@ def test_mesh_with_mask(render, tmpdir_factory):
             input_data=example_for_input,
             args=['--output_json', outjson])
     meshmod.run()
-    assert os.path.exists(meshmod.maskUrl)
+    assert os.path.isfile(meshmod.maskUrl)
 
     outdir2 = str(tmpdir_factory.mktemp("somewhere"))
     newfile = os.path.join(outdir2, 'mask_for_input.png')
