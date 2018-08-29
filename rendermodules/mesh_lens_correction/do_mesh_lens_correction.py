@@ -126,7 +126,7 @@ class MeshLensCorrection(RenderModule):
         sectionId = j[0]['metadata']['grid']
         return sectionId
 
-    def generate_ts_example(self, maskUrl):
+    def generate_ts_example(self):
         ex = {}
         ex['render'] = {}
         ex['render']['host'] = self.render.DEFAULT_HOST
