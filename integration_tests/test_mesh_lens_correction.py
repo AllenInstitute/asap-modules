@@ -136,7 +136,7 @@ def test_make_mask(tmpdir_factory):
     assert np.all(im3 == im)
 
     # try writing somewhere you can't
-    mask_dir = '/usr'
+    mask_dir = './this_does_not_exist'
     with pytest.raises(IOError):
         maskUrl3 = make_mask(
                 mask_dir,

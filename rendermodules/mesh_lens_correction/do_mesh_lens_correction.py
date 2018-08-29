@@ -106,8 +106,7 @@ def make_mask(mask_dir, w, h, coords, mask_file=None, basename=None):
             basename = 'lens_corr_mask.png'
         maskUrl = get_new_filename(os.path.join(mask_dir, basename))
         if not cv2.imwrite(maskUrl, mask):
-            if not os.access(mask_dir, os.W_OK):
-                raise IOError('no write access to %s' % mask_dir)
+            raise IOError('cv2.imwrite() could not write to %s' % mask_dir)
 
     return maskUrl
 
