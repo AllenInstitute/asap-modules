@@ -147,3 +147,5 @@ def create_mipmaps(inputImage, outputDirectory='.', method="block_reduce",
             im, levels_file_map, force_redo=force_redo, **kwargs)
     except KeyError as e:
         raise CreateMipMapException("invalid method {}".format(e))
+
+    return levels_file_map
