@@ -280,6 +280,7 @@ class MeshLensCorrection(RenderModule):
         try:
             self.output(
                     {'output_json': meshclass.args['outfile'],
+                     'maskUrl': self.maskUrl,
                      'qc_json': out_file.name})
         except AttributeError as e:
             self.logger.error(e)

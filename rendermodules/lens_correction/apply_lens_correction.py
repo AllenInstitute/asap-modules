@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 import renderapi
+import os
+import pathlib
 from rendermodules.module.render_module import StackTransitionModule
-from rendermodules.lens_correction.schemas import ApplyLensCorrectionOutput, ApplyLensCorrectionParameters
+from rendermodules.lens_correction.schemas import \
+        ApplyLensCorrectionOutput, ApplyLensCorrectionParameters
 from rendermodules.dataimport.create_mipmaps import create_mipmaps
 
 example_input = {
@@ -102,7 +105,7 @@ class ApplyLensCorrection(StackTransitionModule):
             for ts in tspecs:
                 ts.tforms = [ref_lc] + ts.tforms
                 for i in range(len(mask_mm_list)):
-                    ts.ip[i].maskUrl = mask_mm_list[i]
+                    ts.ip[i].maskUrl = pathlib.Path(mask_mm_list[i]).as_uri()
                 new_tspecs.append(ts)
 
         renderapi.stack.create_stack(outputStack, render=r)
