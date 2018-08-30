@@ -12,4 +12,6 @@ RUN source activate render-modules &&\
  pip uninstall -y opencv-python opencv-contrib-python &&\
  pip install -r requirements.txt &&\
  python setup.py install
+RUN useradd --create-home -s /bin/bash user
+USER user
 ENTRYPOINT ["/bin/bash","/shared/render-modules/entrypoint.sh"]
