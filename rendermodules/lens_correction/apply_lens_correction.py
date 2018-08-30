@@ -78,12 +78,12 @@ class ApplyLensCorrection(StackTransitionModule):
             refId=lc_tform.transformId)
 
         tspecs = renderapi.tilespec.get_tile_specs_from_z(
-            self.input_stack, z, render=r)
+            self.input_stack, self.zValues[0], render=r)
         levels = [int(l) for l in tspecs[0].ip.levels]
         # make mask mipmaps
         mask_mm_list = []
         if self.args['maskUrl'] is not None:
-            root, ext = os.path.splitext(self.args['maskUrl']
+            root, ext = os.path.splitext(self.args['maskUrl'])
             mask_mm_list = create_mipmaps(
                 self.args['maskUrl'],
                 outputDirectory=os.path.dirname(self.args['maskUrl']),
@@ -91,6 +91,7 @@ class ApplyLensCorrection(StackTransitionModule):
                 outputformat=ext.split('.')[-1],
                 convertTo8bit=False,
                 force_redo=True)
+        print(mask_mm_list)
 
         # new tile specs for each z selected
         new_tspecs = []
