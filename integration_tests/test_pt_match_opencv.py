@@ -10,9 +10,6 @@ from test_data import render_params, example_env, render_json_template, TEST_DAT
 from rendermodules.module.render_module import RenderModuleException
 from rendermodules.pointmatch.generate_point_matches_opencv import *
 
-logger = renderapi.client.logger
-logger.setLevel(logging.DEBUG)
-
 pt_match_opencv_example = {
         "ndiv": 8,
         "matchMax": 1000,

@@ -27,11 +27,6 @@ from rendermodules.rough_align.apply_rough_alignment_to_montages import (ApplyRo
                                                                          apply_rough_alignment)
 
 
-logger = renderapi.client.logger
-logger.setLevel(logging.DEBUG)
-
-
-
 @pytest.fixture(scope='module')
 def render():
     render_params['project'] = 'rough_align_test'

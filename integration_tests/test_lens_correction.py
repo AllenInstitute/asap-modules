@@ -62,8 +62,7 @@ def example_tform_dict():
 @pytest.fixture(scope='module')
 def stack_no_lc(render):
     stack = "test_no_lc"
-    logger = renderapi.client.logger
-    logger.setLevel(logging.DEBUG)
+
     renderapi.stack.create_stack(stack, render=render)
 
     tspecs = [renderapi.tilespec.TileSpec(json=tspec) for tspec in TILESPECS_NO_LC_JSON]
@@ -76,8 +75,7 @@ def stack_no_lc(render):
 @pytest.fixture(scope='module')
 def stack_lc(render):
     stack = "test_lc"
-    logger = renderapi.client.logger
-    logger.setLevel(logging.DEBUG)
+
     renderapi.stack.create_stack(stack, render=render)
 
     tspecs = [renderapi.tilespec.TileSpec(json=tspec) for tspec in TILESPECS_LC_JSON]

@@ -9,9 +9,6 @@ from test_data import render_params, example_env, render_json_template, TEST_DAT
 from rendermodules.module.render_module import RenderModuleException
 from rendermodules.registration.register_sections import *
 
-logger = renderapi.client.logger
-logger.setLevel(logging.DEBUG)
-
 example = {
     "render": {
         'host':'em-131db',
