@@ -2,6 +2,7 @@
 import renderapi
 from rendermodules.module.render_module import StackTransitionModule
 from rendermodules.lens_correction.schemas import ApplyLensCorrectionOutput, ApplyLensCorrectionParameters
+from rendermodules.dataimport.create_mipmaps import create_mipmaps
 
 example_input = {
     "render": {
@@ -75,6 +76,22 @@ class ApplyLensCorrection(StackTransitionModule):
         lc_tform.transformId = refId
         ref_lc = renderapi.transform.ReferenceTransform(
             refId=lc_tform.transformId)
+
+        tspecs = renderapi.tilespec.get_tile_specs_from_z(
+            self.input_stack, z, render=r)
+        levels = [int(l) for l in tspecs[0].ip.levels]
+        # make mask mipmaps
+        mask_mm_list = []
+        if self.args['maskUrl'] is not None:
+            root, ext = os.path.splitext(self.args['maskUrl']
+            mask_mm_list = create_mipmaps(
+                self.args['maskUrl'],
+                outputDirectory=os.path.dirname(self.args['maskUrl']),
+                mipmaplevels=levels,
+                outputformat=ext.split('.')[-1],
+                convertTo8bit=False,
+                force_redo=True)
+
         # new tile specs for each z selected
         new_tspecs = []
         for z in self.zValues:
@@ -83,6 +100,8 @@ class ApplyLensCorrection(StackTransitionModule):
 
             for ts in tspecs:
                 ts.tforms = [ref_lc] + ts.tforms
+                for i in range(len(mask_mm_list)):
+                    ts.ip[i].maskUrl = mask_mm_list[i]
                 new_tspecs.append(ts)
 
         renderapi.stack.create_stack(outputStack, render=r)
