@@ -20,9 +20,6 @@ from rendermodules.pointmatch.create_tilepairs import TilePairClientModule
 from rendermodules.pointmatch.generate_point_matches_spark import PointMatchClientModuleSpark
 from rendermodules.pointmatch.generate_point_matches_qsub import PointMatchClientModuleQsub
 from rendermodules.module.render_module import RenderModuleException
-logger = renderapi.client.logger
-logger.setLevel(logging.DEBUG)
-
 
 @pytest.fixture(scope='module')
 def render():

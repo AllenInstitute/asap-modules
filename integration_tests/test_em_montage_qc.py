@@ -16,9 +16,6 @@ from rendermodules.module.render_module import RenderModuleException
 from rendermodules.em_montage_qc import detect_montage_defects
 from rendermodules.em_montage_qc import plots
 
-logger = renderapi.client.logger
-logger.setLevel(logging.DEBUG)
-
 
 @pytest.fixture(scope='module')
 def render():
