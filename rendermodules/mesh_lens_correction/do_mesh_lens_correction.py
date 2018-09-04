@@ -43,7 +43,7 @@ example = {
     "z_index": 100,
     "metafile": "/allen/programs/celltypes/workgroups/em-connectomics/danielk/em_lens_correction/test_data/_metadata_20180220175645_247488_8R_tape070A_05_20180220175645_reference_0_.json",
     "match_collection": "raw_lens_matches",
-    "nfeature_limit": 20000,
+    "nfeature_limit": 19999,
     "output_dir": "/allen/programs/celltypes/workgroups/em-connectomics/danielk/tmp",
     "outfile": "lens_out.json",
     "output_json": "./mesh_lens_output.json",
