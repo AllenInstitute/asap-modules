@@ -8,7 +8,7 @@ scipy
 rtree
 networkx
 bokeh
-EMaligner>=0.1.7
+EMaligner>=0.2.0
 matplotlib
 opencv-contrib-python
 jinja2
