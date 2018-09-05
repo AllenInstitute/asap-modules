@@ -1,8 +1,13 @@
 import json
 import renderapi
 import tempfile
+import numpy as np
+import cv2
+import os
+from shutil import copyfile
+import datetime
 
-from ..module.render_module import RenderModule
+from ..module.render_module import RenderModule, RenderModuleException
 
 from .schemas \
         import MeshLensCorrectionSchema, DoMeshLensCorrectionOutputSchema
@@ -16,12 +21,10 @@ from rendermodules.em_montage_qc.detect_montage_defects \
         import DetectMontageDefectsModule
 from rendermodules.pointmatch.generate_point_matches_opencv \
         import GeneratePointMatchesOpenCV
-from rendermodules.pointmatch.schemas \
-        import PointMatchOpenCVParameters
 
 example = {
     "render": {
-        "host": "em-131db",
+        "host": "em-131db.corp.alleninstitute.org",
         "port": 8080,
         "owner": "danielk",
         "project": "lens_corr",
@@ -43,8 +46,14 @@ example = {
     "nfeature_limit": 20000,
     "output_dir": "/allen/programs/celltypes/workgroups/em-connectomics/danielk/tmp",
     "outfile": "lens_out.json",
-    "output_json": "./mesh_lens_output.json"
+    "output_json": "./mesh_lens_output.json",
+    "mask_coords": [[0, 100], [100, 0], [3840, 0], [3840, 3840], [0, 3840]],
+    "mask_dir": "/allen/programs/celltypes/workgroups/em-connectomics/danielk/masks_for_stacks"
 }
+
+
+class DoMeshException(RenderModuleException):
+    pass
 
 
 def delete_matches_if_exist(render, owner, collection, sectionId):
@@ -62,6 +71,44 @@ def delete_matches_if_exist(render, owner, collection, sectionId):
                     sectionId,
                     sectionId,
                     render=render)
+
+
+def make_mask_from_coords(w, h, coords):
+    cont = np.array(coords).astype('int32')
+    cont = np.reshape(cont, (cont.shape[0], 1, cont.shape[1]))
+    mask = np.zeros((h, w)).astype('uint8')
+    mask = cv2.fillConvexPoly(mask, cont, color=255)
+    return mask
+
+
+def make_mask(mask_dir, w, h, coords, mask_file=None, basename=None):
+
+    def get_new_filename(fname):
+        noext, fext0 = os.path.splitext(fname)
+        fext = str(fext0)
+        while os.path.exists(noext + fext):
+            fext = '%s' % datetime.datetime.now().strftime("_%Y%m%d%H%M%S%f")
+            fext += fext0
+        return noext + fext
+
+    maskUrl = None
+    if mask_file is not None:
+        # copy the provided file directly over
+        maskUrl = get_new_filename(
+                      os.path.join(
+                          mask_dir,
+                          os.path.basename(mask_file)))
+        copyfile(mask_file, maskUrl)
+
+    if (maskUrl is None) & (coords is not None):
+        mask = make_mask_from_coords(w, h, coords)
+        if basename is None:
+            basename = 'lens_corr_mask.png'
+        maskUrl = get_new_filename(os.path.join(mask_dir, basename))
+        if not cv2.imwrite(maskUrl, mask):
+            raise IOError('cv2.imwrite() could not write to %s' % mask_dir)
+
+    return maskUrl
 
 
 class MeshLensCorrection(RenderModule):
@@ -93,6 +140,7 @@ class MeshLensCorrection(RenderModule):
         ex['output_stack'] = self.args['input_stack']
         ex['z'] = self.args['z_index']
         ex['sectionId'] = self.args['sectionId']
+        ex['maskUrl'] = self.maskUrl
         return ex
 
     def generate_tilepair_example(self):
@@ -158,6 +206,21 @@ class MeshLensCorrection(RenderModule):
         out_file.close()
 
         args_for_input = dict(self.args)
+
+        with open(self.args['metafile'], 'r') as f:
+                metafile = json.load(f)
+        self.maskUrl = make_mask(
+                self.args['mask_dir'],
+                metafile[0]['metadata']['camera_info']['width'],
+                metafile[0]['metadata']['camera_info']['height'],
+                self.args['mask_coords'],
+                mask_file=self.args['mask_file'],
+                basename=os.path.basename(self.args['metafile']) + '.png')
+
+        # argschema doesn't like the NumpyArray after processing it once
+        # we don't need it after mask creation
+        self.args['mask_coords'] = None
+        args_for_input['mask_coords'] = None
 
         # create a stack with the lens correction tiles
         ts_example = self.generate_ts_example()

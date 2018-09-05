@@ -11,6 +11,8 @@ import copy
 import os
 import json
 import datetime
+import cv2
+from six.moves import urllib
 from argschema import ArgSchemaParser
 from .schemas \
         import MeshLensCorrectionSchema, MeshAndSolveOutputSchema
@@ -129,23 +131,52 @@ def create_montage_qc_dict(args, tilespecs):
     return qcname, j
 
 
-def create_PSLG(tile_width, tile_height):
+def approx_snap_contour(contour, width, height, epsilon=20, snap_dist=5):
+    # approximate contour within epsilon pixels,
+    # so it isn't too fine in the corner
+    # and snap to edges
+    approx = cv2.approxPolyDP(contour, epsilon, True)
+    for i in range(approx.shape[0]):
+        for j in [0, width]:
+            if np.abs(approx[i, 0, 0] - j) <= snap_dist:
+                approx[i, 0, 0] = j
+        for j in [0, height]:
+            if np.abs(approx[i, 0, 1] - j) <= snap_dist:
+                approx[i, 0, 1] = j
+    return approx
+
+
+def create_PSLG(tile_width, tile_height, maskUrl):
     # define a PSLG for triangle
     # http://dzhelil.info/triangle/definitions.html
     # https://www.cs.cmu.edu/~quake/triangle.defs.html#pslg
-    vertices = np.array([
-            [0, 0],
-            [0, tile_height],
-            [tile_width, tile_height],
-            [tile_width, 0]])
-    segments = np.array([
-            [0, 1],
-            [1, 2],
-            [2, 3],
-            [3, 0]])
+    if maskUrl is None:
+        vertices = np.array([
+                [0, 0],
+                [0, tile_height],
+                [tile_width, tile_height],
+                [tile_width, 0]])
+        segments = np.array([
+                [0, 1],
+                [1, 2],
+                [2, 3],
+                [3, 0]])
+    else:
+        mpath = urllib.parse.unquote(
+                    urllib.parse.urlparse(maskUrl).path)
+        im = cv2.imread(mpath, 0)
+        im2, contours, h = cv2.findContours(
+                im, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        approx = approx_snap_contour(contours[0], tile_width, tile_height)
+        vertices = np.array(approx).squeeze()
+        segments = np.zeros((vertices.shape[0], 2))
+        segments[:, 0] = np.arange(vertices.shape[0])
+        segments[:, 1] = segments[:, 0] + 1
+        segments[-1, 1] = 0
     bbox = {}
     bbox['vertices'] = vertices
     bbox['segments'] = segments
+
     return bbox
 
 
@@ -160,8 +191,9 @@ def calculate_mesh(a, bbox, target, get_t=False):
 
 
 def force_vertices_with_npoints(area_par, bbox, coords, npts):
-    fac = 1.05
+    fac = 1.02
     count = 0
+    max_iter = 20
     while True:
         t = calculate_mesh(
                 area_par,
@@ -169,14 +201,16 @@ def force_vertices_with_npoints(area_par, bbox, coords, npts):
                 None,
                 get_t=True)
         pt_count = count_points_near_vertices(t, coords)
+        print(pt_count.min(), area_par, t.npoints)
         if pt_count.min() >= npts:
             break
         area_par *= fac
         count += 1
         if np.mod(count, 2) == 0:
             fac += 0.5
-        if np.mod(count, 20) == 0:
-            e = 'did not meet vertex requirement after 1000 iterations'
+        if np.mod(count, max_iter) == 0:
+            e = ("did not meet vertex requirement "
+                 "after %d iterations" % max_iter)
             raise MeshLensCorrectionException(e)
     return t, area_par
 
@@ -481,6 +515,7 @@ class MeshAndSolveTransform(ArgSchemaParser):
 
         self.tile_width = self.tilespecs[0].width
         self.tile_height = self.tilespecs[0].height
+        maskUrl = self.tilespecs[0].ip[0].maskUrl
 
         # condense coordinates
         self.coords = condense_coords(self.matches)
@@ -498,7 +533,8 @@ class MeshAndSolveTransform(ArgSchemaParser):
         # create PSLG
         self.bbox = create_PSLG(
                 self.tile_width,
-                self.tile_height)
+                self.tile_height,
+                maskUrl)
 
         # find delaunay with max vertices
         self.mesh, self.area_triangle_par = \
