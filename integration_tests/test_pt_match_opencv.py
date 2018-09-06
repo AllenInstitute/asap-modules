@@ -1,14 +1,16 @@
 import os
 import pytest
-import logging
 import renderapi
-import tempfile
 import json
-import numpy as np
+import cv2
+from six.moves import urllib
 
-from test_data import render_params, example_env, render_json_template, TEST_DATA_ROOT
-from rendermodules.module.render_module import RenderModuleException
+from test_data import (
+        render_params, example_env,
+        render_json_template, TEST_DATA_ROOT)
 from rendermodules.pointmatch.generate_point_matches_opencv import *
+from rendermodules.mesh_lens_correction.do_mesh_lens_correction import \
+    make_mask_from_coords
 
 pt_match_opencv_example = {
         "ndiv": 8,
@@ -37,21 +39,25 @@ pt_match_opencv_example = {
         }
 
 
-POINT_MATCH_OPTS_INPUT_STACK_TS =  render_json_template(example_env, 'point_match_opts_tilespecs.json',
-                                                        test_data_root=TEST_DATA_ROOT)
+POINT_MATCH_OPTS_INPUT_STACK_TS = render_json_template(
+        example_env,
+        'point_match_opts_tilespecs.json',
+        test_data_root=TEST_DATA_ROOT)
 
 
 @pytest.fixture(scope='module')
 def render():
-    render_params['project'] = 'point_match_optimization'  
+    render_params['project'] = 'point_match_optimization'
     render = renderapi.connect(**render_params)
     return render
+
 
 @pytest.fixture(scope='module')
 def stack_from_json():
     tilespecs = [renderapi.tilespec.TileSpec(json=d)
-                    for d in POINT_MATCH_OPTS_INPUT_STACK_TS]
+                 for d in POINT_MATCH_OPTS_INPUT_STACK_TS]
     return tilespecs
+
 
 @pytest.fixture(scope='module')
 def pt_match_input_stack(render, stack_from_json):
@@ -64,34 +70,73 @@ def pt_match_input_stack(render, stack_from_json):
     renderapi.stack.set_stack_state(ptmatch_input_stack,
                                     'COMPLETE',
                                     render=render)
-    
-    assert len({tspec.tileId for tspec 
-                    in stack_from_json}.symmetric_difference(set(
+
+    assert len({tspec.tileId for tspec
+                in stack_from_json}.symmetric_difference(set(
                         renderapi.stack.get_stack_tileIds(
                             ptmatch_input_stack, render=render)))) == 0
     yield ptmatch_input_stack
-    #renderapi.stack.delete_stack(ptmatch_input_stack, render=render)
+
 
 @pytest.fixture(scope='module')
-def tilepair_file(render, stack_from_json):
-    tile_pair_file = "pt_match_opts_tilepair.json"
-    tile_pairs = render_json_template(example_env, 'pt_match_opts_tilepairs.json',
-                                                                  owner=render.DEFAULT_OWNER,
-                                                                  project=render.DEFAULT_PROJECT,
-                                                                  stack=pt_match_input_stack)
+def tilepair_file(render, stack_from_json, tmpdir_factory):
+    output_dir = str(tmpdir_factory.mktemp('tpairdir'))
+    tile_pair_file = os.path.join(
+            output_dir,
+            "pt_match_opts_tilepair.json")
+    tile_pairs = render_json_template(
+            example_env, 'pt_match_opts_tilepairs.json',
+            owner=render.DEFAULT_OWNER,
+            project=render.DEFAULT_PROJECT,
+            stack=pt_match_input_stack)
     with open(tile_pair_file, 'w') as f:
         json.dump(tile_pairs, f, indent=4)
-    
+
     yield tile_pair_file
 
-def test_pt_match_opencv(render, pt_match_input_stack, tilepair_file, tmpdir_factory):
+
+def test_read_etc(render, pt_match_input_stack, tilepair_file, tmpdir_factory):
+    output_dir = str(tmpdir_factory.mktemp('for_masks'))
+
+    with open(tilepair_file, 'r') as f:
+        tpj = json.load(f)
+    tid = tpj['neighborPairs'][0]['p']['id']
+    impath = []
+    tspec = renderapi.tilespec.get_tile_spec(
+            pt_match_input_stack, tid, render=render)
+    impath.append(
+            urllib.parse.unquote(
+                urllib.parse.urlparse(
+                    tspec.ip[0].imageUrl).path))
+
+    w = int(tspec.width)
+    h = int(tspec.height)
+    coords = [
+        [0, 100], [100, 0], [w, 0], [w, h], [0, h]]
+    mask = make_mask_from_coords(w, h, coords)
+    maskUrl = os.path.join(output_dir, 'mask.png')
+    cv2.imwrite(maskUrl, mask)
+    impath.append(maskUrl)
+
+    im = read_downsample_equalize_mask(
+            impath, 0.5, CLAHE_grid=None, CLAHE_clip=None)
+    assert (im.shape[0] == h/2)
+    assert (im.shape[1] == w/2)
+    read_downsample_equalize_mask(
+            impath, 0.5, CLAHE_grid=4, CLAHE_clip=2.0)
+    assert (im.shape[0] == h/2)
+    assert (im.shape[1] == w/2)
+
+
+def test_pt_match_opencv(
+        render, pt_match_input_stack, tilepair_file, tmpdir_factory):
     output_dir = str(tmpdir_factory.mktemp('point_match_opts'))
 
     pt_match_opencv_example['render'] = render_params
     pt_match_opencv_example['input_stack'] = pt_match_input_stack
     pt_match_opencv_example['pairJson'] = tilepair_file
 
-    out_json = "pt_match_opencv_output.json"
+    out_json = os.path.join(output_dir, "pt_match_opencv_output.json")
     pmgen = GeneratePointMatchesOpenCV(
             input_data=pt_match_opencv_example,
             args=['--output_json', out_json])
@@ -122,4 +167,3 @@ def test_pt_match_opencv(render, pt_match_input_stack, tilepair_file, tmpdir_fac
         tpjs = json.load(f)
 
     assert(js['pairCount'] == len(tpjs['neighborPairs']))
-
