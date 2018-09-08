@@ -13,6 +13,8 @@ from six import viewkeys, iteritems
 
 from test_data import (FUSION_TILESPEC_JSON, FUSION_TRANSFORM_JSON,
                        render_params, pool_size)
+import rendermodules.fusion.register_adjacent_stack
+import rendermodules.fusion.fuse_stacks
 
 try:
     xrange
@@ -147,8 +149,10 @@ def get_random_rigid_tform(max_translation_tuple=(10, 10)):
 
 
 def test_register_first_stack(render, stack_DAG, tmpdir):
-    from rendermodules.fusion.register_adjacent_stack import (
-        RegisterSubvolumeModule, example_parameters)
+    RegisterSubvolumeModule = (
+        rendermodules.fusion.register_adjacent_stack.RegisterSubvolumeModule)
+    example_parameters = (
+        rendermodules.fusion.register_adjacent_stack.example_parameters)
 
     parentstack = stack_DAG['stack']
     child = stack_DAG['children'][0]
@@ -179,8 +183,10 @@ def test_register_first_stack(render, stack_DAG, tmpdir):
 
 
 def test_register_all_stacks(render, stack_DAG):
-    from rendermodules.fusion.register_adjacent_stack import (
-        RegisterSubvolumeModule, example_parameters)
+    RegisterSubvolumeModule = (
+        rendermodules.fusion.register_adjacent_stack.RegisterSubvolumeModule)
+    example_parameters = (
+        rendermodules.fusion.register_adjacent_stack.example_parameters)
 
     def registerchildrentest(node):
         for child in node['children']:
@@ -215,8 +221,9 @@ def test_register_all_stacks(render, stack_DAG):
 
 
 def test_fuse_stacks(render, stack_DAG, validstack, tmpdir):
-    from rendermodules.fusion.fuse_stacks import (
-        FuseStacksModule, example_parameters)
+    FuseStacksModule = rendermodules.fusion.fuse_stacks.FuseStacksModule
+    example_parameters = rendermodules.fusion.fuse_stacks.example_parameters
+
     distance_thres = 1.  # central distance threshold in pixels
 
     # stack_DAG uses render-python objects
