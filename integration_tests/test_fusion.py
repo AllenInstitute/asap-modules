@@ -23,9 +23,6 @@ except NameError:
 
 rp = dict(render_params, **{'project': 'fusion_test'})
 
-logger = renderapi.client.logger
-logger.setLevel(logging.DEBUG)
-
 
 @pytest.fixture(scope='module')
 def render():
