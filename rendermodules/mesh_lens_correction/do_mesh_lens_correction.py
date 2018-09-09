@@ -81,14 +81,6 @@ def make_mask_from_coords(w, h, coords):
     return mask
 
 
-def make_mask_from_coords(w, h, coords):
-    cont = np.array(coords).astype('int32')
-    cont = np.reshape(cont, (cont.shape[0], 1, cont.shape[1]))
-    mask = np.zeros((h, w)).astype('uint8')
-    mask = cv2.fillConvexPoly(mask, cont, color=255)
-    return mask
-
-
 def make_mask(mask_dir, w, h, coords, mask_file=None, basename=None):
 
     def get_new_filename(fname):
@@ -229,7 +221,6 @@ class MeshLensCorrection(RenderModule):
         # we don't need it after mask creation
         self.args['mask_coords'] = None
         args_for_input['mask_coords'] = None
-        self.maskUrl = make_mask(args_for_input)
 
         # create a stack with the lens correction tiles
         ts_example = self.generate_ts_example()
