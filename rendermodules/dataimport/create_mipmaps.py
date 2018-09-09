@@ -137,10 +137,9 @@ def create_mipmaps(inputImage, outputDirectory='.', method="block_reduce",
         im = im.convert('I')
         im = im.point(table, 'L')
 
-    imgbasename, ext = os.path.splitext(os.path.basename(inputImage))
     levels_file_map = {int(level): os.path.join(
         outputDirectory, str(level), '{basename}.{fmt}'.format(
-            basename=imgbasename, fmt=outputformat))
+            basename=inputImage.lstrip(os.sep), fmt=outputformat))
                        for level in mipmaplevels}
 
     try:
