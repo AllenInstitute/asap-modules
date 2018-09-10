@@ -258,6 +258,8 @@ def test_swap_z_module(render, source_stack, target_stack, source_tspecs, target
     
     ex['target_stack'] = [target_stack, source_stack]
     ex['zValues'] = [[1015], [1015]]
+    ex['complete_source_stack'] = "True"
+    ex['complete_target_stack'] = "True"
 
     mod = swap_zs.SwapZsModule(input_data=ex, args=['--output_json', 'output.json'])
     mod.run()
