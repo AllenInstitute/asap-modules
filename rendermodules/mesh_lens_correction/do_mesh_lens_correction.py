@@ -53,6 +53,7 @@ example = {
 
 
 class DoMeshException(RenderModuleException):
+    # placeholder
     pass
 
 
