@@ -107,10 +107,13 @@ MATERIALIZE_BOX_JSON = render_json_template(
     test_data_root=TEST_DATA_ROOT)
 
 # Swap Zs json files
-swap_z_tspecs1 = render_json_template(example_env, 'swap_z_tspecs1.json', test_data_root=TEST_DATA_ROOT)
+swap_z_tspecs1 = render_json_template(example_env, 'swap_z_tspecs1.json')
 
-swap_z_tspecs2 = render_json_template(example_env, 'swap_z_tspecs2.json', test_data_root=TEST_DATA_ROOT)
+swap_z_tspecs2 = render_json_template(example_env, 'swap_z_tspecs2.json')
 
+swap_pt_matches1 = render_json_template(example_env, 'swap_pt_matches1.json')
+
+swap_pt_matches2 = render_json_template(example_env, 'swap_pt_matches2.json')
 
 RAW_STACK_INPUT_JSON = render_json_template(example_env, 'raw_tile_specs_for_em_montage.json',
                                             test_data_root=TEST_DATA_ROOT)
