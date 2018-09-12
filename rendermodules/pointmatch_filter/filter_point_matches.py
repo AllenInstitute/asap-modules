@@ -15,12 +15,12 @@ example = {
         "memGB": "2G"},
     "input_stack": "em_2d_montage_lc",
     "input_match_collection": "default_point_matches",
-    "output_match_collection": "weighted_montage_matches",
+    "output_match_collection": None,
     "overwrite_collection_section": True,
     "resmax": 5.0,
     "transmax": 500.0,
-    "minZ": 120515,
-    "maxZ": 120521,
+    "minZ": 120581,
+    "maxZ": 120583,
     "filter_output_file": "./filter_output.json",
     "output_json": "./tmpout.json"
 }
@@ -85,7 +85,7 @@ def fit_affine(A, B, return_all=False):
         Y[2 * i] = B[i, 0]
         Y[2 * i + 1] = B[i, 1]
 
-    (Tvec, residuals, rank, s) = np.linalg.lstsq(M, Y)
+    (Tvec, residuals, rank, s) = np.linalg.lstsq(M, Y, rcond=None)
     if return_all:
         return Tvec, residuals, rank, s
 
@@ -95,14 +95,19 @@ def proc_job(fargs):
         input_stack, z, resmax, transmax, overwrite, rpar] = fargs
 
     render = renderapi.connect(**rpar)
-    matches = renderapi.pointmatch.get_matches_within_group(
-            input_match_collection,
-            str(float(z)),
-            render=render)
-    tspecs = renderapi.tilespec.get_tile_specs_from_z(
-            input_stack,
-            float(z),
-            render=render)
+    try:
+        matches = renderapi.pointmatch.get_matches_within_group(
+                input_match_collection,
+                str(float(z)),
+                render=render)
+        tspecs = renderapi.tilespec.get_tile_specs_from_z(
+                input_stack,
+                float(z),
+                render=render)
+    except renderapi.errors.RenderError as e:
+        logger.warning(str(e))
+        return None
+
     tids = np.array([t.tileId for t in tspecs])
 
     residuals = []
@@ -200,7 +205,10 @@ class FilterMatches(RenderModule):
             results = pool.map(proc_job, fargs)
 
         with open(self.args['filter_output_file'], 'w') as f:
-            json.dump(results, f, indent=2)
+            json.dump(
+                    [x for x in results if x is not None],
+                    f,
+                    indent=2)
 
         with open(self.args['output_json'], 'w') as f:
             outj = {'filter_output_file': self.args['filter_output_file']}

@@ -13,6 +13,8 @@ class FilterSchema(RenderParameters, ZValueParameters, ProcessPoolParameters):
         description='Name of the montage point match collection')
     output_match_collection = Str(
         required=True,
+        default=None,
+        missing=None,
         description='Name of the montage point match collection to write to')
     overwrite_collection_section = Bool(
         required=True,

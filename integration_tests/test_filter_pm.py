@@ -126,6 +126,15 @@ def test_filter_pm(prestitched_stack, point_match_collection, tmpdir_factory):
                 render=renderapi.connect(**ex['render']))
         assert(len(m0) == len(m1))
 
+    # handles missing section?
+    ex['maxZ'] = 1032
+    fmod = FilterMatches(input_data=ex, args=[])
+    fmod.run()
+    with open(ex['filter_output_file'], 'r') as f:
+        fj = json.load(f)
+    assert(len(fj) != len(fmod.args['zValues']))
+    assert(len(fj) == 2)
+
     # test the plot
     with open(ex['filter_output_file'], 'r') as f:
         fj = json.load(f)
