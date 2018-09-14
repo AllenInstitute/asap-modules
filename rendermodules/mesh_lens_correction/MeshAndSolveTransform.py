@@ -284,21 +284,16 @@ def create_regularization(ncols, ntiles, defaultL, transL, lensL):
 
 def create_thinplatespline_tf(
         render, args, mesh, solution,
-        lens_dof_start, transforms,
-        include_affine=True,
+        lens_dof_start, common_transform,
         compute_affine=True):
 
     dst = np.zeros_like(mesh.points)
     dst[:, 0] = mesh.points[:, 0] + solution[0][lens_dof_start:]
     dst[:, 1] = mesh.points[:, 1] + solution[1][lens_dof_start:]
 
-    if include_affine:
+    if common_transform is not None:
         # average affine result
-        M = np.array([t.M for t in transforms]).mean(0)
-        atf = renderapi.transform.AffineModel(
-                M00=M[0, 0], M01=M[0, 1], B0=0.0,
-                M10=M[1, 0], M11=M[1, 1], B1=0.0)
-        dst = atf.tform(dst)
+        dst = common_transform.tform(dst)
 
     transform = renderapi.transform.ThinPlateSplineTransform()
     transform.estimate(mesh.points, dst, computeAffine=compute_affine)
@@ -472,17 +467,28 @@ def create_A(matches, tilespecs, mesh):
     return A, wts, lens_dof_start
 
 
-def create_transforms(ntiles, solution):
-    transforms = []
+def create_transforms(ntiles, solution, get_common=True):
+    rtransforms = []
     for i in range(ntiles):
-        transforms.append(renderapi.transform.AffineModel(
+        rtransforms.append(renderapi.transform.AffineModel(
                            M00=solution[0][i*3+0],
                            M01=solution[0][i*3+1],
                            B0=solution[0][i*3+2],
                            M10=solution[1][i*3+0],
                            M11=solution[1][i*3+1],
                            B1=solution[1][i*3+2]))
-    return transforms
+
+    if get_common:
+        transforms = []
+        common = np.array([t.M for t in rtransforms]).mean(0)
+        for r in rtransforms:
+            transforms.append(renderapi.transform.AffineModel())
+            transforms[-1].M = rtransforms.M.dot(np.linalg.inv(common))
+    else:
+        common = None
+        transforms = rtransforms
+
+    return common, transforms
 
 
 class MeshAndSolveTransform(ArgSchemaParser):
@@ -561,7 +567,7 @@ class MeshAndSolveTransform(ArgSchemaParser):
                 self.reg,
                 self.x0)
 
-        self.transforms = create_transforms(
+        self.common_transform, self.transforms = create_transforms(
                 len(self.tilespecs), self.solution)
 
         tf_scale, message = report_solution(
@@ -601,7 +607,7 @@ class MeshAndSolveTransform(ArgSchemaParser):
                 self.mesh,
                 self.solution,
                 self.lens_dof_start,
-                self.transforms)
+                self.common_transform)
 
         new_stack_with_tf(
                 self.render,
