@@ -104,8 +104,8 @@ class ApplyLensCorrection(StackTransitionModule):
 
             for ts in tspecs:
                 ts.tforms = [ref_lc] + ts.tforms
-                for i in range(len(mask_mm_list)):
-                    ts.ip[i].maskUrl = pathlib.Path(mask_mm_list[i]).as_uri()
+                for lvl, maskUrl in mask_mm_list.items():
+                    ts.ip[lvl].maskUrl = pathlib.Path(maskUrl).as_uri()
                 new_tspecs.append(ts)
 
         renderapi.stack.create_stack(outputStack, render=r)
