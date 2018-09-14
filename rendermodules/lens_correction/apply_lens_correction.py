@@ -93,8 +93,8 @@ class ApplyLensCorrection(StackTransitionModule):
                 mipmaplevels=levels,
                 outputformat=ext.split('.')[-1],
                 convertTo8bit=False,
-                force_redo=True)
-        print(mask_mm_list)
+                force_redo=True,
+                block_func="min")
 
         # new tile specs for each z selected
         new_tspecs = []

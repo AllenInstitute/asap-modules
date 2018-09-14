@@ -22,7 +22,8 @@ PIL_filters = {
 
 block_funcs = {
     'mean': numpy.mean,
-    'median': numpy.median
+    'median': numpy.median,
+    'min': numpy.min
 }
 
 
