@@ -484,11 +484,13 @@ def create_transforms(ntiles, solution, get_common=True):
         for r in rtransforms:
             transforms.append(renderapi.transform.AffineModel())
             transforms[-1].M = r.M.dot(np.linalg.inv(common))
+        ctform = renderapi.transform.AffineModel()
+        ctform.M = common
     else:
-        common = None
+        ctform = None
         transforms = rtransforms
 
-    return common, transforms
+    return ctform, transforms
 
 
 class MeshAndSolveTransform(ArgSchemaParser):
