@@ -283,47 +283,33 @@ def create_regularization(ncols, ntiles, defaultL, transL, lensL):
 
 
 def create_thinplatespline_tf(
-        render, args,
-        mesh, solution, lens_dof_start):
+        render, args, mesh, solution,
+        lens_dof_start, transforms,
+        include_affine=True,
+        compute_affine=True):
 
-    if args['outfile'] is None:
-        fname = '%s/%s.json' % (
-                args['output_dir'],
-                args['sectionId'])
-    else:
-        fname = args['outfile']
+    dst = np.zeros_like(mesh.points)
+    dst[:, 0] = mesh.points[:, 0] + solution[0][lens_dof_start:]
+    dst[:, 1] = mesh.points[:, 1] + solution[1][lens_dof_start:]
 
-    argvs = ['--computeAffine', 'false']
-    argvs += ['--numberOfDimensions', '2']
-    argvs += ['--outputFile', fname]
-    argvs += ['--numberOfLandmarks', mesh.points.shape[0]]
+    if include_affine:
+        # average affine result
+        M = np.array([t.M for t in transforms]).mean(0)
+        atf = renderapi.transform.AffineModel(
+                M00=M[0, 0], M01=M[0, 1], B0=0.0,
+                M10=M[1, 0], M11=M[1, 1], B1=0.0)
+        dst = atf.tform(dst)
 
-    for i in range(mesh.points.shape[0]):
-        argvs += ['%0.6f ' % mesh.points[i, 0]]
-        argvs += ['%0.6f ' % mesh.points[i, 1]]
-    for i in range(mesh.points.shape[0]):
-        argvs += ['%0.6f ' % (
-                mesh.points[i, 0] +
-                solution[0][lens_dof_start + i])]
-        argvs += ['%0.6f ' % (
-                mesh.points[i, 1] +
-                solution[1][lens_dof_start + i])]
-
-    renderapi.client.call_run_ws_client(
-            'org.janelia.render.client.ThinPlateSplineClient',
-            add_args=argvs,
-            renderclient=render,
-            memGB='2G',
-            subprocess_mode='check_call')
-
-    j = json.load(open(fname, 'r'))
-    transform = (
-            renderapi.transform.ThinPlateSplineTransform(
-                dataString=j['dataString']))
+    transform = renderapi.transform.ThinPlateSplineTransform()
+    transform.estimate(mesh.points, dst, computeAffine=compute_affine)
     transform.transformId = (
             args['sectionId'] +
             datetime.datetime.now().strftime("_%Y%m%d%H%M%S"))
     transform.labels = None
+
+    with open(args['outfile'], 'w') as f:
+        json.dump(transform.to_dict(), f, indent=2)
+
     return transform
 
 
@@ -614,7 +600,8 @@ class MeshAndSolveTransform(ArgSchemaParser):
                 self.args,
                 self.mesh,
                 self.solution,
-                self.lens_dof_start)
+                self.lens_dof_start,
+                self.transforms)
 
         new_stack_with_tf(
                 self.render,
