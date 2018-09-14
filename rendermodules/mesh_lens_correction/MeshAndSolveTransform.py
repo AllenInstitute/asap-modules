@@ -483,7 +483,7 @@ def create_transforms(ntiles, solution, get_common=True):
         common = np.array([t.M for t in rtransforms]).mean(0)
         for r in rtransforms:
             transforms.append(renderapi.transform.AffineModel())
-            transforms[-1].M = rtransforms.M.dot(np.linalg.inv(common))
+            transforms[-1].M = r.M.dot(np.linalg.inv(common))
     else:
         common = None
         transforms = rtransforms
