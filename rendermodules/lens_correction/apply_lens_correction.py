@@ -84,7 +84,7 @@ class ApplyLensCorrection(StackTransitionModule):
             self.input_stack, self.zValues[0], render=r)
         levels = [int(l) for l in tspecs[0].ip.levels]
         # make mask mipmaps
-        mask_mm_list = []
+        mask_mm_list = {}
         if self.args['maskUrl'] is not None:
             root, ext = os.path.splitext(self.args['maskUrl'])
             mask_mm_list = create_mipmaps(
