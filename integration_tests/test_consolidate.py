@@ -183,4 +183,3 @@ def test_remap_zs(render, test_stack, remap_sectionId):
     else:
         assert ({ts.layout.sectionId for ts in in_tspecs} ==
                 {ts.layout.sectionId for ts in out_tspecs})
-

@@ -144,7 +144,7 @@ def test_rough_registration(render, reference_stack, moving_stack, point_match_c
     
     mtspecs = renderapi.tilespec.get_tile_specs_from_z(example['output_stack'], example['moving_z'], render=render)
     mtform = mtspecs[0].tforms[0]
-    assert(abs(mtform.shear-0.0) < np.finfo(float).eps)
+    assert(abs(mtform.shear-0.0) < 100.0 * np.finfo(float).eps)
 
 
     # similarity model
@@ -156,7 +156,7 @@ def test_rough_registration(render, reference_stack, moving_stack, point_match_c
 
     mtspecs = renderapi.tilespec.get_tile_specs_from_z(example['output_stack'], example['moving_z'], render=render)
     mtform = mtspecs[0].tforms[0]
-    assert(abs(mtform.shear-0.0) < np.finfo(float).eps)
+    assert(abs(mtform.shear-0.0) < 100.0 * np.finfo(float).eps)
     
     # code coverage
     example['reference_stack'] = moving_stack
