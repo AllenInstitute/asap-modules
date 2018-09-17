@@ -4,18 +4,26 @@ import logging
 import renderapi
 import numpy as np
 import math
-from rendermodules.lens_correction.apply_lens_correction import ApplyLensCorrection
+from rendermodules.lens_correction.apply_lens_correction import \
+        ApplyLensCorrection
 from rendermodules.lens_correction.lens_correction import LensCorrectionModule
+from rendermodules.mesh_lens_correction.do_mesh_lens_correction import \
+        make_mask
 from test_data import render_params, TILESPECS_NO_LC_JSON, TILESPECS_LC_JSON
 from test_data import calc_lens_parameters
+import matplotlib.pyplot as plt
+from six.moves import urllib
+import os
 
 
 render_params['project'] = "lens_correction_test"
+
 
 @pytest.fixture(scope='module')
 def render():
     render = renderapi.connect(**render_params)
     return render
+
 
 @pytest.fixture(scope='module')
 def example_tform_dict():
@@ -59,18 +67,21 @@ def example_tform_dict():
 
     return tform
 
+
 @pytest.fixture(scope='module')
 def stack_no_lc(render):
     stack = "test_no_lc"
 
     renderapi.stack.create_stack(stack, render=render)
 
-    tspecs = [renderapi.tilespec.TileSpec(json=tspec) for tspec in TILESPECS_NO_LC_JSON]
+    tspecs = [renderapi.tilespec.TileSpec(json=tspec)
+              for tspec in TILESPECS_NO_LC_JSON]
     renderapi.client.import_tilespecs(stack, tspecs, render=render)
     renderapi.stack.set_stack_state(stack, 'COMPLETE', render=render)
     yield stack
 
     renderapi.stack.delete_stack(stack, render=render)
+
 
 @pytest.fixture(scope='module')
 def stack_lc(render):
@@ -78,16 +89,19 @@ def stack_lc(render):
 
     renderapi.stack.create_stack(stack, render=render)
 
-    tspecs = [renderapi.tilespec.TileSpec(json=tspec) for tspec in TILESPECS_LC_JSON]
+    tspecs = [renderapi.tilespec.TileSpec(json=tspec)
+              for tspec in TILESPECS_LC_JSON]
     renderapi.client.import_tilespecs(stack, tspecs, render=render)
     renderapi.stack.set_stack_state(stack, 'COMPLETE', render=render)
     yield stack
 
     renderapi.stack.delete_stack(stack, render=render)
 
+
 @pytest.fixture(scope='module')
 def test_points(example_tform_dict):
-    example_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=example_tform_dict['dataString'])
+    example_tform = renderapi.transform.NonLinearCoordinateTransform(
+            dataString=example_tform_dict['dataString'])
     x = np.arange(0, example_tform.width, 100, dtype=np.float64)
     y = np.arange(0, example_tform.height, 100, dtype=np.float64)
     xv, yv = np.meshgrid(x, y)
@@ -97,35 +111,45 @@ def test_points(example_tform_dict):
 
     return test_points
 
+
 @pytest.fixture(scope='module')
 def compute_lc_norm_and_max(test_example_tform, test_new_tform):
-    tform_norm = np.linalg.norm(test_new_tform - test_example_tform) / math.sqrt(test_new_tform.size)
+    tform_norm = (
+            np.linalg.norm(test_new_tform - test_example_tform) /
+            math.sqrt(test_new_tform.size))
     tform_diff = np.power(test_new_tform - test_example_tform, 2)
-    tform_max_diff = max(np.power(tform_diff[:,0] + tform_diff[:,1], 0.5))
+    tform_max_diff = max(np.power(tform_diff[:, 0] + tform_diff[:, 1], 0.5))
     print('Norm: %s Max difference: %s' % (tform_norm, tform_max_diff))
     assert tform_max_diff < 3
     assert tform_norm < 1
 
-def test_calc_lens_correction(example_tform_dict, test_points,tmpdir):
+
+def test_calc_lens_correction(example_tform_dict, test_points, tmpdir):
     outfile = str(tmpdir.join('test_LC_out.json'))
     print(outfile)
 
-    mod = LensCorrectionModule(input_data=calc_lens_parameters, args=['--output_json', outfile])
+    mod = LensCorrectionModule(
+            input_data=calc_lens_parameters, args=['--output_json', outfile])
     mod.logger.setLevel(logging.DEBUG)
     mod.run()
 
-    with open(calc_lens_parameters['outfile'],'r') as fp:
+    with open(calc_lens_parameters['outfile'], 'r') as fp:
         new_tform_dict = json.load(fp)
 
     # new_tform_path = calc_lens_parameters['outfile']
     # with open(new_tform_path, 'r') as fp:
     #     new_tform_dict = json.load(fp)
 
-    example_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=example_tform_dict['dataString'])
-    new_tform = renderapi.transform.NonLinearCoordinateTransform(dataString=new_tform_dict['transform']['dataString'])
+    example_tform = renderapi.transform.NonLinearCoordinateTransform(
+            dataString=example_tform_dict['dataString'])
+    new_tform = renderapi.transform.NonLinearCoordinateTransform(
+            dataString=new_tform_dict['transform']['dataString'])
 
-    assert np.array_equal([example_tform.height, example_tform.width, example_tform.length, example_tform.dimension],
-                          [new_tform.height, new_tform.width, new_tform.length, new_tform.dimension])
+    assert np.array_equal(
+            [example_tform.height, example_tform.width,
+                example_tform.length, example_tform.dimension],
+            [new_tform.height, new_tform.width,
+                new_tform.length, new_tform.dimension])
 
     test_example_tform = example_tform.tform(test_points)
     test_new_tform = new_tform.tform(test_points)
@@ -178,3 +202,61 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc,
                 new_tform.dimension])
         test_new_tform = new_tform.tform(test_points)
         compute_lc_norm_and_max(test_example_tform, test_new_tform)
+
+
+def test_apply_lens_correction_mask(
+        render, stack_no_lc, stack_lc,
+        example_tform_dict, test_points, tmpdir_factory):
+
+    params = {
+        "render": render_params,
+        "inputStack": stack_no_lc,
+        "outputStack": stack_lc,
+        "zs": [2266],
+        "transform": example_tform_dict,
+        "refId": None,
+        "pool_size": 5,
+        "overwrite_zlayer": True
+    }
+
+    # make a mask
+    tspecs = renderapi.tilespec.get_tile_specs_from_z(
+            params['inputStack'],
+            float(params['zs'][0]),
+            render=renderapi.connect(**params['render']))
+    mask_dir = str(tmpdir_factory.mktemp("make_mask"))
+    dx = 100
+    dy = 100
+    width = int(tspecs[0].width)
+    height = int(tspecs[0].height)
+    mask_coords = [
+            [0, dy], [dx, 0], [width, 0], [width, height],
+            [0, height]]
+    maskUrl = make_mask(
+            mask_dir,
+            width,
+            height,
+            mask_coords,
+            mask_file=None,
+            basename='mymask.png')
+    params['maskUrl'] = maskUrl
+
+    out_fn = 'test_ALC_out.json'
+    mod = ApplyLensCorrection(input_data=params,
+                              args=['--output_json', out_fn])
+    mod.run()
+
+    tspecs = renderapi.tilespec.get_tile_specs_from_z(
+            params['outputStack'],
+            float(params['zs'][0]),
+            render=renderapi.connect(**params['render']))
+
+    for t in tspecs:
+        for lvl, mm in t.ip.items():
+            assert(mm.maskUrl is not None)
+            mpath = urllib.parse.unquote(
+                    urllib.parse.urlparse(mm.maskUrl).path)
+            assert(os.path.isfile(mpath))
+            mask = plt.imread(mpath)
+            assert (mask.shape[0] == height / (2**int(lvl)))
+            assert (mask.shape[1] == width / (2**int(lvl)))

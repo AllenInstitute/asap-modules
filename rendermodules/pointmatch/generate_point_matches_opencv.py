@@ -15,7 +15,7 @@ example = {
         "ndiv": 8,
         "matchMax": 10000,
         "downsample_scale": 0.3,
-        "SIFT_nfeature": 50000,
+        "SIFT_nfeature": 50001,
         "SIFT_noctave": 8,
         "SIFT_sigma": 2.5,
         "RANSAC_outlier": 5.0,

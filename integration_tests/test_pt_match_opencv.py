@@ -16,7 +16,7 @@ pt_match_opencv_example = {
         "ndiv": 8,
         "matchMax": 1000,
         "downsample_scale": 0.3,
-        "SIFT_nfeature": 20000,
+        "SIFT_nfeature": 20001,
         "SIFT_noctave": 3,
         "SIFT_sigma": 1.5,
         "RANSAC_outlier": 5.0,
