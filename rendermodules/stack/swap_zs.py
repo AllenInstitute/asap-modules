@@ -59,7 +59,7 @@ class SwapZsModule(RenderModule):
         renderapi.stack.delete_stack(temp_stack, render=self.render)
 
         # delete source stack if specified in input
-        if self.args['delete_source_stack']:
+        if self.args['delete_source_stack']: # pragma: no cover
             renderapi.stack.delete_stack(source_stack, render=self.render)
 
         
@@ -78,7 +78,7 @@ class SwapZsModule(RenderModule):
         target_stacks = []
         zvalues = []
         for source_stack, target_stack, zVals in zip(self.args['source_stack'], self.args['target_stack'], self.args['zValues']):
-            if source_stack not in list_of_stacks or target_stack not in list_of_stacks:
+            if source_stack not in list_of_stacks or target_stack not in list_of_stacks: # pragma: no cover
                 continue
             #if source_stack not in list_of_stacks:
             #    raise RenderModuleException("Source stack {} not in render".format(source_stack))
@@ -99,6 +99,6 @@ class SwapZsModule(RenderModule):
 
         self.output({"source_stacks": source_stacks, "target_stacks": target_stacks, "zvalues": zvalues})
 
-if __name__=="__main__":
+if __name__ == "__main__":
     mod = SwapZsModule(input_data=example)
     mod.run()

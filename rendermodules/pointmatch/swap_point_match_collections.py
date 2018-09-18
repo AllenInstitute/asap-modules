@@ -92,6 +92,6 @@ class SwapPointMatchesModule(RenderModule):
                      "swapped_zs": zvalues, 
                      "nonswapped_zs": set(self.args['zValues']).difference(zvalues)})
 
-if __name__=="__main__":
+if __name__ == "__main__":
     mod = SwapPointMatchesModule(input_data=example)
     mod.run()
