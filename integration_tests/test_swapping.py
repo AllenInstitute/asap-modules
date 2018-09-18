@@ -109,6 +109,7 @@ def test_swap_z_module(render, source_stack, target_stack, source_tspecs, target
 
     mod = swap_zs.SwapZsModule(input_data=ex, args=['--output_json', 'output.json'])
     
+    # check if the number of source_stacks and # of target_stacks match for swapping
     with pytest.raises(RenderModuleException) as e:
         mod.run()
     
