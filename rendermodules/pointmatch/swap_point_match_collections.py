@@ -27,8 +27,6 @@ class SwapPointMatchesModule(RenderModule):
 
         collections = [c['collectionId']['name'] for c in collecs]
 
-        print(self.args['source_collection'], self.args['target_collection'])
-        print(collections)
         if (self.args['source_collection'] not in collections) or (self.args['target_collection'] not in collections):
             raise RenderModuleException("One of source or target collections does not exist")
 
