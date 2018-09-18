@@ -1,8 +1,8 @@
 
-from argschema import ArgSchema
 from argschema.schemas import DefaultSchema
-from argschema.fields import Str, Int, Bool, Nested, Float, OutputDir, List, InputFile, NumpyArray
-from ..module.render_module import RenderParameters
+from argschema.fields import Str, Int, Bool, \
+        Nested, Float, OutputDir, \
+        InputFile, NumpyArray, OutputFile
 from ..pointmatch.schemas import PointMatchOpenCVParameters
 
 
@@ -141,6 +141,9 @@ class DoMeshLensCorrectionOutputSchema(DefaultSchema):
     output_json = Str(
         required=True,
         description="path to lens correction file")
+    maskUrl = OutputFile(
+        required=True,
+        description="path to mask generated")
     qc_json = Str(
         required=True,
         description="path to qc json file")
