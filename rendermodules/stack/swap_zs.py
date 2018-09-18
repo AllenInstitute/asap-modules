@@ -95,7 +95,7 @@ class SwapZsModule(RenderModule):
             target_stacks.append(target_stack)
             zvalues.append(final_zs)
 
-        self.swap_zs_from_stacks(source_stack, target_stack, final_zs)
+            self.swap_zs_from_stacks(source_stack, target_stack, final_zs)
 
         self.output({"source_stacks": source_stacks, "target_stacks": target_stacks, "zvalues": zvalues})
 
