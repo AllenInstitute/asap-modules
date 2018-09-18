@@ -7,14 +7,14 @@ example = {
     "render": {
         "host": "em-131db",
         "port": 8080,
-        "owner": "TEM",
+        "owner": "gayathrim",
         "project": "17797_1R",
         "client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts/"
     },
     "match_owner": "match_owner",
     "source_collection": "source_collection",
     "target_collection": "target_collection",
-    "zValues": []
+    "zValues": [1015]
 }
 
 class SwapPointMatchesModule(RenderModule):

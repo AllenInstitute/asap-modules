@@ -7,13 +7,13 @@ example = {
     "render": {
         "host": "em-131db",
         "port": 8080,
-        "owner": "TEM",
+        "owner": "gayathrim",
         "project": "17797_1R",
         "client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts/"
     },
     "source_stack": "source_stack",
     "target_stack": "target_stack",
-    "zValues": [],
+    "zValues": [[1015]],
     "delete_source_stack": "False"
 }
 
