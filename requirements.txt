@@ -9,7 +9,7 @@ rtree
 networkx
 bokeh
 EMaligner>=0.2.0
-matplotlib
+matplotlib>=2.0.0
 opencv-contrib-python<3.4.3.0
 jinja2
 six
