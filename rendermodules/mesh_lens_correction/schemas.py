@@ -64,6 +64,11 @@ class MeshLensCorrectionSchema(PointMatchOpenCVParameters):
         default=True,
         missing=True,
         description="Close input stack")
+    do_montage_QC = Bool(
+        required=False,
+        default=True,
+        missing=True,
+        description="perform montage QC on stack result")
     match_collection = Str(
         required=True,
         description="name of point match collection")
