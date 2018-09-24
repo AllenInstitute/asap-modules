@@ -7,7 +7,9 @@ import numpy as np
 
 import renderapi
 
-from test_data import render_params, cons_ex_tilespec_json, cons_ex_transform_json
+from test_data import (render_params, 
+                       cons_ex_tilespec_json, 
+                       cons_ex_transform_json)
 from rendermodules.module.render_module import RenderModuleException
 from rendermodules.stack.consolidate_transforms import ConsolidateTransforms, process_z, consolidate_transforms
 from rendermodules.stack import redirect_mipmaps, remap_zs
@@ -26,6 +28,7 @@ def render_example_tilespec_and_transforms():
     tforms = [renderapi.transform.load_transform_json(td) for td in cons_ex_transform_json]
     print(tforms)
     return (tilespecs, tforms)
+
 
 @pytest.fixture(scope='module')
 def test_stack(render,render_example_tilespec_and_transforms):

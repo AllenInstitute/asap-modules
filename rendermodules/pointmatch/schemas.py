@@ -1,5 +1,5 @@
 from argschema.fields import (Bool, Float, Int, Nested, Str, InputDir,
-                              InputFile, OutputDir)
+                              InputFile, OutputDir, List)
 from argschema.schemas import DefaultSchema
 import marshmallow as mm
 import argschema
@@ -224,3 +224,35 @@ class PointMatchOpenCVParameters(RenderParameters):
         default=-1,
         missing=-1,
         description="number of CPUs to use")
+
+
+class SwapPointMatches(RenderParameters):
+    match_owner = Str(
+        required=True,
+        description="Match collection owner name")
+    source_collection = Str(
+        required=True,
+        description="Source point match collection")
+    target_collection = Str(
+        required=True,
+        description="Target point match collection")
+    zValues = List(
+        Int,
+        required=True,
+        description="List of integer group ids")
+
+class SwapPointMatchesOutput(DefaultSchema):
+    source_collection = Str(
+        required=True,
+        description="Source point match collection")
+    target_collection = Str(
+        required=True,
+        description="Target point match collection")
+    swapped_zs = List(
+        Int,
+        required=True,
+        description="List of group ids that got swapped")
+    nonswapped_zs = List(
+        Int,
+        required=True,
+        description="List of group ids that did not get swapped")
