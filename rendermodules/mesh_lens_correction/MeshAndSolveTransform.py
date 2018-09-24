@@ -542,6 +542,8 @@ class MeshAndSolveTransform(ArgSchemaParser):
                 self.bbox,
                 self.args['nvertex'])
 
+        self.logger.debug('first pass mesh with %d vertices' % self.mesh.npoints)
+
         # and enforce neighboring matches to vertices
         self.mesh, self.area_triangle_par = \
             force_vertices_with_npoints(
@@ -549,6 +551,8 @@ class MeshAndSolveTransform(ArgSchemaParser):
                 self.bbox,
                 self.coords,
                 3)
+
+        self.logger.debug('after neighbor enforcement  %d vertices' % self.mesh.npoints)
 
         if self.mesh.points.shape[0] < 0.5*self.args['nvertex']:
             raise MeshLensCorrectionException(
@@ -616,6 +620,8 @@ class MeshAndSolveTransform(ArgSchemaParser):
                 self.solution,
                 self.lens_dof_start)
 
+        self.logger.debug('created new transforms')
+
         new_stack_with_tf(
                 self.render,
                 self.args['output_stack'],
@@ -624,9 +630,13 @@ class MeshAndSolveTransform(ArgSchemaParser):
                 self.transforms,
                 self.args['close_stack'])
 
+        self.logger.debug('wrote new stack')
+
         self.qc_path, self.qc_dict = create_montage_qc_dict(
                 self.args,
                 self.tilespecs)
+
+        self.logger.debug('wrote qc dict')
 
         try:
             self.output(
