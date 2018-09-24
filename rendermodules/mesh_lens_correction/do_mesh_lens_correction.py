@@ -262,12 +262,13 @@ class MeshLensCorrection(RenderModule):
         # find the lens correction, write out to new stack
         meshclass.run()
 
-        # run montage qc on the new stack
-        qc_example = self.get_qc_example()
-        qc_mod = DetectMontageDefectsModule(
-                input_data=qc_example,
-                args=['--output_json', out_file.name])
-        qc_mod.run()
+        if self.args['do_montage_QC']:
+            # run montage qc on the new stack
+            qc_example = self.get_qc_example()
+            qc_mod = DetectMontageDefectsModule(
+                    input_data=qc_example,
+                    args=['--output_json', out_file.name])
+            qc_mod.run()
 
         try:
             self.output(
