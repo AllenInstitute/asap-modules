@@ -71,6 +71,12 @@ class FuseStacksParameters(RenderParameters):
         required=False, default=False,
         description=("upload uninterpolated sections for sections "
                      "without overlap"))
+    close_stack = Bool(required=False, default=False, description=(
+        "whether to set output stack to COMPLETE on finishing"))
+    max_tilespecs_per_import_process = Int(
+        required=False, default=None, allow_none=True, description=(
+            "maximum number of tilespecs (written to tempfile) per "
+            "import processing group.  Default unlimited."))
 
 
 class FuseStacksOutput(argschema.schemas.DefaultSchema):
