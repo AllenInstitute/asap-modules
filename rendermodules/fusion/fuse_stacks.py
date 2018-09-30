@@ -185,8 +185,8 @@ class FuseStacksModule(RenderModule):
             max_tilespecs_per_group=self.args[
                 'max_tilespecs_per_import_process'])
         if self.args['close_stack']:
-            self.render.run(renderapi.stack.set_stack_state(
-                self.args['output_stack'], "COMPLETE"))
+            renderapi.stack.set_stack_state(
+                self.args['output_stack'], "COMPLETE", render=self.render)
         d = {'stack': self.args['output_stack']}
         self.output(d)
 
