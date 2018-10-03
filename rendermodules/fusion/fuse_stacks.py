@@ -39,7 +39,9 @@ example_parameters = {
     "pool_size": 12,
     "interpolate_transforms": True,  # False is notimplemented
     "output_stack": "FUSEDOUTSTACK",
-    "create_nonoverlapping_zs": True
+    "create_nonoverlapping_zs": True,
+    "close_stack": False,
+    "max_tilespecs_per_import_process": 5000
 }
 
 
@@ -72,6 +74,12 @@ class FuseStacksModule(RenderModule):
                 # tsc.tforms.append(transform)  # TODO for nonconcat
                 tsc.tforms.extend(transform[::-1])
                 resolved_tspecs.append(tsc)
+
+        if set(uninterpolated_zs) == set(parent_zs).union(set(child_zs)):
+            # standalone uninterplated case
+            return renderapi.resolvedtiles.ResolvedTiles(
+                tilespecs=resolved_tspecs,
+                transformList=all_resolved_tform)
 
         # can check order relation of child/parent stack
         positive = max(child_zs) > z_intersection[-1]
@@ -117,7 +125,8 @@ class FuseStacksModule(RenderModule):
             tilespecs=resolved_tspecs, transformList=resolved_tforms)
 
     def fuse_graph(self, node, parentstack=None, inputtransform=None,
-                   create_nonoverlapping_zs=False):
+                   create_nonoverlapping_zs=False,
+                   max_tilespecs_per_group=5000):
         inputtransform = ([]
                           if inputtransform is None else inputtransform)
         node_edge = (renderapi.transform.AffineModel()
@@ -159,7 +168,9 @@ class FuseStacksModule(RenderModule):
         renderapi.client.import_tilespecs_parallel(
             self.args['output_stack'], resolvedtiles.tilespecs,
             resolvedtiles.transforms, pool_size=self.args['pool_size'],
-            close_stack=False, render=self.render)
+            close_stack=False,
+            max_tilespecs_per_group=max_tilespecs_per_group,
+            render=self.render)
 
         # recurse through depth of graph
         for child in node['children']:
@@ -170,7 +181,12 @@ class FuseStacksModule(RenderModule):
     def run(self):
         self.fuse_graph(
             self.args['stacks'],
-            create_nonoverlapping_zs=self.args['create_nonoverlapping_zs'])
+            create_nonoverlapping_zs=self.args['create_nonoverlapping_zs'],
+            max_tilespecs_per_group=self.args[
+                'max_tilespecs_per_import_process'])
+        if self.args['close_stack']:
+            renderapi.stack.set_stack_state(
+                self.args['output_stack'], "COMPLETE", render=self.render)
         d = {'stack': self.args['output_stack']}
         self.output(d)
 
