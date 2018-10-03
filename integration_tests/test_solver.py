@@ -46,37 +46,44 @@ def montage_pointmatches(render):
     renderapi.pointmatch.import_matches(test_montage_collection, pms_from_json, render=render)
     yield test_montage_collection
 
+
+def one_solve(parameters):
+    mod = Solve_stack(input_data=parameters, args=[])
+    mod.run()
+    assert mod.module.results['precision'] < 1e-7
+    assert mod.module.results['error'] < 200
+    with open(parameters['output_json'], 'r') as f:
+        output_d = json.load(f)
+    assert output_d['stack'] == parameters['output_stack']['name']
+
+
 def test_solver_montage_test(render, montage_pointmatches, raw_stack, tmpdir):
     output_dir = str(tmpdir)
-    solver_montage_parameters['input_stack']['name'] = raw_stack
-    solver_montage_parameters['pointmatch']['name'] = montage_pointmatches
-
-    montage_fn = os.path.join(output_dir, "montage_solve.json")
-    mod = Solve_stack(input_data=solver_montage_parameters,
-                      args=['--output_json', montage_fn])
-    mod.run()
-    assert mod.module.results['precision'] < 1e-7
-    assert mod.module.results['error'] < 200
+    parameters = dict(solver_montage_parameters)
+    parameters['input_stack']['name'] = raw_stack
+    parameters['pointmatch']['name'] = montage_pointmatches
+    parameters['output_json'] = os.path.join(output_dir, "montage_solve.json")
+    
+    one_solve(parameters)
 
     # try with affine_fullsize
-    afffull_fn = os.path.join(output_dir, "affine_fullsize.json")
-    solver_montage_parameters['transformation'] = "affine_fullsize"
-    mod = Solve_stack(input_data=solver_montage_parameters,
-                      args=["--output_json", afffull_fn])
-    mod.run()
-    assert mod.module.results['precision'] < 1e-7
-    assert mod.module.results['error'] < 200
+    parameters['output_json'] = os.path.join(output_dir, "affine_fullsize.json")
+    parameters['transformation'] = "AffineModel"
+    parameters['fullsize_transform'] = True
+    one_solve(parameters)
 
     # try with render interface
-    renderinterface_fn = os.path.join(output_dir, 'renderinterface.json')
-    solver_montage_parameters['input_stack']['db_interface'] = 'render'
-    solver_montage_parameters['pointmatch']['db_interface'] = 'render'
-    mod = Solve_stack(input_data=solver_montage_parameters,
-                      args=["--output_json", renderinterface_fn])
-    mod.run()
-    assert mod.module.results['precision'] < 1e-7
-    assert mod.module.results['error'] < 200
+    parameters['output_json'] = os.path.join(output_dir, 'renderinterface.json')
+    parameters['input_stack']['db_interface'] = 'render'
+    parameters['pointmatch']['db_interface'] = 'render'
+    one_solve(parameters)
 
-    with open(renderinterface_fn, 'r') as f:
-        output_d = json.load(f)
-    assert output_d['stack'] == solver_montage_parameters['output_stack']['name']
+    #try with similarity and polynomial
+    parameters['transformation'] = "SimilarityModel"
+    one_solve(parameters)
+
+    parameters['transformation'] = "Polynomial2DTransform"
+    parameters['poly_order'] = 2
+    # for poly_order=2, similar regularizations work
+    # for poly_order > 2, need to tweak regularization
+    one_solve(parameters)
