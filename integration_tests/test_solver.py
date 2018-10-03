@@ -63,7 +63,10 @@ def test_solver_montage_test(render, montage_pointmatches, raw_stack, tmpdir):
     parameters['input_stack']['name'] = raw_stack
     parameters['pointmatch']['name'] = montage_pointmatches
     parameters['output_json'] = os.path.join(output_dir, "montage_solve.json")
-    
+   
+    # affine half size
+    parameters['transformation'] = "AffineModel"
+    parameters['fullsize_transform'] = False
     one_solve(parameters)
 
     # try with affine_fullsize
