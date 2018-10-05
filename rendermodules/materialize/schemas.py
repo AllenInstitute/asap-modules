@@ -6,6 +6,8 @@ from rendermodules.module.schemas import (
 from argschema.fields import (Str, OutputDir, Int, Boolean, Float,
                               List, InputDir, Nested)
 from marshmallow import post_load
+import marshmallow
+
 
 class Bounds(argschema.schemas.DefaultSchema):
     minX = Int(
@@ -29,7 +31,7 @@ class Bounds(argschema.schemas.DefaultSchema):
         missing=None,
         description="maxY of bounds")
 
-    
+
 class RenderSectionAtScaleParameters(RenderParameters):
     input_stack = Str(
         required=True,
@@ -119,3 +121,29 @@ class MaterializeSectionsOutput(argschema.schemas.DefaultSchema):
     zValues = List(Int, required=True)
     rootDirectory = InputDir(required=True)
     materializedDirectory = InputDir(required=True)
+
+
+# materialization validation schemas
+class ValidateMaterializationParameters(argschema.ArgSchema):
+    # TODO allow row, column, validate min & max
+    minRow = argschema.fields.Int(required=True, description=(
+        "minimum row to attempt to validate tiles. "
+        "Will attempt to use stack bounds if None"))
+    maxRow = argschema.fields.Int(required=True)
+    minCol = argschema.fields.Int(required=True)
+    maxCol = argschema.fields.Int(required=True)
+    minZ = argschema.fields.Int(required=True)
+    maxZ = argschema.fields.Int(required=True)
+    ext = argschema.fields.Str(required=False, default="png",
+                               validator=marshmallow.validate.OneOf(
+                                   ["png", "jpg", "tif"]))
+    basedir = argschema.fields.InputDir(required=True, description=(
+        "base directory for materialization"))
+    pool_size = argschema.fields.Int(required=False, description=(
+        "size of pool to use to investigate image validity"))
+
+
+class ValidateMaterializationOutput(argschema.ArgSchema):
+    basedir = argschema.fields.Str(required=True)
+    # TODO this should probably be an InputFile unless we're disallowing ENOENT
+    failures = argschema.fields.List(argschema.fields.Str, required=True)
