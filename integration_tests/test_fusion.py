@@ -5,6 +5,7 @@ import copy
 import json
 import logging
 import os
+import random
 
 import numpy
 import pytest
@@ -217,6 +218,64 @@ def test_register_all_stacks(render, stack_DAG):
     registerchildrentest(stack_DAG)
 
 
+def compare_stacks_tilecenters(render, stack_hyp, stack_true, distance_thres=1.,
+                               testzs=None):
+    validzs = set(renderapi.stack.get_z_values_for_stack(
+        stack_true, render=render))
+    zs = set(renderapi.stack.get_z_values_for_stack(
+        stack_hyp, render=render))
+
+    validzs = (validzs if testzs is None else set(
+        testzs).intersection(validzs))
+
+    # assure zs are shared
+    assert not zs.symmetric_difference(validzs)
+
+    for z in zs:
+        created_tId_to_tile = {
+            ts.tileId: ts for ts in
+            renderapi.tilespec.get_tile_specs_from_z(
+                stack_hyp, z, render=render)}
+
+        valid_tId_to_tile = {
+            ts.tileId: ts for ts in renderapi.tilespec.get_tile_specs_from_z(
+                stack_true, z, render=render)}
+
+        # assure all tiles are represented
+        assert not (
+            viewkeys(valid_tId_to_tile) ^ viewkeys(created_tId_to_tile))
+
+        # assert that all tile centers are within distance threshold
+        created_centerpoint_l2w_in = []
+        valid_centerpoint_l2w_in = []
+        for tileId, tile in iteritems(created_tId_to_tile):
+            validtile = valid_tId_to_tile[tileId]
+
+            created_centerpoint_l2w_in.append(
+                {'tileId': tileId, 'visible': False,
+                 'local': [tile.width // 2, tile.height // 2]})
+
+            valid_centerpoint_l2w_in.append(
+                {'tileId': tileId, 'visible': False,
+                 'local': [validtile.width // 2, validtile.height // 2]})
+        # using server-side batch coordinate processing
+        wc_valid = renderapi.coordinate.local_to_world_coordinates_batch(
+            stack_true, valid_centerpoint_l2w_in, z, number_of_threads=5,
+            render=render)
+        wc_created = renderapi.coordinate.local_to_world_coordinates_batch(
+            stack_hyp, created_centerpoint_l2w_in, z, number_of_threads=5,
+            render=render)
+
+        validcoord = numpy.array([d['world'][:2] for d in wc_valid])
+        createdcoord = numpy.array([d['world'][:2] for d in wc_created])
+
+        print("comparing world coordinates for z{}".format(z))
+        print(wc_valid[:5])
+        print(wc_created[:5])
+        assert (numpy.linalg.norm(
+            validcoord - createdcoord, axis=1).max() < distance_thres)
+
+
 def test_fuse_stacks(render, stack_DAG, validstack, tmpdir):
     FuseStacksModule = rendermodules.fusion.fuse_stacks.FuseStacksModule
     example_parameters = rendermodules.fusion.fuse_stacks.example_parameters
@@ -239,54 +298,45 @@ def test_fuse_stacks(render, stack_DAG, validstack, tmpdir):
     with open(fs.args['output_json'], 'r') as f:
         outd = json.load(f)
 
-    validzs = set(renderapi.stack.get_z_values_for_stack(
+    compare_stacks_tilecenters(
+        render, outd['stack'], validstack, distance_thres=distance_thres)
+
+
+def test_skip_fusion(render, stack_DAG, validstack, tmpdir):
+    # stack_DAG uses render-python objects
+    input_DAG = json.loads(renderapi.utils.renderdumps(stack_DAG))
+
+    test_input = dict(rendermodules.fusion.fuse_stacks.example_parameters, **{
+        'render': render.make_kwargs(),
+        'stacks': input_DAG,
+        'output_stack': 'fuse_stacks_skipping_test'})
+
+    def getallnodes(dag):
+        for n in dag['children']:
+            yield n
+            getallnodes(n)
+
+    allnodes = [n for n in getallnodes(input_DAG)]
+
+    skippednode = random.choice(allnodes)
+    skippednode['fuse_stack'] = False
+
+    skippedzs = set(renderapi.stack.get_z_values_for_stack(
+        skippednode['stack'], render=render))
+    allzs = set(renderapi.stack.get_z_values_for_stack(
         validstack, render=render))
-    zs = set(renderapi.stack.get_z_values_for_stack(
+
+    outputfn = os.path.join(str(tmpdir), "fuse_stack_skipout.json")
+    fs = rendermodules.fusion.fuse_stacks.FuseStacksModule(
+        input_data=test_input, args=['--output_json', outputfn])
+    fs.run()
+
+    with open(fs.args['output_json'], 'r') as f:
+        outd = json.load(f)
+
+    outzs = set(renderapi.stack.get_z_values_for_stack(
         outd['stack'], render=render))
+    assert not outzs & skippedzs
 
-    # assure zs are shared
-    assert not zs.symmetric_difference(validzs)
-
-    for z in zs:
-        created_tId_to_tile = {
-            ts.tileId: ts for ts in
-            renderapi.tilespec.get_tile_specs_from_z(
-                outd['stack'], z, render=render)}
-
-        valid_tId_to_tile = {
-            ts.tileId: ts for ts in renderapi.tilespec.get_tile_specs_from_z(
-                validstack, z, render=render)}
-
-        # assure all tiles are represented
-        assert not (
-            viewkeys(valid_tId_to_tile) ^ viewkeys(created_tId_to_tile))
-
-        # assert that all tile centers are within distance threshold
-        created_centerpoint_l2w_in = []
-        valid_centerpoint_l2w_in = []
-        for tileId, tile in iteritems(created_tId_to_tile):
-            validtile = valid_tId_to_tile[tileId]
-
-            created_centerpoint_l2w_in.append(
-                {'tileId': tileId, 'visible': False,
-                 'local': [tile.width // 2, tile.height // 2]})
-
-            valid_centerpoint_l2w_in.append(
-                {'tileId': tileId, 'visible': False,
-                 'local': [validtile.width // 2, validtile.height // 2]})
-        # using server-side batch coordinate processing
-        wc_valid = renderapi.coordinate.local_to_world_coordinates_batch(
-            validstack, valid_centerpoint_l2w_in, z, number_of_threads=5,
-            render=render)
-        wc_created = renderapi.coordinate.local_to_world_coordinates_batch(
-            outd['stack'], created_centerpoint_l2w_in, z, number_of_threads=5,
-            render=render)
-
-        validcoord = numpy.array([d['world'][:2] for d in wc_valid])
-        createdcoord = numpy.array([d['world'][:2] for d in wc_created])
-
-        print("comparing world coordinates for z{}".format(z))
-        print(wc_valid[:5])
-        print(wc_created[:5])
-        assert (numpy.linalg.norm(
-            validcoord - createdcoord, axis=1).max() < distance_thres)
+    compare_stacks_tilecenters(render, outd['stack'], validstack,
+                               testzs=allzs.difference(skippedzs))
