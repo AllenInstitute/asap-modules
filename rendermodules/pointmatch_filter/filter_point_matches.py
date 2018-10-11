@@ -72,24 +72,6 @@ def filter_plot(fig, result_json, fs=14):
     ax.plot([ax.get_xlim()[0], tmax], [rmax, rmax], '--b', alpha=0.5)
 
 
-def fit_affine(A, B, return_all=False):
-    # placeholder until renderapi catches up to provide this
-
-    N = A.shape[0]  # total points
-
-    M = np.zeros((2 * N, 6))
-    Y = np.zeros((2 * N, 1))
-    for i in range(N):
-        M[2 * i, :] = [A[i, 0], A[i, 1], 0, 0, 1, 0]
-        M[2 * i + 1, :] = [0, 0, A[i, 0], A[i, 1], 0, 1]
-        Y[2 * i] = B[i, 0]
-        Y[2 * i + 1] = B[i, 1]
-
-    (Tvec, residuals, rank, s) = np.linalg.lstsq(M, Y, rcond=None)
-    if return_all:
-        return Tvec, residuals, rank, s
-
-
 def proc_job(fargs):
     [input_match_collection, output_match_collection,
         input_stack, z, resmax, transmax, overwrite, rpar] = fargs
@@ -108,6 +90,9 @@ def proc_job(fargs):
         logger.warning(str(e))
         return None
 
+    if len(matches) == 0:
+        return None
+
     tids = np.array([t.tileId for t in tspecs])
 
     residuals = []
@@ -115,14 +100,13 @@ def proc_job(fargs):
     counts = []
     pids = [m['pId'] for m in matches]
     qids = [m['qId'] for m in matches]
-    # later, when renderapi catches up
-    # tf = renderapi.transform.AffineModel()
+    tf = renderapi.transform.AffineModel()
+
     for m in matches:
         A = np.transpose(np.array(m['matches']['p']))
         B = np.transpose(np.array(m['matches']['q']))
-        # later, when renderapi catches up
-        # tvec, res, _, _ = tf.fit(A, B, return_all=True)
-        tvec, res, _, _ = fit_affine(A, B, return_all=True)
+        tvec, res, _, _ = tf.fit(A, B, return_all=True)
+
         pi = np.argwhere(tids == m['pId'])[0][0]
         qi = np.argwhere(tids == m['qId'])[0][0]
         dx = tspecs[pi].tforms[-1].B0 - tspecs[qi].tforms[-1].B0
