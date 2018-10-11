@@ -126,7 +126,7 @@ def test_filter_pm(prestitched_stack, point_match_collection, tmpdir_factory):
                 render=renderapi.connect(**ex['render']))
         assert(len(m0) == len(m1))
 
-    # handles missing section?
+    # handles missing section from stack?
     ex['maxZ'] = 1032
     fmod = FilterMatches(input_data=ex, args=[])
     fmod.run()
@@ -134,6 +134,19 @@ def test_filter_pm(prestitched_stack, point_match_collection, tmpdir_factory):
         fj = json.load(f)
     assert(len(fj) != len(fmod.args['zValues']))
     assert(len(fj) == 2)
+
+    # handles missing section from pm?
+    renderapi.pointmatch.delete_point_matches_between_groups(
+            fmod.args['input_match_collection'],
+            "1029.0",
+            "1029.0",
+            render=renderapi.connect(**ex['render']))
+    fmod = FilterMatches(input_data=ex, args=[])
+    fmod.run()
+    with open(ex['filter_output_file'], 'r') as f:
+        fj = json.load(f)
+    assert(len(fj) != len(fmod.args['zValues']))
+    assert(len(fj) == 1)
 
     # test the plot
     with open(ex['filter_output_file'], 'r') as f:
