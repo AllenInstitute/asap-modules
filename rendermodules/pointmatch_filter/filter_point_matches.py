@@ -74,7 +74,7 @@ def filter_plot(fig, result_json, fs=14):
 
 def proc_job(fargs):
     [input_match_collection, output_match_collection,
-        input_stack, z, resmax, transmax, overwrite, rpar] = fargs
+        input_stack, z, resmax, transmax, overwrite, rpar, inverse] = fargs
 
     render = renderapi.connect(**rpar)
     try:
@@ -127,10 +127,11 @@ def proc_job(fargs):
     w = []
     cmax = float(counts.max())
     for i in range(len(matches)):
+        w.append(1.0)
         if (nres[i] > resmax) & (translations[i] > transmax):
             # solver will ignore
-            w.append(0.0)
-        else:
+            w[-1] = 0.0
+        if inverse:
             w.append(cmax/counts[i])
         w[-1] = np.round(w[-1], 3)
         matches[i]['matches']['w'] = [w[-1]] * counts[i]
@@ -183,7 +184,8 @@ class FilterMatches(RenderModule):
                 self.args['resmax'],
                 self.args['transmax'],
                 self.args['overwrite_collection_section'],
-                self.args['render']])
+                self.args['render'],
+                self.args['inverse_weighting']])
 
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
             results = pool.map(proc_job, fargs)
