@@ -125,6 +125,19 @@ def proc_job(fargs):
 
     w = []
     cmax = float(counts.max())
+    updated_matches = []
+
+    def new_match(match, new_w, copy=False):
+        changed = not np.all(np.isclose(
+            np.array(new_w),
+            np.array(match['matches']['w'])))
+        if (not copy) & (not changed):
+            return None
+
+        nmatch = dict(match)
+        nmatch['matches']['w'] = new_w
+        return nmatch
+
     for i in range(len(matches)):
         w.append(1.0)
         if (nres[i] > resmax) & (translations[i] > transmax):
@@ -132,13 +145,27 @@ def proc_job(fargs):
             w[-1] = 0.0
         if inverse:
             w.append(cmax/counts[i])
-        w[-1] = np.round(w[-1], 3)
-        matches[i]['matches']['w'] = [w[-1]] * counts[i]
+        if output_match_collection is not None:
+            new_w = [w[-1]] * counts[i]
+            if(output_match_collection != input_match_collection):
+                # copy over everything, modified or not
+                updated_matches.append(new_match(matches[i], new_w, copy=True))
+            else:
+                # only copy over modified
+                nmatch = new_match(matches[i], new_w, copy=False)
+                if nmatch is not None:
+                    updated_matches.append(nmatch)
 
     if output_match_collection is not None:
+        logger.info(
+                "updating weights for %d of %d matches for z=%d in %s" % (
+                    len(updated_matches),
+                    len(matches),
+                    int(z),
+                    output_match_collection))
         renderapi.pointmatch.import_matches(
                 output_match_collection,
-                matches,
+                updated_matches,
                 render=render)
 
     result = {}
