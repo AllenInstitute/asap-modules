@@ -16,7 +16,6 @@ example = {
     "input_stack": "em_2d_montage_lc",
     "input_match_collection": "default_point_matches",
     "output_match_collection": None,
-    "overwrite_collection_section": True,
     "resmax": 5.0,
     "transmax": 500.0,
     "minZ": 120581,
@@ -74,7 +73,7 @@ def filter_plot(fig, result_json, fs=14):
 
 def proc_job(fargs):
     [input_match_collection, output_match_collection,
-        input_stack, z, resmax, transmax, overwrite, rpar, inverse] = fargs
+        input_stack, z, resmax, transmax, rpar, inverse] = fargs
 
     render = renderapi.connect(**rpar)
     try:
@@ -137,16 +136,6 @@ def proc_job(fargs):
         matches[i]['matches']['w'] = [w[-1]] * counts[i]
 
     if output_match_collection is not None:
-        if overwrite:
-            try:
-                renderapi.pointmatch.delete_point_matches_between_groups(
-                        output_match_collection,
-                        str(float(z)),
-                        str(float(z)),
-                        render=render)
-            except renderapi.errors.RenderError as e:
-                logger.info(e)
-                pass
         renderapi.pointmatch.import_matches(
                 output_match_collection,
                 matches,
@@ -183,7 +172,6 @@ class FilterMatches(RenderModule):
                 z,
                 self.args['resmax'],
                 self.args['transmax'],
-                self.args['overwrite_collection_section'],
                 self.args['render'],
                 self.args['inverse_weighting']])
 

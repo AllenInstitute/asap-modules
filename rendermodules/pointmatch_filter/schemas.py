@@ -16,9 +16,6 @@ class FilterSchema(RenderParameters, ZValueParameters, ProcessPoolParameters):
         default=None,
         missing=None,
         description='Name of the montage point match collection to write to')
-    overwrite_collection_section = Bool(
-        required=True,
-        description='delete and overwrite')
     resmax = Float(
         required=True,
         description=("maximum value in "

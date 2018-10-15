@@ -101,7 +101,6 @@ def example(prestitched_stack, point_match_collection, tmpdir_factory):
     ex['input_stack'] = prestitched_stack
     ex['input_match_collection'] = point_match_collection
     ex['output_match_collection'] = point_match_collection
-    ex['overwrite_collection_section'] = True
     ex['resmax'] = 5.0
     ex['transmax'] = 500.0
     ex['minZ'] = 1028
