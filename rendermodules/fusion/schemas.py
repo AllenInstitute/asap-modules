@@ -16,6 +16,8 @@ class Stack(argschema.schemas.DefaultSchema):
     stack = Str(required=True)
     transform = Nested(Transform, required=False)
     children = Nested("self", many=True)
+    fuse_stack = Bool(required=False, default=True, description=(
+        "whether to include this stack's in the output of fusion"))
 
 
 # register adjacent schemas
