@@ -283,47 +283,28 @@ def create_regularization(ncols, ntiles, defaultL, transL, lensL):
 
 
 def create_thinplatespline_tf(
-        render, args,
-        mesh, solution, lens_dof_start):
+        render, args, mesh, solution,
+        lens_dof_start, common_transform,
+        compute_affine=True):
 
-    if args['outfile'] is None:
-        fname = '%s/%s.json' % (
-                args['output_dir'],
-                args['sectionId'])
-    else:
-        fname = args['outfile']
+    dst = np.zeros_like(mesh.points)
+    dst[:, 0] = mesh.points[:, 0] + solution[0][lens_dof_start:]
+    dst[:, 1] = mesh.points[:, 1] + solution[1][lens_dof_start:]
 
-    argvs = ['--computeAffine', 'false']
-    argvs += ['--numberOfDimensions', '2']
-    argvs += ['--outputFile', fname]
-    argvs += ['--numberOfLandmarks', mesh.points.shape[0]]
+    if common_transform is not None:
+        # average affine result
+        dst = common_transform.tform(dst)
 
-    for i in range(mesh.points.shape[0]):
-        argvs += ['%0.6f ' % mesh.points[i, 0]]
-        argvs += ['%0.6f ' % mesh.points[i, 1]]
-    for i in range(mesh.points.shape[0]):
-        argvs += ['%0.6f ' % (
-                mesh.points[i, 0] +
-                solution[0][lens_dof_start + i])]
-        argvs += ['%0.6f ' % (
-                mesh.points[i, 1] +
-                solution[1][lens_dof_start + i])]
-
-    renderapi.client.call_run_ws_client(
-            'org.janelia.render.client.ThinPlateSplineClient',
-            add_args=argvs,
-            renderclient=render,
-            memGB='2G',
-            subprocess_mode='check_call')
-
-    j = json.load(open(fname, 'r'))
-    transform = (
-            renderapi.transform.ThinPlateSplineTransform(
-                dataString=j['dataString']))
+    transform = renderapi.transform.ThinPlateSplineTransform()
+    transform.estimate(mesh.points, dst, computeAffine=compute_affine)
     transform.transformId = (
             args['sectionId'] +
             datetime.datetime.now().strftime("_%Y%m%d%H%M%S"))
     transform.labels = None
+
+    with open(args['outfile'], 'w') as f:
+        json.dump(transform.to_dict(), f, indent=2)
+
     return transform
 
 
@@ -486,17 +467,33 @@ def create_A(matches, tilespecs, mesh):
     return A, wts, lens_dof_start
 
 
-def create_transforms(ntiles, solution):
-    transforms = []
+def create_transforms(ntiles, solution, get_common=True):
+    rtransforms = []
     for i in range(ntiles):
-        transforms.append(renderapi.transform.AffineModel(
+        rtransforms.append(renderapi.transform.AffineModel(
                            M00=solution[0][i*3+0],
                            M01=solution[0][i*3+1],
                            B0=solution[0][i*3+2],
                            M10=solution[1][i*3+0],
                            M11=solution[1][i*3+1],
                            B1=solution[1][i*3+2]))
-    return transforms
+
+    if get_common:
+        transforms = []
+        # average without translations
+        common = np.array([t.M for t in rtransforms]).mean(0)
+        common[0, 2] = 0.0
+        common[1, 2] = 0.0
+        for r in rtransforms:
+            transforms.append(renderapi.transform.AffineModel())
+            transforms[-1].M = r.M.dot(np.linalg.inv(common))
+        ctform = renderapi.transform.AffineModel()
+        ctform.M = common
+    else:
+        ctform = None
+        transforms = rtransforms
+
+    return ctform, transforms
 
 
 class MeshAndSolveTransform(ArgSchemaParser):
@@ -575,7 +572,7 @@ class MeshAndSolveTransform(ArgSchemaParser):
                 self.reg,
                 self.x0)
 
-        self.transforms = create_transforms(
+        self.common_transform, self.transforms = create_transforms(
                 len(self.tilespecs), self.solution)
 
         tf_scale, message = report_solution(
@@ -614,7 +611,8 @@ class MeshAndSolveTransform(ArgSchemaParser):
                 self.args,
                 self.mesh,
                 self.solution,
-                self.lens_dof_start)
+                self.lens_dof_start,
+                self.common_transform)
 
         new_stack_with_tf(
                 self.render,
