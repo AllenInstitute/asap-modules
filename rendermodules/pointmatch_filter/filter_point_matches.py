@@ -140,7 +140,7 @@ def proc_job(fargs):
 
     for i in range(len(matches)):
         w.append(1.0)
-        if (nres[i] > resmax) & (translations[i] > transmax):
+        if (nres[i] > resmax) | (translations[i] > transmax):
             # solver will ignore
             w[-1] = 0.0
         if inverse:
