@@ -245,12 +245,19 @@ def montage_z_mapped_stack(render, montage_stack, downsample_sections_dir):
         assert(z in zvalues)
 
     # check for overwrite = False
-    params['overwrite_z'] = False
-    params['zstart'] = 1022
-    params['zend'] = 1022
-    params['new_z_start'] = 253
-
-    mod = MakeMontageScapeSectionStack(input_data=params, args=['--output_json', outjson])
+    params1 = {
+        "render": render_params,
+        "montage_stack": montage_stack,
+        "output_stack": output_stack,
+        "image_directory": downsample_sections_dir,
+        "imgformat": "png",
+        "scale": 0.1,
+        "zstart": 1022,
+        "zend": 1022,
+        "set_new_z": True,
+        "new_z_start": 253
+    }
+    mod = MakeMontageScapeSectionStack(input_data=params1, args=['--output_json', outjson])
     mod.run()
 
     zvalues = render.run(renderapi.stack.get_z_values_for_stack, output_stack)
