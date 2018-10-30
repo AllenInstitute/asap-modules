@@ -139,6 +139,11 @@ class MakeMontageScapeSectionStackParameters(OutputStackParameters):
         default=False,
         missing=False,
         metadata={'description':'Do you want to scale the downsample to the size of section? Default = False'})
+    overwrite_z = Boolean(
+        required=False,
+        default=True,
+        missing=True,
+        metadata={'description': 'overwrite existing section in stack (Default = True'})
     doFilter = Boolean(required=False, default=True, description=(
         "whether to apply default filtering when generating "
         "missing downsamples"))

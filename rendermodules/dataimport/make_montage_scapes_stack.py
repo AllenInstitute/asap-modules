@@ -214,6 +214,32 @@ class MakeMontageScapeSectionStack(StackOutputModule):
 
         Z = [[int(oldz),int(newz)] for oldz, newz in zip(zvalues, newzvalues)]
 
+        out_stack_exists = self.args['output_stack'] in self.render.run(renderapi.render.get_stacks_by_owner_project)
+
+        if out_stack_exists:
+            # check whether overwrite z is set to false. If so, then remove those z that is already in output stack
+            outzvalues = renderapi.stack.get_z_values_for_stack(
+                            self.args['output_stack'],
+                            render=self.render)
+            
+            if self.args['overwrite_z'] is False:
+                # do not include those sections that are already in the output stack
+                Z = [[int(oldz), int(newz)] for oldz, newz in zip(zvalues, newzvalues) if not(float(newz) in outzvalues)]
+            else:
+                # stack has to be in loading state
+                renderapi.stack.set_stack_state(self.args['output_stack'],
+                                                'LOADING',
+                                                render=self.render)
+                for oldz, newz in zip(zvalues, newzvalues):
+                    # delete the section from output stack
+                    renderapi.stack.delete_section(self.args['output_stack'], 
+                                                   newz, 
+                                                   render=self.render)
+                renderapi.stack.set_stack_state(self.args['output_stack'],
+                                                'COMPLETE',
+                                                render=self.render)
+
+        
 
         # generate the tag string to add to output tilespec json file name
         tagstr = "%s_%s" % (min(zvalues), max(zvalues))
