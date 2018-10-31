@@ -232,10 +232,6 @@ class MakeMontageScapeSectionStack(StackOutputModule):
                     renderapi.stack.delete_section(self.args['output_stack'], 
                                                    newz, 
                                                    render=self.render)
-                renderapi.stack.set_stack_state(self.args['output_stack'],
-                                                'COMPLETE',
-                                                render=self.render)
-
         
 
         # generate the tag string to add to output tilespec json file name
@@ -321,10 +317,11 @@ class MakeMontageScapeSectionStack(StackOutputModule):
                         self.output_stack,
                         jsonfiles)
 
-        # set stack state to complete
-        self.render.run(renderapi.stack.set_stack_state,
-                        self.output_stack,
-                        state='COMPLETE')
+        if self.close_stack:
+            # set stack state to complete
+            self.render.run(renderapi.stack.set_stack_state,
+                            self.output_stack,
+                            state='COMPLETE')
 
         self.output({'output_stack': self.output_stack})
 
