@@ -279,7 +279,7 @@ def montage_z_mapped_stack(render, montage_stack, downsample_sections_dir):
         "set_new_z": False,
         "new_z_start": 253
     }
-    mod = MakeMontageScapeSectionStack(input_data=params1, args=['--output_json', outjson])
+    mod = MakeMontageScapeSectionStack(input_data=params2, args=['--output_json', outjson])
     mod.run()
 
     zvalues = render.run(renderapi.stack.get_z_values_for_stack, output_stack)
