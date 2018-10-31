@@ -230,7 +230,7 @@ def montage_z_mapped_stack(render, montage_stack, downsample_sections_dir):
         "imgformat": "png",
         "scale": 0.1,
         "zstart": 1020,
-        "zend": 1022,
+        "zend": 1021,
         "set_new_z": True,
         "new_z_start": 251
     }
@@ -239,7 +239,55 @@ def montage_z_mapped_stack(render, montage_stack, downsample_sections_dir):
     mod.run()
 
     zvalues = render.run(renderapi.stack.get_z_values_for_stack, output_stack)
+    zs = [251, 252]
+
+    for z in zs:
+        assert(z in zvalues)
+
+    # check for overwrite = False
+    params1 = {
+        "render": render_params,
+        "montage_stack": montage_stack,
+        "output_stack": output_stack,
+        "image_directory": downsample_sections_dir,
+        "imgformat": "png",
+        "scale": 0.1,
+        "zstart": 1022,
+        "zend": 1022,
+        "set_new_z": True,
+        "new_z_start": 253
+    }
+    mod = MakeMontageScapeSectionStack(input_data=params1, args=['--output_json', outjson])
+    mod.run()
+
+    zvalues = render.run(renderapi.stack.get_z_values_for_stack, output_stack)
     zs = [251, 252, 253]
+
+    for z in zs:
+        assert(z in zvalues)
+
+    params2 = {
+        "render": render_params,
+        "montage_stack": montage_stack,
+        "output_stack": output_stack,
+        "image_directory": downsample_sections_dir,
+        "overwrite_zlayer": True,
+        "imgformat": "png",
+        "scale": 0.1,
+        "zstart": 1022,
+        "zend": 1022,
+        "set_new_z": True,
+        "new_z_start": 253,
+        "close_stack": True
+    }
+    mod = MakeMontageScapeSectionStack(input_data=params2, args=['--output_json', outjson])
+    mod.run()
+
+    zvalues = render.run(renderapi.stack.get_z_values_for_stack, output_stack)
+    zs = [251, 252, 253]
+
+    for z in zs:
+        assert(z in zvalues)
 
     yield output_stack
     renderapi.stack.delete_stack(output_stack, render=render)
@@ -377,6 +425,7 @@ def test_montage_scape_stack(render, montage_scape_stack):
     zvalues = render.run(renderapi.stack.get_z_values_for_stack, montage_scape_stack)
     zs = [1020, 1021, 1022]
     assert(set(zvalues)==set(zs))
+
 '''
 def test_montage_scape_stack_code_coverage(render, montage_stack, downsample_sections_dir):
     output_stack = '{}_DS_code_coverage'.format(montage_stack)
