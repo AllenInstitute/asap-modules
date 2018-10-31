@@ -274,8 +274,8 @@ def montage_z_mapped_stack(render, montage_stack, downsample_sections_dir):
         "overwrite_zlayer": True,
         "imgformat": "png",
         "scale": 0.1,
-        "zstart": 253,
-        "zend": 253,
+        "zstart": 1022,
+        "zend": 1022,
         "set_new_z": False,
         "new_z_start": 253
     }
@@ -283,7 +283,7 @@ def montage_z_mapped_stack(render, montage_stack, downsample_sections_dir):
     mod.run()
 
     zvalues = render.run(renderapi.stack.get_z_values_for_stack, output_stack)
-    zs = [251, 252, 253]
+    zs = [251, 252, 1022]
 
     for z in zs:
         assert(z in zvalues)
