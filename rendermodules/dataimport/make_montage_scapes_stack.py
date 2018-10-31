@@ -222,10 +222,7 @@ class MakeMontageScapeSectionStack(StackOutputModule):
                             self.args['output_stack'],
                             render=self.render)
             
-            if self.args['overwrite_z'] is False:
-                # do not include those sections that are already in the output stack
-                Z = [[int(oldz), int(newz)] for oldz, newz in zip(zvalues, newzvalues) if not(float(newz) in outzvalues)]
-            else:
+            if self.overwrite_zlayer:
                 # stack has to be in loading state
                 renderapi.stack.set_stack_state(self.args['output_stack'],
                                                 'LOADING',

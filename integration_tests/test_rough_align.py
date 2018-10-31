@@ -266,6 +266,28 @@ def montage_z_mapped_stack(render, montage_stack, downsample_sections_dir):
     for z in zs:
         assert(z in zvalues)
 
+    params2 = {
+        "render": render_params,
+        "montage_stack": montage_stack,
+        "output_stack": output_stack,
+        "image_directory": downsample_sections_dir,
+        "overwrite_zlayer": True,
+        "imgformat": "png",
+        "scale": 0.1,
+        "zstart": 253,
+        "zend": 253,
+        "set_new_z": False,
+        "new_z_start": 253
+    }
+    mod = MakeMontageScapeSectionStack(input_data=params1, args=['--output_json', outjson])
+    mod.run()
+
+    zvalues = render.run(renderapi.stack.get_z_values_for_stack, output_stack)
+    zs = [251, 252, 253]
+
+    for z in zs:
+        assert(z in zvalues)
+
     yield output_stack
     renderapi.stack.delete_stack(output_stack, render=render)
 
