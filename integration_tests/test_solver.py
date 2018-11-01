@@ -91,3 +91,8 @@ def test_solver_montage_test(render, montage_pointmatches, raw_stack, tmpdir):
     # for poly_order=2, similar regularizations work
     # for poly_order > 2, need to tweak regularization
     one_solve(parameters, precision=1e-3)
+
+    parameters['transformation'] = "Polynomial2DTransform"
+    parameters['poly_order'] = 2
+    parameters['regularization']['poly_factors'] = [1e-5, 1.0, 1e6]
+    one_solve(parameters, precision=1e-3)
