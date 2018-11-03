@@ -558,7 +558,7 @@ def test_render_downsample_with_mipmaps(render, one_tile_montage, tmpdir_factory
     # generate tilespecs used for rendering stack input
     maxlvl = 1
     tspecs = create_tilespecs_without_mipmaps(render, ex['input_stack'], maxlvl, 1020)
-    ts_levels = {int(i) for l in (ts.ip.levels) for ts in tspecs.tilespecs) for i in l}
+    ts_levels = {int(i) for l in (ts.ip.levels for ts in tspecs.tilespecs) for i in l}
     #ts_levels = {int(i) for l in (ts.ip.levels for ts in tspecs) for i in l}
     # levels > maxlevel should not be included if
     assert not ts_levels.difference(set(range(maxlvl + 1)))
