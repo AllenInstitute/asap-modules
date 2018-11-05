@@ -609,13 +609,13 @@ def test_render_downsample_with_mipmaps(render, one_tile_montage, tmpdir_factory
         assert(1021 not in zvalues)
 
 
-def make_montage_stack_without_downsamples(render, one_tile_montage, tmpdir_factory):
+def make_montage_stack_without_downsamples(render, montage_stack, tmpdir_factory):
     # testing for make montage scape stack without having downsamples generated
     tmp_dir = str(tmpdir_factory.mktemp('downsample'))
     output_stack = '{}_Downsample'.format(one_tile_montage)
     params = {
         "render": render_params,
-        "montage_stack": one_tile_montage,
+        "montage_stack": montage_stack,
         "output_stack": output_stack,
         "image_directory": tmp_dir,
         "imgformat": "png",
@@ -651,13 +651,13 @@ def make_montage_stack_without_downsamples(render, one_tile_montage, tmpdir_fact
 
 
 def test_make_montage_stack_module_without_downsamples(
-        render, one_tile_montage, tmpdir_factory):
+        render, montage_stack, tmpdir_factory):
     # testing for make montage scape stack without having downsamples generated
     tmp_dir = str(tmpdir_factory.mktemp('downsample'))
-    output_stack = '{}_Downsample'.format(one_tile_montage)
+    output_stack = '{}_Downsample'.format(montage_stack)
     params = {
         "render": render_params,
-        "montage_stack": one_tile_montage,
+        "montage_stack": montage_stack,
         "output_stack": output_stack,
         "image_directory": tmp_dir,
         "imgformat": "png",

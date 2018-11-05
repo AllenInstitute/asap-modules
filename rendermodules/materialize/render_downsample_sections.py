@@ -112,10 +112,6 @@ class RenderSectionAtScale(RenderModule):
             with poolclass(pool_size) as pool:
                 all_resolved_ts = pool.map(mypartial, zvalues)
 
-            #with poolclass(pool_size) as pool:
-            #    # jsonfiles = pool.map(mypartial, zvalues)
-            #    all_tilespecs = [i for l in pool.map(mypartial, zvalues)
-            #                     for i in l]
             
             # create stack - overwrites existing one
             render.run(renderapi.stack.create_stack, temp_no_mipmap_stack)
@@ -123,17 +119,13 @@ class RenderSectionAtScale(RenderModule):
             # set stack state to LOADING
             render.run(renderapi.stack.set_stack_state,
                        temp_no_mipmap_stack, state='LOADING')
-
-            #render.run(renderapi.client.import_tilespecs_parallel,
-            #           temp_no_mipmap_stack,
-            #           all_tilespecs,
-            #           poolsize=pool_size,
-            #           close_stack=True,
-            #           mpPool=poolclass)
+        
             for rtspecs in all_resolved_ts:
-                render.run(renderapi.resolvedtiles.put_tilespecs,
+                render.run(renderapi.client.import_tilespecs_parallel,
                            temp_no_mipmap_stack,
-                           resolved_tiles=rtspecs)
+                           rtspecs.tilespecs,
+                           sharedTransforms=rtspecs.transforms)
+            
             ds_source = temp_no_mipmap_stack
 
         render.run(renderapi.client.renderSectionClient,
