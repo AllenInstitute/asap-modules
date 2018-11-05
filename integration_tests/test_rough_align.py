@@ -558,7 +558,8 @@ def test_render_downsample_with_mipmaps(render, one_tile_montage, tmpdir_factory
     # generate tilespecs used for rendering stack input
     maxlvl = 1
     tspecs = create_tilespecs_without_mipmaps(render, ex['input_stack'], maxlvl, 1020)
-    ts_levels = {int(i) for l in (ts.ip.levels for ts in tspecs) for i in l}
+    ts_levels = {int(i) for l in (ts.ip.levels for ts in tspecs.tilespecs) for i in l}
+    #ts_levels = {int(i) for l in (ts.ip.levels for ts in tspecs) for i in l}
     # levels > maxlevel should not be included if
     assert not ts_levels.difference(set(range(maxlvl + 1)))
 
@@ -608,13 +609,13 @@ def test_render_downsample_with_mipmaps(render, one_tile_montage, tmpdir_factory
         assert(1021 not in zvalues)
 
 
-def make_montage_stack_without_downsamples(render, one_tile_montage, tmpdir_factory):
+def make_montage_stack_without_downsamples(render, montage_stack, tmpdir_factory):
     # testing for make montage scape stack without having downsamples generated
     tmp_dir = str(tmpdir_factory.mktemp('downsample'))
     output_stack = '{}_Downsample'.format(one_tile_montage)
     params = {
         "render": render_params,
-        "montage_stack": one_tile_montage,
+        "montage_stack": montage_stack,
         "output_stack": output_stack,
         "image_directory": tmp_dir,
         "imgformat": "png",
@@ -650,13 +651,13 @@ def make_montage_stack_without_downsamples(render, one_tile_montage, tmpdir_fact
 
 
 def test_make_montage_stack_module_without_downsamples(
-        render, one_tile_montage, tmpdir_factory):
+        render, montage_stack, tmpdir_factory):
     # testing for make montage scape stack without having downsamples generated
     tmp_dir = str(tmpdir_factory.mktemp('downsample'))
-    output_stack = '{}_Downsample'.format(one_tile_montage)
+    output_stack = '{}_Downsample'.format(montage_stack)
     params = {
         "render": render_params,
-        "montage_stack": one_tile_montage,
+        "montage_stack": montage_stack,
         "output_stack": output_stack,
         "image_directory": tmp_dir,
         "imgformat": "png",

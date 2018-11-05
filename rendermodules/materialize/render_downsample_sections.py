@@ -57,12 +57,14 @@ def check_stack_for_mipmaps(render, input_stack, zvalues):
 
 def create_tilespecs_without_mipmaps(render, montage_stack, level, z):
     """return tilespecs missing mipmaplevels above the specified level"""
-    ts = render.run(renderapi.tilespec.get_tile_specs_from_z, montage_stack, z)
-    for t in ts:
+    ts = render.run(renderapi.resolvedtiles.get_resolved_tiles_from_z, montage_stack, z)
+    for t in ts.tilespecs:
         t.ip = renderapi.tilespec.ImagePyramid({
             lvl: mipmap for lvl, mipmap in t.ip.items()
             if int(lvl) <= int(level)})
+    
     return ts
+
 
 
 # FIXME this should be provided in render-python external
@@ -96,6 +98,7 @@ class RenderSectionAtScale(RenderModule):
 
         ds_source = input_stack
         # check if there are mipmaps in this stack
+        temp_no_mipmap_stack = "" # this needs initialization here for the delete to work
         if stack_has_mipmaps:
             print("stack has mipmaps")
             # clone the input stack to a temporary one with level 1 mipmap alone
@@ -105,25 +108,24 @@ class RenderSectionAtScale(RenderModule):
 
             mypartial = partial(create_tilespecs_without_mipmaps,
                                 render, input_stack, level)
-
+            
             with poolclass(pool_size) as pool:
-                # jsonfiles = pool.map(mypartial, zvalues)
-                all_tilespecs = [i for l in pool.map(mypartial, zvalues)
-                                 for i in l]
+                all_resolved_ts = pool.map(mypartial, zvalues)
 
+            
             # create stack - overwrites existing one
             render.run(renderapi.stack.create_stack, temp_no_mipmap_stack)
 
             # set stack state to LOADING
             render.run(renderapi.stack.set_stack_state,
                        temp_no_mipmap_stack, state='LOADING')
-
-            render.run(renderapi.client.import_tilespecs_parallel,
-                       temp_no_mipmap_stack,
-                       all_tilespecs,
-                       poolsize=pool_size,
-                       close_stack=True,
-                       mpPool=poolclass)
+        
+            for rtspecs in all_resolved_ts:
+                render.run(renderapi.client.import_tilespecs_parallel,
+                           temp_no_mipmap_stack,
+                           rtspecs.tilespecs,
+                           sharedTransforms=rtspecs.transforms)
+            
             ds_source = temp_no_mipmap_stack
 
         render.run(renderapi.client.renderSectionClient,
