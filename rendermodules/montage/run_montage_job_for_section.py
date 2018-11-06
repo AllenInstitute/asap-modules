@@ -117,6 +117,7 @@ class SolveMontageSectionModule(RenderModule):
     def run(self):
         if "MCRROOT" not in os.environ:
             raise ValidationError("MCRROOT not set")
+        tmp_stack = []
         if self.clone_section_stack:
             tmp_stack = "{}_zs{}_ze{}_t{}".format(self.args['source_collection']['stack'],
                                            self.args['first_section'],
