@@ -240,6 +240,11 @@ class SwapPointMatches(RenderParameters):
         Int,
         required=True,
         description="List of integer group ids")
+    pool_size = Int(
+        required=False,
+        default=5,
+        missing=5,
+        description="Pool size")
 
 class SwapPointMatchesOutput(DefaultSchema):
     source_collection = Str(
