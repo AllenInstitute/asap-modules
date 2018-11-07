@@ -10,6 +10,10 @@ from rendermodules.stack.consolidate_transforms import consolidate_transforms
 from functools import partial
 import logging
 import requests
+import pathlib
+import cv2
+from six.moves import urllib
+from shapely.geometry import Polygon
 
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.rough_align.apply_rough_alignment_to_montages"
@@ -61,6 +65,108 @@ example = {
 
 logger = logging.getLogger()
 
+
+def get_mask_paths(mask_input_dir, tilespecs, exts=['png', 'tif']):
+    results = {}
+
+    if mask_input_dir is not None:
+        tids = [t.tileId for t in tilespecs]
+        maskfiles= []
+        for ext in exts:
+            e = mask_input_dir + '/*.' + ext
+            maskfiles += glob.glob(e) 
+        maskbasenames = np.array([os.path.basename(os.path.splitext(p)[0])
+            for p in maskfiles])
+        for t in tids:
+            ind = np.argwhere(maskbasenames == t).flatten()
+            if ind.size > 1:
+                raise RenderModuleException("more than one mask in "
+                                            "directory %s matches tileId %s" % 
+                                            (mask_input_dir, t))
+            if ind.size == 0:
+                continue
+            results[t] = pathlib.Path(maskfiles[ind[0]]).as_uri()
+
+    return results
+
+
+def add_masks_to_lowres(render, stack, z, mask_map):
+    if len(mask_map) == 0:
+        return
+
+    tilespecs = renderapi.tilespec.get_tile_specs_from_z(
+            stack, z, render=render)
+
+    if not np.any([t.tileId in mask_map.keys() for t in tilespecs]):
+        return
+
+    for t in tilespecs:
+        if t.tileId in mask_map:
+            t.ip['0'].maskUrl = mask_map[t.tileId]
+            renderapi.client.import_tilespecs(
+                    stack,
+                    [t],
+                    render=render)
+
+    return
+
+
+def filter_highres_with_masks(resolved_highres, tspec_lowres, mask_map, scale):
+    """function to return a filtered list of tilespecs from a 
+       ResolvedTiles object, based on a lowres mask
+
+    Parameters
+    ----------
+    resolved_highres : renderapi.resolvedtiles.ResolvedTiles object
+        tilespecs and transforms from a single section
+    tspec_lowres: renderapi.tilespec.TileSpec object
+        tilespec from a downsampled stack
+    mask_map: dict
+        keys should match lowres tileids, values are mask file URI
+    scale: float
+        scale factor between coordinate systems lowres = scale * highres
+    
+    Returns
+    -------
+    new_highres: List of renderapi.tilespec.TileSpec objects
+        which highres specs are fully contained
+        within the boundary of mask=255
+    """
+
+    if not tspec_lowres.tileId in mask_map.keys():
+        return resolved_highres.tilespecs
+
+    impath = urllib.parse.unquote(
+                 urllib.parse.urlparse(
+                     mask_map[tspec_lowres.tileId]).path)
+    maskim = cv2.imread(impath, 0)
+    _, contours, _ = cv2.findContours(
+                         maskim,
+                         cv2.RETR_TREE,
+                         cv2.CHAIN_APPROX_SIMPLE)    
+    mask_polygons = []
+    for c in contours:
+        c = c.squeeze()
+        for tf in tspec_lowres.tforms:
+            c = tf.tform(c)
+        #c /= scale
+        print(c.mean(axis=0))
+        mask_polygons.append(Polygon(c))
+
+    new_highres = []    
+    for t in resolved_highres.tilespecs:
+        tc = t.bbox_transformed(
+                    reference_tforms=resolved_highres.transforms)
+        tpoly = Polygon(tc)
+        print(tc.mean(axis=0))
+        for p in mask_polygons:
+            if p.contains(tpoly):
+                new_highres.append(t)
+    print(len(new_highres))
+
+    return new_highres
+
+
 def apply_rough_alignment(render,
                           input_stack,
                           prealigned_stack,
@@ -68,6 +174,10 @@ def apply_rough_alignment(render,
                           output_stack,
                           output_dir,
                           scale,
+                          mask_input_dir,
+                          update_lowres_with_masks,
+                          filter_montage_output_with_masks,
+                          mask_exts,
                           Z,
                           apply_scale=False,
                           consolidateTransforms=True):
@@ -83,6 +193,11 @@ def apply_rough_alignment(render,
                             lowres_stack,
                             newz,
                             session=session)
+
+        mask_map = get_mask_paths(mask_input_dir, lowres_ts)
+
+        if update_lowres_with_masks:
+            add_masks_to_lowres(render, lowres_stack, newz, mask_map)
 
         # get the lowres stack rough alignment transformation
         tforms = lowres_ts[0].tforms
@@ -143,7 +258,15 @@ def apply_rough_alignment(render,
             t.z = newz
             #t.z = z
             t.layout.sectionId = "%s.0"%str(int(newz))
-        
+
+        if filter_montage_output_with_masks:
+           resolved_highrests1.tilespecs = highres_ts1
+           highres_ts1 = filter_highres_with_masks(
+                   resolved_highrests1,
+                   lowres_ts[0],
+                   mask_map,
+                   scale)
+
         renderapi.client.import_tilespecs(
             output_stack, highres_ts1,
             sharedTransforms=sharedTransforms_highrests1, render=render)
@@ -173,6 +296,10 @@ class ApplyRoughAlignmentTransform(RenderModule):
                         self.args['output_stack'],
                         self.args['tilespec_directory'],
                         self.args['scale'],
+                        self.args['mask_input_dir'],
+                        self.args['update_lowres_with_masks'],
+                        self.args['filter_montage_output_with_masks'],
+                        self.args['mask_exts'],
                         apply_scale=self.args['apply_scale'],
                         consolidateTransforms=self.args['consolidate_transforms'])
 
@@ -187,11 +314,15 @@ class ApplyRoughAlignmentTransform(RenderModule):
             self.render.run(renderapi.stack.set_stack_state,
                             self.args['output_stack'],
                             'LOADING')
+    
+        lowres_state = self.render.run(
+                renderapi.stack.get_full_stack_metadata,
+                self.args['lowres_stack'])['state']
 
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
             results=pool.map(mypartial, Z)
         
-        #raise an exception if all the z values to apply alignment were not
+        # raise an exception if all the z values to apply alignment were not
         if not all([r is None for r in results]):
             failed_zs = [(result,z) for result,z in zip(results,Z) if result is not None]
             raise RenderModuleException("Failed to rough align z values {}".format(failed_zs))
@@ -201,6 +332,14 @@ class ApplyRoughAlignmentTransform(RenderModule):
             renderapi.stack.set_stack_state,
             self.args['output_stack'],
             state='COMPLETE')
+
+        if self.args['update_lowres_with_masks']:
+            # return the lowres stack to original state
+            # if any imports were done
+            self.render.run(
+                renderapi.stack.set_stack_state,
+                self.args['lowres_stack'],
+                state=lowres_state)
 
         self.output(
             {

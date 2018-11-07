@@ -72,7 +72,26 @@ class ApplyRoughAlignmentTransformParameters(RenderParameters):
         required=True,
         cli_as_single_argument=True,
         description="List of z values to apply rough alignment to")  
-    
+    mask_input_dir = InputDir(
+        required=False,
+        default=None,
+        missing=None,
+        description=("directory containing mask files. basenames of "
+                     "masks that match tileIds in the rough stack "
+                     "will be handled."))
+    update_lowres_with_masks = Bool(
+        required=False,
+        default=False,
+        description="should the masks be added to the rough stack?")
+    filter_montage_output_with_masks = Bool(
+        required=False,
+        default=False,
+        description="should the tiles written be filtered by the masks?")
+    mask_exts = List(
+        Str,
+        required=False,
+        default=['png', 'tif'],
+        description="what kind of mask files to recognize")
 
     @post_load
     def validate_data(self, data):
