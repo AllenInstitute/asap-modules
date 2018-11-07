@@ -1,37 +1,40 @@
-from argschema import InputFile, InputDir
+from argschema import InputDir
 import marshmallow as mm
 from argschema.fields import Bool, Float, Int, Nested, Str, InputFile, List
 from argschema.schemas import DefaultSchema
 from ..module.schemas import RenderParameters
-from marshmallow import validates_schema, post_load, ValidationError
+from marshmallow import post_load, ValidationError
 import argschema
-
-
 
 
 class ApplyRoughAlignmentTransformParameters(RenderParameters):
     montage_stack = mm.fields.Str(
         required=True,
-        metadata={'description':'stack to make a downsample version of'})
+        metadata={'description': 'stack to make a downsample version of'})
     prealigned_stack = mm.fields.Str(
         required=False,
         default=None,
         missing=None,
-        metadata={'description':'stack with dropped tiles corrected for stitching errors'})
+        metadata={'description':
+                  "stack with dropped tiles corrected for stitching errors"})
     lowres_stack = mm.fields.Str(
         required=True,
-        metadata={'description':'montage scape stack with rough aligned transform'})
+        metadata={'description':
+                  'montage scape stack with rough aligned transform'})
     output_stack = mm.fields.Str(
         required=True,
-        metadata={'description':'output high resolution rough aligned stack'})
+        metadata={'description':
+                  'output high resolution rough aligned stack'})
     tilespec_directory = mm.fields.Str(
         required=True,
-        metadata={'description':'path to save section images'})
+        metadata={'description': 'path to save section images'})
     map_z = mm.fields.Boolean(
         required=False,
         default=False,
         missing=False,
-        metadata={'description':'map the montage Z indices to the rough alignment indices (default - False)'})
+        metadata={'description':
+                  "map the montage Z indices to the rough alignment "
+                  "indices (default - False)"})
     #map_z_start = mm.fields.Int(
     #    required=False,
     #    default=-1,
@@ -47,20 +50,21 @@ class ApplyRoughAlignmentTransformParameters(RenderParameters):
         required=False,
         default=True,
         missing=True,
-        metadata={'description':'should the transforms be consolidated? (default - True)'})
+        metadata={'description':
+                  'should the transforms be consolidated? (default - True)'})
     scale = mm.fields.Float(
         required=True,
-        metadata={'description':'scale of montage scapes'})
+        metadata={'description': 'scale of montage scapes'})
     apply_scale = mm.fields.Boolean(
         required=False,
         default=False,
         missing=False,
-        metadata={'description':'do you want to apply scale'})
+        metadata={'description': 'do you want to apply scale'})
     pool_size = mm.fields.Int(
         require=False,
         default=10,
         missing=10,
-        metadata={'description':'pool size for parallel processing'})
+        metadata={'description': 'pool size for parallel processing'})
     new_z = List(
         Int,
         required=False,
@@ -71,7 +75,7 @@ class ApplyRoughAlignmentTransformParameters(RenderParameters):
         Int,
         required=True,
         cli_as_single_argument=True,
-        description="List of z values to apply rough alignment to")  
+        description="List of z values to apply rough alignment to")
     mask_input_dir = InputDir(
         required=False,
         default=None,
@@ -99,9 +103,12 @@ class ApplyRoughAlignmentTransformParameters(RenderParameters):
             data['prealigned_stack'] = data['montage_stack']
         if data['map_z']:
             if data['new_z'] is None:
-                raise ValidationError("new_z is invalid. You need to specify new_z as a list of values")
+                raise ValidationError("new_z is invalid. "
+                                      "You need to specify new_z "
+                                      "as a list of values")
             elif abs(len(data['new_z']) - len(data['old_z'])) != 0:
-                raise ValidationError("new_z list count does not match with old_z list count")
+                raise ValidationError("new_z list count does "
+                                      "not match with old_z list count")
         else:
             data['new_z'] = data['old_z']
 
@@ -191,7 +198,8 @@ class PointMatchCollectionParameters(DefaultSchema):
         required=False,
         default=None,
         missing=None,
-        description="baseURL of the Render service holding the point match collection")
+        description="baseURL of the Render service holding the "
+                    "point match collection")
     verbose = Int(
         required=False,
         default=0,
@@ -224,7 +232,8 @@ class PointMatchParameters(DefaultSchema):
         required=False,
         default="AFFINE",
         missing="AFFINE",
-        description='Transformation type parameter for point match filtering (default AFFINE)')
+        description="Transformation type parameter for point "
+                    "match filtering (default AFFINE)")
 
 
 class PastixParameters(DefaultSchema):
@@ -253,7 +262,8 @@ class SolverParameters(DefaultSchema):
     degree = Int(
         required=True,
         default=1,
-        description="Degree of transformation 1 - affine, 2 - second order polynomial, maximum is 3")
+        description="Degree of transformation 1 - affine, "
+                    "2 - second order polynomial, maximum is 3")
     solver = Str(
         required=False,
         default='backslash',
@@ -299,7 +309,8 @@ class SolverParameters(DefaultSchema):
     outlier_lambda = Float(
         required=True,
         default=100,
-        description="Outlier lambda - large numbers result in fewer tiles excluded")
+        description="Outlier lambda - large numbers result in "
+                    "fewer tiles excluded")
     min_tiles = Int(
         required=False,
         default=2,
@@ -324,7 +335,8 @@ class SolverParameters(DefaultSchema):
         required=False,
         default=0,
         missing=0,
-        description="0 - solve (default), 1 - only generate the matrix. For debugging only")
+        description="0 - solve (default), 1 - only generate "
+                    "the matrix. For debugging only")
     distribute_A = Int(
         required=False,
         default=1,
@@ -417,12 +429,13 @@ class SolveRoughAlignmentParameters(RenderParameters):
     solver_executable = Str(
         required=True,
         description="Rough alignment solver executable file with full path")
-    
 
     @post_load
     def add_missing_values(self, data):
-        # cannot create "lambda" as a variable name in SolverParameters. So, adding it here
-        data['solver_options']['lambda'] = data['solver_options']['lambda_value']
+        # cannot create "lambda" as a variable
+        # name in SolverParameters. So, adding it here
+        data['solver_options']['lambda'] = \
+                data['solver_options']['lambda_value']
         data['solver_options'].pop('lambda_value', None)
         if data['solver_options']['pastix'] is None:
             data['solver_options'].pop('pastix', None)
@@ -431,7 +444,7 @@ class SolveRoughAlignmentParameters(RenderParameters):
         if data['render']['host'].find('http://') == 0:
             host = data['render']['host']
         else:
-            host = "http://%s"%(data['render']['host'])
+            host = "http://%s" % (data['render']['host'])
 
         if data['source_collection']['owner'] is None:
             data['source_collection']['owner'] = data['render']['owner']
@@ -439,13 +452,20 @@ class SolveRoughAlignmentParameters(RenderParameters):
             data['source_collection']['project'] = data['render']['project']
         if data['source_collection']['service_host'] is None:
             if data['render']['host'].find('http://') == 0:
-                data['source_collection']['service_host'] = data['render']['host'][7:] + ":" + str(data['render']['port'])
+                data['source_collection']['service_host'] = (
+                        data['render']['host'][7:] +
+                        ":" + str(data['render']['port']))
             else:
-                data['source_collection']['service_host'] = data['render']['host'] + ":" + str(data['render']['port'])
+                data['source_collection']['service_host'] = (
+                        data['render']['host'] +
+                        ":" + str(data['render']['port']))
         if data['source_collection']['baseURL'] is None:
-            data['source_collection']['baseURL'] = host + ":" + str(data['render']['port']) + '/render-ws/v1'
+            data['source_collection']['baseURL'] = (
+                    host + ":" +
+                    str(data['render']['port']) + '/render-ws/v1')
         if data['source_collection']['renderbinPath'] is None:
-            data['source_collection']['renderbinPath'] = data['render']['client_scripts']
+            data['source_collection']['renderbinPath'] = \
+                    data['render']['client_scripts']
 
         if data['target_collection']['owner'] is None:
             data['target_collection']['owner'] = data['render']['owner']
@@ -453,20 +473,29 @@ class SolveRoughAlignmentParameters(RenderParameters):
             data['target_collection']['project'] = data['render']['project']
         if data['target_collection']['service_host'] is None:
             if data['render']['host'].find('http://') == 0:
-                data['target_collection']['service_host'] = data['render']['host'][7:] + ":" + str(data['render']['port'])
+                data['target_collection']['service_host'] = (
+                        data['render']['host'][7:] +
+                        ":" + str(data['render']['port']))
             else:
-                data['target_collection']['service_host'] = data['render']['host'] + ":" + str(data['render']['port'])
+                data['target_collection']['service_host'] = (
+                        data['render']['host'] +
+                        ":" + str(data['render']['port']))
         if data['target_collection']['baseURL'] is None:
-            data['target_collection']['baseURL'] = host + ":" + str(data['render']['port']) + '/render-ws/v1'
+            data['target_collection']['baseURL'] = (
+                    host + ":" + str(data['render']['port']) + '/render-ws/v1')
         if data['target_collection']['renderbinPath'] is None:
-            data['target_collection']['renderbinPath'] = data['render']['client_scripts']
+            data['target_collection']['renderbinPath'] = \
+                    data['render']['client_scripts']
 
         if data['source_point_match_collection']['server'] is None:
-            data['source_point_match_collection']['server'] = data['source_collection']['baseURL']
+            data['source_point_match_collection']['server'] = \
+                    data['source_collection']['baseURL']
         if data['source_point_match_collection']['owner'] is None:
-            data['source_point_match_collection']['owner'] = data['render']['owner']
+            data['source_point_match_collection']['owner'] = \
+                    data['render']['owner']
 
-        # if solver is "pastix" then data['solver_options']['pastix'] is required
+        # if solver is "pastix" then
+        # data['solver_options']['pastix'] is required
         if data['solver_options']['solver'] is "pastix":
             pastix = data['solver_options']['pastix']
             if pastix['ncpus'] is None:
@@ -474,6 +503,9 @@ class SolveRoughAlignmentParameters(RenderParameters):
             if pastix['split'] is None:
                 data['solver_options']['pastix']['split'] = 1
 
+
 class ApplyRoughAlignmentOutputParameters(DefaultSchema):
-    zs = argschema.fields.NumpyArray(description="list of z values that were applied to")
-    output_stack = argschema.fields.Str(description="stack where applied transforms were set")
+    zs = argschema.fields.NumpyArray(
+            description="list of z values that were applied to")
+    output_stack = argschema.fields.Str(
+            description="stack where applied transforms were set")
