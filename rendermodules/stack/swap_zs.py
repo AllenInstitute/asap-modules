@@ -20,7 +20,6 @@ example = {
 }
 
 def swap_section(render, source_stack, target_stack, z):
-    print(source_stack, target_stack, z)
     session = requests.Session()
     session.mount('http://', requests.adapters.HTTPAdapter(max_retries=5))
 
