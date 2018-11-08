@@ -124,7 +124,10 @@ class RenderSectionAtScale(RenderModule):
                 render.run(renderapi.client.import_tilespecs_parallel,
                            temp_no_mipmap_stack,
                            rtspecs.tilespecs,
-                           sharedTransforms=rtspecs.transforms)
+                           sharedTransforms=rtspecs.transforms,
+                           poolsize=pool_size,
+                           close_stack=True,
+                           mpPool=poolclass)
             
             ds_source = temp_no_mipmap_stack
 
