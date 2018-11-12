@@ -130,7 +130,7 @@ class SwapPointMatchesModule(RenderModule):
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
             output_bool = pool.map(mypartial, ids)
             
-        zvalues = [z for z, n in zip(ids, output_bool) if output_bool ]    
+        zvalues = [z for z, n in zip(ids, output_bool) if n]    
         
 
         self.output({"source_collection": self.args['source_collection'], 
