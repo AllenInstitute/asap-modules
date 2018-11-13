@@ -32,6 +32,15 @@ def swap_section(render, source_stack, target_stack, z):
     temp_stack2 = "em_2d_montage_solved_swap_temp_stack_{}_z{}_t{}".format(target_stack, z, time.strftime("%m%d%y_%H%M%S"))
 
     try:
+        render.run(renderapi.stack.create_stack,
+                   temp_stack1)
+        render.run(renderapi.stack.create_stack,
+                   temp_stack2)
+    except Exception as :
+        print("Cannot create temp stacks")
+        return False
+
+    try:
         render.run(renderapi.client.import_tilespecs_parallel,
                         temp_stack1,
                         source_ts.tilespecs,
