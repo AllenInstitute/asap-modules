@@ -36,7 +36,7 @@ def swap_section(render, source_stack, target_stack, z):
                    temp_stack1)
         render.run(renderapi.stack.create_stack,
                    temp_stack2)
-    except Exception as :
+    except Exception as e:
         print("Cannot create temp stacks")
         return False
 
