@@ -83,7 +83,7 @@ def swap_section(render, source_stack, target_stack, z):
                         sharedTransforms=target_ts.transforms)
     except Exception as e:
         print("Cannot import tilespecs to {} from {}".format(source_stack, target_stack))
-        return temp_stacks, False
+        return False
     
     try:
         render.run(renderapi.stack.set_stack_state,
