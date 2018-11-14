@@ -87,6 +87,11 @@ class SwapZsParameters(RenderParameters):
         default=False,
         missing=False,
         description="Do you want to delete source stack after copying its contents?. Default=False")
+    pool_size = Int(
+        required=False,
+        default=5,
+        missing=5,
+        description="Pool size")
 
 class SwapZsOutput(DefaultSchema):
     source_stacks = List(
@@ -97,6 +102,6 @@ class SwapZsOutput(DefaultSchema):
         Str,
         required=True,
         description="List of target stacks that have been successfully swapped")
-    zvalues = List(List(
+    swapped_zvalues = List(List(
         Int,
         required=True))
