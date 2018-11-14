@@ -38,14 +38,15 @@ def swap_pt_matches(render, source_collection, target_collection, z, match_owner
                                                                 render=render,
                                                                 session=session)
     # write them to a temp collection
-    temp_col1 = "temp_{}_{}_{}".format(source_collection, groupid, time.strftime("%m%d%y_%H%M%S"))
-    temp_col2 = "temp_{}_{}_{}".format(target_collection, groupid, time.strftime("%m%d%y_%H%M%S"))
+    gid = int(float(groupid))
+    temp_col1 = "temp_{}_{}_{}".format(source_collection, str(gid), time.strftime("%m%d%y_%H%M%S"))
+    temp_col2 = "temp_{}_{}_{}".format(target_collection, str(gid), time.strftime("%m%d%y_%H%M%S"))
 
     try:
         renderapi.pointmatch.import_matches(temp_col1, sourcematches, owner=match_owner, render=render, session=session)
         renderapi.pointmatch.import_matches(temp_col2, targetmatches, owner=match_owner, render=render, session=session)
     except Exception as e:
-        print("Could not create temp point match collections")
+        print("Could not create temp point match collections {}".format(e))
         return False
     
     # get the qgroupIds in source matches
