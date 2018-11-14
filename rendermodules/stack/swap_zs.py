@@ -19,7 +19,15 @@ example = {
     "delete_source_stack": "False"
 }
 
-def swap_section(render, source_stack, target_stack, z):
+def delete_temp_stacks(render, temp_stack_list):
+    for temps in temp_stack_list:
+        try:
+            renderapi.stack.delete_stack(temps, render=render)
+        except Exception as e:
+            print("Could not delete stack {}".format(temps))
+
+
+def swap_section(render, source_stack, target_stack, z, pool_size=5):
     session = requests.Session()
     session.mount('http://', requests.adapters.HTTPAdapter(max_retries=5))
 
@@ -44,39 +52,48 @@ def swap_section(render, source_stack, target_stack, z):
         render.run(renderapi.client.import_tilespecs_parallel,
                         temp_stack1,
                         source_ts.tilespecs,
-                        sharedTransforms=source_ts.transforms)
+                        sharedTransforms=source_ts.transforms,
+                        poolsize=pool_size,
+                        close_stack=True)
     except Exception as e:
-        print("Could not import tilespecs to {}".format(temp_stack1))
+        print("Could not import tilespecs to {}, error: {}".format(temp_stack1, e))
         return False
     
     try:
         render.run(renderapi.client.import_tilespecs_parallel,
                         temp_stack2,
                         target_ts.tilespecs,
-                        sharedTransforms=target_ts.transforms)
+                        sharedTransforms=target_ts.transforms,
+                        poolsize=pool_size,
+                        close_stack=True)
     except Exception as e:
-        print("Could not import tilespecs to {}".format(temp_stack2))
+        print("Could not import tilespecs to {}, error: {}".format(temp_stack2, e))
         return False
     
     temp_stacks = [temp_stack1, temp_stack2]
 
     # delete the section from source and target stacks now
     try:
+        renderapi.stack.set_stack_state(target_stack, "LOADING", render=render)
         response = renderapi.stack.delete_section(target_stack, z, render=render, session=session)
     except Exception as e:
-        print("Cannot delete section {} from {}".format(z, target_stack))
+        print("Cannot delete section {} from {}, error: {}".format(z, target_stack, e))
+        delete_temp_stacks(render, temp_stacks)
         return False
     
     try:
+        renderapi.stack.set_stack_state(source_stack, "LOADING", render=render)
         response = renderapi.stack.delete_section(source_stack, z, render=render, session=session)
     except Exception as e:
-        print("Cannot delete section {} from {}".format(z, source_stack))
+        print("Cannot delete section {} from {}, error: {}".format(z, source_stack, e))
         # restore the section in target_stack
         render.run(renderapi.client.import_tilespecs_parallel,
                         target_stack,
                         target_ts.tilespecs,
                         sharedTransforms=target_ts.transforms,
-                        session=session)
+                        poolsize=pool_size,
+                        close_stack=False)
+        #delete_temp_stacks(render, temp_stacks)
         return False
     
     # both stacks do not have the section now
@@ -89,9 +106,12 @@ def swap_section(render, source_stack, target_stack, z):
         render.run(renderapi.client.import_tilespecs_parallel,
                         source_stack,
                         target_ts.tilespecs,
-                        sharedTransforms=target_ts.transforms)
+                        sharedTransforms=target_ts.transforms,
+                        poolsize=pool_size,
+                        close_stack=False)
     except Exception as e:
         print("Cannot import tilespecs to {} from {}".format(source_stack, target_stack))
+        #delete_temp_stacks(render, temp_stacks)
         return False
     
     try:
@@ -102,15 +122,17 @@ def swap_section(render, source_stack, target_stack, z):
         render.run(renderapi.client.import_tilespecs_parallel,
                         target_stack,
                         source_ts.tilespecs,
-                        sharedTransforms=source_ts.transforms)
+                        sharedTransforms=source_ts.transforms,
+                        poolsize=pool_size,
+                        close_stack=False)
     except Exception as e:
         print("Cannot import tilespecs to {} from {}".format(target_stack, source_stack))
+        #delete_temp_stacks(render, temp_stacks)
         return False
     
     # delete temp stacks
     try:
-        for t in temp_stacks:
-            render.run(renderapi.stack.delete_stack, t)
+        delete_temp_stacks(render, temp_stacks)
     except Exception as e:
         print("Cannot delete temp stacks {}".format(temp_stacks))
     
@@ -153,10 +175,15 @@ class SwapZsModule(RenderModule):
             target_stacks.append(target_stack)
             #zvalues.append(final_zs)
             print(final_zs)
-            mypartial = partial(swap_section, self.render, source_stack, target_stack)
+            #mypartial = partial(swap_section, self.render, source_stack, target_stack)
 
-            with renderapi.client.WithPool(self.args['pool_size']) as pool:
-                output_bool = pool.map(mypartial, final_zs)
+            #with renderapi.client.WithPool(self.args['pool_size']) as pool:
+            #    output_bool = pool.map(mypartial, final_zs)
+        
+            output_bool = []
+            for z in final_zs:
+                outbool = swap_section(self.render, source_stack, target_stack, z)
+                output_bool.append(outbool)
 
             zs = [z for z, n in zip(final_zs, output_bool) if n]
             zvalues.append(zs)
