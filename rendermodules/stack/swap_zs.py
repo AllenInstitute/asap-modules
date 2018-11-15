@@ -105,8 +105,8 @@ class SwapZsModule(RenderModule):
             avail_zs = set(szvalues).intersection(tzvalues)
             final_zs = list(set(zVals).intersection(avail_zs))
 
-            source_stacks.append(source_stack)
-            target_stacks.append(target_stack)
+            #source_stacks.append(source_stack)
+            #target_stacks.append(target_stack)
             #zvalues.append(final_zs)
             print(final_zs)
             #mypartial = partial(swap_section, self.render, source_stack, target_stack)
