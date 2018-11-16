@@ -39,6 +39,15 @@ example_input = {
 }
 
 
+def from_uri(uri):
+    return urllib.parse.unquote(
+               urllib.parse.urlparse(uri).path)
+
+
+def to_uri(path):
+   return pathlib.Path(path).as_uri()
+
+
 def get_mask_lists(tilespecs, labeldirs, exts=['png', 'tif']):
     results = {}
     maskfiles = []
@@ -52,11 +61,8 @@ def get_mask_lists(tilespecs, labeldirs, exts=['png', 'tif']):
                 'levels': [int(l) for l in t.ip.levels],
                 'masks': []}
         if t.ip['0']['maskUrl'] is not None:
-            mpath = urllib.parse.unquote(
-                        urllib.parse.urlparse(
-                            t.ip['0']['maskUrl']).path)
             results[t.tileId]['masks'].append({
-                'path': mpath,
+                'path': from_uri(t.ip['0']['maskUrl']),
                 'invert': False})
         ind = np.argwhere(maskbasenames == t.tileId.split('.')[0]).flatten()
         for i in ind:
@@ -102,6 +108,88 @@ def combine_masks(masks, mask_dir):
     return results
 
 
+def approx_snap_contour(contour, width, height, epsilon=20, snap_dist=5):
+    approx = cv2.approxPolyDP(contour, epsilon, True)
+    for i in range(approx.shape[0]):
+        for j in [0, width]:
+            if np.abs(approx[i, 0, 0] - j) <= snap_dist:
+                approx[i, 0, 0] = j
+        for j in [0, height]:
+            if np.abs(approx[i, 0, 1] - j) <= snap_dist:
+                approx[i, 0, 1] = j
+    return approx
+
+
+def add_vertices_from_mask(mpath, vertices):
+    im = cv2.imread(mpath, 0)
+    im = cv2.threshold(im, 127, 255, cv2.THRESH_BINARY)[1]
+    im2, contours, h = cv2.findContours(
+        im, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+    cf_vertices = []
+    for c in contours:
+        approx = approx_snap_contour(c, im.shape[1], im.shape[0], epsilon=10)
+        cf_vertices.append(np.array(approx).squeeze(axis=1))
+
+    for v in np.concatenate(cf_vertices):
+        if v not in vertices:
+            vertices = np.vstack((vertices, v))
+
+    return vertices
+
+
+def baseline_vertices(width, height, nx, ny):
+    xt, yt = np.meshgrid(
+            np.linspace(0, width, nx),
+            np.linspace(0, height, ny))
+    return np.vstack((xt.flatten(), yt.flatten())).transpose()
+
+
+def tps_from_vertices(vertices):
+    tf = renderapi.transform.ThinPlateSplineTransform()
+    tf.ndims = 2
+    tf.nLm = vertices.shape[0]
+    tf.aMtx = np.array([[0.0, 0.0], [0.0, 0.0]])
+    tf.bVec = np.array([0.0, 0.0])
+    tf.srcPts = vertices.transpose()
+    tf.dMtxDat = np.zeros_like(tf.srcPts)
+
+    src = tf.srcPts.transpose()
+    dst = np.copy(src)
+    for i in range(src.shape[0]):
+        if ((not np.any(src[i,:] == 0)) & (not np.any(src[i, :] == 3840))):
+            dst[i, :] += np.random.randn(2) * 50
+
+    tf.estimate(src, dst, computeAffine=False)
+  
+    return tf
+
+
+def add_new_tforms(resolved):
+    refids = np.array([r.transformId for r in resolved.transforms])
+
+    for t in resolved.tilespecs:
+        vertices = baseline_vertices(t.width, t.height, 3, 3)
+
+        if t.ip['0']['maskUrl'] is not None:
+            impath = from_uri(t.ip['0']['maskUrl'])
+            vertices = add_vertices_from_mask(impath, vertices)
+
+
+        # need to transform vertices through tforms
+        for tf in t.tforms:
+            if isinstance(tf, renderapi.transform.ReferenceTransform):
+                rind = np.argwhere(refids == tf.refId)[0][0]
+                vertices = resolved.transforms[rind].tform(vertices)
+            else:
+                vertices = tf.tform(vertices)
+
+        tf = tps_from_vertices(vertices)
+        t.tforms.append(tf)
+
+    return resolved.tilespecs
+
+
 def zjob(fargs):
     [z, args] = fargs
 
@@ -121,11 +209,13 @@ def zjob(fargs):
     for t in resolved.tilespecs:
         if t.tileId in combined:
             for lvl, maskUrl in combined[t.tileId].items():
-                t.ip[lvl].maskUrl = pathlib.Path(maskUrl).as_uri()
+                t.ip[lvl].maskUrl = to_uri(maskUrl)
+
+    new_tilespecs = add_new_tforms(resolved)
 
     renderapi.client.import_tilespecs(
             args['output_stack'],
-            resolved.tilespecs,
+            new_tilespecs,
             sharedTransforms=resolved.transforms,
             render=render)
 
@@ -146,7 +236,9 @@ class MakeFineInputStack(StackInputModule, StackOutputModule):
             fargs = []
             for z in self.args['zValues']:
                 fargs.append([z, self.args])
-            pool.imap_unordered(zjob, fargs)
+            #pool.imap_unordered(zjob, fargs)
+
+            zjob(fargs[0])
 
         try:
             if self.args['close_stack']:
