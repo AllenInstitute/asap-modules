@@ -34,6 +34,13 @@ def swap_section(render, source_stack, target_stack, z, pool_size=5):
     source_ts = renderapi.resolvedtiles.get_resolved_tiles_from_z(source_stack, z, render=render)
     target_ts = renderapi.resolvedtiles.get_resolved_tiles_from_z(target_stack, z, render=render)
 
+    source_tileids = [ts.tileId for ts in source_ts.tilespecs]
+    target_tileids = [ts.tileId for ts in target_ts.tilespecs]
+
+    if set(source_tileids) == set(target_tileids):
+        print("{} and {} stack have same tileIds for Z = {}".format(source_stack, target_stack, z))
+        return False
+
     # write these tilespecs to the appropriate stacks
     try:
         renderapi.stack.set_stack_state(source_stack, "LOADING", render=render)
