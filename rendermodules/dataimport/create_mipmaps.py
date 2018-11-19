@@ -96,7 +96,7 @@ method_funcs = {
 
 def create_mipmaps(inputImage, outputDirectory='.', method="block_reduce",
                    mipmaplevels=[1, 2, 3], outputformat='tif',
-                   convertTo8bit=True, force_redo=True,
+                   convertTo8bit=True, force_redo=True, paths_only=False,
                    **kwargs):
     """function to create downsampled images from an input image
 
@@ -120,6 +120,8 @@ def create_mipmaps(inputImage, outputDirectory='.', method="block_reduce",
         string corresponding to function used by block_reduce
     ds_filter: str
         string corresponding to PIL downsample mode
+    paths_only: boolean
+        creates the dict without performing any r/w or calculations
 
     Returns
     =======
@@ -131,22 +133,24 @@ def create_mipmaps(inputImage, outputDirectory='.', method="block_reduce",
     MipMapException
         if an image cannot be created for some reason
     """
-    # Need to check if the level 0 image exists
-    im = Image.open(inputImage)
-    if convertTo8bit:
-        table = [i//256 for i in range(65536)]
-        im = im.convert('I')
-        im = im.point(table, 'L')
 
     levels_file_map = {int(level): os.path.join(
         outputDirectory, str(level), '{basename}.{fmt}'.format(
             basename=inputImage.lstrip(os.sep), fmt=outputformat))
                        for level in mipmaplevels}
 
-    try:
-        method_funcs[method](
-            im, levels_file_map, force_redo=force_redo, **kwargs)
-    except KeyError as e:
-        raise CreateMipMapException("invalid method {}".format(e))
+    if not paths_only:
+        # Need to check if the level 0 image exists
+        im = Image.open(inputImage)
+        if convertTo8bit:
+            table = [i//256 for i in range(65536)]
+            im = im.convert('I')
+            im = im.point(table, 'L')
+
+        try:
+            method_funcs[method](
+                im, levels_file_map, force_redo=force_redo, **kwargs)
+        except KeyError as e:
+            raise CreateMipMapException("invalid method {}".format(e))
 
     return levels_file_map
