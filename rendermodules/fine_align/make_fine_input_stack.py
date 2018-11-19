@@ -33,6 +33,9 @@ example_input = {
             "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/crack_detection/unet_predictions/em_rough_align_zs11357_ze11838_sub/post_processing/cracks",
             "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/crack_detection/unet_predictions/em_rough_align_zs11357_ze11838_sub/post_processing/folds"],
         "mask_output_dir": "/allen/programs/celltypes/workgroups/em-connectomics/danielk/fine_stack/masks",
+        "baseline_vertices": [3, 3],
+        "mask_epsilon": 10.0,
+        "recalculate_masks": True,
         "split_divided_tiles": True,
         "pool_size": 7,
         "close_stack": True
@@ -72,27 +75,27 @@ def get_mask_lists(tilespecs, labeldirs, exts=['png', 'tif']):
     return results
 
 
-def combine_masks(masks, mask_dir):
+def combine_masks(masks, mask_dir, recalculate):
     results = {}
     for tid, v in masks.items():
-        combined = None
         if len(v['masks']) == 0:
             continue
-        for m in v['masks']:
-            im = cv2.imread(m['path'], 0)
-            if m['invert']:
-                im = 255 - im
-            if combined is None:
-                combined = im
-            else:
-                combined[im == 0] = 0
-        mpath = os.path.join(
-                    mask_dir,
-                    tid + '.png')
-        if not cv2.imwrite(mpath, combined):
-            raise IOError('cv2.imwrite() could not write to %s' % mask_dir)
 
+        mpath = os.path.join(mask_dir, tid + '.png')
         root, ext = os.path.splitext(mpath)
+
+        if recalculate:
+            combined = None
+            for m in v['masks']:
+                im = cv2.imread(m['path'], 0)
+                if m['invert']:
+                    im = 255 - im
+                if combined is None:
+                    combined = im
+                else:
+                    combined[im == 0] = 0
+            if not cv2.imwrite(mpath, combined):
+                raise IOError('cv2.imwrite() could not write to %s' % mask_dir)
 
         results[tid] = create_mipmaps(
             mpath,
@@ -101,14 +104,16 @@ def combine_masks(masks, mask_dir):
             outputformat=ext.split('.')[-1],
             convertTo8bit=False,
             force_redo=True,
-            block_func="min")  
+            block_func="min",
+            paths_only=not recalculate)  
 
-        os.remove(mpath)
+        if recalculate:
+            os.remove(mpath)
 
     return results
 
 
-def approx_snap_contour(contour, width, height, epsilon=20, snap_dist=5):
+def approx_snap_contour(contour, width, height, epsilon, snap_dist=5):
     approx = cv2.approxPolyDP(contour, epsilon, True)
     for i in range(approx.shape[0]):
         for j in [0, width]:
@@ -120,15 +125,19 @@ def approx_snap_contour(contour, width, height, epsilon=20, snap_dist=5):
     return approx
 
 
-def add_vertices_from_mask(mpath, vertices):
+def add_vertices_from_mask(mpath, vertices, epsilon):
     im = cv2.imread(mpath, 0)
+    if im is None:
+        raise RenderModuleException("could not read %s\n"
+                                    "if recalculate_masks = False, are you "
+                                    "sure the masks are there?" % mpath) 
     im = cv2.threshold(im, 127, 255, cv2.THRESH_BINARY)[1]
     im2, contours, h = cv2.findContours(
         im, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     cf_vertices = []
     for c in contours:
-        approx = approx_snap_contour(c, im.shape[1], im.shape[0], epsilon=10)
+        approx = approx_snap_contour(c, im.shape[1], im.shape[0], epsilon)
         cf_vertices.append(np.array(approx).squeeze(axis=1))
 
     for v in np.concatenate(cf_vertices):
@@ -138,10 +147,10 @@ def add_vertices_from_mask(mpath, vertices):
     return vertices
 
 
-def baseline_vertices(width, height, nx, ny):
+def baseline_vertices(width, height, nxy):
     xt, yt = np.meshgrid(
-            np.linspace(0, width, nx),
-            np.linspace(0, height, ny))
+            np.linspace(0, width, nxy[0]),
+            np.linspace(0, height, nxy[1]))
     return np.vstack((xt.flatten(), yt.flatten())).transpose()
 
 
@@ -153,27 +162,18 @@ def tps_from_vertices(vertices):
     tf.bVec = np.array([0.0, 0.0])
     tf.srcPts = vertices.transpose()
     tf.dMtxDat = np.zeros_like(tf.srcPts)
-
-    src = tf.srcPts.transpose()
-    dst = np.copy(src)
-    for i in range(src.shape[0]):
-        if ((not np.any(src[i,:] == 0)) & (not np.any(src[i, :] == 3840))):
-            dst[i, :] += np.random.randn(2) * 50
-
-    tf.estimate(src, dst, computeAffine=False)
-  
     return tf
 
 
-def add_new_tforms(resolved):
+def add_new_tforms(resolved, nxy_baseline, epsilon):
     refids = np.array([r.transformId for r in resolved.transforms])
 
     for t in resolved.tilespecs:
-        vertices = baseline_vertices(t.width, t.height, 3, 3)
+        vertices = baseline_vertices(t.width, t.height, nxy_baseline)
 
         if t.ip['0']['maskUrl'] is not None:
             impath = from_uri(t.ip['0']['maskUrl'])
-            vertices = add_vertices_from_mask(impath, vertices)
+            vertices = add_vertices_from_mask(impath, vertices, epsilon)
 
 
         # need to transform vertices through tforms
@@ -204,14 +204,15 @@ def zjob(fargs):
             args['label_input_dirs'],
             exts=args['mask_exts'])
 
-    combined = combine_masks(masks, args['mask_output_dir'])
+    combined = combine_masks(masks, args['mask_output_dir'], args['recalculate_masks'])
 
     for t in resolved.tilespecs:
         if t.tileId in combined:
             for lvl, maskUrl in combined[t.tileId].items():
                 t.ip[lvl].maskUrl = to_uri(maskUrl)
 
-    new_tilespecs = add_new_tforms(resolved)
+    new_tilespecs = add_new_tforms(
+            resolved, args['baseline_vertices'], args['mask_epsilon'])
 
     renderapi.client.import_tilespecs(
             args['output_stack'],
@@ -236,9 +237,9 @@ class MakeFineInputStack(StackInputModule, StackOutputModule):
             fargs = []
             for z in self.args['zValues']:
                 fargs.append([z, self.args])
-            #pool.imap_unordered(zjob, fargs)
+            pool.imap_unordered(zjob, fargs)
 
-            zjob(fargs[0])
+            #zjob(fargs[0])
 
         try:
             if self.args['close_stack']:
@@ -246,7 +247,7 @@ class MakeFineInputStack(StackInputModule, StackOutputModule):
                         self.args['output_stack'],
                         state='COMPLETE',
                         render=render)
-        except render.errors.RenderError:
+        except renderapi.errors.RenderError:
             pass
 
 

@@ -1,5 +1,6 @@
 import argschema
-from argschema.fields import InputDir, OutputDir, Str, Boolean, Nested, List
+from argschema.fields import (
+        InputDir, OutputDir, Str, Boolean, Nested, List, Int, Float)
 from argschema.schemas import DefaultSchema
 from ..module.schemas import (
         InputStackParameters, OutputStackParameters,
@@ -30,6 +31,26 @@ class MakeFineInputStackSchema(
         required=False,
         default=['png', 'tif'],
         description="what kind of mask files to recognize") 
+    baseline_vertices = List(
+        Int,
+        required=False,
+        default=[3, 3],
+        missing=[3, 3],
+        description=("for [n, m] new ThinPlateSpline transforms will have "
+                     " at minimum a grid f n x m control points."))
+    mask_epsilon = Float(
+        required=False,
+        default=10.0,
+        missing=10.0,
+        description=("parameter epsilon of cv2.approxPolyDP(). Used for converting "
+                     "mask contours into control points."))
+    recalculate_masks = Boolean(
+        required=False,
+        default=True,
+        missing=True,
+        description=("maybe you don't want to spend the time recreating the masks"
+                     "and downsampling them. Maybe they are already exactly where they"
+                     " should be. For example, re-running with different epsilon."))
 
 
 class MakeFineOutputStackSchema(DefaultSchema):
