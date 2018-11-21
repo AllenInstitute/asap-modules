@@ -1,10 +1,12 @@
 import argschema
 from argschema.fields import (
-        InputDir, OutputDir, Str, Boolean, Nested, List, Int, Float)
+        InputDir, OutputDir, Str, Boolean,
+        Nested, List, Int, Float, OutputFile)
 from argschema.schemas import DefaultSchema
 from ..module.schemas import (
         InputStackParameters, OutputStackParameters,
-        RenderParameters, RenderClientParameters)
+        RenderParameters, RenderClientParameters,
+        ProcessPoolParameters)
 
 
 class MakeFineInputStackSchema(
@@ -56,6 +58,41 @@ class MakeFineInputStackSchema(
 class MakeFineOutputStackSchema(DefaultSchema):
     stack = Str(required=True,
         description="output fine stack ready for 3D alignment")
+
+
+class MakePairJsonShapelySchema(InputStackParameters, ProcessPoolParameters):
+    output_dir = OutputDir(
+        required=True,
+        description="Output directory path to save the tilepair json file")
+    zNeighborDistance = Int(
+        required=False,
+        default=2,
+        missing=2,
+        description="Look for neighbor tiles with z values less than "
+                    "or equal to this distance from the current tile's z value")
+    buffer_pixels = Int(
+        required=False,
+        default=200,
+        missing=200,
+        description="passed to shapely Polygon.buffer() to accout for imperfect "
+                    " rough alignment")
+    excludeSameLayerNeighbors = Boolean(
+        required=False,
+        default=False,
+        missing=False,
+        description="Exclude neighbor tiles in the "
+                    "same layer (z) as the source tile")
+    compress_output = Boolean(
+        required=False,
+        default=True,
+        missing=True,
+        description="write tilepair in json.gz format?")
+
+
+class MakePairJsonShapelyOutputSchema(DefaultSchema):
+    tile_pair_file = OutputFile(
+        required=True,
+        description="location of json file with tile pair inputs")
 
 
 class FilterPointMatchesByMaskSchema(InputStackParameters):
