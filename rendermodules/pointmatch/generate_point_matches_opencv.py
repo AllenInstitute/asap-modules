@@ -44,7 +44,7 @@ example = {
 def ransac_chunk(fargs):
     [k1xy, k2xy, des1, des2, k1ind, args] = fargs
 
-    FLANN_INDEX_KDTREE = 0
+    FLANN_INDEX_KDTREE = 1
     index_params = dict(
             algorithm=FLANN_INDEX_KDTREE,
             trees=args['FLANN_ntree'])
