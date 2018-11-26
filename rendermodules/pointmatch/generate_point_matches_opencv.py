@@ -6,6 +6,9 @@ import multiprocessing
 from six.moves import urllib
 import logging
 from argschema import ArgSchemaParser
+import os
+import gzip
+import time
 from .schemas import \
         PointMatchOpenCVParameters, \
         PointMatchClientOutputSchema
@@ -112,9 +115,17 @@ def read_downsample_equalize_mask(impath, scale, CLAHE_grid=None, CLAHE_clip=Non
     return im
 
 
-def find_matches(fargs):
-    [impaths, ids, gids, args] = fargs
+def make_mask(im, contour, downsample_scale):
+    mask = np.zeros_like(im)
+    cv2.fillConvexPoly(
+            mask,
+            (np.array(contour) * downsample_scale).astype('int32'),
+            1)
+    return mask
 
+
+def find_matches(fargs):
+    [impaths, ids, gids, args, neighborPair] = fargs
     pim = read_downsample_equalize_mask(
             impaths[0],
             args['downsample_scale'],
@@ -131,9 +142,23 @@ def find_matches(fargs):
             nOctaveLayers=args['SIFT_noctave'],
             sigma=args['SIFT_sigma'])
 
+    pmask = None
+    qmask = None
+    if not args['ignore_filter_contours']:
+        if 'filter_contour' in neighborPair['p']:
+            pmask = make_mask(
+                    pim,
+                    neighborPair['p']['filter_contour'],
+                    args['downsample_scale'])
+        if 'filter_contour' in neighborPair['q']:
+            qmask = make_mask(
+                    qim,
+                    neighborPair['q']['filter_contour'],
+                    args['downsample_scale'])
+
     # find the keypoints and descriptors
-    kp1, des1 = sift.detectAndCompute(pim, None)
-    kp2, des2 = sift.detectAndCompute(qim, None)
+    kp1, des1 = sift.detectAndCompute(pim, pmask)
+    kp2, des2 = sift.detectAndCompute(qim, qmask)
 
     k1xy = np.array([np.array(k.pt) for k in kp1])
     k2xy = np.array([np.array(k.pt) for k in kp2])
@@ -220,8 +245,14 @@ def parse_tileids(tpjson, logger=logging.getLogger()):
 
 def load_pairjson(tilepair_file, logger=logging.getLogger()):
     tpjson = []
+    ext = os.path.splitext(tilepair_file)[1]
     try:
-        tpjson = json.load(open(tilepair_file, 'r'))
+        if ext=='.gz':
+            f = gzip.open(tilepair_file, 'r')
+        else:
+            f = open(tilepair_file, 'r')
+        tpjson = json.load(f)
+        f.close()
     except TypeError as e:
         logger.error(e)
 
@@ -255,9 +286,10 @@ class GeneratePointMatchesOpenCV(ArgSchemaParser):
 
         self.match_image_pairs(
                 tilespecs,
-                tile_index)
+                tile_index,
+                tpjson)
 
-    def match_image_pairs(self, tilespecs, tile_index):
+    def match_image_pairs(self, tilespecs, tile_index, tpjson):
         ncpus = self.args['ncpus']
         if self.args['ncpus'] == -1:
             ncpus = multiprocessing.cpu_count()
@@ -277,8 +309,14 @@ class GeneratePointMatchesOpenCV(ArgSchemaParser):
                 ids = [t.tileId for t in tilespecs[tile_index[i]]]
                 gids = [t.layout.sectionId
                         for t in tilespecs[tile_index[i]]]
-                fargs.append([impaths, ids, gids, self.args])
+                fargs.append([
+                    impaths,
+                    ids,
+                    gids,
+                    self.args,
+                    tpjson['neighborPairs'][i]])
 
+            #r = find_matches(fargs[3])
             for r in pool.imap_unordered(find_matches, fargs):
                 log = "\n%s\n%s\n" % (r[0][0], r[0][1])
                 log += "  (%d, %d) features found" % (r[1], r[2])
@@ -294,5 +332,7 @@ class GeneratePointMatchesOpenCV(ArgSchemaParser):
 
 
 if __name__ == '__main__':
+    t0 = time.time()
     pm_mod = GeneratePointMatchesOpenCV(input_data=example)
     pm_mod.run()
+    print(time.time() - t0)

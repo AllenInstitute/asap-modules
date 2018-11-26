@@ -13,27 +13,10 @@ from rendermodules.fine_align.schemas import (
         MakePairJsonShapelyOutputSchema)
 
 
-#example = {
-#        "render":{
-#            "host": "em-131fs",
-#            "port": 8988,
-#            "owner": "TEM",
-#            "project": "17797_1R",
-#            "client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts",
-#            },
-#        "output_dir": "/allen/programs/celltypes/workgroups/em-connectomics/danielk/fine_stack/tpjson",
-#        "zNeighborDistance": 2,
-#        "excludeSameLayerNeighbors": True,
-#        "input_stack": "em_rough_align_zs11357_ze11838_sub_fine_input",
-#        "minZ": 11593,
-#        "maxZ": 11602,
-#        "buffer_pixels": 200,
-#        "pool_size": 7
-#        }
 example = {
         "render":{
             "host": "em-131fs",
-            "port": 8987,
+            "port": 8988,
             "owner": "TEM",
             "project": "17797_1R",
             "client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts",
@@ -41,12 +24,29 @@ example = {
         "output_dir": "/allen/programs/celltypes/workgroups/em-connectomics/danielk/fine_stack/tpjson",
         "zNeighborDistance": 2,
         "excludeSameLayerNeighbors": True,
-        "input_stack": "em_rough_align_zs11357_ze11838",
+        "input_stack": "em_rough_align_zs11357_ze11838_sub_fine_input",
         "minZ": 11593,
         "maxZ": 11602,
         "buffer_pixels": 200,
-        "pool_size": 8
+        "pool_size": 4
         }
+#example = {
+#        "render":{
+#            "host": "em-131fs",
+#            "port": 8987,
+#            "owner": "TEM",
+#            "project": "17797_1R",
+#            "client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts",
+#            },
+#        "output_dir": "/allen/programs/celltypes/workgroups/em-connectomics/danielk/fine_stack/tpjson",
+#        "zNeighborDistance": 2,
+#        "excludeSameLayerNeighbors": True,
+#        "input_stack": "em_rough_align_zs11357_ze11838",
+#        "minZ": 11593,
+#        "maxZ": 11602,
+#        "buffer_pixels": 200,
+#        "pool_size": 8
+#        }
 
 
 def get_z_pairs(zValues, zNeighborDistance, excludeSameLayerNeighbors):
@@ -110,8 +110,6 @@ def find_pairs(res0, res1, buffer_pixels):
     mx = max(mx0, mx1)
 
     for i in range(len(p0)):
-        if np.mod(i, 50) == 0:
-            print(i)
         for j in range(len(p1)):
             dist = np.linalg.norm(centroids0[i] - centroids1[j])
             if dist > (2.0 * mx):

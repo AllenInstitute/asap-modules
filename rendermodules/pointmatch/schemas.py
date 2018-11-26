@@ -224,6 +224,11 @@ class PointMatchOpenCVParameters(RenderParameters):
         default=-1,
         missing=-1,
         description="number of CPUs to use")
+    ignore_filter_contours = Bool(
+        required=False,
+        default=False,
+        missing=False,
+        description="ignore filter contour in tpjson, if present")
 
 
 class SwapPointMatches(RenderParameters):
