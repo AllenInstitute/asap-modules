@@ -53,6 +53,17 @@ class MakeFineInputStackSchema(
         description=("maybe you don't want to spend the time recreating the masks"
                      "and downsampling them. Maybe they are already exactly where they"
                      " should be. For example, re-running with different epsilon."))
+    transform_label = Str(
+        required=True,
+        default='lens',
+        missing='lens',
+        description="apply this label to the transforms specified by label index list")
+    label_index_list = List(
+        Int,
+        required=True,
+        default=[0],
+        missing=[0],
+        description="apply transform_label to transforms at these positions in the transform list")
 
 
 class MakeFineOutputStackSchema(DefaultSchema):
