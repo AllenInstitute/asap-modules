@@ -301,6 +301,8 @@ def create_thinplatespline_tf(
             args['sectionId'] +
             datetime.datetime.now().strftime("_%Y%m%d%H%M%S"))
     transform.labels = None
+    if args['transform_label'] is not None:
+        transform.labels = [args['transform_label']]
 
     with open(args['outfile'], 'w') as f:
         json.dump(transform.to_dict(), f, indent=2)

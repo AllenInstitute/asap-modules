@@ -119,6 +119,11 @@ class MeshLensCorrectionSchema(PointMatchOpenCVParameters):
         default=None,
         missing=None,
         description="explicit mask setting from file")
+    transform_label = Str(
+        required=False,
+        default="lens",
+        missing="lens",
+        description="apply this as label to the resulting transform.")
 
 
 class MeshAndSolveOutputSchema(DefaultSchema):
