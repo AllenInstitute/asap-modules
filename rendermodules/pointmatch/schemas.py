@@ -229,6 +229,17 @@ class PointMatchOpenCVParameters(RenderParameters):
         default=False,
         missing=False,
         description="ignore filter contour in tpjson, if present")
+    use_render_client = Bool(
+        required=False,
+        default=False,
+        missing=False,
+        description="use renderapi client for rendering tile")
+    transform_labels = List(
+        Str,
+        required=False,
+        default=["lens"],
+        missing=["lens"],
+        description="labels to use with renderapi client for rendering")
 
 
 class SwapPointMatches(RenderParameters):

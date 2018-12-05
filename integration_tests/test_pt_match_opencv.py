@@ -4,6 +4,7 @@ import renderapi
 import json
 import cv2
 from six.moves import urllib
+import copy
 
 from test_data import (
         render_params, example_env,
@@ -60,6 +61,29 @@ def stack_from_json():
 
 
 @pytest.fixture(scope='module')
+def pt_match_input_stack_labels(render, stack_from_json):
+    ptmatch_input_stack = "point_match_input_stack_labels"
+    sj = copy.deepcopy(stack_from_json)
+    for t in sj:
+        for tf in t.tforms:
+            tf.labels=["lens"]
+    renderapi.stack.create_stack(ptmatch_input_stack,
+                                 render=render)
+    renderapi.client.import_tilespecs(ptmatch_input_stack,
+                                      sj,
+                                      render=render)
+    renderapi.stack.set_stack_state(ptmatch_input_stack,
+                                    'COMPLETE',
+                                    render=render)
+
+    assert len({tspec.tileId for tspec
+                in sj}.symmetric_difference(set(
+                        renderapi.stack.get_stack_tileIds(
+                            ptmatch_input_stack, render=render)))) == 0
+    yield ptmatch_input_stack
+
+
+@pytest.fixture(scope='module')
 def pt_match_input_stack(render, stack_from_json):
     ptmatch_input_stack = "point_match_input_stack"
     renderapi.stack.create_stack(ptmatch_input_stack,
@@ -89,6 +113,26 @@ def tilepair_file(render, stack_from_json, tmpdir_factory):
             owner=render.DEFAULT_OWNER,
             project=render.DEFAULT_PROJECT,
             stack=pt_match_input_stack)
+    with open(tile_pair_file, 'w') as f:
+        json.dump(tile_pairs, f, indent=4)
+
+    yield tile_pair_file
+
+
+@pytest.fixture(scope='module')
+def tilepair_file_contours(render, stack_from_json, tmpdir_factory):
+    output_dir = str(tmpdir_factory.mktemp('tpairdir'))
+    tile_pair_file = os.path.join(
+            output_dir,
+            "pt_match_opts_tilepair_contours.json")
+    tile_pairs = render_json_template(
+            example_env, 'pt_match_opts_tilepairs.json',
+            owner=render.DEFAULT_OWNER,
+            project=render.DEFAULT_PROJECT,
+            stack=pt_match_input_stack)
+    for n in tile_pairs['neighborPairs']:
+        n['p']['filter_contour'] = [[0.0, 0.0], [0.0, 3840.0], [3840.0, 3840.0], [3840.0, 0.0], [0.0, 0.0]]
+        n['q']['filter_contour'] = [[0.0, 0.0], [0.0, 3840.0], [3840.0, 3840.0], [3840.0, 0.0], [0.0, 0.0]]
     with open(tile_pair_file, 'w') as f:
         json.dump(tile_pairs, f, indent=4)
 
@@ -128,17 +172,84 @@ def test_read_etc(render, pt_match_input_stack, tilepair_file, tmpdir_factory):
     assert (im.shape[1] == w/2)
 
 
+def one_test(example, out_json):
+    pmgen = GeneratePointMatchesOpenCV(
+            input_data=example,
+            args=['--output_json', out_json])
+    pmgen.run()
+
+    with open(out_json, 'r') as f:
+        js = json.load(f)
+
+    ext = os.path.splitext(example['pairJson'])[1]
+    if ext == '.gz':
+        fout = gzip.open(example['pairJson'], 'r')
+    else:
+        fout = open(example['pairJson'], 'r')
+    tpjs = json.load(fout)
+    fout.close()
+
+    assert(js['pairCount'] == len(tpjs['neighborPairs']))
+
+
+def test_pt_match_render_client(
+        render, pt_match_input_stack,
+        pt_match_input_stack_labels,
+        tilepair_file, tilepair_file_contours, tmpdir_factory):
+
+    output_dir = str(tmpdir_factory.mktemp('point_match_opts'))
+
+    example = copy.deepcopy(pt_match_opencv_example)
+
+    example['render'] = render_params
+    example['input_stack'] = pt_match_input_stack
+    example['pairJson'] = tilepair_file
+    example['use_render_client'] = True
+    example['transform_labels'] = []
+
+    # basic test with render client
+    out_json = os.path.join(output_dir, "pt_match_opencv_output_rc.json")
+    one_test(example, out_json)
+
+    # render client test, filter transforms with labels
+    example['input_stack'] = pt_match_input_stack_labels
+    example['transform_labels'] = ["lens"]
+    one_test(example, out_json)
+
+    # contours in tilepair json file
+    example['pairJson'] = tilepair_file_contours
+    one_test(example, out_json)
+
+    # gzip tilepair format
+    with open(example['pairJson'], 'r') as f:
+        tpj = json.load(f)
+    gname = example['pairJson'] + '.gz'
+    with gzip.open(gname, 'w') as f:
+        json.dump(tpj, f)
+    example['pairJson'] = gname
+    one_test(example, out_json)
+
+    # empty tilepair file
+    tpj['neighborPairs'] = []
+    with gzip.open(gname, 'w') as f:
+        json.dump(tpj, f)
+    with pytest.raises(IndexError):
+        one_test(example, out_json)
+
+
 def test_pt_match_opencv(
         render, pt_match_input_stack, tilepair_file, tmpdir_factory):
     output_dir = str(tmpdir_factory.mktemp('point_match_opts'))
 
-    pt_match_opencv_example['render'] = render_params
-    pt_match_opencv_example['input_stack'] = pt_match_input_stack
-    pt_match_opencv_example['pairJson'] = tilepair_file
+    example = copy.deepcopy(pt_match_opencv_example)
+
+    example['render'] = render_params
+    example['input_stack'] = pt_match_input_stack
+    example['pairJson'] = tilepair_file
 
     out_json = os.path.join(output_dir, "pt_match_opencv_output.json")
     pmgen = GeneratePointMatchesOpenCV(
-            input_data=pt_match_opencv_example,
+            input_data=example,
             args=['--output_json', out_json])
     pmgen.run()
 
@@ -150,13 +261,13 @@ def test_pt_match_opencv(
 
     assert(js['pairCount'] == len(tpjs['neighborPairs']))
 
-    pt_match_opencv_example['CLAHE_grid'] = None
-    pt_match_opencv_example['CLAHE_clip'] = None
-    pt_match_opencv_example['ncpus'] = -1
-    pt_match_opencv_example['matchMax'] = 50
+    example['CLAHE_grid'] = None
+    example['CLAHE_clip'] = None
+    example['ncpus'] = -1
+    example['matchMax'] = 50
 
     pmgen = GeneratePointMatchesOpenCV(
-            input_data=pt_match_opencv_example,
+            input_data=example,
             args=['--output_json', out_json])
     pmgen.run()
 

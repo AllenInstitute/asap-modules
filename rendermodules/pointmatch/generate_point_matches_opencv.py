@@ -61,6 +61,7 @@ def ransac_chunk(fargs):
     for m, n in matches:
         if m.distance < args['ratio_of_dist']*n.distance:
             good.append(m)
+
     if len(good) > MIN_MATCH_COUNT:
         src_pts = np.float32(
                 [k1xy[k1ind, :][m.queryIdx] for m in good]).reshape(-1, 1, 2)
@@ -117,25 +118,56 @@ def read_downsample_equalize_mask(impath, scale, CLAHE_grid=None, CLAHE_clip=Non
 
 def make_mask(im, contour, downsample_scale):
     mask = np.zeros_like(im)
+
     cv2.fillConvexPoly(
             mask,
             (np.array(contour) * downsample_scale).astype('int32'),
             1)
+
     return mask
 
 
+def get_image(tspec, args):
+    if args['use_render_client']:
+        if args['transform_labels']:
+            tform_list = []
+            for tf in tspec.tforms:
+                if tf.labels:
+                    if set(tf.labels) & set(args['transform_labels']):
+                        tform_list.append(tf)
+            tspec.tforms = tform_list
+        render = renderapi.connect(**args['render'])
+        im = renderapi.client.render_tilespec(
+                tspec,
+                render=render,
+                res=32)[:, :, 0]
+        im = cv2.resize(im, (0, 0),
+                        fx=args['downsample_scale'],
+                        fy=args['downsample_scale'],
+                        interpolation=cv2.INTER_CUBIC)
+
+        im_m = np.ma.masked_equal(im, 0).astype('float')
+        im_m = (im_m - im_m.min())*255/(im_m.max()-im_m.min())
+        im = np.ma.filled(im_m, 0).astype('uint8')
+    else:
+        impaths = [
+            urllib.parse.unquote(
+                urllib.parse.urlparse(url).path)
+            if url is not None else None 
+            for url in [tspec.ip[0].imageUrl, tspec.ip[0].maskUrl]]
+        im = read_downsample_equalize_mask(
+               impaths,
+               args['downsample_scale'],
+               CLAHE_grid=args['CLAHE_grid'],
+               CLAHE_clip=args['CLAHE_clip'])
+    return im
+
+
 def find_matches(fargs):
-    [impaths, ids, gids, args, neighborPair] = fargs
-    pim = read_downsample_equalize_mask(
-            impaths[0],
-            args['downsample_scale'],
-            CLAHE_grid=args['CLAHE_grid'],
-            CLAHE_clip=args['CLAHE_clip'])
-    qim = read_downsample_equalize_mask(
-            impaths[1],
-            args['downsample_scale'],
-            CLAHE_grid=args['CLAHE_grid'],
-            CLAHE_clip=args['CLAHE_clip'])
+    [ptspec, qtspec, args, neighborPair] = fargs
+
+    pim = get_image(ptspec, args)
+    qim = get_image(qtspec, args)
 
     sift = cv2.xfeatures2d.SIFT_create(
             nfeatures=args['SIFT_nfeature'],
@@ -157,15 +189,15 @@ def find_matches(fargs):
                     args['downsample_scale'])
 
     # find the keypoints and descriptors
-    kp1, des1 = sift.detectAndCompute(pim, pmask)
-    kp2, des2 = sift.detectAndCompute(qim, qmask)
+    p_points, p_des = sift.detectAndCompute(pim, pmask)
+    q_points, q_des = sift.detectAndCompute(qim, qmask)
 
-    k1xy = np.array([np.array(k.pt) for k in kp1])
-    k2xy = np.array([np.array(k.pt) for k in kp2])
+    pxy = np.array([np.array(k.pt) for k in p_points])
+    qxy = np.array([np.array(k.pt) for k in q_points])
 
     nr, nc = pim.shape
-    k1 = []
-    k2 = []
+    kp = []
+    kq = []
     ransac_args = []
     results = []
     ndiv = args['ndiv']
@@ -173,51 +205,51 @@ def find_matches(fargs):
         r = np.arange(nr*i/ndiv, nr*(i+1)/ndiv)
         for j in range(ndiv):
             c = np.arange(nc*j/ndiv, nc*(j+1)/ndiv)
-            k1ind = np.argwhere(
-                    (k1xy[:, 0] >= r.min()) &
-                    (k1xy[:, 0] <= r.max()) &
-                    (k1xy[:, 1] >= c.min()) &
-                    (k1xy[:, 1] <= c.max())).flatten()
-            ransac_args.append([k1xy, k2xy, des1, des2, k1ind, args])
+            kpind = np.argwhere(
+                    (pxy[:, 0] >= r.min()) &
+                    (pxy[:, 0] <= r.max()) &
+                    (pxy[:, 1] >= c.min()) &
+                    (pxy[:, 1] <= c.max())).flatten()
+            ransac_args.append([pxy, qxy, p_des, q_des, kpind, args])
             results.append(ransac_chunk(ransac_args[-1]))
 
     for result in results:
-        k1 += result[0]
-        k2 += result[1]
+        kp += result[0]
+        kq += result[1]
 
-    if len(k1) >= 1:
-        k1 = np.array(k1) / args['downsample_scale']
-        k2 = np.array(k2) / args['downsample_scale']
+    if len(kp) >= 1:
+        kp = np.array(kp) / args['downsample_scale']
+        kq = np.array(kq) / args['downsample_scale']
 
-        if k1.shape[0] > args['matchMax']:
-            a = np.arange(k1.shape[0])
+        if kp.shape[0] > args['matchMax']:
+            a = np.arange(kp.shape[0])
             np.random.shuffle(a)
-            k1 = k1[a[0: args['matchMax']], :]
-            k2 = k2[a[0: args['matchMax']], :]
+            kp = kp[a[0: args['matchMax']], :]
+            kq = kq[a[0: args['matchMax']], :]
 
         render = renderapi.connect(**args['render'])
-        pm_dict = make_pm(ids, gids, k1, k2)
+        pm_dict = make_pm(ptspec, qtspec, kp, kq)
 
         renderapi.pointmatch.import_matches(
           args['match_collection'],
           [pm_dict],
           render=render)
 
-    return [impaths, len(kp1), len(kp2), len(k1), len(k2)]
+    return [[ptspec.tileId, qtspec.tileId], len(p_points), len(q_points), len(kp), len(kq)]
 
 
-def make_pm(ids, gids, k1, k2):
+def make_pm(ptspec, qtspec, kp, kq):
     pm = {}
-    pm['pId'] = ids[0]
-    pm['qId'] = ids[1]
-    pm['pGroupId'] = gids[0]
-    pm['qGroupId'] = gids[1]
+    pm['pId'] = ptspec.tileId
+    pm['qId'] = qtspec.tileId
+    pm['pGroupId'] = ptspec.layout.sectionId
+    pm['qGroupId'] = qtspec.layout.sectionId
     pm['matches'] = {'p': [], 'q': [], 'w': []}
-    pm['matches']['p'].append(k1[:, 0].tolist())
-    pm['matches']['p'].append(k1[:, 1].tolist())
-    pm['matches']['q'].append(k2[:, 0].tolist())
-    pm['matches']['q'].append(k2[:, 1].tolist())
-    pm['matches']['w'] = np.ones(k1.shape[0]).tolist()
+    pm['matches']['p'].append(kp[:, 0].tolist())
+    pm['matches']['p'].append(kp[:, 1].tolist())
+    pm['matches']['q'].append(kq[:, 0].tolist())
+    pm['matches']['q'].append(kq[:, 1].tolist())
+    pm['matches']['w'] = np.ones(kp.shape[0]).tolist()
     return pm
 
 
@@ -235,6 +267,7 @@ def parse_tileids(tpjson, logger=logging.getLogger()):
                         ).astype('int')
     except IndexError as e:
         logger.error('%s : probably no tilepairs' % str(e))
+        raise(e)
 
     for i in range(tile_ids.shape[0]):
         for j in range(tile_ids.shape[1]):
@@ -246,15 +279,12 @@ def parse_tileids(tpjson, logger=logging.getLogger()):
 def load_pairjson(tilepair_file, logger=logging.getLogger()):
     tpjson = []
     ext = os.path.splitext(tilepair_file)[1]
-    try:
-        if ext=='.gz':
-            f = gzip.open(tilepair_file, 'r')
-        else:
-            f = open(tilepair_file, 'r')
-        tpjson = json.load(f)
-        f.close()
-    except TypeError as e:
-        logger.error(e)
+    if ext=='.gz':
+        f = gzip.open(tilepair_file, 'r')
+    else:
+        f = open(tilepair_file, 'r')
+    tpjson = json.load(f)
+    f.close()
 
     return tpjson
 
@@ -263,7 +293,7 @@ def load_tilespecs(render, input_stack, unique_ids):
     tilespecs = []
     for tid in unique_ids:
         tilespecs.append(
-            renderapi.tilespec.get_tile_spec_raw(
+            renderapi.tilespec.get_tile_spec(
                 input_stack, tid, render=render))
 
     return np.array(tilespecs)
@@ -294,29 +324,15 @@ class GeneratePointMatchesOpenCV(ArgSchemaParser):
         if self.args['ncpus'] == -1:
             ncpus = multiprocessing.cpu_count()
 
+        fargs = []
+        for i in range(tile_index.shape[0]):
+            fargs.append([
+                tilespecs[tile_index[i][0]],
+                tilespecs[tile_index[i][1]],
+                self.args,
+                tpjson['neighborPairs'][i]])
+
         with renderapi.client.WithPool(ncpus) as pool:
-            index_list = range(tile_index.shape[0])
-
-            fargs = []
-            for i in index_list:
-                impaths = [
-                           [urllib.parse.unquote(
-                               urllib.parse.urlparse(url).path)
-                               if url is not None else None
-                               for url in [t.ip[0].imageUrl, t.ip[0].maskUrl]]
-                           for t in tilespecs[tile_index[i]]
-                          ]
-                ids = [t.tileId for t in tilespecs[tile_index[i]]]
-                gids = [t.layout.sectionId
-                        for t in tilespecs[tile_index[i]]]
-                fargs.append([
-                    impaths,
-                    ids,
-                    gids,
-                    self.args,
-                    tpjson['neighborPairs'][i]])
-
-            #r = find_matches(fargs[3])
             for r in pool.imap_unordered(find_matches, fargs):
                 log = "\n%s\n%s\n" % (r[0][0], r[0][1])
                 log += "  (%d, %d) features found" % (r[1], r[2])
