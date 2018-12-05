@@ -40,7 +40,8 @@ example_input = {
         "pool_size": 7,
         "close_stack": True,
         "transform_label": "lens",
-        "label_index_list": [0]
+        "label_index_list": [0],
+        "unmap_sectionId": True
 }
 
 
@@ -214,6 +215,13 @@ def label_transforms(tilespecs, shared, label, label_list):
     return tilespecs, shared
 
 
+def unmap_sectionId(tilespecs):
+    for t in tilespecs:
+        old_z = float(t.tileId.split('.')[-2])
+        t.layout.sectionId = str(old_z)
+    return tilespecs
+
+
 def zjob(fargs):
     [z, args] = fargs
 
@@ -245,6 +253,10 @@ def zjob(fargs):
             resolved.transforms,
             args['transform_label'],
             args['label_index_list'])
+
+    if args['unmap_sectionId']:
+        new_tilespecs = unmap_sectionId(
+                new_tilespecs)
 
     renderapi.client.import_tilespecs(
             args['output_stack'],

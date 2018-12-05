@@ -53,6 +53,11 @@ class MakeFineInputStackSchema(
         description=("maybe you don't want to spend the time recreating the masks"
                      "and downsampling them. Maybe they are already exactly where they"
                      " should be. For example, re-running with different epsilon."))
+    unmap_sectionId = Boolean(
+        required=False,
+        default=True,
+        missing=True,
+        description=("undo the sectionId mapping so we can still use montage point matches"))
     transform_label = Str(
         required=True,
         default='lens',
