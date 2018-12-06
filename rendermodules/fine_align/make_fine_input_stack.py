@@ -39,8 +39,10 @@ example_input = {
         "split_divided_tiles": True,
         "pool_size": 7,
         "close_stack": True,
-        "transform_label": "lens",
-        "label_index_list": [0],
+        "transform_labels": {
+            0: ['lens'],
+            1: ['rough'],
+            2: ['fine']},
         "unmap_sectionId": True
 }
 
@@ -193,24 +195,25 @@ def add_new_tforms(resolved, nxy_baseline, epsilon):
     return resolved.tilespecs
 
 
-def label_transforms(tilespecs, shared, label, label_list):
-    def add_label(tf, label):
+def label_transforms(tilespecs, shared, transform_labels):
+    def add_labels(tf, labels):
         if tf.labels is None:
-            tf.labels = [label]
+            tf.labels = labels
         else:
-            if label not in tf.labels:
-                tf.labels.append(label)
+            for label in labels:
+                if label not in tf.labels:
+                    tf.labels.append(label)
         return
 
     shared_ids = np.array([ref.transformId for ref in shared])
     for t in tilespecs:
         for i in range(len(t.tforms)):
-            if i in label_list:
+            if i in transform_labels:
                 if isinstance(t.tforms[i], renderapi.transform.ReferenceTransform):
                     ind = np.argwhere(shared_ids == t.tforms[i].refId)[0][0]
-                    add_label(shared[ind], label)
+                    add_labels(shared[ind], transform_labels[i])
                 else:
-                    add_label(t.tforms[i], label)
+                    add_labels(t.tforms[i], transform_labels[i])
 
     return tilespecs, shared
 
@@ -251,8 +254,7 @@ def zjob(fargs):
     new_tilespecs, new_transforms = label_transforms(
             new_tilespecs,
             resolved.transforms,
-            args['transform_label'],
-            args['label_index_list'])
+            args['transform_labels'])
 
     if args['unmap_sectionId']:
         new_tilespecs = unmap_sectionId(

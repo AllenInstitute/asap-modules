@@ -1,7 +1,7 @@
 import argschema
 from argschema.fields import (
         InputDir, OutputDir, Str, Boolean,
-        Nested, List, Int, Float, OutputFile)
+        Nested, List, Int, Float, OutputFile, Dict)
 from argschema.schemas import DefaultSchema
 from ..module.schemas import (
         InputStackParameters, OutputStackParameters,
@@ -58,17 +58,12 @@ class MakeFineInputStackSchema(
         default=True,
         missing=True,
         description=("undo the sectionId mapping so we can still use montage point matches"))
-    transform_label = Str(
-        required=True,
-        default='lens',
-        missing='lens',
-        description="apply this label to the transforms specified by label index list")
-    label_index_list = List(
-        Int,
-        required=True,
-        default=[0],
-        missing=[0],
-        description="apply transform_label to transforms at these positions in the transform list")
+    transform_labels = Dict(
+        required=False,
+        default={},
+        missing={},
+        description="dict of label lists to apply to transforms, i.e. "
+                    "{0: ['a', 'b']} for 0th transform")
 
 
 class MakeFineOutputStackSchema(DefaultSchema):
