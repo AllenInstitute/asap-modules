@@ -195,6 +195,11 @@ class PointMatchOpenCVParameters(RenderParameters):
         default=50,
         missing=50,
         description="passed to cv2.FlannBasedMatcher()")
+    FLANN_algorithm = Int(
+        required=False,
+        default=0,
+        missing=0,
+        description="passed to cv2.FlannBasedMatcher()")
     ratio_of_dist = Float(
         required=False,
         default=0.7,
