@@ -21,7 +21,9 @@ example = {
     "minZ": 120581,
     "maxZ": 120583,
     "filter_output_file": "./filter_output.json",
-    "output_json": "./tmpout.json"
+    "output_json": "./tmpout.json",
+    "zNeighborDistance": 1,
+    "excludeSameLayerNeighbors": False
 }
 
 logger = logging.getLogger()
@@ -29,7 +31,8 @@ logger = logging.getLogger()
 
 def filter_plot(fig, result_json, fs=14):
 
-    z = result_json['z']
+    z1 = result_json['z1']
+    z2 = result_json['z2']
     tmax = result_json['transmax']
     rmax = result_json['resmax']
     cnt = np.array([i['count'] for i in result_json['filter']])
@@ -42,7 +45,7 @@ def filter_plot(fig, result_json, fs=14):
     ax = fig.add_subplot(221)
     ax.scatter(cnt, nres, marker='.', s=10.3, color='k')
     ax.set_yscale('log')
-    ax.set_title('z = %d' % z)
+    ax.set_title('z = %d, %d' % (z1, z2))
     ax.legend(['mean(resid)\n%0.2f [px]' % nres.mean()])
     ax.set_xlabel('# of point pairs', fontsize=fs)
     ax.set_ylabel('average residual per tilepair', color='b', fontsize=fs)
@@ -73,18 +76,29 @@ def filter_plot(fig, result_json, fs=14):
 
 def proc_job(fargs):
     [input_match_collection, output_match_collection,
-        input_stack, z, resmax, transmax, rpar, inverse] = fargs
+        input_stack, zpair, resmax, transmax, rpar,
+        inverse, compare_to_label, compare_to_index] = fargs
 
     render = renderapi.connect(**rpar)
     try:
-        matches = renderapi.pointmatch.get_matches_within_group(
-                input_match_collection,
-                str(float(z)),
-                render=render)
         tspecs = renderapi.tilespec.get_tile_specs_from_z(
                 input_stack,
-                float(z),
+                float(zpair[0]),
                 render=render)
+        if zpair[0] != zpair[1]:
+            tspecs += renderapi.tilespec.get_tile_specs_from_z(
+                    input_stack,
+                    float(zpair[1]),
+                    render=render)
+        sections = np.unique(np.array([t.layout.sectionId for t in tspecs]))
+        if sections.size == 1:
+            sections = np.append(sections, sections[0])
+        matches = renderapi.pointmatch.get_matches_from_group_to_group(
+                input_match_collection,
+                sections[0],
+                sections[1],
+                render=render)
+
     except renderapi.errors.RenderError as e:
         logger.warning(str(e))
         return None
@@ -106,13 +120,28 @@ def proc_job(fargs):
         B = np.transpose(np.array(m['matches']['q']))
         tvec, res, _, _ = tf.fit(A, B, return_all=True)
 
-        pi = np.argwhere(tids == m['pId'])[0][0]
-        qi = np.argwhere(tids == m['qId'])[0][0]
-        dx = tspecs[pi].tforms[-1].B0 - tspecs[qi].tforms[-1].B0
-        dy = tspecs[pi].tforms[-1].B1 - tspecs[qi].tforms[-1].B1
-
         residuals.append(res)
         counts.append(len(m['matches']['w']))
+
+        pi = np.argwhere(tids == m['pId'])[0][0]
+        qi = np.argwhere(tids == m['qId'])[0][0]
+        tform_index = None
+        if compare_to_label:
+            for i in range(len(tspecs[pi].tforms)):
+                itf = tspecs[pi].tforms[i]
+                if itf.labels is not None:
+                    if compare_to_label in itf.labels:
+                        tform_index = i
+        if compare_to_index:
+            tform_index = compare_to_index
+
+        if tform_index is not None:
+            dx = tspecs[pi].tforms[tform_index].B0 - tspecs[qi].tforms[tform_index].B0
+            dy = tspecs[pi].tforms[tform_index].B1 - tspecs[qi].tforms[tform_index].B1
+        else:
+            dx = 0.0
+            dy = 0.0
+
         translations.append(
                 np.sqrt(
                     np.power(dx - tvec[4][0], 2.0) +
@@ -158,10 +187,11 @@ def proc_job(fargs):
 
     if output_match_collection is not None:
         logger.info(
-                "updating weights for %d of %d matches for z=%d in %s" % (
+                "updating weights for %d of %d matches for z1=%d z2=%d in %s" % (
                     len(updated_matches),
                     len(matches),
-                    int(z),
+                    int(zpair[0]),
+                    int(zpair[1]),
                     output_match_collection))
         renderapi.pointmatch.import_matches(
                 output_match_collection,
@@ -169,7 +199,8 @@ def proc_job(fargs):
                 render=render)
 
     result = {}
-    result['z'] = z
+    result['z1'] = zpair[0]
+    result['z2'] = zpair[1]
     result['transmax'] = transmax
     result['resmax'] = resmax
     result['filter'] = []
@@ -185,22 +216,39 @@ def proc_job(fargs):
     return result
 
 
+def get_z_pairs(zValues, zNeighborDistance, excludeSameLayerNeighbors):
+    z1, z2 = np.meshgrid(zValues, zValues)
+    ind = (z1 <= z2)
+    if excludeSameLayerNeighbors:
+        ind = (z1 < z2)
+    ind = ind & (np.abs(z1 - z2) <= zNeighborDistance)
+    return np.vstack((z1[ind].flatten(), z2[ind].flatten())).transpose()
+
+
 class FilterMatches(RenderModule):
     default_schema = FilterSchema
     default_output_schema = FilterOutputSchema
 
     def run(self):
         fargs = []
-        for z in self.args['zValues']:
+        zpairs = get_z_pairs(
+                self.args['zValues'],
+                self.args['zNeighborDistance'],
+                self.args['excludeSameLayerNeighbors'])
+        for zpair in zpairs:
             fargs.append([
                 self.args['input_match_collection'],
                 self.args['output_match_collection'],
                 self.args['input_stack'],
-                z,
+                zpair,
                 self.args['resmax'],
                 self.args['transmax'],
                 self.args['render'],
-                self.args['inverse_weighting']])
+                self.args['inverse_weighting'],
+                self.args['compare_translation_to_tform_label'],
+                self.args['compare_translation_to_tform_index']])
+
+        #results = [proc_job(fargs[0])]
 
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
             results = pool.map(proc_job, fargs)
