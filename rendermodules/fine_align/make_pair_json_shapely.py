@@ -26,9 +26,10 @@ example = {
         "excludeSameLayerNeighbors": True,
         "input_stack": "em_rough_align_zs11357_ze11838_sub_fine_input",
         "minZ": 11593,
-        "maxZ": 11602,
+        "maxZ": 11594,
         "buffer_pixels": 200,
-        "pool_size": 4
+        "pool_size": 4,
+        "compress_output": False
         }
 #example = {
 #        "render":{
@@ -117,13 +118,30 @@ def find_pairs(res0, res1, buffer_pixels):
                 continue
 
             overlap = p0[i].intersection(p1[j])
-            if overlap.area <= 100:
+            if overlap.area <= 50000:
                 continue
 
             bnds = overlap.bounds
             overlap_box = box(bnds[0], bnds[1], bnds[2], bnds[3])
             bblc0 = inverse(res0.tilespecs[i], overlap_box, sharedTransforms=res0.transforms)
             bblc1 = inverse(res1.tilespecs[j], overlap_box, sharedTransforms=res1.transforms)
+
+            # 
+            bblc0 = bblc0.intersection(Polygon(res0.tilespecs[i].bbox_transformed(tf_limit=0)))
+            if bblc0.area < 1000:
+                continue
+            dx = bblc0.bounds[2] - bblc0.bounds[0]
+            dy = bblc0.bounds[3] - bblc0.bounds[1]
+            if (dx < 200) | (dy < 200):
+                continue
+
+            bblc1 = bblc1.intersection(Polygon(res1.tilespecs[i].bbox_transformed(tf_limit=0)))
+            if bblc1.area < 1000:
+                continue
+            dx = bblc1.bounds[2] - bblc1.bounds[0]
+            dy = bblc1.bounds[3] - bblc1.bounds[1]
+            if (dx < 200) | (dy < 200):
+                continue
 
             pd = {'p':{}, 'q': {}}
             pd['p']['groupId'] = res0.tilespecs[i].layout.sectionId

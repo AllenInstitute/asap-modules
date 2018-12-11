@@ -191,6 +191,8 @@ def find_matches(fargs):
     p_points, p_des = sift.detectAndCompute(pim, pmask)
     q_points, q_des = sift.detectAndCompute(qim, qmask)
 
+    print(len(p_points), len(q_points))
+
     pxy = np.array([np.array(k.pt) for k in p_points])
     qxy = np.array([np.array(k.pt) for k in q_points])
 
@@ -215,6 +217,8 @@ def find_matches(fargs):
     for result in results:
         kp += result[0]
         kq += result[1]
+
+    print(len(kp), len(kq))
 
     if len(kp) >= 1:
         kp = np.array(kp) / args['downsample_scale']
@@ -330,6 +334,8 @@ class GeneratePointMatchesOpenCV(ArgSchemaParser):
                 tilespecs[tile_index[i][1]],
                 self.args,
                 tpjson['neighborPairs'][i]])
+
+        #find_matches(fargs[3])
 
         with renderapi.client.WithPool(ncpus) as pool:
             for r in pool.imap_unordered(find_matches, fargs):
