@@ -35,17 +35,19 @@ class ApplyRoughAlignmentTransformParameters(RenderParameters):
         metadata={'description':
                   "map the montage Z indices to the rough alignment "
                   "indices (default - False)"})
-    #map_z_start = mm.fields.Int(
-    #    required=False,
-    #    default=-1,
-    #    missing=-1,
-    #    metadata={'description':'the starting index of the z in the montage stack'})
-    #minZ = mm.fields.Int(
-    #    required=True,
-    #    metadata={'description':'Minimum Z value'})
-    #maxZ = mm.fields.Int(
-    #    required=True,
-    #    metadata={'description':'Maximum Z value'})
+    # map_z_start = mm.fields.Int(
+    #     required=False,
+    #     default=-1,
+    #     missing=-1,
+    #     metadata={
+    #               'description':
+    #               'the starting index of the z in the montage stack'})
+    # minZ = mm.fields.Int(
+    #     required=True,
+    #     metadata={'description':'Minimum Z value'})
+    # maxZ = mm.fields.Int(
+    #     required=True,
+    #     metadata={'description':'Maximum Z value'})
     consolidate_transforms = mm.fields.Boolean(
         required=False,
         default=True,
@@ -83,6 +85,12 @@ class ApplyRoughAlignmentTransformParameters(RenderParameters):
         description=("directory containing mask files. basenames of "
                      "masks that match tileIds in the rough stack "
                      "will be handled."))
+    read_masks_from_lowres_stack = Bool(
+        required=False,
+        default=False,
+        missing=False,
+        description=("masks will be taken from lowres tilespecs."
+                     " any mask_input_dir ignored."))
     update_lowres_with_masks = Bool(
         required=False,
         default=False,

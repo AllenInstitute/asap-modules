@@ -516,7 +516,6 @@ def test_mapped_apply_rough_alignment_transform(render, montage_stack, test_do_m
         mod = ApplyRoughAlignmentTransform(input_data=ex4, args=[])
 
 
-
 def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_alignment, tmpdir_factory, prealigned_stack=None, output_stack=None):
 
      ex = dict(ex1, **{
@@ -657,8 +656,17 @@ def test_apply_rough_alignment_with_masks(render, montage_stack, test_do_rough_a
      assert lrs[0].ip['0']['maskUrl'] is None
      assert lrs[1].ip['0']['maskUrl'] is not None
      assert lrs[2].ip['0']['maskUrl'] is None
+     #renderapi.stack.delete_stack(ex['lowres_stack'], render=render)
+
+     # read the masks from the lowres stack (just modified above)
+     ex['read_masks_from_lowres_stack'] = True
+     modular_test_for_masks(render, ex)
+     ntiles = len(renderapi.tilespec.get_tile_specs_from_stack(
+         ex['output_stack'], render=render))
+     assert(ntiles == ntiles_montage - 3)
      renderapi.stack.delete_stack(ex['lowres_stack'], render=render)
 
+     # make multiple matches for one tileId
      mpath = urllib.parse.unquote(
                  urllib.parse.urlparse(
                      lrs[1].ip['0']['maskUrl']).path)
@@ -667,8 +675,8 @@ def test_apply_rough_alignment_with_masks(render, montage_stack, test_do_rough_a
      shutil.copy(mpath, os.path.join(tmp_dir, mbase + '.png'))
      shutil.copy(mpath, os.path.join(tmp_dir, mbase + '.tif'))
 
-     # make multiple matches for one tileId
      renderapi.stack.clone_stack(orig_lowres, ex['lowres_stack'], render=render)
+     ex['read_masks_from_lowres_stack'] = False
      ex['mask_input_dir'] = tmp_dir
      ex['filter_montage_output_with_masks'] = True
      ex['update_lowres_with_masks'] = True

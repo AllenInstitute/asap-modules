@@ -67,10 +67,20 @@ example = {
 logger = logging.getLogger()
 
 
-def get_mask_paths(mask_input_dir, tilespecs, exts=['png', 'tif']):
+def get_mask_paths(
+        mask_input_dir,
+        tilespecs,
+        read_masks_from_lowres_stack,
+        exts=['png', 'tif']):
+
     results = {}
 
-    if mask_input_dir is not None:
+    if read_masks_from_lowres_stack:
+        for t in tilespecs:
+            if t.ip[0].maskUrl is not None:
+                results[t.tileId] = t.ip[0].maskUrl
+
+    elif mask_input_dir is not None:
         tids = [t.tileId for t in tilespecs]
         maskfiles = []
         for ext in exts:
@@ -169,6 +179,7 @@ def apply_rough_alignment(render,
                           scale,
                           mask_input_dir,
                           update_lowres_with_masks,
+                          read_masks_from_lowres_stack,
                           filter_montage_output_with_masks,
                           mask_exts,
                           Z,
@@ -188,9 +199,13 @@ def apply_rough_alignment(render,
                             newz,
                             session=session)
 
-        mask_map = get_mask_paths(mask_input_dir, lowres_ts)
+        mask_map = get_mask_paths(
+                mask_input_dir,
+                lowres_ts,
+                read_masks_from_lowres_stack)
 
-        if update_lowres_with_masks:
+        if (not read_masks_from_lowres_stack) & \
+                update_lowres_with_masks:
             add_masks_to_lowres(render, lowres_stack, newz, mask_map)
 
         # get the lowres stack rough alignment transformation
@@ -293,6 +308,7 @@ class ApplyRoughAlignmentTransform(RenderModule):
                         self.args['scale'],
                         self.args['mask_input_dir'],
                         self.args['update_lowres_with_masks'],
+                        self.args['read_masks_from_lowres_stack'],
                         self.args['filter_montage_output_with_masks'],
                         self.args['mask_exts'],
                         apply_scale=self.args['apply_scale'],
