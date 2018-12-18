@@ -64,6 +64,11 @@ class MakeFineInputStackSchema(
         missing={},
         description="dict of label lists to apply to transforms, i.e. "
                     "{0: ['a', 'b']} for 0th transform")
+    materializedBoxRootPath = InputDir(
+        required=False,
+        default=None,
+        missing=None,
+        description-"")
 
 
 class MakeFineOutputStackSchema(DefaultSchema):
