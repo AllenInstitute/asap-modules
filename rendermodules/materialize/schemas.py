@@ -126,12 +126,12 @@ class MaterializeSectionsOutput(argschema.schemas.DefaultSchema):
 # materialization validation schemas
 class ValidateMaterializationParameters(argschema.ArgSchema):
     # TODO allow row, column, validate min & max
-    minRow = argschema.fields.Int(required=True, description=(
+    minRow = argschema.fields.Int(required=False, description=(
         "minimum row to attempt to validate tiles. "
         "Will attempt to use stack bounds if None"))
-    maxRow = argschema.fields.Int(required=True)
-    minCol = argschema.fields.Int(required=True)
-    maxCol = argschema.fields.Int(required=True)
+    maxRow = argschema.fields.Int(required=False)
+    minCol = argschema.fields.Int(required=False)
+    maxCol = argschema.fields.Int(required=False)
     minZ = argschema.fields.Int(required=True)
     maxZ = argschema.fields.Int(required=True)
     ext = argschema.fields.Str(required=False, default="png",
@@ -143,7 +143,21 @@ class ValidateMaterializationParameters(argschema.ArgSchema):
         "size of pool to use to investigate image validity"))
 
 
-class ValidateMaterializationOutput(argschema.ArgSchema):
+class ValidateMaterializationOutput(argschema.schemas.DefaultSchema):
     basedir = argschema.fields.Str(required=True)
     # TODO this should probably be an InputFile unless we're disallowing ENOENT
     failures = argschema.fields.List(argschema.fields.Str, required=True)
+
+
+class DeleteMaterializedSectionsParameters(argschema.ArgSchema):
+    minZ = argschema.fields.Int(required=True)
+    maxZ = argschema.fields.Int(required=True)
+    basedir = argschema.fields.InputDir(required=True, description=(
+        "base directory for materialization"))
+    pool_size = argschema.fields.Int(required=False, description=(
+        "size of pool to use to delete files"))
+    tilesource = argschema.fields.Int(required=False, default=5)
+
+
+class DeleteMaterializedSectionsOutput(argschema.schemas.DefaultSchema):
+    pass
