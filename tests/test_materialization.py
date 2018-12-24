@@ -20,8 +20,8 @@ from rendermodules.materialize.validate_materialized_tilesource import (
     ValidateMaterialization)
 from rendermodules.materialize.delete_materialized_tilesource import (
     DeleteMaterializedSectionsModule)
-# TODO why doesn't this have test data?
-from test_data import (TEST_MATERIALIZATION_JSON, pool_size)
+
+from tests_test_data import (TEST_MATERIALIZATION_JSON, pool_size)
 
 MaterializedVolumeParams = collections.namedtuple(
     "MaterializedVolumeParams",
