@@ -10,22 +10,26 @@ from bokeh.palettes import Plasma256, Viridis256
 from bokeh.plotting import figure, output_file, show, save
 from bokeh.layouts import column, row
 from bokeh.models.widgets import Tabs, Panel
-from bokeh.models import (HoverTool, ColumnDataSource, 
+from bokeh.models import (HoverTool, ColumnDataSource,
                           CustomJS, CategoricalColorMapper,
-                          LinearColorMapper, 
+                          LinearColorMapper,
                           TapTool, OpenURL, Div, ColorBar,
                           Slider, WidgetBox)
 
+try:
+    xrange
+except NameError:
+    xrange = range
 
 def point_match_plot(tilespecsA, matches, tilespecsB=None):
     if tilespecsB is None:
         tilespecsB = tilespecsA
-    
+
     if len(matches) > 0:
         x1, y1, id1 = cr.get_tile_centers(tilespecsA)
         x2, y2, id2 = cr.get_tile_centers(tilespecsB)
 
-        xs = [] 
+        xs = []
         ys = []
         clist = []
 
@@ -37,12 +41,12 @@ def point_match_plot(tilespecsA, matches, tilespecsB=None):
         # tiny line to make sure max is in there for consistent color range
         xs.append([0.1, 0])
         ys.append([0.1, 0.1])
-        
+
         if (set(x1) != set(x2)):
             clist.append(500)
         else:
             clist.append(200)
-        
+
         for k in np.arange(len(matches)):
             t1 = np.argwhere(id1 == matches[k]['qId']).flatten()
             t2 = np.argwhere(id2 == matches[k]['pId']).flatten()
@@ -52,7 +56,7 @@ def point_match_plot(tilespecsA, matches, tilespecsB=None):
                 xs.append([x1[t1], x2[t2]])
                 ys.append([y1[t1], y2[t2]])
                 clist.append(len(matches[k]['matches']['q'][0]))
-        
+
         mapper = LinearColorMapper(palette=Plasma256, low=min(clist), high=max(clist))
         colorbar = ColorBar(color_mapper=mapper, label_standoff=12, location=(0,0))
         source = ColumnDataSource(dict(xs=xs, ys=ys, colors=clist))
@@ -67,7 +71,7 @@ def point_match_plot(tilespecsA, matches, tilespecsB=None):
 
     else:
         plot = figure(plot_width=800, plot_height=700, background_fill_color='gray')
-    
+
     return plot
 
 
@@ -117,12 +121,12 @@ def plot_defects(render, stack, out_html_dir, args):
         pts.append([ts.minX, ts.maxY])
         pts.append([ts.minX, ts.minY])
         tile_positions.append(pts)
-        
+
         try:
             residual.append(tile_residual_mean[ts.tileId])
         except KeyError:
             residual.append(50) # a high value for residual for that tile
-        
+
         #if ts.tileId in tile_residual_mean.keys():
         #    residual.append(tile_residual_mean[ts.tileId])
         #else:
@@ -202,7 +206,7 @@ def plot_defects(render, stack, out_html_dir, args):
     # montage statistics plots in other tabs
 
     stat_layout = plot_residual(xs, ys, residual)
-    
+
     tabs = []
     tabs.append(Panel(child=layout, title="Defects"))
     tabs.append(Panel(child=plot, title="Point match plot"))
