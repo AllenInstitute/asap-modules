@@ -206,7 +206,8 @@ class FilterMatches(RenderModule):
             results = pool.map(proc_job, fargs)
 
         with open(self.args['filter_output_file'], 'w') as f:
-            json.dump(
+            # using renderapi dump allows py3 numpy integer serialization
+            renderapi.utils.renderdump(
                     [x for x in results if x is not None],
                     f,
                     indent=2)
