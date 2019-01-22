@@ -1,10 +1,59 @@
 from argschema import InputDir
 import marshmallow as mm
-from argschema.fields import Bool, Float, Int, Nested, Str, InputFile, List
+from argschema.fields import \
+        Bool, Float, Int, Nested, Str, InputFile, List, Dict
 from argschema.schemas import DefaultSchema
-from ..module.schemas import RenderParameters
+from ..module.schemas import \
+        RenderParameters, InputStackParameters, OutputStackParameters
 from marshmallow import post_load, ValidationError
 import argschema
+
+
+class PairwiseRigidSchema(InputStackParameters, OutputStackParameters):
+    match_collection = Str(
+        required=True,
+        description="Point match collection name")
+    gap_file = InputFile(
+        required=False,
+        default=None,
+        missing=None,
+        description="json file {k: v} where int(k) is a z value to skip")
+    translate_to_positive = Bool(
+        required=False,
+        default=True,
+        missing=True,
+        description="translate output stack to positive space")
+    translation_buffer = List(
+        Float,
+        required=False,
+        default=[0, 0],
+        missing=[0, 0],
+        description=("minimum (x, y) of output stack if "
+                     "translate_to_positive=True"))
+
+
+class PairwiseRigidOutputSchema(DefaultSchema):
+    minZ = Int(
+        required=True,
+        description="minimum z value in output stack")
+    maxZ = Int(
+        required=True,
+        description="minimum z value in output stack")
+    output_stack = Str(
+        required=True,
+        description="name of output stack")
+    missing = List(
+        Int,
+        required=True,
+        description="list of z values missing in z range of output stack")
+    masked = List(
+        Int,
+        required=True,
+        description="list of z values masked in z range of output stack")
+    residuals = List(
+        Dict,
+        required=True,
+        description="pairwise residuals in output stack")
 
 
 class ApplyRoughAlignmentTransformParameters(RenderParameters):
