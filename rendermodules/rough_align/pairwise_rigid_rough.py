@@ -19,11 +19,11 @@ example = {
             "client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts"
           },
         "input_stack": "em_2d_montage_solved_py_0_01_mapped",
-        "output_stack": "test_pairwise_rigid",
+        "output_stack": "em_rough_align_pre_rigid",
         "match_collection": "chunk_rough_align_point_matches",
         "close_stack": True,
-        "minZ": 14725,
-        "maxZ": 14755,
+        "minZ": 27488,
+        "maxZ": 27882,
         "gap_file": "/allen/programs/celltypes/workgroups/em-connectomics/danielk/pre_align_rigid/gap_reasons.json",
         "pool_size": 7,
         "output_json": "test_output.json",
@@ -130,7 +130,10 @@ class PairwiseRigidRoughAlignment(StackInputModule, StackOutputModule):
     def run(self):
         self.render = renderapi.connect(**self.args['render'])
 
-        self.args['zValues'] = self.get_inputstack_zs()
+        self.args['zValues'] = np.array(self.get_inputstack_zs())
+        ind = (self.args['zValues'] >= self.args['minZ']) & \
+              (self.args['zValues'] <= self.args['maxZ'])
+        self.args['zValues'] = self.args['zValues'][ind]
         self.args['zValues'] = get_zrange_with_skipped(
                 self.args['gap_file'],
                 self.args['zValues'])
