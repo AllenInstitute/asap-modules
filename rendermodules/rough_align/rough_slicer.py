@@ -105,7 +105,7 @@ class RoughSlicer(StackInputModule):
             fargs.append([z, self.args['input_stack'], self.render, bounds])
 
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
-            for z, im in pool.map(zjob, fargs[500:520]):
+            for z, im in pool.map(zjob, fargs):
                 t0 = time.time()
                 zind = self.args['zValues'].index(z)
                 self.slice_image(im, zind)
