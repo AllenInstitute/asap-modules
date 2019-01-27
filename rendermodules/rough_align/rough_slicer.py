@@ -109,6 +109,7 @@ class RoughSlicer(StackInputModule):
                 t0 = time.time()
                 zind = self.args['zValues'].index(z)
                 self.slice_image(im, zind)
+                del im
 
         for im in self.images:
             fname = self.args['input_stack'] + \
