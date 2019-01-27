@@ -1,12 +1,40 @@
 from argschema import InputDir
 import marshmallow as mm
-from argschema.fields import \
-        Bool, Float, Int, Nested, Str, InputFile, List, Dict
+from argschema.fields import (
+        Bool, Float, Int, Nested, OutputDir,
+        Str, InputFile, List, Dict)
 from argschema.schemas import DefaultSchema
-from ..module.schemas import \
-        RenderParameters, InputStackParameters, OutputStackParameters
+from ..module.schemas import (
+        RenderParameters,
+        InputStackParameters,
+        OutputStackParameters,
+        ProcessPoolParameters)
 from marshmallow import post_load, ValidationError
 import argschema
+
+
+class RoughSlicerSchema(InputStackParameters, ProcessPoolParameters):
+    x_slice_locs = List(
+        Float,
+        required=False,
+        default=[0.5],
+        cli_as_single_argument=True,
+        description="fractional location of x_slices")
+    y_slice_locs = List(
+        Float,
+        required=False,
+        default=[0.5],
+        cli_as_single_argument=True,
+        description="fractional location of x_slices")
+    slice_locs_as_pixels = Bool(
+        required=False,
+        default=False,
+        missing=False,
+        description=("interpret slice_locs as absolute pixel "
+                     "coordinates instead of fractional."))
+    output_dir = OutputDir(
+        required=True,
+        description="Location_of_output_slices")
 
 
 class PairwiseRigidSchema(InputStackParameters, OutputStackParameters):
