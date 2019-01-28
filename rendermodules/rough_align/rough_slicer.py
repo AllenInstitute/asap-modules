@@ -20,6 +20,7 @@ example = {
             "client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts"
           },
         "input_stack": "20190123_manual_reg_ds",
+        "bounds_from_stack": None,
         "minZ": 14500,
         "maxZ": 15800,
         "pool_size": 7,
@@ -78,9 +79,14 @@ class RoughSlicer(StackInputModule):
 
     def run(self):
         self.render = renderapi.connect(**self.args['render'])
+
+        bstack = self.args['input_stack']
+        if self.args['bounds_from_stack'] is not None:
+            bstack = self.args['bounds_from_stack']
         bounds = renderapi.stack.get_stack_bounds(
-                self.args['input_stack'],
+                bstack,
                 render=self.render)
+
         if not self.args['slice_locs_as_pixels']:
             xlocs = np.uint(np.array(self.args['x_slice_locs']) * \
                     (bounds['maxX'] - bounds['minX']) + \

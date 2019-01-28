@@ -35,6 +35,11 @@ class RoughSlicerSchema(InputStackParameters, ProcessPoolParameters):
     output_dir = OutputDir(
         required=True,
         description="Location_of_output_slices")
+    bounds_from_stack = Str(
+        require=False,
+        default=None,
+        missing=None,
+        description=("get bounds from this stack instead of input_stack"))
 
 
 class PairwiseRigidSchema(InputStackParameters, OutputStackParameters):
