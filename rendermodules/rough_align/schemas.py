@@ -63,6 +63,11 @@ class PairwiseRigidSchema(InputStackParameters, OutputStackParameters):
         missing=[0, 0],
         description=("minimum (x, y) of output stack if "
                      "translate_to_positive=True"))
+    anchor_stack = Str(
+        require=False,
+        default=None,
+        missing=None,
+        description=("fix transforms using tiles in this stack"))
 
 
 class PairwiseRigidOutputSchema(DefaultSchema):
