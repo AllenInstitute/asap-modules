@@ -32,6 +32,7 @@ class ConsolidateTransformsParameters(RenderParameters):
 class ConsolidateTransformsOutputParameters(DefaultSchema):
     output_stack = Str(required=True, description="name of output stack")
     numZ = Int(required=True, description="Number of z values processed")
+    close_stack = Boolean(required=False, default=False)
 
 
 class MipMapDirectories(DefaultSchema):
