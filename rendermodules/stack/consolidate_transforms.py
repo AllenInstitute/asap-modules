@@ -158,7 +158,7 @@ class ConsolidateTransforms(RenderModule):
 
         if self.args['close_stack']:
             renderapi.stack.set_stack_state(
-                stack,
+                outstack,
                 'COMPLETE',
                 render=self.render)
 
