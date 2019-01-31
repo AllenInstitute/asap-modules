@@ -18,6 +18,7 @@ example_json = {
     "output_stack": "ROUGHALIGN_LENS_DAPI_1_deconvnew_CONS",
     "transforms_slice": ":",
     "pool_size": 10,
+    "close_stack": True
 }
 
 
@@ -154,6 +155,12 @@ class ConsolidateTransforms(RenderModule):
 
         # self.render.run(
         #     renderapi.client.import_jsonfiles_parallel, outstack, json_files)
+
+        if self.args['close_stack']:
+            renderapi.stack.set_stack_state(
+                stack,
+                'COMPLETE',
+                render=self.render)
 
         output_d = {
             "output_stack": outstack,
