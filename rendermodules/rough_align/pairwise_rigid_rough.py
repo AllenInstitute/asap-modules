@@ -19,13 +19,14 @@ example = {
             "client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts"
           },
         "input_stack": "em_2d_montage_solved_py_0_01_mapped",
-        "output_stack": "em_rough_align_pre_rigid",
+        "anchor_stack": "full_rough_anchor_stack_plus",
+        "output_stack": "full_pre_rigid_with_anchors_plus",
         "match_collection": "chunk_rough_align_point_matches",
         "close_stack": True,
-        "minZ": 27488,
-        "maxZ": 27882,
+        "minZ": 25000,
+        "maxZ": 26000,
         "gap_file": "/allen/programs/celltypes/workgroups/em-connectomics/danielk/pre_align_rigid/gap_reasons.json",
-        "pool_size": 7,
+        "pool_size": 20,
         "output_json": "test_output.json",
         "overwrite_zlayer": True,
         "translate_to_positive": True,
@@ -68,8 +69,8 @@ def tspecjob(collection, render, tilespecs, estimate=True):
             tilespecs[0].layout.sectionId,
             tilespecs[1].tileId,
             tilespecs[1].layout.sectionId)
-        e.args += (estr, )
-        raise
+        print(estr)
+        return None
 
     match = matches[0]
 
@@ -134,27 +135,91 @@ class PairwiseRigidRoughAlignment(StackInputModule, StackOutputModule):
         ind = (self.args['zValues'] >= self.args['minZ']) & \
               (self.args['zValues'] <= self.args['maxZ'])
         self.args['zValues'] = self.args['zValues'][ind]
-        self.args['zValues'] = get_zrange_with_skipped(
+        self.args['zValues'] = np.array(get_zrange_with_skipped(
                 self.args['gap_file'],
-                self.args['zValues'])
+                self.args['zValues']))
 
-        tilespecs = []
-        for z in self.args['zValues']:
-            tilespecs += renderapi.tilespec.get_tile_specs_from_z(
-                    self.args['input_stack'],
-                    z,
+        if self.args['anchor_stack'] is None:
+            ts = renderapi.tilespec.TileSpec()
+            ts.z = self.args['zValues'][0]
+            ts.tforms = [renderapi.transform.AffineModel()]
+            anchor_specs = np.array([ts])
+        else:
+            tspecs = renderapi.tilespec.get_tile_specs_from_stack(
+                    self.args['anchor_stack'],
                     render=self.render)
+            anchor_specs = np.array([
+                    t for t in tspecs if t.z in self.args['zValues']])
+        anchor_zs = np.array([a.z for a in anchor_specs])
+        aind = np.argsort(anchor_zs)
+        anchor_specs = anchor_specs[aind]
+        clumps = []
+        for i in range(anchor_specs.size):
+            # backward looking
+            zback = self.args['zValues'] < anchor_specs[i].z
+            if i != 0:
+                zback = zback & (self.args['zValues'] > anchor_specs[i - 1].z)
+            clumps.append({
+                "direction": -1,
+                "z_values": np.sort(self.args['zValues'][zback])[::-1],
+                "anchor": anchor_specs[i]})
 
-        new_tilespecs = self.pairwise_estimate(tilespecs)
+            # forward looking
+            zfor = self.args['zValues'] > anchor_specs[i].z
+            if i != anchor_specs.size - 1:
+                zfor = zfor & (self.args['zValues'] < anchor_specs[i + 1].z)
+            clumps.append({
+                "direction": 1,
+                "z_values": np.sort((self.args['zValues'][zfor])),
+                "anchor": anchor_specs[i]})
+        
+        new_specs = []
+        for c in clumps:
+            a = self.pairwise_estimate(c['anchor'], c['z_values'])
+            azs = [n['dist'] for n in a]
+            print(a[0]['spec'].z, azs)
+            new_specs += a
+
+        print('done with clumps')
+
+        nzs = np.array([n['spec'].z for n in new_specs])
+        unzs = np.unique(nzs)
+
+        averaged_new_specs = []
+        for unz in unzs:
+            print('unique z: %d' % unz)
+            ind = np.argwhere(nzs == unz).flatten()
+            if ind.size == 1:
+                averaged_new_specs.append(new_specs[ind[0]]['spec'])
+            else:
+                dsum = np.array([new_specs[i]['dist'] for i in ind]).sum()
+                if dsum == 0:
+                    averaged_new_specs.append(new_specs[ind[0]]['spec'])
+                else:
+                    M = np.array(
+                            [
+                                ((dsum - new_specs[i]['dist']) / float(dsum)) * \
+                                        new_specs[i]['spec'].tforms[0].M for i in ind])
+                    M = M.sum(axis=0)
+                    averaged_new_specs.append(new_specs[ind[0]]['spec'])
+                    averaged_new_specs[-1].tforms[0].M = M
+
+        #for z in self.args['zValues']:
+        #    tilespecs += renderapi.tilespec.get_tile_specs_from_z(
+        #            self.args['input_stack'],
+        #            z,
+        #            render=self.render)
+
+        #new_tilespecs = self.pairwise_estimate(tilespecs)
 
         if self.args['translate_to_positive']:
-            new_tilespecs = translate_to_positive(
-                    new_tilespecs,
+            averaged_new_specs = translate_to_positive(
+                    averaged_new_specs,
                     self.args['translation_buffer'])
 
         self.output_stack = self.args['output_stack'] + \
             '_zs%d_ze%d' % (self.args['minZ'], self.args['maxZ'])
-        self.output_tilespecs_to_stack(new_tilespecs)
+        self.output_tilespecs_to_stack(averaged_new_specs)
 
         self.output(self.check_result())
 
@@ -190,7 +255,14 @@ class PairwiseRigidRoughAlignment(StackInputModule, StackOutputModule):
         result['maxZ'] = self.args['maxZ']
         return result
 
-    def pairwise_estimate(self, tilespecs):
+    def pairwise_estimate(self, anchor_spec, z_values):
+        tilespecs = [anchor_spec]
+        for z in z_values:
+            tilespecs += renderapi.tilespec.get_tile_specs_from_z(
+                     self.args['input_stack'],
+                     z,
+                     render=self.render)
+
         # accumulate transforms (zs = Identity)
         estimate_func = partial(
                 tspecjob,
@@ -201,19 +273,25 @@ class PairwiseRigidRoughAlignment(StackInputModule, StackOutputModule):
                     tilespecs[i - 1],
                     tilespecs[i],
                     ] for i in range(1, len(tilespecs))]
-        M = np.eye(3)
-        newtf = renderapi.transform.RigidModel()
-        newtf.M = M
-        new_tilespecs = [tilespecs[0]]
-        new_tilespecs[-1].tforms = [newtf]
 
+        M = anchor_spec.tforms[0].M
+        new_tilespecs = [{
+            'spec': anchor_spec,
+            'dist': 0}]
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
             for result in pool.map(estimate_func, fargs):
+                if result is None:
+                    break
                 M = M.dot(result['transform'].M)
                 newtf = renderapi.transform.RigidModel()
                 newtf.M = M
-                new_tilespecs.append(result['tilespecs'][1])
-                new_tilespecs[-1].tforms = [newtf]
+                ts = result['tilespecs'][1]
+                ts.tforms = [newtf]
+                new_tilespecs.append({
+                    'spec': renderapi.tilespec.TileSpec(json=ts.to_dict()),
+                    'dist': int(np.abs(ts.z - anchor_spec.z))})
+
+        print('done anchor_z = %d' % anchor_spec.z)
 
         return new_tilespecs
 
