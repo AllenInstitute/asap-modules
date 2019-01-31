@@ -154,7 +154,8 @@ class ConsolidateTransforms(RenderModule):
 
         # self.render.run(
         #     renderapi.client.import_jsonfiles_parallel, outstack, json_files)
-
+        print ("Closing the STACK")
+        renderapi.stack.set_stack_state(outstack, 'COMPLETE',  render=self.render)
         output_d = {
             "output_stack": outstack,
             "numZ": len(zvalues)
