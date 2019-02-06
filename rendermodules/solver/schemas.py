@@ -1,5 +1,5 @@
 import argschema
-from EMaligner.EM_aligner_python_schema import EMA_Schema
+from EMaligner.schemas import EMA_Schema
 
 
 class EMA_Output_Schema(argschema.schemas.DefaultSchema):

@@ -26,12 +26,13 @@ class ConsolidateTransformsParameters(RenderParameters):
         required=False, default=False,
         description=("whether to remove the existing layer from the "
                      "target stack before uploading."))
-
+    close_stack = Boolean(required=False, default=False)
 
 
 class ConsolidateTransformsOutputParameters(DefaultSchema):
     output_stack = Str(required=True, description="name of output stack")
     numZ = Int(required=True, description="Number of z values processed")
+
 
 
 class MipMapDirectories(DefaultSchema):
@@ -59,3 +60,49 @@ class RemapZsParameters(StackTransitionParameters):
 class RemapZsOutput(DefaultSchema):
     zValues = List(Int, required=True)
     output_stack = Str(required=True)
+
+class SwapZsParameters(RenderParameters):
+    source_stack = List(
+        Str,
+        required=True,
+        description="List of source stacks")
+    target_stack = List(
+        Str,
+        required=True,
+        description="List of target stacks")
+    complete_source_stack = Boolean(
+        required=False,
+        default=False,
+        missing=False,
+        description="set source stack state to complete after copying Default=False")
+    complete_target_stack = Boolean(
+        required=False,
+        default=False,
+        missing=False,
+        description="set target stack state to complete after copying Default=False")
+    zValues = List(List(
+        Int,
+        required=True))
+    delete_source_stack = Boolean(
+        required=False,
+        default=False,
+        missing=False,
+        description="Do you want to delete source stack after copying its contents?. Default=False")
+    pool_size = Int(
+        required=False,
+        default=5,
+        missing=5,
+        description="Pool size")
+
+class SwapZsOutput(DefaultSchema):
+    source_stacks = List(
+        Str,
+        required=True,
+        description="List of source stacks that have been successfully swapped")
+    target_stacks = List(
+        Str,
+        required=True,
+        description="List of target stacks that have been successfully swapped")
+    swapped_zvalues = List(List(
+        Int,
+        required=True))

@@ -11,6 +11,8 @@ import copy
 import os
 import json
 import datetime
+import cv2
+from six.moves import urllib
 from argschema import ArgSchemaParser
 from .schemas \
         import MeshLensCorrectionSchema, MeshAndSolveOutputSchema
@@ -129,23 +131,52 @@ def create_montage_qc_dict(args, tilespecs):
     return qcname, j
 
 
-def create_PSLG(tile_width, tile_height):
+def approx_snap_contour(contour, width, height, epsilon=20, snap_dist=5):
+    # approximate contour within epsilon pixels,
+    # so it isn't too fine in the corner
+    # and snap to edges
+    approx = cv2.approxPolyDP(contour, epsilon, True)
+    for i in range(approx.shape[0]):
+        for j in [0, width]:
+            if np.abs(approx[i, 0, 0] - j) <= snap_dist:
+                approx[i, 0, 0] = j
+        for j in [0, height]:
+            if np.abs(approx[i, 0, 1] - j) <= snap_dist:
+                approx[i, 0, 1] = j
+    return approx
+
+
+def create_PSLG(tile_width, tile_height, maskUrl):
     # define a PSLG for triangle
     # http://dzhelil.info/triangle/definitions.html
     # https://www.cs.cmu.edu/~quake/triangle.defs.html#pslg
-    vertices = np.array([
-            [0, 0],
-            [0, tile_height],
-            [tile_width, tile_height],
-            [tile_width, 0]])
-    segments = np.array([
-            [0, 1],
-            [1, 2],
-            [2, 3],
-            [3, 0]])
+    if maskUrl is None:
+        vertices = np.array([
+                [0, 0],
+                [0, tile_height],
+                [tile_width, tile_height],
+                [tile_width, 0]])
+        segments = np.array([
+                [0, 1],
+                [1, 2],
+                [2, 3],
+                [3, 0]])
+    else:
+        mpath = urllib.parse.unquote(
+                    urllib.parse.urlparse(maskUrl).path)
+        im = cv2.imread(mpath, 0)
+        im2, contours, h = cv2.findContours(
+                im, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        approx = approx_snap_contour(contours[0], tile_width, tile_height)
+        vertices = np.array(approx).squeeze()
+        segments = np.zeros((vertices.shape[0], 2))
+        segments[:, 0] = np.arange(vertices.shape[0])
+        segments[:, 1] = segments[:, 0] + 1
+        segments[-1, 1] = 0
     bbox = {}
     bbox['vertices'] = vertices
     bbox['segments'] = segments
+
     return bbox
 
 
@@ -160,8 +191,9 @@ def calculate_mesh(a, bbox, target, get_t=False):
 
 
 def force_vertices_with_npoints(area_par, bbox, coords, npts):
-    fac = 1.05
+    fac = 1.02
     count = 0
+    max_iter = 20
     while True:
         t = calculate_mesh(
                 area_par,
@@ -169,14 +201,16 @@ def force_vertices_with_npoints(area_par, bbox, coords, npts):
                 None,
                 get_t=True)
         pt_count = count_points_near_vertices(t, coords)
+        print(pt_count.min(), area_par, t.npoints)
         if pt_count.min() >= npts:
             break
         area_par *= fac
         count += 1
         if np.mod(count, 2) == 0:
             fac += 0.5
-        if np.mod(count, 20) == 0:
-            e = 'did not meet vertex requirement after 1000 iterations'
+        if np.mod(count, max_iter) == 0:
+            e = ("did not meet vertex requirement "
+                 "after %d iterations" % max_iter)
             raise MeshLensCorrectionException(e)
     return t, area_par
 
@@ -249,47 +283,28 @@ def create_regularization(ncols, ntiles, defaultL, transL, lensL):
 
 
 def create_thinplatespline_tf(
-        render, args,
-        mesh, solution, lens_dof_start):
+        render, args, mesh, solution,
+        lens_dof_start, common_transform,
+        compute_affine=True):
 
-    if args['outfile'] is None:
-        fname = '%s/%s.json' % (
-                args['output_dir'],
-                args['sectionId'])
-    else:
-        fname = args['outfile']
+    dst = np.zeros_like(mesh.points)
+    dst[:, 0] = mesh.points[:, 0] + solution[0][lens_dof_start:]
+    dst[:, 1] = mesh.points[:, 1] + solution[1][lens_dof_start:]
 
-    argvs = ['--computeAffine', 'false']
-    argvs += ['--numberOfDimensions', '2']
-    argvs += ['--outputFile', fname]
-    argvs += ['--numberOfLandmarks', mesh.points.shape[0]]
+    if common_transform is not None:
+        # average affine result
+        dst = common_transform.tform(dst)
 
-    for i in range(mesh.points.shape[0]):
-        argvs += ['%0.6f ' % mesh.points[i, 0]]
-        argvs += ['%0.6f ' % mesh.points[i, 1]]
-    for i in range(mesh.points.shape[0]):
-        argvs += ['%0.6f ' % (
-                mesh.points[i, 0] +
-                solution[0][lens_dof_start + i])]
-        argvs += ['%0.6f ' % (
-                mesh.points[i, 1] +
-                solution[1][lens_dof_start + i])]
-
-    renderapi.client.call_run_ws_client(
-            'org.janelia.render.client.ThinPlateSplineClient',
-            add_args=argvs,
-            renderclient=render,
-            memGB='2G',
-            subprocess_mode='check_call')
-
-    j = json.load(open(fname, 'r'))
-    transform = (
-            renderapi.transform.ThinPlateSplineTransform(
-                dataString=j['dataString']))
+    transform = renderapi.transform.ThinPlateSplineTransform()
+    transform.estimate(mesh.points, dst, computeAffine=compute_affine)
     transform.transformId = (
             args['sectionId'] +
             datetime.datetime.now().strftime("_%Y%m%d%H%M%S"))
     transform.labels = None
+
+    with open(args['outfile'], 'w') as f:
+        json.dump(transform.to_dict(), f, indent=2)
+
     return transform
 
 
@@ -341,7 +356,7 @@ def report_solution(errx, erry, transforms, criteria):
         message += (
               ' %s: [%8.2f,%8.2f] %8.2f +/-%8.2f pixels\n' %
               (v, e.min(), e.max(), e.mean(), e.std()))
-    message += 'dx/dy criteria [ < %0.3f ] +/- [ < %0.3f ]' % \
+    message += 'dx/dy criteria [ < %0.3f ] +/- [ < %0.3f ]]\n' % \
         (criteria['error_mean'], criteria['error_std'])
 
     scale = np.array([tf.scale for tf in transforms])
@@ -452,17 +467,33 @@ def create_A(matches, tilespecs, mesh):
     return A, wts, lens_dof_start
 
 
-def create_transforms(ntiles, solution):
-    transforms = []
+def create_transforms(ntiles, solution, get_common=True):
+    rtransforms = []
     for i in range(ntiles):
-        transforms.append(renderapi.transform.AffineModel(
+        rtransforms.append(renderapi.transform.AffineModel(
                            M00=solution[0][i*3+0],
                            M01=solution[0][i*3+1],
                            B0=solution[0][i*3+2],
                            M10=solution[1][i*3+0],
                            M11=solution[1][i*3+1],
                            B1=solution[1][i*3+2]))
-    return transforms
+
+    if get_common:
+        transforms = []
+        # average without translations
+        common = np.array([t.M for t in rtransforms]).mean(0)
+        common[0, 2] = 0.0
+        common[1, 2] = 0.0
+        for r in rtransforms:
+            transforms.append(renderapi.transform.AffineModel())
+            transforms[-1].M = r.M.dot(np.linalg.inv(common))
+        ctform = renderapi.transform.AffineModel()
+        ctform.M = common
+    else:
+        ctform = None
+        transforms = rtransforms
+
+    return ctform, transforms
 
 
 class MeshAndSolveTransform(ArgSchemaParser):
@@ -471,8 +502,6 @@ class MeshAndSolveTransform(ArgSchemaParser):
 
     def run(self):
         self.render = renderapi.connect(**self.args['render'])
-
-        print(self.args['good_solve'])
 
         self.tilespecs, self.matches = get_tspecs_and_matches(
             self.render,
@@ -483,6 +512,7 @@ class MeshAndSolveTransform(ArgSchemaParser):
 
         self.tile_width = self.tilespecs[0].width
         self.tile_height = self.tilespecs[0].height
+        maskUrl = self.tilespecs[0].ip[0].maskUrl
 
         # condense coordinates
         self.coords = condense_coords(self.matches)
@@ -500,7 +530,8 @@ class MeshAndSolveTransform(ArgSchemaParser):
         # create PSLG
         self.bbox = create_PSLG(
                 self.tile_width,
-                self.tile_height)
+                self.tile_height,
+                maskUrl)
 
         # find delaunay with max vertices
         self.mesh, self.area_triangle_par = \
@@ -541,7 +572,7 @@ class MeshAndSolveTransform(ArgSchemaParser):
                 self.reg,
                 self.x0)
 
-        self.transforms = create_transforms(
+        self.common_transform, self.transforms = create_transforms(
                 len(self.tilespecs), self.solution)
 
         tf_scale, message = report_solution(
@@ -580,7 +611,8 @@ class MeshAndSolveTransform(ArgSchemaParser):
                 self.args,
                 self.mesh,
                 self.solution,
-                self.lens_dof_start)
+                self.lens_dof_start,
+                self.common_transform)
 
         new_stack_with_tf(
                 self.render,

@@ -10,9 +10,6 @@ from test_data import render_params, example_env, render_json_template, TEST_DAT
 from rendermodules.module.render_module import RenderModuleException
 from rendermodules.point_match_optimization.pt_match_optimization import *
 
-logger = renderapi.client.logger
-logger.setLevel(logging.DEBUG)
-
 pt_match_opts_example =  {
     "render": render_params,
     "SIFT_options": {

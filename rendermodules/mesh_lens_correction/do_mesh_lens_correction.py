@@ -1,8 +1,13 @@
 import json
 import renderapi
 import tempfile
+import numpy as np
+import cv2
+import os
+from shutil import copyfile
+import datetime
 
-from ..module.render_module import RenderModule
+from ..module.render_module import RenderModule, RenderModuleException
 
 from .schemas \
         import MeshLensCorrectionSchema, DoMeshLensCorrectionOutputSchema
@@ -10,18 +15,18 @@ from rendermodules.dataimport.generate_EM_tilespecs_from_metafile \
         import GenerateEMTileSpecsModule
 from rendermodules.pointmatch.create_tilepairs \
         import TilePairClientModule
-from rendermodules.mesh_lens_correction.LensPointMatches \
-        import generate_point_matches
 from rendermodules.mesh_lens_correction.MeshAndSolveTransform \
         import MeshAndSolveTransform
 from rendermodules.em_montage_qc.detect_montage_defects \
         import DetectMontageDefectsModule
+from rendermodules.pointmatch.generate_point_matches_opencv \
+        import GeneratePointMatchesOpenCV
 
 example = {
     "render": {
-        "host": "em-131snb1",
+        "host": "em-131db.corp.alleninstitute.org",
         "port": 8080,
-        "owner": "gayathrim",
+        "owner": "danielk",
         "project": "lens_corr",
         "client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts",
         "memGB": "2G"
@@ -39,9 +44,17 @@ example = {
     "metafile": "/allen/programs/celltypes/workgroups/em-connectomics/danielk/em_lens_correction/test_data/_metadata_20180220175645_247488_8R_tape070A_05_20180220175645_reference_0_.json",
     "match_collection": "raw_lens_matches",
     "nfeature_limit": 20000,
-    "output_dir": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch",
-    "outfile": "lens_out.json"
+    "output_dir": "/allen/programs/celltypes/workgroups/em-connectomics/danielk/tmp",
+    "outfile": "lens_out.json",
+    "output_json": "./mesh_lens_output.json",
+    "mask_coords": [[0, 100], [100, 0], [3840, 0], [3840, 3840], [0, 3840]],
+    "mask_dir": "/allen/programs/celltypes/workgroups/em-connectomics/danielk/masks_for_stacks"
 }
+
+
+class DoMeshException(RenderModuleException):
+    # placeholder
+    pass
 
 
 def delete_matches_if_exist(render, owner, collection, sectionId):
@@ -59,6 +72,44 @@ def delete_matches_if_exist(render, owner, collection, sectionId):
                     sectionId,
                     sectionId,
                     render=render)
+
+
+def make_mask_from_coords(w, h, coords):
+    cont = np.array(coords).astype('int32')
+    cont = np.reshape(cont, (cont.shape[0], 1, cont.shape[1]))
+    mask = np.zeros((h, w)).astype('uint8')
+    mask = cv2.fillConvexPoly(mask, cont, color=255)
+    return mask
+
+
+def make_mask(mask_dir, w, h, coords, mask_file=None, basename=None):
+
+    def get_new_filename(fname):
+        noext, fext0 = os.path.splitext(fname)
+        fext = str(fext0)
+        while os.path.exists(noext + fext):
+            fext = '%s' % datetime.datetime.now().strftime("_%Y%m%d%H%M%S%f")
+            fext += fext0
+        return noext + fext
+
+    maskUrl = None
+    if mask_file is not None:
+        # copy the provided file directly over
+        maskUrl = get_new_filename(
+                      os.path.join(
+                          mask_dir,
+                          os.path.basename(mask_file)))
+        copyfile(mask_file, maskUrl)
+
+    if (maskUrl is None) & (coords is not None):
+        mask = make_mask_from_coords(w, h, coords)
+        if basename is None:
+            basename = 'lens_corr_mask.png'
+        maskUrl = get_new_filename(os.path.join(mask_dir, basename))
+        if not cv2.imwrite(maskUrl, mask):
+            raise IOError('cv2.imwrite() could not write to %s' % mask_dir)
+
+    return maskUrl
 
 
 class MeshLensCorrection(RenderModule):
@@ -90,6 +141,7 @@ class MeshLensCorrection(RenderModule):
         ex['output_stack'] = self.args['input_stack']
         ex['z'] = self.args['z_index']
         ex['sectionId'] = self.args['sectionId']
+        ex['maskUrl'] = self.maskUrl
         return ex
 
     def generate_tilepair_example(self):
@@ -129,6 +181,14 @@ class MeshLensCorrection(RenderModule):
         ex['maxZ'] = self.args['z_index']
         return ex
 
+    def get_pm_args(self):
+        args_for_pm = dict(self.args)
+        args_for_pm['render'] = self.args['render']
+        args_for_pm['pairJson'] = self.args['pairJson']
+        args_for_pm['input_stack'] = self.args['input_stack']
+        args_for_pm['match_collection'] = self.args['match_collection']
+        return args_for_pm
+
     def run(self):
         self.args['sectionId'] = self.get_sectionId_from_metafile(
                 self.args['metafile'])
@@ -147,6 +207,21 @@ class MeshLensCorrection(RenderModule):
         out_file.close()
 
         args_for_input = dict(self.args)
+
+        with open(self.args['metafile'], 'r') as f:
+                metafile = json.load(f)
+        self.maskUrl = make_mask(
+                self.args['mask_dir'],
+                metafile[0]['metadata']['camera_info']['width'],
+                metafile[0]['metadata']['camera_info']['height'],
+                self.args['mask_coords'],
+                mask_file=self.args['mask_file'],
+                basename=os.path.basename(self.args['metafile']) + '.png')
+
+        # argschema doesn't like the NumpyArray after processing it once
+        # we don't need it after mask creation
+        self.args['mask_coords'] = None
+        args_for_input['mask_coords'] = None
 
         # create a stack with the lens correction tiles
         ts_example = self.generate_ts_example()
@@ -173,14 +248,11 @@ class MeshLensCorrection(RenderModule):
                     self.args['match_collection'],
                     self.args['sectionId'])
 
-            # generate point matches
-            generate_point_matches(self.render,
-                                   self.args['pairJson'],
-                                   self.args['input_stack'],
-                                   self.args['match_collection'],
-                                   self.args['matchMax'],
-                                   nfeature_limit=self.args['nfeature_limit'],
-                                   logger=self.logger)
+            args_for_pm = self.get_pm_args()
+            pmgen = GeneratePointMatchesOpenCV(
+                    input_data=args_for_pm,
+                    args=['--output_json', out_file.name])
+            pmgen.run()
 
         self.logger.setLevel(self.args['log_level'])
 
@@ -190,16 +262,18 @@ class MeshLensCorrection(RenderModule):
         # find the lens correction, write out to new stack
         meshclass.run()
 
-        # run montage qc on the new stack
-        qc_example = self.get_qc_example()
-        qc_mod = DetectMontageDefectsModule(
-                input_data=qc_example,
-                args=['--output_json', out_file.name])
-        qc_mod.run()
+        if self.args['do_montage_QC']:
+            # run montage qc on the new stack
+            qc_example = self.get_qc_example()
+            qc_mod = DetectMontageDefectsModule(
+                    input_data=qc_example,
+                    args=['--output_json', out_file.name])
+            qc_mod.run()
 
         try:
             self.output(
                     {'output_json': meshclass.args['outfile'],
+                     'maskUrl': self.maskUrl,
                      'qc_json': out_file.name})
         except AttributeError as e:
             self.logger.error(e)

@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 import renderapi
+import os
+import pathlib
 from rendermodules.module.render_module import StackTransitionModule
-from rendermodules.lens_correction.schemas import ApplyLensCorrectionOutput, ApplyLensCorrectionParameters
+from rendermodules.lens_correction.schemas import \
+        ApplyLensCorrectionOutput, ApplyLensCorrectionParameters
+from rendermodules.dataimport.create_mipmaps import create_mipmaps
 
 example_input = {
     "render": {
@@ -75,6 +79,23 @@ class ApplyLensCorrection(StackTransitionModule):
         lc_tform.transformId = refId
         ref_lc = renderapi.transform.ReferenceTransform(
             refId=lc_tform.transformId)
+
+        tspecs = renderapi.tilespec.get_tile_specs_from_z(
+            self.input_stack, self.zValues[0], render=r)
+        levels = [int(l) for l in tspecs[0].ip.levels]
+        # make mask mipmaps
+        mask_mm_list = {}
+        if self.args['maskUrl'] is not None:
+            root, ext = os.path.splitext(self.args['maskUrl'])
+            mask_mm_list = create_mipmaps(
+                self.args['maskUrl'],
+                outputDirectory=os.path.dirname(self.args['maskUrl']),
+                mipmaplevels=levels,
+                outputformat=ext.split('.')[-1],
+                convertTo8bit=False,
+                force_redo=True,
+                block_func="min")
+
         # new tile specs for each z selected
         new_tspecs = []
         for z in self.zValues:
@@ -83,6 +104,8 @@ class ApplyLensCorrection(StackTransitionModule):
 
             for ts in tspecs:
                 ts.tforms = [ref_lc] + ts.tforms
+                for lvl, maskUrl in mask_mm_list.items():
+                    ts.ip[lvl].maskUrl = pathlib.Path(maskUrl).as_uri()
                 new_tspecs.append(ts)
 
         renderapi.stack.create_stack(outputStack, render=r)

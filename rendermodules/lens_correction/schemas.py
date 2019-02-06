@@ -113,6 +113,12 @@ class ApplyLensCorrectionParameters(StackTransitionParameters):
         allow_none=True, required=True,
         description=('Reference ID to use when uploading transform to '
                      'render database (Not Implemented)'))
+    maskUrl = InputFile(
+            required=False,
+            default=None,
+            missing=None,
+            description='path to level 0 maskUrl to apply to stack'
+            )
 
 
 class ApplyLensCorrectionOutput(DefaultSchema):

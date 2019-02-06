@@ -106,7 +106,14 @@ MATERIALIZE_BOX_JSON = render_json_template(
     example_env, 'materialize_sections_test_data.json',
     test_data_root=TEST_DATA_ROOT)
 
+# Swap Zs json files
+swap_z_tspecs1 = render_json_template(example_env, 'swap_z_tspecs1.json')
 
+swap_z_tspecs2 = render_json_template(example_env, 'swap_z_tspecs2.json')
+
+swap_pt_matches1 = render_json_template(example_env, 'swap_pt_matches1.json')
+
+swap_pt_matches2 = render_json_template(example_env, 'swap_pt_matches2.json')
 
 RAW_STACK_INPUT_JSON = render_json_template(example_env, 'raw_tile_specs_for_em_montage.json',
                                             test_data_root=TEST_DATA_ROOT)
@@ -182,6 +189,7 @@ ROUGH_MAPPED_PT_MATCH_COLLECTION = render_json_template(example_env, 'rough_alig
 
 rough_project = "rough_align_test"
 
+ROUGH_MASK_DIR = '/allen/aibs/pipeline/image_processing/volume_assembly/em_modules_test_data/rough_align_test_data/masks'
 
 test_rough_parameters = render_json_template(example_env,
     'run_rough_job_for_chunk_template.json',
@@ -192,6 +200,17 @@ test_rough_parameters = render_json_template(example_env,
     render_client_scripts = client_script_location,
     em_solver_bin = MONTAGE_SOLVER_BIN,
     scratch_dir = tempfile.mkdtemp(),
+    firstz = 1020,
+    lastz = 1022
+    )
+
+test_rough_parameters_python = render_json_template(example_env,
+    'rough_align_python_input.json',
+    render_host = render_host,
+    render_port = render_port,
+    render_project = rough_project,
+    render_owner = render_test_owner,
+    render_client_scripts = client_script_location,
     firstz = 1020,
     lastz = 1022
     )
@@ -248,4 +267,9 @@ solver_montage_parameters = render_json_template(example_env, 'solver_montage_te
                                                  render_client_scripts=client_script_location,
                                                  solver_output_dir=tempfile.mkdtemp())
 
-                                                                                                                                                                                                                                                                                                                             
+FUSION_TILESPEC_JSON = render_json_template(
+    example_env, 'fusion_test_tilespecs_ref.json',
+    test_data_root=TEST_DATA_ROOT)
+
+FUSION_TRANSFORM_JSON = render_json_template(
+    example_env, 'fusion_test_tform_ref.json', test_data_root=TEST_DATA_ROOT)
