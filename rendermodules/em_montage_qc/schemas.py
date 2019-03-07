@@ -79,3 +79,43 @@ class DetectMontageDefectsParametersOutput(argschema.schemas.DefaultSchema):
         dtype='object',
         required=True,
         description='An array of (x,y) positions of seams for each section with seams')
+
+
+
+class RoughQCSchema(RenderParameters):
+    input_downsampled_stack = Str(
+        required=True,
+        description="Pre rough aligned downsampled stack")
+    rough_aligned_stack = Str(
+        required=True,
+        description="Rough aligned stack name")
+    minZ = Int(
+        required=True,
+        description="min z")
+    maxZ = Int(
+        required=True,
+        description="max z")
+    pool_size = Int(
+        required=False,
+        default=10,
+        missing=10,
+        description="Pool size")
+    output_dir = Str(
+        required=False,
+        default=None,
+        missing=None,
+        description="temp filename to save fig")
+    out_file_format = Int(
+        required=False,
+        default=0,
+        description="Do you want the output to be bokeh plots in html (option = 1) or pdf files for plots (option = 0, default)")
+    
+
+class RoughQCOutputSchema(argschema.schemas.DefaultSchema):
+    iou_plot = OutputFile(
+        required=True,
+        description="Pdf/html file showing IOU plots")
+    distortion_plot = OutputFile(
+        required=True,
+        description="Pdf/html file with distortion plots")
+    
