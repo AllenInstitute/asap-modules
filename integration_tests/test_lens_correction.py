@@ -112,7 +112,6 @@ def test_points(example_tform_dict):
     return test_points
 
 
-@pytest.fixture(scope='module')
 def compute_lc_norm_and_max(test_example_tform, test_new_tform):
     tform_norm = (
             np.linalg.norm(test_new_tform - test_example_tform) /

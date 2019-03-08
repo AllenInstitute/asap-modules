@@ -16,3 +16,4 @@ six
 scikit-image
 shapely
 triangle
+imageio
