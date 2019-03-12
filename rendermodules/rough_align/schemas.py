@@ -2,8 +2,8 @@ from argschema import InputDir
 import marshmallow as mm
 from argschema.fields import Bool, Float, Int, Nested, Str, InputFile, List
 from argschema.schemas import DefaultSchema
-from ..module.schemas import RenderParameters
-from marshmallow import post_load, ValidationError
+from ..module.schemas import RenderParameters, OutputStackParameters
+from marshmallow import post_load, ValidationError, pre_load
 import argschema
 
 
@@ -517,3 +517,41 @@ class ApplyRoughAlignmentOutputParameters(DefaultSchema):
             description="list of z values that were applied to")
     output_stack = argschema.fields.Str(
             description="stack where applied transforms were set")
+
+
+class DownsampleMaskHandlerSchema(RenderParameters):
+    stack = argschema.fields.Str(
+        required=True,
+        description="stack that is read and modified with masks")
+    close_stack = argschema.fields.Bool(
+        require=True,
+        default=True,
+        missing=True,
+        description="set COMPLETE or not")
+    mask_dir = argschema.fields.InputDir(
+        required=True,
+        missing=None,
+        default=None,
+        description=("directory containing masks, named <z>_*.png where"
+                     "<z> is a z value in input_stack and may be specified"
+                     "in z_apply"))
+    collection = argschema.fields.Str(
+        required=True,
+        missing=None,
+        default=None,
+        description=("name of collection to be filtered by mask, or reset"
+                     "can be None for no operation"))
+    zMask = argschema.fields.List(
+        argschema.fields.Int,
+        required=True,
+        missing=None,
+        default=None,
+        cli_as_single_argument=True,
+        description=("z values for which the masks will be set"))
+    zReset = argschema.fields.List(
+        argschema.fields.Int,
+        required=True,
+        missing=None,
+        default=None,
+        cli_as_single_argument=True,
+        description=("z values for which the masks will be reset"))
