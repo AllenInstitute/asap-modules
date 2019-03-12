@@ -2,7 +2,7 @@ import argschema
 from marshmallow import post_load
 from ..module.schemas import (RenderParameters, ZValueParameters,
                               ProcessPoolParameters)
-from argschema.fields import Bool, Int, Str, InputDir
+from argschema.fields import Bool, Int, Str, InputDir, OutputFile
 
 
 class DetectMontageDefectsParameters(
@@ -86,7 +86,7 @@ class RoughQCSchema(RenderParameters):
     input_downsampled_stack = Str(
         required=True,
         description="Pre rough aligned downsampled stack")
-    rough_aligned_stack = Str(
+    output_downsampled_stack = Str(
         required=True,
         description="Rough aligned stack name")
     minZ = Int(

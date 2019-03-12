@@ -17,3 +17,5 @@ scikit-image
 shapely
 triangle
 imageio
+seaborn
+mpld3

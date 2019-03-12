@@ -1,0 +1,365 @@
+[
+    {
+        "minIntensity": 0.0, 
+        "layout": {
+            "sectionId": "9831.0", 
+            "imageRow": 0, 
+            "imageCol": 90, 
+            "stageX": -1360764.0, 
+            "stageY": -256340.0, 
+            "camera": "44500428", 
+            "temca": "temca4", 
+            "rotation": 185.0
+        }, 
+        "width": 3326.0, 
+        "height": 2848.0, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_scapes/120214.0.png"
+            }
+        }, 
+        "tileId": "20180611205904634_17797_1R_Tape149_TEMCA4_03_000214_0_90_0.120214.0", 
+        "maxIntensity": 255.0, 
+        "z": 120214.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "0.9623253760 -0.0065383110 0.0137276564 0.9613564435 -44.8129915062 39.0664358758", 
+                    "type": "leaf"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 0.0, 
+        "layout": {
+            "sectionId": "9832.0", 
+            "imageRow": 0, 
+            "imageCol": 90, 
+            "stageX": -1342374.0, 
+            "stageY": -290056.0, 
+            "camera": "44500428", 
+            "temca": "temca4", 
+            "rotation": 185.0
+        }, 
+        "width": 3320.0, 
+        "height": 2843.0, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_scapes/120215.0.png"
+            }
+        }, 
+        "tileId": "20180611221620624_17797_1R_Tape149_TEMCA4_04_000215_0_90_0.120215.0", 
+        "maxIntensity": 255.0, 
+        "z": 120215.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "0.9938413915 0.0020771767 -0.0085326728 0.9614755252 -62.4027569166 -7.5167606123", 
+                    "type": "leaf"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 0.0, 
+        "layout": {
+            "sectionId": "9833.0", 
+            "imageRow": 0, 
+            "imageCol": 90, 
+            "stageX": -1285609.0, 
+            "stageY": -287488.0, 
+            "camera": "44500428", 
+            "temca": "temca4", 
+            "rotation": 185.0
+        }, 
+        "width": 3325.0, 
+        "height": 2845.0, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_scapes/120216.0.png"
+            }
+        }, 
+        "tileId": "20180611225202325_17797_1R_Tape149_TEMCA4_04_000216_0_90_0.120216.0", 
+        "maxIntensity": 255.0, 
+        "z": 120216.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "0.9496556046 -0.0024060155 -0.0017212314 0.9623134573 24.7633297171 7.5303441583", 
+                    "type": "leaf"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 0.0, 
+        "layout": {
+            "sectionId": "9834.0", 
+            "imageRow": 0, 
+            "imageCol": 90, 
+            "stageX": -1152911.0, 
+            "stageY": -240724.0, 
+            "camera": "44500428", 
+            "temca": "temca4", 
+            "rotation": 185.0
+        }, 
+        "width": 3237.0, 
+        "height": 2773.0, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_scapes/120217.0.png"
+            }
+        }, 
+        "tileId": "20180611232750735_17797_1R_Tape149_TEMCA4_04_000217_0_90_0.120217.0", 
+        "maxIntensity": 255.0, 
+        "z": 120217.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "0.9572148501 -0.0236576580 0.0139663376 0.9611079852 -25.6003459402 15.5175496765", 
+                    "type": "leaf"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 0.0, 
+        "layout": {
+            "sectionId": "9835.0", 
+            "imageRow": 0, 
+            "imageCol": 90, 
+            "stageX": -1308924.0, 
+            "stageY": -235495.0, 
+            "camera": "44500428", 
+            "temca": "temca4", 
+            "rotation": 185.0
+        }, 
+        "width": 3270.0, 
+        "height": 2808.0, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_scapes/120218.0.png"
+            }
+        }, 
+        "tileId": "20180612000330291_17797_1R_Tape149_TEMCA4_04_000218_0_90_0.120218.0", 
+        "maxIntensity": 255.0, 
+        "z": 120218.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "0.9431125168 -0.0187705100 0.0251661493 0.9590565642 21.6046181435 1.9002953991", 
+                    "type": "leaf"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 0.0, 
+        "layout": {
+            "sectionId": "9836.0", 
+            "imageRow": 0, 
+            "imageCol": 90, 
+            "stageX": -1337686.0, 
+            "stageY": -292738.0, 
+            "camera": "44500428", 
+            "temca": "temca4", 
+            "rotation": 185.0
+        }, 
+        "width": 3298.0, 
+        "height": 2840.0, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_scapes/120219.0.png"
+            }
+        }, 
+        "tileId": "20180612003724653_17797_1R_Tape149_TEMCA4_04_000219_0_90_0.120219.0", 
+        "maxIntensity": 255.0, 
+        "z": 120219.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "0.9341987100 0.0074957384 0.0070603534 0.9569329088 18.3231084652 -0.0264119539", 
+                    "type": "leaf"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 0.0, 
+        "layout": {
+            "sectionId": "9837.0", 
+            "imageRow": 0, 
+            "imageCol": 95, 
+            "stageX": -1321648.0, 
+            "stageY": -335997.0, 
+            "camera": "44500428", 
+            "temca": "temca4", 
+            "rotation": 185.0
+        }, 
+        "width": 3479.0, 
+        "height": 2847.0, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_scapes/120220.0.png"
+            }
+        }, 
+        "tileId": "20180612011121203_17797_1R_Tape149_TEMCA4_04_000220_0_95_0.120220.0", 
+        "maxIntensity": 255.0, 
+        "z": 120220.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "1.0046833552 0.0879085726 -0.1074239493 0.9592279698 43.6876884761 -151.1943380556", 
+                    "type": "leaf"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 0.0, 
+        "layout": {
+            "sectionId": "9838.0", 
+            "imageRow": 0, 
+            "imageCol": 90, 
+            "stageX": -1350696.0, 
+            "stageY": -277044.0, 
+            "camera": "44500428", 
+            "temca": "temca4", 
+            "rotation": 185.0
+        }, 
+        "width": 3313.0, 
+        "height": 2812.0, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_scapes/120221.0.png"
+            }
+        }, 
+        "tileId": "20180612014643883_17797_1R_Tape149_TEMCA4_04_000221_0_90_0.120221.0", 
+        "maxIntensity": 255.0, 
+        "z": 120221.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "0.9359790515 -0.0083523490 0.0044577911 0.9590020782 65.6597078880 15.1745014566", 
+                    "type": "leaf"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 0.0, 
+        "layout": {
+            "sectionId": "9839.0", 
+            "imageRow": 0, 
+            "imageCol": 90, 
+            "stageX": -1324657.0, 
+            "stageY": -248458.0, 
+            "camera": "44500428", 
+            "temca": "temca4", 
+            "rotation": 185.0
+        }, 
+        "width": 3280.0, 
+        "height": 2779.0, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_scapes/120222.0.png"
+            }
+        }, 
+        "tileId": "20180612022240554_17797_1R_Tape149_TEMCA4_04_000222_0_90_0.120222.0", 
+        "maxIntensity": 255.0, 
+        "z": 120222.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "0.9610778285 -0.0236615955 0.0161347022 0.9586781128 -45.1719967638 47.1324107441", 
+                    "type": "leaf"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 0.0, 
+        "layout": {
+            "sectionId": "9840.0", 
+            "imageRow": 0, 
+            "imageCol": 90, 
+            "stageX": -1340106.0, 
+            "stageY": -256269.0, 
+            "camera": "44500428", 
+            "temca": "temca4", 
+            "rotation": 185.0
+        }, 
+        "width": 3317.0, 
+        "height": 2815.0, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_scapes/120223.0.png"
+            }
+        }, 
+        "tileId": "20180612025629482_17797_1R_Tape149_TEMCA4_04_000223_0_90_0.120223.0", 
+        "maxIntensity": 255.0, 
+        "z": 120223.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "0.9455833884 -0.0089350460 0.0174430389 0.9573890776 -19.4736330040 41.7098663854", 
+                    "type": "leaf"
+                }
+            ], 
+            "type": "list"
+        }
+    }, 
+    {
+        "minIntensity": 0.0, 
+        "layout": {
+            "sectionId": "9841.0", 
+            "imageRow": 0, 
+            "imageCol": 90, 
+            "stageX": -1397314.0, 
+            "stageY": -292747.0, 
+            "camera": "44500428", 
+            "temca": "temca4", 
+            "rotation": 185.0
+        }, 
+        "width": 3351.0, 
+        "height": 2846.0, 
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "file:{{test_data_root}}/em_modules_test_data/rough_align_test_data/montage_scapes/120224.0.png"
+            }
+        }, 
+        "tileId": "20180612033235730_17797_1R_Tape149_TEMCA4_04_000224_0_90_0.120224.0", 
+        "maxIntensity": 255.0, 
+        "z": 120224.0, 
+        "transforms": {
+            "specList": [
+                {
+                    "className": "mpicbg.trakem2.transform.AffineModel2D", 
+                    "dataString": "0.9562726596 0.0075163008 -0.0016717190 0.9565206734 23.4232451995 -9.2938447668", 
+                    "type": "leaf"
+                }
+            ], 
+            "type": "list"
+        }
+    }
+]

@@ -17,13 +17,14 @@ from matplotlib.backends.backend_pdf import PdfPages
 from bokeh.layouts import gridplot
 from bokeh.io import show, save
 from bokeh.plotting import figure, output_file
-from bokeh.models import ColumnDataSource, Plot, LinearColorMapper, BasicTicker, ColorBar, LinearAxis
+from bokeh.models import ColumnDataSource, Plot, LinearColorMapper, ColorBar, LinearAxis
 from bokeh.models.annotations import Title
 from bokeh.models.glyphs import Patches, Patch, Rect
 from bokeh.models.widgets import Tabs, Panel
 from bokeh.palettes import Plasma256, Viridis256
 
 from ..module.render_module import RenderModule, RenderModuleException
+from rendermodules.em_montage_qc.schemas import RoughQCSchema, RoughQCOutputSchema
 
 example = {
     "render":{
@@ -34,7 +35,7 @@ example = {
         "client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts"
     },
     "input_downsampled_stack": "em_2d_montage_solved_py_0_01_mapped",
-    "rough_aligned_stack": "em_rough_align_solved_downsample_zs27060_ze27586",
+    "output_downsampled_stack": "em_rough_align_solved_downsample_zs27060_ze27586",
     "minZ": 27060,
     "maxZ": 27164,
     "pool_size": 20,
@@ -55,30 +56,6 @@ def get_poly(stack, render, z):
         outpolys.append(Polygon(bbox))
     return cascaded_union(outpolys)
 
-
-def plot_poly1(p, face, edge, alpha):
-    fig, ax = plt.subplots()
-    (x1, xh) = ax.get_xlim()
-    (y1, yh) = ax.get_ylim()
-
-    if isinstance(p, Polygon):
-        p = [p]
-    
-    for ip in p:
-        ax.add_patch(PolygonPatch(ip, facecolor=face, edgecolor=edge, alpha=alpha))
-        bounds = ip.bounds
-        
-        x1 = bounds[0] if bounds[0] < x1 else x1
-        y1 = bounds[1] if bounds[1] < y1 else y1
-        xh = bounds[2] if bounds[2] > xh else xh
-        yh = bounds[3] if bounds[3] > yh else yh
-    xr = xh-x1
-    yr = yh-y1
-
-    ax.set_xlim(x1-0.02*xr, xh+0.02*xr)
-    ax.set_ylim(y1-0.02*yr, yh+0.02*yr)
-    ax.set_aspect('equal')
-    return ax
 
 def plot_poly(axis, p, face, edge, alpha):
     (x1, xh) = axis.get_xlim()
@@ -411,10 +388,11 @@ def generate_pdf_plots(ious, zrange, out_dir, pre_polys, post_polys, dio, doi, d
 
 class RoughAlignmentQC(RenderModule):
     default_schema = RoughQCSchema
+    default_output_schema = RoughQCOutputSchema
 
     def run(self):
         zvalues1 = self.render.run(renderapi.stack.get_z_values_for_stack,
-                                self.args['rough_aligned_stack'])
+                                self.args['output_downsampled_stack'])
         zrange = range(self.args['minZ'], self.args['maxZ']+1)
         zvalues = list(set(zvalues1).intersection(set(zrange)))
         zvalues.sort()
@@ -422,7 +400,7 @@ class RoughAlignmentQC(RenderModule):
             raise RenderModuleException('No valid zvalues found in stack for given range {} - {}'.format(self.args['minZ'], self.args['maxZ']))
 
         # get the boundary polygon for each section
-        mypartial1 = partial(get_poly, self.args['rough_aligned_stack'], self.render)
+        mypartial1 = partial(get_poly, self.args['output_downsampled_stack'], self.render)
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
             boundary_polygons = pool.map(mypartial1, zvalues)
 
