@@ -32,6 +32,11 @@ class ApplyRoughAlignmentTransformParameters(RenderParameters):
         default=False,
         missing=False,
         metadata={'description':'map the montage Z indices to the rough alignment indices (default - False)'})
+    remap_section_ids = mm.fields.Boolean(
+        required=False,
+        default=False,
+        missing=False,
+        metadata={'description':'map section ids as well with the new z mapping. Default = False'})
     #map_z_start = mm.fields.Int(
     #    required=False,
     #    default=-1,
@@ -85,6 +90,9 @@ class ApplyRoughAlignmentTransformParameters(RenderParameters):
                 raise ValidationError("new_z list count does not match with old_z list count")
         else:
             data['new_z'] = data['old_z']
+        
+        if data['map_z'] is False:
+            data['remap_section_ids'] = False
 
 
 class LowresStackParameters(DefaultSchema):

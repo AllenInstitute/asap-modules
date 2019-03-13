@@ -51,6 +51,7 @@ example = {
     "tilespec_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch",
     "map_z": "False",
     "new_z": [251, 252, 253],
+    "remap_section_ids": "False",
     "consolidate_transforms": "True",
     "old_z": [1020, 1021, 1022],
     "scale": 0.1,
@@ -70,7 +71,8 @@ def apply_rough_alignment(render,
                           scale,
                           Z,
                           apply_scale=False,
-                          consolidateTransforms=True):
+                          consolidateTransforms=True,
+                          remap_section_ids=False):
     z = Z[0] # z value from the montage stack - to be mapped to the newz values in lowres stack
     newz = Z[1] # z value in the lowres stack for this montage
     
@@ -142,7 +144,9 @@ def apply_rough_alignment(render,
                 t.tforms = newt
             t.z = newz
             #t.z = z
-            t.layout.sectionId = "%s.0"%str(int(newz))
+            if remap_section_ids:
+                t.layout.sectionId = "%s.0"%str(int(newz))
+
         
         renderapi.client.import_tilespecs(
             output_stack, highres_ts1,
@@ -174,7 +178,8 @@ class ApplyRoughAlignmentTransform(RenderModule):
                         self.args['tilespec_directory'],
                         self.args['scale'],
                         apply_scale=self.args['apply_scale'],
-                        consolidateTransforms=self.args['consolidate_transforms'])
+                        consolidateTransforms=self.args['consolidate_transforms'],
+                        remap_section_ids=self.args['remap_section_ids'])
 
         # Create the output stack if it doesn't exist
         if self.args['output_stack'] not in self.render.run(renderapi.render.get_stacks_by_owner_project):
