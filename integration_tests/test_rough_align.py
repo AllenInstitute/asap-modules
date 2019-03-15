@@ -329,7 +329,7 @@ def test_do_mapped_rough_alignment_python(render,
         tmpdir_factory, 
         output_lowres_stack=None):
     if output_lowres_stack == None:
-        output_lowres_stack = '{}_mapped_Rough'.format(montage_z_mapped_stack)
+        output_lowres_stack = '{}_mapped_Rough_python'.format(montage_z_mapped_stack)
 
     output_directory = str(tmpdir_factory.mktemp('output_json'))
 
@@ -378,6 +378,7 @@ def test_do_mapped_rough_alignment_python(render,
 
     yield output_lowres_stack
     renderapi.stack.delete_stack(output_lowres_stack, render=render)
+
 
 @pytest.fixture(scope='module')
 def test_do_rough_alignment(render, montage_scape_stack, rough_point_match_collection, tmpdir_factory, output_lowres_stack=None):
