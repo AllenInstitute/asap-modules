@@ -640,6 +640,7 @@ def test_apply_rough_alignment_with_masks(render, montage_stack, test_do_rough_a
              ex['output_stack'], render=render))
          assert(ntiles == ntiles_montage - 3)
          renderapi.stack.delete_stack(ex['lowres_stack'], render=render)
+         renderapi.stack.delete_stack(ex['output_stack'], render=render)
 
      # modify the input stack
      renderapi.stack.clone_stack(orig_lowres, ex['lowres_stack'], render=render)
@@ -656,6 +657,7 @@ def test_apply_rough_alignment_with_masks(render, montage_stack, test_do_rough_a
      assert lrs[0].ip['0']['maskUrl'] is None
      assert lrs[1].ip['0']['maskUrl'] is not None
      assert lrs[2].ip['0']['maskUrl'] is None
+     renderapi.stack.delete_stack(ex['output_stack'], render=render)
      #renderapi.stack.delete_stack(ex['lowres_stack'], render=render)
 
      # read the masks from the lowres stack (just modified above)
@@ -665,7 +667,7 @@ def test_apply_rough_alignment_with_masks(render, montage_stack, test_do_rough_a
          ex['output_stack'], render=render))
      assert(ntiles == ntiles_montage - 3)
      renderapi.stack.delete_stack(ex['lowres_stack'], render=render)
-
+  
      # make multiple matches for one tileId
      mpath = urllib.parse.unquote(
                  urllib.parse.urlparse(

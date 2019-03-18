@@ -6,11 +6,12 @@ from test_data import (
         render_params)
 
 from rendermodules.rough_align.downsample_mask_handler import (
-        DownsampleMaskHandler, points_in_mask)
+        DownsampleMaskHandler, points_in_mask, polygon_list_from_mask)
 from rendermodules.module.render_module import \
         RenderModuleException
 import pytest
 import numpy as np
+from shapely.geometry import Polygon, Point
 
 DS_MASK_TEST_PATH = os.path.join(
         TEST_DATA_ROOT,
@@ -94,6 +95,51 @@ def matches_are_filtered(render, collection):
     return ids
 
 
+def test_mask_polygons():
+    mask1 = np.zeros((100, 100)).astype('uint8')
+    mask2 = np.zeros((100, 100)).astype('uint8')
+    mask1[40:60, 40:60] = 255
+    mask2[0:10, 20:50] = 255
+    polys = polygon_list_from_mask(mask1 + mask2)
+    assert len(polys) == 2
+
+    # flip the axes order to be (col, row), i.e. (x, y)
+    m1mnmx = np.hstack((
+        np.argwhere(mask1 == 255).min(axis=0)[::-1],
+        np.argwhere(mask1 == 255).max(axis=0)[::-1]))
+    m2mnmx = np.hstack((
+        np.argwhere(mask2 == 255).min(axis=0)[::-1],
+        np.argwhere(mask2 == 255).max(axis=0)[::-1]))
+
+    def check_matching(polys, m1mnmx, m2mnnx):
+        # check that the polygons match up 1-to-1 with the input
+        match = [-1] * len(polys)
+        for i in range(len(polys)):
+            pmnmx = np.hstack((
+                np.array(polys[i].boundary.xy).min(axis=1).astype('int'),
+                np.array(polys[i].boundary.xy).max(axis=1).astype('int')))
+            if np.all(np.isclose(pmnmx, m1mnmx)):
+                match[i] = 1
+            if np.all(np.isclose(pmnmx, m2mnmx)):
+                match[i] = 2
+        assert (match == [1, 2]) | (match == [2, 1])
+
+    check_matching(polys, m1mnmx, m2mnmx)
+
+    # give a transform
+    B0 = 10
+    B1 = -20
+    tf = renderapi.transform.AffineModel(
+            B0=B0,
+            B1=B1)
+    polys = polygon_list_from_mask(mask1 + mask2, transforms=[tf])
+    m1mnmx[[0, 2]] += B0
+    m1mnmx[[1, 3]] += B1
+    m2mnmx[[0, 2]] += B0
+    m2mnmx[[1, 3]] += B1
+    check_matching(polys, m1mnmx, m2mnmx)
+
+
 def test_points_in_mask():
     mask = np.zeros((1000, 1000)).astype('uint8')
     # render masks areas where mask = 0
@@ -109,8 +155,8 @@ def test_points_in_mask():
     # all should be weight=0 (excluded)
     w0pts = np.random.rand(2, 100)
     w0pts[0, :] *= 1000
-    w0pts[1, :] *= 500
-    w0pts[1, :] += 500
+    w0pts[1, :] *= 400
+    w0pts[1, :] += 510
     w0 = points_in_mask(mask, w0pts.tolist())
     assert np.all(np.isclose(w0, 0.0))
 
