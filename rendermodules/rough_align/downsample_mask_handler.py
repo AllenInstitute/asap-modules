@@ -167,8 +167,6 @@ class DownsampleMaskHandler(RenderModule):
             tspec = self.get_tilespec(z)
             if tspec:
                 tspecs.append(tspec)
-                if tspec:
-                    tspecs.append(tspec)
             groups = [t.layout.sectionId for t in tspecs]
             matches = []
             for g in groups:
