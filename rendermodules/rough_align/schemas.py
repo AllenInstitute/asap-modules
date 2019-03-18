@@ -555,3 +555,9 @@ class DownsampleMaskHandlerSchema(RenderParameters):
         default=None,
         cli_as_single_argument=True,
         description=("z values for which the masks will be reset"))
+    mask_exts = List(
+        Str,
+        required=False,
+        default=['png', 'tif'],
+        description="what kind of mask files to recognize")
+

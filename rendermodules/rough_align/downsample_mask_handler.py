@@ -118,7 +118,7 @@ class DownsampleMaskHandler(RenderModule):
 
         return tspecs[0]
 
-    def add_mask_to_tilespec(self, z):
+    def add_mask_to_tilespec(self, z, exts):
         tspec = self.get_tilespec(z)
         if not tspec:
             return tspec
@@ -127,8 +127,12 @@ class DownsampleMaskHandler(RenderModule):
             raise RenderModuleException(
                     "Tilespec already has a mask for z = %d" % (z))
 
-        fnames = glob.glob(os.path.join(
-            self.args['mask_dir'], '%d_*.png' % z))
+        fnames = []
+        for ext in exts:
+            fnames += glob.glob(
+                        os.path.join(
+                            self.args['mask_dir'],
+                            '%d_*' % z + os.extsep + ext))
 
         if len(fnames) != 1:
             raise RenderModuleException(
@@ -157,7 +161,7 @@ class DownsampleMaskHandler(RenderModule):
         # add a mask for any zMask not in zReset
         if self.args['zMask']:
             for z in np.setdiff1d(self.args['zMask'], self.args['zReset']):
-                tspec = self.add_mask_to_tilespec(z)
+                tspec = self.add_mask_to_tilespec(z, self.args['mask_exts'])
                 if tspec:
                     tspecs.append(tspec)
 
