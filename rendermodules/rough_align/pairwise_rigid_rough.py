@@ -140,10 +140,10 @@ class PairwiseRigidRoughAlignment(StackInputModule, StackOutputModule):
                 self.args['zValues']))
 
         if self.args['anchor_stack'] is None:
-            ts = renderapi.tilespec.TileSpec()
-            ts.z = self.args['zValues'][0]
-            ts.tforms = [renderapi.transform.AffineModel()]
-            anchor_specs = np.array([ts])
+            anchor_specs = np.array(renderapi.tilespec.get_tile_specs_from_z(
+                    self.args['input_stack'],
+                    self.args['zValues'][0],
+                    render=self.render))
         else:
             tspecs = renderapi.tilespec.get_tile_specs_from_stack(
                     self.args['anchor_stack'],
@@ -154,6 +154,7 @@ class PairwiseRigidRoughAlignment(StackInputModule, StackOutputModule):
         aind = np.argsort(anchor_zs)
         anchor_specs = anchor_specs[aind]
         clumps = []
+
         for i in range(anchor_specs.size):
             # backward looking
             zback = self.args['zValues'] < anchor_specs[i].z
@@ -177,17 +178,13 @@ class PairwiseRigidRoughAlignment(StackInputModule, StackOutputModule):
         for c in clumps:
             a = self.pairwise_estimate(c['anchor'], c['z_values'])
             azs = [n['dist'] for n in a]
-            print(a[0]['spec'].z, azs)
             new_specs += a
-
-        print('done with clumps')
 
         nzs = np.array([n['spec'].z for n in new_specs])
         unzs = np.unique(nzs)
 
         averaged_new_specs = []
         for unz in unzs:
-            print('unique z: %d' % unz)
             ind = np.argwhere(nzs == unz).flatten()
             if ind.size == 1:
                 averaged_new_specs.append(new_specs[ind[0]]['spec'])
@@ -290,8 +287,6 @@ class PairwiseRigidRoughAlignment(StackInputModule, StackOutputModule):
                 new_tilespecs.append({
                     'spec': renderapi.tilespec.TileSpec(json=ts.to_dict()),
                     'dist': int(np.abs(ts.z - anchor_spec.z))})
-
-        print('done anchor_z = %d' % anchor_spec.z)
 
         return new_tilespecs
 
