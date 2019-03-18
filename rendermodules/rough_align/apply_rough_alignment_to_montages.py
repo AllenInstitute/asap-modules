@@ -160,8 +160,10 @@ def filter_highres_with_masks(resolved_highres, tspec_lowres, mask_map):
         tc = t.bbox_transformed(
                     reference_tforms=resolved_highres.transforms)
         tpoly = Polygon(tc).buffer(0)
-        for p in mask_polygons:
-            if not p.intersects(tpoly):
+        pint = [not p.intersects(tpoly) for p in mask_polygons]
+        if np.all(pint):
+        #for p in mask_polygons:
+        #    if not p.intersects(tpoly):
                 new_highres.append(t)
 
     return new_highres
