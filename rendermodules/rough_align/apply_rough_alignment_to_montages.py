@@ -8,6 +8,8 @@ from rendermodules.rough_align.schemas import (
         ApplyRoughAlignmentTransformParameters,
         ApplyRoughAlignmentOutputParameters)
 from rendermodules.stack.consolidate_transforms import consolidate_transforms
+from rendermodules.rough_align.downsample_mask_handler \
+        import polygon_list_from_mask
 from functools import partial
 import logging
 import requests
@@ -142,18 +144,16 @@ def filter_highres_with_masks(resolved_highres, tspec_lowres, mask_map):
                  urllib.parse.urlparse(
                      mask_map[tspec_lowres.tileId]).path)
     maskim = cv2.imread(impath, 0)
-    maskim = 255 - maskim
-    _, contours, _ = cv2.findContours(
-                         maskim,
-                         cv2.RETR_TREE,
-                         cv2.CHAIN_APPROX_SIMPLE)
 
-    mask_polygons = []
-    for c in contours:
-        c = c.squeeze().astype('float')
-        for tf in tspec_lowres.tforms:
-            c = tf.tform(c)
-        mask_polygons.append(Polygon(c).buffer(0))
+    # in this case, it is easiest to outline regions where
+    # mask is zero, and then include tilespecs that do
+    # not intersect the mask. I think this handles some
+    # shapely cases where Polygon.contains() does not work
+    # well with polygons that overlap exactly on one edge
+    # or, there is some rounding/precision issue
+    mask_polygons = polygon_list_from_mask(
+            255 - maskim,
+            transforms=tspec_lowres.tforms)
 
     new_highres = []
     for t in resolved_highres.tilespecs:

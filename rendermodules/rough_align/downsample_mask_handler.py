@@ -31,16 +31,55 @@ example = {
         }
 
 
-def points_in_mask(mask, pts):
+def polygon_list_from_mask(mask, transforms=None):
+    """Shapely polygons from mask
+    
+    Parameters
+    ----------
+    mask : numpy array, uint8
+    transforms: list of renderapi transforms to apply to the mask
+
+    Returns
+    -------
+    list : 
+        shapely polygons which outline regions where mask is non-zero
+        Render retains parts of image where mask==255
+    """
     # openCV >= 4.0:
     # contours, _ = cv2.findContours(
     #         mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     # openCV < 4.0:
     _, contours, _ = cv2.findContours(
             mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    maskpoly = Polygon(contours[0].squeeze())
-    mask_list = [1.0 if maskpoly.contains(Point(pt)) else 0.0
-                 for pt in np.array(pts).transpose()]
+    contours = [c.squeeze().astype('float') for c in contours]
+    if transforms:
+        for i in range(len(contours)):
+            for tf in transforms:
+                contours[i] = tf.tform(contours[i])
+    mask_polygons = [Polygon(c).buffer(0) for c in contours]
+    return mask_polygons
+
+
+def points_in_mask(mask, pts):
+    """Inlier list given a mask and pts
+    Parameters
+    ----------
+    mask : numpy array, uint8
+    pts : nested list
+        as read from pointmatch json. i.e. match['matches']['p']
+
+    Returns
+    -------
+    list : float
+        as would be included in pointmatch json. i.e. match['matches']['w']
+        1.0 = point is inside of non-zero mask region
+        0.0 = point is inside of zero-value mask region
+        Render retains parts of image where mask==255
+    """
+    mask_list = []
+    for maskpoly in polygon_list_from_mask(mask):
+        mask_list += [1.0 if maskpoly.contains(Point(pt)) else 0.0
+                     for pt in np.array(pts).transpose()]
     return mask_list
 
 
