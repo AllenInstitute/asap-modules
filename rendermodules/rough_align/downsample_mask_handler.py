@@ -114,8 +114,6 @@ class DownsampleMaskHandler(RenderModule):
         return tspec
 
     def run(self):
-        self.render = renderapi.connect(**self.args['render'])
-
         tspecs = []
         # add a mask for any zMask not in zReset
         if self.args['zMask']:
