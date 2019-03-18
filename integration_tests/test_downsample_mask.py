@@ -87,10 +87,7 @@ def matches_are_filtered(render, collection):
                 collection, group1, group2, render=render)
     ids = []
     for m in matches:
-        if np.count_nonzero(
-                np.isclose(
-                    np.array(m['matches']['w']),
-                    0.0)) != 0:
+        if np.any(np.isclose(np.array(m['matches']['w']), 0.0)):
             ids.append([m['pGroupId'], m['qGroupId']])
     return ids
 
