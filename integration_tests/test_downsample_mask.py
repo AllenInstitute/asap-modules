@@ -12,6 +12,7 @@ from rendermodules.module.render_module import \
 import pytest
 import numpy as np
 from shapely.geometry import Polygon, Point
+import itertools
 
 DS_MASK_TEST_PATH = os.path.join(
         TEST_DATA_ROOT,
@@ -81,10 +82,9 @@ def matches_are_filtered(render, collection):
             collection,
             render=render)
     matches = []
-    for i in range(len(groups)):
-        for j in range(i):
-            matches += renderapi.pointmatch.get_matches_from_group_to_group(
-                    collection, groups[i], groups[j], render=render)
+    for group1, group2 in itertools.combinations(groups, 2):
+        matches += renderapi.pointmatch.get_matches_from_group_to_group(
+                collection, group1, group2, render=render)
     ids = []
     for m in matches:
         if np.count_nonzero(
