@@ -616,7 +616,7 @@ def test_mapped_apply_rough_alignment_transform(render,
     with pytest.raises(mm.ValidationError):
         mod = ApplyRoughAlignmentTransform(input_data=ex4, args=[])
 
-
+'''
 # additional tests for code coverage
 def test_render_downsample_with_mipmaps(render, one_tile_montage, tmpdir_factory, test_do_rough_alignment, montage_stack):
     image_directory = str(tmpdir_factory.mktemp('rough'))
@@ -731,7 +731,6 @@ def make_montage_stack_without_downsamples(render, montage_stack, tmpdir_factory
                                     Z,
                                     pool_size=pool_size)
 
-
 def test_make_montage_stack_module_without_downsamples(
         render, montage_stack, tmpdir_factory):
     # testing for make montage scape stack without having downsamples generated
@@ -800,7 +799,7 @@ def test_apply_rough_alignment_transform_with_scale(render, montage_stack, test_
             ts.tforms[0], renderapi.transform.ReferenceTransform)
                     for ts in out_resolvedtiles.tilespecs])
 
-
+'''
 def test_make_montage_scape_stack_fail(render, montage_stack, downsample_sections_dir):
     output_stack = '{}_DS'.format(montage_stack)
     params = {
@@ -828,7 +827,12 @@ def test_make_montage_scape_stack_fail(render, montage_stack, downsample_section
         mod.run()
 
 
-def test_setting_remap_section_ids(render, montage_stack, rough_downsample_stack, test_do_mapped_rough_alignment_python, downsample_sections_dir, tmpdir_factory):
+def test_setting_remap_section_ids(render, 
+                                    montage_stack, 
+                                    rough_downsample_stack, 
+                                    test_do_mapped_rough_alignment_python, 
+                                    downsample_sections_dir, 
+                                    tmpdir_factory):
     output_stack = '{}_Rough'.format(montage_stack)
     params = {
         "render": render_params,
@@ -846,6 +850,7 @@ def test_setting_remap_section_ids(render, montage_stack, rough_downsample_stack
         "apply_scale": False,
         "consolidate_transforms": "True"
     }
+    print(params)
     outjson = 'test_montage_scape_output.json'
     mod = ApplyRoughAlignmentTransform(input_data=params, args=['--output_json', outjson])
     mod.run()
