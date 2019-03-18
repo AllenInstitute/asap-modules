@@ -82,22 +82,18 @@ def get_mask_paths(
                 results[t.tileId] = t.ip[0].maskUrl
 
     elif mask_input_dir is not None:
-        tids = [t.tileId for t in tilespecs]
-        maskfiles = []
-        for ext in exts:
-            e = mask_input_dir + '/*.' + ext
-            maskfiles += glob.glob(e)
-        maskbasenames = np.array([os.path.basename(os.path.splitext(p)[0])
-                                  for p in maskfiles])
-        for t in tids:
-            ind = np.argwhere(maskbasenames == t).flatten()
-            if ind.size > 1:
-                raise RenderModuleException("more than one mask in "
-                                            "directory %s matches tileId %s" %
-                                            (mask_input_dir, t))
-            if ind.size == 0:
-                continue
-            results[t] = pathlib.Path(maskfiles[ind[0]]).as_uri()
+        for t in tilespecs:
+            for ext in exts:
+                e = os.path.join(
+                        mask_input_dir,
+                        t.tileId + os.extsep + ext)
+                if os.path.isfile(e):
+                    if t.tileId in results:
+                        raise RenderModuleException(
+                                "more than one mask in "
+                                "directory %s matches tileId %s" %
+                                (mask_input_dir, t))
+                    results[t.tileId] = pathlib.Path(e).as_uri()
 
     return results
 
