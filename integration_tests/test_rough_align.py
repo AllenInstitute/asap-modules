@@ -29,10 +29,13 @@ from rendermodules.rough_align.do_rough_alignment import \
         SolveRoughAlignmentModule
 from rendermodules.rough_align.pairwise_rigid_rough import \
         PairwiseRigidRoughAlignment
+from rendermodules.rough_align.make_anchor_stack import \
+        MakeAnchorStack
 from rendermodules.rough_align.apply_rough_alignment_to_montages import (
         ApplyRoughAlignmentTransform)
 from rendermodules.solver.solve import Solve_stack
 import shutil
+import numpy as np
 
 
 @pytest.fixture(scope='module')
@@ -1136,72 +1139,143 @@ def test_do_rough_alignment_python(
 #        mod.run()
 
 
-def test_pairwise_rigid_alignment(
+def test_make_anchor_stack(
         render,
         montage_scape_stack,
-        rough_point_match_collection,
         tmpdir_factory):
-    output_lowres_stack = '{}_DS_Pairwise_rigid'.format(montage_scape_stack)
 
-    output_directory = str(tmpdir_factory.mktemp('pwr_output_json'))
+    zs = renderapi.stack.get_z_values_for_stack(
+            montage_scape_stack,
+            render=render)
 
-    example = {
+    # make some transforms that would come from a manual trakem alignment
+    transforms = {}
+    for z in zs[:-1]:
+        tf = renderapi.transform.AffineModel(
+                M00=1.0 + np.random.randn(),
+                M11=1.0 + np.random.randn())
+        transforms["%d_blah.png" % z] = tf.to_dict()
+    output_directory = str(tmpdir_factory.mktemp('anchor_stack_input'))
+    tjson_path = os.path.join(output_directory, 'human_made_transforms.json')
+    with open(tjson_path, 'w') as f:
+        json.dump(transforms, f, indent=2)
+
+    anchor_stack = "my_anchor_stack"
+    ex = {
             "render": dict(solver_example['render']),
             "input_stack": montage_scape_stack,
-            "output_stack": output_lowres_stack,
-            "match_collection": rough_point_match_collection,
-            "close_stack": True,
-            "minZ": 1020,
-            "maxZ": 1022,
-            "gap_file": None,
-            "pool_size": 2,
-            "output_json": os.path.join(output_directory, 'output.json'),
-            "overwrite_zlayer": True,
-            "translate_to_positive": True,
-            "translation_buffer": [50, 50]
+            "output_stack": anchor_stack,
+            "transform_json": tjson_path,
+            "close_stack": True
             }
+    mmod = MakeAnchorStack(input_data=ex, args=[])
+    mmod.run()
 
-    # normal
-    ex = dict(example)
-    pwmod = PairwiseRigidRoughAlignment(input_data=ex, args=[])
-    pwmod.run()
-    with open(ex['output_json'], 'r') as f:
-        outj = json.load(f)
-    assert(outj['masked'] == [])
-    assert(outj['missing'] == [])
-    assert(len(outj['residuals']) == 2)
+    tspecs = renderapi.tilespec.get_tile_specs_from_stack(
+            ex['output_stack'], render=render)
+    for t in tspecs:
+        assert len(t.tforms) == 1
+        for tf in transforms:
+            if tf.startswith('%d_' % t.z):
+                assert t.tforms[0].dataString == transforms[tf]['dataString']
 
-    # gap file
-    ex = dict(example)
-    gapfile = os.path.join(output_directory, "gapfile.json")
-    with open(gapfile, 'w') as f:
-        json.dump({"1020": "gap for some reason"}, f)
-    ex['gap_file'] = gapfile
-    pwmod = PairwiseRigidRoughAlignment(input_data=ex, args=[])
-    pwmod.run()
-    with open(ex['output_json'], 'r') as f:
-        outj = json.load(f)
-    assert(outj['masked'] == [])
-    assert(outj['missing'] == [1020])
-    assert(len(outj['residuals']) == 1)
+    # pedantic, what if a downsample stack has multiple tiles for one z
+    other_stack = "other_stack"
+    renderapi.stack.clone_stack(montage_scape_stack, other_stack, render=render)
+    tspecs = renderapi.tilespec.get_tile_specs_from_stack(
+            other_stack, render=render)
+    t = tspecs[0]
+    t.tileId = 'something_unique'
+    renderapi.client.import_tilespecs(other_stack, [t], render=render)
+    ex['input_stack'] = other_stack
+    mmod = MakeAnchorStack(input_data=ex, args=[])
+    with pytest.raises(RenderModuleException):
+        mmod.run()
+    renderapi.stack.delete_stack(other_stack, render=render)
 
-    # make one match missing
-    ex = dict(example)
-    render = renderapi.connect(**ex['render'])
-    matches = renderapi.pointmatch.get_matches_outside_group(
-            rough_point_match_collection,
-            "1020.0",
-            render=render)
-    new_collection = 'with_missing'
-    renderapi.pointmatch.import_matches(
-            new_collection,
-            matches,
-            render=render)
-    ex['match_collection'] = new_collection
+    # add a z to the transforms that isn't in the stack
+    ztry = zs[-1] + 1
+    while ztry in zs:
+        ztry += 1
+    tf = renderapi.transform.AffineModel(
+                M00=1.0 + np.random.randn(),
+                M11=1.0 + np.random.randn())
+    transforms["%d_blah.png" % ztry] = tf.to_dict()
+    with open(tjson_path, 'w') as f:
+        json.dump(transforms, f, indent=2)
+    ex['input_stack'] = montage_scape_stack
+    mmod = MakeAnchorStack(input_data=ex, args=[])
+    with pytest.raises(renderapi.errors.RenderError):
+        mmod.run()
+    renderapi.stack.delete_stack(ex['output_stack'], render=render)
 
-    with pytest.raises(AssertionError):
-        pwmod = PairwiseRigidRoughAlignment(input_data=ex, args=[])
-        pwmod.run()
+
+#def test_pairwise_rigid_alignment(
+#        render,
+#        montage_scape_stack,
+#        rough_point_match_collection,
+#        tmpdir_factory):
+#    output_lowres_stack = '{}_DS_Pairwise_rigid'.format(montage_scape_stack)
+#
+#    output_directory = str(tmpdir_factory.mktemp('pwr_output_json'))
+#
+#    example = {
+#            "render": dict(solver_example['render']),
+#            "input_stack": montage_scape_stack,
+#            "output_stack": output_lowres_stack,
+#            "match_collection": rough_point_match_collection,
+#            "close_stack": True,
+#            "minZ": 1020,
+#            "maxZ": 1022,
+#            "gap_file": None,
+#            "pool_size": 2,
+#            "output_json": os.path.join(output_directory, 'output.json'),
+#            "overwrite_zlayer": True,
+#            "translate_to_positive": True,
+#            "translation_buffer": [50, 50]
+#            }
+#
+#    # normal
+#    ex = dict(example)
+#    pwmod = PairwiseRigidRoughAlignment(input_data=ex, args=[])
+#    pwmod.run()
+#    with open(ex['output_json'], 'r') as f:
+#        outj = json.load(f)
+#    assert(outj['masked'] == [])
+#    assert(outj['missing'] == [])
+#    assert(len(outj['residuals']) == 2)
+#
+#    # gap file
+#    ex = dict(example)
+#    gapfile = os.path.join(output_directory, "gapfile.json")
+#    with open(gapfile, 'w') as f:
+#        json.dump({"1020": "gap for some reason"}, f)
+#    ex['gap_file'] = gapfile
+#    pwmod = PairwiseRigidRoughAlignment(input_data=ex, args=[])
+#    pwmod.run()
+#    with open(ex['output_json'], 'r') as f:
+#        outj = json.load(f)
+#    assert(outj['masked'] == [])
+#    assert(outj['missing'] == [1020])
+#    assert(len(outj['residuals']) == 1)
+#
+#    # make one match missing
+#    ex = dict(example)
+#    render = renderapi.connect(**ex['render'])
+#    matches = renderapi.pointmatch.get_matches_outside_group(
+#            rough_point_match_collection,
+#            "1020.0",
+#            render=render)
+#    new_collection = 'with_missing'
+#    renderapi.pointmatch.import_matches(
+#            new_collection,
+#            matches,
+#            render=render)
+#    ex['match_collection'] = new_collection
+#
+#    with pytest.raises(AssertionError):
+#        pwmod = PairwiseRigidRoughAlignment(input_data=ex, args=[])
+#        pwmod.run()
 
 
 #def test_filterNameList_warning_makemontagescapes(tmpdir):
