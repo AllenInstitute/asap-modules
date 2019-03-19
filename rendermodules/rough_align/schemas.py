@@ -42,6 +42,20 @@ class RoughSlicerSchema(InputStackParameters, ProcessPoolParameters):
         description=("get bounds from this stack instead of input_stack"))
 
 
+class MakeAnchorStackSchema(InputStackParameters, OutputStackParameters):
+    transform_json = InputFile(
+        required=True,
+        description=("Human generated list of transforms."
+                     "Keys are of form <z>_*.png where z matches a tilespec in input_stack"
+                     " and values are AffineModel transform jsons"))
+    zValues = List(
+            Int,
+            required=True,
+            missing=[1000],
+            default=[1000],
+            description="not used in this module, keeps parents happy")
+
+
 class PairwiseRigidSchema(InputStackParameters, OutputStackParameters):
     match_collection = Str(
         required=True,
