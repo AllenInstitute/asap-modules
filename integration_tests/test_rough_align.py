@@ -333,7 +333,8 @@ def test_do_mapped_rough_alignment_python(render,
 
     output_directory = str(tmpdir_factory.mktemp('output_json'))
 
-    solver_ex_py = dict(solver_input, **{
+    solver_ex_py = copy.deepcopy(solver_input)
+    solver_ex_py = dict(solver_ex_py, **{
         'first_section': 251,
         'last_section': 253,
         'solve_type': "3D",
@@ -387,7 +388,8 @@ def test_do_rough_alignment_python(render, montage_scape_stack, rough_point_matc
         output_lowres_stack = '{}_DS_Rough_python'.format(montage_scape_stack)
     output_directory = str(tmpdir_factory.mktemp('output_json'))
 
-    solver_ex_py = dict(solver_input, **{
+    solver_ex_py = copy.deepcopy(solver_input)
+    solver_ex_py = dict(solver_ex_py, **{
         'first_section': 1020,
         'last_section': 1022,
         'solve_type': "3D",
@@ -440,6 +442,7 @@ def test_do_rough_alignment(render, montage_scape_stack, rough_point_match_colle
         output_lowres_stack = '{}_DS_Rough'.format(montage_scape_stack)
 
     output_directory = str(tmpdir_factory.mktemp('output_json'))
+    solver_ex = copy.deepcopy(solver_example)
     solver_ex = dict(solver_example, **{
         'output_json': os.path.join(output_directory,'output.json'),
         'source_collection': dict(solver_example['source_collection'], **{
@@ -477,6 +480,7 @@ def test_do_mapped_rough_alignment(render, montage_z_mapped_stack, rough_mapped_
         output_lowres_stack = '{}_DS_Rough'.format(montage_z_mapped_stack)
 
     output_directory = str(tmpdir_factory.mktemp('output_json'))
+    solver_ex = copy.deepcopy(solver_example)
     solver_ex = dict(solver_example, **{
         'output_json': os.path.join(output_directory,'output.json'),
         'first_section': 251,
@@ -552,6 +556,7 @@ def test_do_rough_alignment_with_scale(render, montage_scape_stack_with_scale, r
         output_lowres_stack = '{}_DS_Rough_scale'.format(montage_scape_stack_with_scale)
 
     output_directory = str(tmpdir_factory.mktemp('output_json'))
+    solver_ex = copy.deepcopy(solver_example)
     solver_ex = dict(solver_example, **{
         'output_json': os.path.join(output_directory,'output.json'),
         'source_collection': dict(solver_example['source_collection'], **{
@@ -816,6 +821,7 @@ def test_make_montage_stack_module_without_downsamples(
 
 
 def test_apply_rough_alignment_transform_with_scale(render, montage_stack, test_do_rough_alignment_with_scale, tmpdir_factory, prealigned_stack=None, output_stack=None):
+    ex = copy.deepcopy(ex1)
     ex = dict(ex1, **{
         'render': dict(ex1['render'], **render_params),
         'montage_stack': montage_stack,
