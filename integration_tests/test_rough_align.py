@@ -379,6 +379,60 @@ def test_do_mapped_rough_alignment_python(render,
     yield output_lowres_stack
     renderapi.stack.delete_stack(output_lowres_stack, render=render)
 
+@pytest.fixture(scope='module')
+def test_do_rough_alignment_python(render, montage_scape_stack, rough_point_match_collection, 
+                                    tmpdir_factory, output_lowres_stack=None):
+    
+    if output_lowres_stack == None:
+        output_lowres_stack = '{}_DS_Rough_python'.format(montage_scape_stack)
+    output_directory = str(tmpdir_factory.mktemp('output_json'))
+
+    solver_ex_py = dict(solver_input, **{
+        'first_section': 1020,
+        'last_section': 1022,
+        'solve_type': "3D",
+        'transformation': "rigid",
+        'input_stack': dict(solver_input['input_stack'], **{
+            'name': montage_scape_stack,
+            'db_interface': "render"
+        }),
+        'output_stack': dict(solver_input['output_stack'], **{
+            "name": "temp_stack",
+            "db_interface": "render"
+        }),
+        'pointmatch': dict(solver_input['pointmatch'], **{
+            'name': rough_point_match_collection,
+            'db_interface': "render"
+        }),
+        'matrix_assembly': dict(solver_input['matrix_assembly'], **{
+            'montage_pt_weight': 0,
+            'cross_pt_weight': 1.0
+        })
+    })
+
+    out_json = os.path.join(output_directory, "output.json")
+
+    mod = Solve_stack(input_data=solver_ex_py, args=["--output_json", out_json])
+    mod.run()
+
+    solver_ex_py['input_stack']['name'] = "temp_stack"
+    solver_ex_py['tranformation'] = "AffineModel"
+    solver_ex_py['output_stack']['name'] = output_lowres_stack
+    mod = Solve_stack(input_data=solver_ex_py, args=["--output_json", out_json])
+    mod.run()
+
+    stacks = renderapi.render.get_stacks_by_owner_project(render=render)
+    assert(output_lowres_stack in stacks)
+
+    zvalues = render.run(renderapi.stack.get_z_values_for_stack, output_lowres_stack)
+    zs = [1020, 1021, 1022]
+    assert(set(zvalues) == set(zs))
+
+    renderapi.stack.delete_stack("temp_stack", render=render)
+
+    yield output_lowres_stack
+    renderapi.stack.delete_stack(output_lowres_stack, render=render)
+
 
 @pytest.fixture(scope='module')
 def test_do_rough_alignment(render, montage_scape_stack, rough_point_match_collection, tmpdir_factory, output_lowres_stack=None):
@@ -616,9 +670,9 @@ def test_mapped_apply_rough_alignment_transform(render,
     with pytest.raises(mm.ValidationError):
         mod = ApplyRoughAlignmentTransform(input_data=ex4, args=[])
 
-'''
+
 # additional tests for code coverage
-def test_render_downsample_with_mipmaps(render, one_tile_montage, tmpdir_factory, test_do_rough_alignment, montage_stack):
+def test_render_downsample_with_mipmaps(render, one_tile_montage, tmpdir_factory, test_do_rough_alignment_python, montage_stack):
     image_directory = str(tmpdir_factory.mktemp('rough'))
     ex = {
         "render": render_params,
@@ -672,7 +726,7 @@ def test_render_downsample_with_mipmaps(render, one_tile_montage, tmpdir_factory
         'output_stack': 'failed_output',
         'render': dict(ex1['render'], **render_params),
         'montage_stack': montage_stack,
-        'lowres_stack': test_do_rough_alignment,
+        'lowres_stack': test_do_rough_alignment_python,
         'prealigned_stack': None,
         'tilespec_directory': str(tmpdir_factory.mktemp('scratch')),
         'old_z': [1020, 1021, 1022],
@@ -760,6 +814,7 @@ def test_make_montage_stack_module_without_downsamples(
     assert os.path.isfile(tsfn)
     assert os.path.basename(tsfn) == '1020.0.png'
 
+
 def test_apply_rough_alignment_transform_with_scale(render, montage_stack, test_do_rough_alignment_with_scale, tmpdir_factory, prealigned_stack=None, output_stack=None):
     ex = dict(ex1, **{
         'render': dict(ex1['render'], **render_params),
@@ -799,7 +854,7 @@ def test_apply_rough_alignment_transform_with_scale(render, montage_stack, test_
             ts.tforms[0], renderapi.transform.ReferenceTransform)
                     for ts in out_resolvedtiles.tilespecs])
 
-'''
+
 def test_make_montage_scape_stack_fail(render, montage_stack, downsample_sections_dir):
     output_stack = '{}_DS'.format(montage_stack)
     params = {
