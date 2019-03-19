@@ -196,7 +196,7 @@ def montage_scape_stack(render, montage_stack, downsample_sections_dir):
     assert(set(zvalues) == set(zs))
 
     yield output_stack
-    #renderapi.stack.delete_stack(output_stack, render=render)
+    renderapi.stack.delete_stack(output_stack, render=render)
 
 @pytest.fixture(scope='module')
 def montage_scape_stack_with_scale(render, montage_stack, downsample_sections_dir):
@@ -393,7 +393,7 @@ def test_do_rough_alignment(render, montage_scape_stack, rough_point_match_colle
     assert(set(zvalues) == set(zs))
 
     yield output_lowres_stack
-    #renderapi.stack.delete_stack(output_lowres_stack, render=render)
+    renderapi.stack.delete_stack(output_lowres_stack, render=render)
 
 
 @pytest.fixture(scope='module')
@@ -422,7 +422,7 @@ def test_do_rough_alignment_with_scale(render, montage_scape_stack_with_scale, r
     assert(set(zvalues) == set(zs))
 
     yield output_lowres_stack
-    #renderapi.stack.delete_stack(output_lowres_stack, render=render)
+    renderapi.stack.delete_stack(output_lowres_stack, render=render)
 
 @pytest.fixture(scope='module')
 def test_do_rough_alignment_python(
@@ -658,7 +658,6 @@ def test_apply_rough_alignment_with_masks(render, montage_stack, test_do_rough_a
      assert lrs[1].ip['0']['maskUrl'] is not None
      assert lrs[2].ip['0']['maskUrl'] is None
      renderapi.stack.delete_stack(ex['output_stack'], render=render)
-     #renderapi.stack.delete_stack(ex['lowres_stack'], render=render)
 
      # read the masks from the lowres stack (just modified above)
      ex['read_masks_from_lowres_stack'] = True
