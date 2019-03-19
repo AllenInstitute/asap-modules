@@ -75,7 +75,7 @@ def apply_rough_alignment(render,
                           remap_section_ids=False):
     z = Z[0] # z value from the montage stack - to be mapped to the newz values in lowres stack
     newz = Z[1] # z value in the lowres stack for this montage
-    print(z, newz)
+    
     session=requests.session()
     try:
         # get lowres stack tile specs
