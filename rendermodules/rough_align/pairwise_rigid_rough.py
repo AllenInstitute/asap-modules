@@ -3,7 +3,8 @@ import numpy as np
 import json
 from rendermodules.module.render_module import (
         StackInputModule,
-        StackOutputModule)
+        StackOutputModule,
+        RenderModuleException)
 from rendermodules.rough_align.schemas import (
         PairwiseRigidSchema,
         PairwiseRigidOutputSchema)
@@ -58,10 +59,8 @@ def tspecjob(collection, render, tilespecs, estimate=True):
             tilespecs[1].layout.sectionId,
             tilespecs[1].tileId,
             render=render)
-    
-    try:
-        assert(len(matches) == 1)
-    except AssertionError as e:
+
+    if len(matches) != 1:
         estr = "\n  expected 1 matching tile pair, found %d for" % (
                 len(matches))
         estr += '\n  %s\n  group: %s\n  %s\n  group: %s' % (
@@ -69,7 +68,7 @@ def tspecjob(collection, render, tilespecs, estimate=True):
             tilespecs[0].layout.sectionId,
             tilespecs[1].tileId,
             tilespecs[1].layout.sectionId)
-        raise
+        raise RenderModuleException(estr)
 
     match = matches[0]
 
@@ -172,11 +171,10 @@ class PairwiseRigidRoughAlignment(StackInputModule, StackOutputModule):
                 "direction": 1,
                 "z_values": np.sort((self.args['zValues'][zfor])),
                 "anchor": anchor_specs[i]})
-        
+
         new_specs = []
         for c in clumps:
             a = self.pairwise_estimate(c['anchor'], c['z_values'])
-            azs = [n['dist'] for n in a]
             new_specs += a
 
         nzs = np.array([n['spec'].z for n in new_specs])
@@ -192,21 +190,12 @@ class PairwiseRigidRoughAlignment(StackInputModule, StackOutputModule):
                 if dsum == 0:
                     averaged_new_specs.append(new_specs[ind[0]]['spec'])
                 else:
-                    M = np.array(
-                            [
-                                ((dsum - new_specs[i]['dist']) / float(dsum)) * \
-                                        new_specs[i]['spec'].tforms[0].M for i in ind])
-                    M = M.sum(axis=0)
+                    M = np.zeros(3, 3)
+                    for i in ind:
+                        w = (dsum - new_specs[i]['dist']) / float(dsum)
+                        M += w * new_specs[i]['spec'].tforms[0].M
                     averaged_new_specs.append(new_specs[ind[0]]['spec'])
                     averaged_new_specs[-1].tforms[0].M = M
-
-        #for z in self.args['zValues']:
-        #    tilespecs += renderapi.tilespec.get_tile_specs_from_z(
-        #            self.args['input_stack'],
-        #            z,
-        #            render=self.render)
-
-        #new_tilespecs = self.pairwise_estimate(tilespecs)
 
         if self.args['translate_to_positive']:
             averaged_new_specs = translate_to_positive(

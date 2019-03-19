@@ -344,7 +344,7 @@ def rough_point_match_collection(render, rough_point_matches_from_json):
     assert isinstance(groupIds, list)
     # assert(len(groupIds) == 3)
     yield pt_match_collection
-    #render.run(renderapi.pointmatch.delete_collection, pt_match_collection)
+    render.run(renderapi.pointmatch.delete_collection, pt_match_collection)
 
 
 @pytest.fixture(scope='module')
@@ -1181,7 +1181,8 @@ def test_make_anchor_stack(
 
     # pedantic, what if a downsample stack has multiple tiles for one z
     other_stack = "other_stack"
-    renderapi.stack.clone_stack(montage_scape_stack, other_stack, render=render)
+    renderapi.stack.clone_stack(
+            montage_scape_stack, other_stack, render=render)
     tspecs = renderapi.tilespec.get_tile_specs_from_stack(
             other_stack, render=render)
     t = tspecs[0]
@@ -1334,14 +1335,14 @@ def test_pairwise_results(render, tmpdir_factory):
         np.array([t.tforms[0].rotation for t in new_specs])))
 
     # in this artificial example, the ground truth is changing
-    # in a smooth linear way, we can check the results are 
+    # in a smooth linear way, we can check the results are
     # weighted linear averages of the anchors
     for i in range(2, 9):
         assert np.all(
                 np.isclose(
                     new_specs[i].tforms[0].M,
                     (new_specs[2].tforms[0].M * (7 - np.abs(2 - i)) +
-                        new_specs[9].tforms[0].M * (7 - np.abs(9 - i)))/ 7,
+                        new_specs[9].tforms[0].M * (7 - np.abs(9 - i))) / 7,
                     1e-3))
 
     # finally, the module gives good residuals without an anchor stack
@@ -1429,7 +1430,7 @@ def test_pairwise_rigid_alignment_coverage(
             render=render)
     ex['match_collection'] = new_collection
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(RenderModuleException):
         pwmod = PairwiseRigidRoughAlignment(input_data=ex, args=[])
         pwmod.run()
 

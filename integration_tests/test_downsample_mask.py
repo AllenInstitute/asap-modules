@@ -11,7 +11,6 @@ from rendermodules.module.render_module import \
         RenderModuleException
 import pytest
 import numpy as np
-from shapely.geometry import Polygon, Point
 import itertools
 
 DS_MASK_TEST_PATH = os.path.join(
