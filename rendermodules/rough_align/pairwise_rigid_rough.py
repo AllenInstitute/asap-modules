@@ -58,7 +58,7 @@ def tspecjob(collection, render, tilespecs, estimate=True):
             tilespecs[1].layout.sectionId,
             tilespecs[1].tileId,
             render=render)
-
+    
     try:
         assert(len(matches) == 1)
     except AssertionError as e:
@@ -69,8 +69,7 @@ def tspecjob(collection, render, tilespecs, estimate=True):
             tilespecs[0].layout.sectionId,
             tilespecs[1].tileId,
             tilespecs[1].layout.sectionId)
-        print(estr)
-        return None
+        raise
 
     match = matches[0]
 
@@ -277,8 +276,6 @@ class PairwiseRigidRoughAlignment(StackInputModule, StackOutputModule):
             'dist': 0}]
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
             for result in pool.map(estimate_func, fargs):
-                if result is None:
-                    break
                 M = M.dot(result['transform'].M)
                 newtf = renderapi.transform.RigidModel()
                 newtf.M = M

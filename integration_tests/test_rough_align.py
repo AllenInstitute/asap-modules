@@ -1162,74 +1162,76 @@ def test_pairwise_rigid_alignment(
             }
 
     # normal
-    pwmod = PairwiseRigidRoughAlignment(input_data=example, args=[])
+    ex = dict(example)
+    pwmod = PairwiseRigidRoughAlignment(input_data=ex, args=[])
     pwmod.run()
-    with open(example['output_json'], 'r') as f:
+    with open(ex['output_json'], 'r') as f:
         outj = json.load(f)
     assert(outj['masked'] == [])
     assert(outj['missing'] == [])
     assert(len(outj['residuals']) == 2)
 
     # gap file
+    ex = dict(example)
     gapfile = os.path.join(output_directory, "gapfile.json")
     with open(gapfile, 'w') as f:
         json.dump({"1020": "gap for some reason"}, f)
-    example['gap_file'] = gapfile
-    pwmod = PairwiseRigidRoughAlignment(input_data=example, args=[])
+    ex['gap_file'] = gapfile
+    pwmod = PairwiseRigidRoughAlignment(input_data=ex, args=[])
     pwmod.run()
-    with open(example['output_json'], 'r') as f:
+    with open(ex['output_json'], 'r') as f:
         outj = json.load(f)
     assert(outj['masked'] == [])
     assert(outj['missing'] == [1020])
     assert(len(outj['residuals']) == 1)
 
-    ## make one match missing
-    #example['gap_file'] = None
-    #render = renderapi.connect(**example['render'])
-    #matches = renderapi.pointmatch.get_matches_outside_group(
-    #        rough_point_match_collection,
-    #        "1020.0",
-    #        render=render)
-    #new_collection = 'with_missing'
-    #renderapi.pointmatch.import_matches(
-    #        new_collection,
-    #        matches,
-    #        render=render)
-    #example['match_collection'] = new_collection
+    # make one match missing
+    ex = dict(example)
+    render = renderapi.connect(**ex['render'])
+    matches = renderapi.pointmatch.get_matches_outside_group(
+            rough_point_match_collection,
+            "1020.0",
+            render=render)
+    new_collection = 'with_missing'
+    renderapi.pointmatch.import_matches(
+            new_collection,
+            matches,
+            render=render)
+    ex['match_collection'] = new_collection
 
-    #with pytest.raises(AssertionError):
-    #    pwmod = PairwiseRigidRoughAlignment(input_data=example, args=[])
-    #    pwmod.run()
-
-
-def test_filterNameList_warning_makemontagescapes(tmpdir):
-    warn_input = {
-        "render": render_params,
-        "montage_stack": "montage_stack",
-        "output_stack": "output_stack",
-        "image_directory": str(tmpdir),
-        "imgformat": "png",
-        "set_new_z": False,
-        "new_z_start": 0,
-        "scale": 0.1,
-        "zstart": 1020,
-        "zend": 1022,
-        "filterListName": "notafilter"}
-    with pytest.warns(UserWarning):
-        mod = MakeMontageScapeSectionStack(input_data=warn_input, args=[])
-        del mod
+    with pytest.raises(AssertionError):
+        pwmod = PairwiseRigidRoughAlignment(input_data=ex, args=[])
+        pwmod.run()
 
 
-def test_filterNameList_warning_rendersection(tmpdir):
-    warn_input = {
-        "render": render_params,
-        "input_stack": "one_tile_montage",
-        "image_directory": str(tmpdir),
-        "imgformat": "png",
-        "scale": 0.1,
-        "minZ": -1,
-        "maxZ": -1,
-        "filterListName": "notafilter"}
-    with pytest.warns(UserWarning):
-        mod = RenderSectionAtScale(input_data=warn_input, args=[])
-        del mod
+#def test_filterNameList_warning_makemontagescapes(tmpdir):
+#    warn_input = {
+#        "render": render_params,
+#        "montage_stack": "montage_stack",
+#        "output_stack": "output_stack",
+#        "image_directory": str(tmpdir),
+#        "imgformat": "png",
+#        "set_new_z": False,
+#        "new_z_start": 0,
+#        "scale": 0.1,
+#        "zstart": 1020,
+#        "zend": 1022,
+#        "filterListName": "notafilter"}
+#    with pytest.warns(UserWarning):
+#        mod = MakeMontageScapeSectionStack(input_data=warn_input, args=[])
+#        del mod
+#
+#
+#def test_filterNameList_warning_rendersection(tmpdir):
+#    warn_input = {
+#        "render": render_params,
+#        "input_stack": "one_tile_montage",
+#        "image_directory": str(tmpdir),
+#        "imgformat": "png",
+#        "scale": 0.1,
+#        "minZ": -1,
+#        "maxZ": -1,
+#        "filterListName": "notafilter"}
+#    with pytest.warns(UserWarning):
+#        mod = RenderSectionAtScale(input_data=warn_input, args=[])
+#        del mod
