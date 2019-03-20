@@ -511,6 +511,7 @@ def test_do_rough_alignment_python(
     assert(set(zvalues) == set(zs))
 
     yield output_lowres_stack
+    renderapi.stack.delete_stack(output_lowres_stack, render=render)
 
 
 def test_montage_scape_stack(render, montage_scape_stack):
@@ -654,6 +655,8 @@ def test_apply_rough_alignment_transform(
             ts.tforms[0], renderapi.transform.ReferenceTransform)
                     for ts in out_resolvedtiles.tilespecs])
 
+    renderapi.stack.delete_stack(ex['output_stack'], render=render)
+
 
 def modular_test_for_masks(render, ex):
     ex = copy.deepcopy(ex)
@@ -732,6 +735,7 @@ def test_apply_rough_alignment_with_masks(
         ex['output_stack'], render=render))
     assert(ntiles == ntiles_montage)
     renderapi.stack.delete_stack(ex['lowres_stack'], render=render)
+    renderapi.stack.delete_stack(ex['output_stack'], render=render)
 
     # set mask and filter the highres output
     for apply_scale in [True, False]:
@@ -749,6 +753,7 @@ def test_apply_rough_alignment_with_masks(
             ex['output_stack'], render=render))
         assert(ntiles == ntiles_montage - 3)
         renderapi.stack.delete_stack(ex['lowres_stack'], render=render)
+        renderapi.stack.delete_stack(ex['output_stack'], render=render)
 
     # modify the input stack
     renderapi.stack.clone_stack(orig_lowres, ex['lowres_stack'], render=render)
@@ -774,6 +779,7 @@ def test_apply_rough_alignment_with_masks(
         ex['output_stack'], render=render))
     assert(ntiles == ntiles_montage - 3)
     renderapi.stack.delete_stack(ex['lowres_stack'], render=render)
+    renderapi.stack.delete_stack(ex['output_stack'], render=render)
 
     # make multiple matches for one tileId
     mpath = urllib.parse.unquote(
@@ -792,6 +798,10 @@ def test_apply_rough_alignment_with_masks(
     ex['output_stack'] = "mask_montage_output_stack_with_mask"
     with pytest.raises(RenderModuleException):
         modular_test_for_masks(render, ex)
+
+    renderapi.stack.delete_stack(ex['lowres_stack'], render=render)
+    renderapi.stack.delete_stack(ex['output_stack'], render=render)
+    renderapi.stack.delete_stack(ex['montage_stack'], render=render)
 
 
 # additional tests for code coverage
@@ -889,6 +899,8 @@ def test_render_downsample_with_mipmaps(
                 ex2['output_stack'], render=render)
         assert(1021 not in zvalues)
 
+    renderapi.stack.delete_stack('failed_output', render=render)
+
 
 def make_montage_stack_without_downsamples(
         render, montage_stack, tmpdir_factory):
@@ -933,6 +945,8 @@ def make_montage_stack_without_downsamples(
                                     Z,
                                     pool_size=pool_size)
 
+    renderapi.stack.delete_stack(output_stack, render=render)
+
 
 def test_make_montage_stack_module_without_downsamples(
         render, montage_stack, tmpdir_factory):
@@ -962,6 +976,7 @@ def test_make_montage_stack_module_without_downsamples(
         tspecs[0].ip[0].imageUrl).path)
     assert os.path.isfile(tsfn)
     assert os.path.basename(tsfn) == '1020.0.png'
+    renderapi.stack.delete_stack(output_stack, render=render)
 
 
 def test_apply_rough_alignment_transform_with_scale(
@@ -1013,6 +1028,8 @@ def test_apply_rough_alignment_transform_with_scale(
         assert all([isinstance(
             ts.tforms[0], renderapi.transform.ReferenceTransform)
                     for ts in out_resolvedtiles.tilespecs])
+
+    renderapi.stack.delete_stack(ex['output_stack'], render=render)
 
 
 def test_make_montage_scape_stack_fail(
@@ -1401,6 +1418,8 @@ def test_pairwise_rigid_alignment_coverage(
     assert(outj['masked'] == [])
     assert(outj['missing'] == [])
     assert(len(outj['residuals']) == 2)
+    renderapi.stack.delete_stack(
+            pwmod.output_stack, render=render)
 
     # gap file
     ex = dict(example)
@@ -1415,6 +1434,8 @@ def test_pairwise_rigid_alignment_coverage(
     assert(outj['masked'] == [])
     assert(outj['missing'] == [1020])
     assert(len(outj['residuals']) == 1)
+    renderapi.stack.delete_stack(
+            pwmod.output_stack, render=render)
 
     # make one match missing
     ex = dict(example)
@@ -1433,6 +1454,11 @@ def test_pairwise_rigid_alignment_coverage(
     with pytest.raises(RenderModuleException):
         pwmod = PairwiseRigidRoughAlignment(input_data=ex, args=[])
         pwmod.run()
+
+    renderapi.pointmatch.delete_collection(
+            new_collection, render=render)
+    renderapi.stack.delete_stack(
+            pwmod.output_stack, render=render)
 
 
 def test_filterNameList_warning_makemontagescapes(tmpdir):
