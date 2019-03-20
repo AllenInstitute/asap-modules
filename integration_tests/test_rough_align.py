@@ -1155,7 +1155,6 @@ def test_solver_default_options(
         mod.run()
 
 
-<<<<<<< HEAD
 def test_make_anchor_stack(
         render,
         montage_scape_stack,
