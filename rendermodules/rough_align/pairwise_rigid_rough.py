@@ -190,7 +190,7 @@ class PairwiseRigidRoughAlignment(StackInputModule, StackOutputModule):
                 if dsum == 0:
                     averaged_new_specs.append(new_specs[ind[0]]['spec'])
                 else:
-                    M = np.zeros(3, 3)
+                    M = np.zeros((3, 3))
                     for i in ind:
                         w = (dsum - new_specs[i]['dist']) / float(dsum)
                         M += w * new_specs[i]['spec'].tforms[0].M
