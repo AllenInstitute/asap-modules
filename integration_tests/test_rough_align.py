@@ -654,7 +654,6 @@ def test_apply_rough_alignment_transform(
         assert all([isinstance(
             ts.tforms[0], renderapi.transform.ReferenceTransform)
                     for ts in out_resolvedtiles.tilespecs])
-
     renderapi.stack.delete_stack(ex['output_stack'], render=render)
 
 
@@ -1156,6 +1155,7 @@ def test_solver_default_options(
         mod.run()
 
 
+<<<<<<< HEAD
 def test_make_anchor_stack(
         render,
         montage_scape_stack,
