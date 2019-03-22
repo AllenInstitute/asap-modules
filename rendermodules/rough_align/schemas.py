@@ -90,8 +90,6 @@ class ApplyRoughAlignmentTransformParameters(RenderParameters):
                 raise ValidationError("new_z list count does not match with old_z list count")
         else:
             data['new_z'] = data['old_z']
-        
-        if data['map_z'] is False:
             data['remap_section_ids'] = False
 
 

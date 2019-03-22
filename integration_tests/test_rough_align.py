@@ -932,6 +932,71 @@ def test_setting_remap_section_ids(render,
         sectionid = renderapi.stack.get_sectionId_for_z(output_stack, z, render=render)
         assert(int(z) == int(float(sectionid)))
 
+def test_solver_default_options(render, montage_scape_stack, rough_point_match_collection, tmpdir_factory):
+    output_lowres_stack = '{}_DS_Rough'.format(montage_scape_stack)
+
+    output_directory = str(tmpdir_factory.mktemp('output_json'))
+
+    solver_ex1 = copy.deepcopy(solver_example)
+    solver_ex1 = dict(solver_ex1, **{
+        'output_json': os.path.join(output_directory,'output.json'),
+        'source_collection': dict(solver_example['source_collection'], **{
+            'stack': montage_scape_stack,
+            'owner': None,
+            'project': None,
+            'service_host': None,
+            'baseURL': None,
+            'renderbinPath': None}),
+        'target_collection': dict(solver_example['target_collection'], **{
+            'stack': output_lowres_stack,
+            'owner': None,
+            'project': None,
+            'service_host': None,
+            'baseURL': None,
+            'renderbinPath': None}),
+        'source_point_match_collection': dict(
+            solver_example['source_point_match_collection'], **{
+                'match_collection': rough_point_match_collection,
+                'server': None,
+                'owner': None
+            }),
+        'first_section': 1020,
+        'last_section': 1020})
+
+    solver_ex2 = dict(solver_ex1, **{
+        'first_section': 1022,
+        'last_section': 1020})
+
+    solver_ex3 = copy.copy(solver_ex2)
+
+    solver_example['source_collection'].pop('owner', None)
+    solver_example['source_collection'].pop('project', None)
+    solver_example['source_collection'].pop('service_host', None)
+    solver_example['source_collection'].pop('baseURL', None)
+    solver_example['source_collection'].pop('renderbinPath', None)
+    solver_example['target_collection'].pop('owner', None)
+    solver_example['target_collection'].pop('project', None)
+    solver_example['target_collection'].pop('service_host', None)
+    solver_example['target_collection'].pop('baseURL', None)
+    solver_example['target_collection'].pop('renderbinPath', None)
+    #solver_example['solver_options']['pastix'] = None
+
+    mod = SolveRoughAlignmentModule(input_data=solver_ex1, args=[])
+
+    with pytest.raises(RenderModuleException):
+        mod.run()
+
+    mod = SolveRoughAlignmentModule(input_data=solver_ex2, args=[])
+
+    with pytest.raises(RenderModuleException):
+        mod.run()
+
+    os.environ.pop('MCRROOT', None)
+    mod = SolveRoughAlignmentModule(input_data=solver_ex3, args=[])
+
+    with pytest.raises(mm.ValidationError):
+        mod.run()
+
 
 
 def test_setting_new_z_montage_scape(render, montage_stack, downsample_sections_dir):
