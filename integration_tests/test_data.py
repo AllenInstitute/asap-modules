@@ -189,6 +189,7 @@ ROUGH_MAPPED_PT_MATCH_COLLECTION = render_json_template(example_env, 'rough_alig
 
 rough_project = "rough_align_test"
 
+ROUGH_MASK_DIR = '/allen/aibs/pipeline/image_processing/volume_assembly/em_modules_test_data/rough_align_test_data/masks'
 
 test_rough_parameters = render_json_template(example_env,
     'run_rough_job_for_chunk_template.json',
@@ -203,16 +204,16 @@ test_rough_parameters = render_json_template(example_env,
     lastz = 1022
     )
 
-rough_solver_example = render_json_template(example_env, 'solver_montage_test.json',
-                                            render_project = rough_project,
-                                            render_host=render_host,
-                                            render_owner=render_test_owner,
-                                            render_port=render_port,
-                                            mongo_port=os.environ.get('MONGO_PORT', 27017),
-                                            render_mongo_host=os.environ.get('RENDER_MONGO_HOST', 'localhost'),
-                                            render_output_owner=render_test_owner,
-                                            render_client_scripts=client_script_location,
-                                            solver_output_dir=tempfile.mkdtemp())
+test_rough_parameters_python = render_json_template(example_env,
+    'rough_align_python_input.json',
+    render_host = render_host,
+    render_port = render_port,
+    render_project = rough_project,
+    render_owner = render_test_owner,
+    render_client_scripts = client_script_location,
+    firstz = 1020,
+    lastz = 1022
+    )
 
 apply_rough_alignment_example = {
     "render": {
