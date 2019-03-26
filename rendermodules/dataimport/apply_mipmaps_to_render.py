@@ -102,7 +102,22 @@ class AddMipMapsToStack(StackTransitionModule):
 
         self.output_tilespecs_to_stack(tilespecs, output_stack,
                                        sharedTransforms=identified_tforms)
-        self.output({"output_stack": output_stack})
+
+        missing_ts_zs = self.validate_apply_mipmaps(self.args['input_stack'], output_stack, zvalues)
+
+        self.output({"output_stack": output_stack, "missing_tilespecs_zs": missing_ts_zs})
+
+    def validate_apply_mipmaps(self, input_stack, output_stack, zvalues):
+        missing_ts_zs = []
+        
+        for z in zvalues:
+            input_rs = renderapi.resolvedtiles.get_resolved_tiles_from_z(input_stack, z, render=self.render)
+            output_rs = renderapi.resolvedtiles.get_resolved_tiles_from_z(output_stack, z, render=self.render)
+            if len(input_rs.tilespecs) != len(output_rs.tilespecs):
+                missing_ts_zs.append(z)
+        
+        return missing_ts_zs
+
 
 
 if __name__ == "__main__":
