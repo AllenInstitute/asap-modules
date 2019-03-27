@@ -265,14 +265,9 @@ def apply_rough_alignment(render,
                     keep_ref_tforms=True)
                 t.tforms = newt
             t.z = newz
-<<<<<<< HEAD
             #t.z = z
             if remap_section_ids:
                 t.layout.sectionId = "%s.0"%str(int(newz))
-
-        
-=======
-            t.layout.sectionId = "%s.0" % str(int(newz))
 
         if filter_montage_output_with_masks:
             tf.M[0:2, 0:2] /= scale
@@ -282,7 +277,6 @@ def apply_rough_alignment(render,
                     lowres_ts[0],
                     mask_map)
 
->>>>>>> 9630238d473645db944a3808738d7c3098f0bb41
         renderapi.client.import_tilespecs(
             output_stack, highres_ts1,
             sharedTransforms=sharedTransforms_highrests1, render=render)
@@ -321,13 +315,8 @@ class ApplyRoughAlignmentTransform(RenderModule):
                         self.args['filter_montage_output_with_masks'],
                         self.args['mask_exts'],
                         apply_scale=self.args['apply_scale'],
-<<<<<<< HEAD
                         consolidateTransforms=self.args['consolidate_transforms'],
                         remap_section_ids=self.args['remap_section_ids'])
-=======
-                        consolidateTransforms=self.args[
-                            'consolidate_transforms'])
->>>>>>> 9630238d473645db944a3808738d7c3098f0bb41
 
         # Create the output stack if it doesn't exist
         if self.args['output_stack'] not in self.render.run(
