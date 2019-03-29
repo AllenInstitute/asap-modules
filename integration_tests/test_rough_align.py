@@ -8,18 +8,19 @@ import glob
 import copy
 import marshmallow as mm
 from six.moves import urllib
-from test_data import (ROUGH_MONTAGE_TILESPECS_JSON,
-                       ROUGH_MONTAGE_TRANSFORM_JSON,
-                       ROUGH_POINT_MATCH_COLLECTION,
-                       ROUGH_DS_TEST_TILESPECS_JSON,
-                       ROUGH_MAPPED_PT_MATCH_COLLECTION,
-                       ROUGH_MASK_DIR,
-                       render_params,
-                       test_rough_parameters_python,
-                       test_rough_parameters as solver_example,
-                       apply_rough_alignment_example as ex1,
-                       rough_solver_example as solver_input,
-                       pool_size)
+from test_data import (
+        ROUGH_MONTAGE_TILESPECS_JSON,
+        ROUGH_MONTAGE_TRANSFORM_JSON,
+        ROUGH_POINT_MATCH_COLLECTION,
+        ROUGH_DS_TEST_TILESPECS_JSON,
+        ROUGH_MAPPED_PT_MATCH_COLLECTION,
+        ROUGH_MASK_DIR,
+        render_params,
+        test_rough_parameters_python,
+        test_rough_parameters as solver_example,
+        apply_rough_alignment_example as ex1,
+        rough_solver_example as solver_input,
+        pool_size)
 
 from rendermodules.module.render_module import RenderModuleException
 from rendermodules.materialize.render_downsample_sections import RenderSectionAtScale, create_tilespecs_without_mipmaps
