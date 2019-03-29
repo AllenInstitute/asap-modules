@@ -37,7 +37,10 @@ class ZValueParameters(  # argschema.schemas.DefaultSchema,
     minZ = argschema.fields.Int(required=False)
     maxZ = argschema.fields.Int(required=False)
     z = argschema.fields.Int(required=False)
-    zValues = argschema.fields.List(argschema.fields.Int, required=False)
+    zValues = argschema.fields.List(
+            argschema.fields.Int,
+            cli_as_single_argument=True,
+            required=False)
 
     @post_load
     def generate_zValues(self, data):
@@ -87,8 +90,10 @@ class RenderStackVersion(argschema.schemas.DefaultSchema):
     mipmapPathBuilder = argschema.fields.Nested(RenderMipMapPathBuilder,
                                                 required=False)
     cycle = argschema.fields.Nested(RenderCycle, required=False)
-    stackResolutionValues = argschema.fields.List(argschema.fields.Int,
-                                                  required=False)
+    stackResolutionValues = argschema.fields.List(
+            argschema.fields.Int,
+            cli_as_single_argument=True,
+            required=False)
 
 
 class OutputStackParameters(RenderParameters, ZValueParameters,
