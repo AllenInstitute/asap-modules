@@ -44,8 +44,8 @@ class RemapZsModule(StackTransitionModule):
                 self.input_stack, z, render=self.render)
             for ts in resolvedtiles.tilespecs:
                 ts.z = newz
-                if self.args.get('remap_sectionId'):
-                    ts.layout.sectionId = self.sectionId_from_z(newz)
+                #if self.args.get('remap_sectionId'):
+                #    ts.layout.sectionId = self.sectionId_from_z(newz)
             self.output_tilespecs_to_stack(
                 resolvedtiles.tilespecs,
                 sharedTransforms=resolvedtiles.transforms,

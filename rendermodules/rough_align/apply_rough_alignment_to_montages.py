@@ -264,7 +264,7 @@ def apply_rough_alignment(render,
                     keep_ref_tforms=True)
                 t.tforms = newt
             t.z = newz
-            t.layout.sectionId = "%s.0" % str(int(newz))
+            #t.layout.sectionId = "%s.0" % str(int(newz))
 
         if filter_montage_output_with_masks:
             tf.M[0:2, 0:2] /= scale
