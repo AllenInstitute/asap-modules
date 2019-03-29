@@ -144,16 +144,16 @@ def test_points_in_mask():
 
     # all should be weight=1 (included)
     w1pts = np.random.rand(2, 100)
-    w1pts[0, :] *= 1000
-    w1pts[1, :] *= 500
+    w1pts[0, :] *= 999
+    w1pts[1, :] *= 499
     w1 = points_in_mask(mask, w1pts.tolist())
     assert np.all(np.isclose(w1, 1.0))
 
     # all should be weight=0 (excluded)
     w0pts = np.random.rand(2, 100)
-    w0pts[0, :] *= 1000
-    w0pts[1, :] *= 400
-    w0pts[1, :] += 510
+    w0pts[0, :] *= 999
+    w0pts[1, :] *= 499
+    w0pts[1, :] += 500
     w0 = points_in_mask(mask, w0pts.tolist())
     assert np.all(np.isclose(w0, 0.0))
 
