@@ -11,7 +11,6 @@ from rendermodules.module.render_module import \
         RenderModuleException
 import pytest
 import numpy as np
-from shapely.geometry import Polygon, Point
 import itertools
 
 DS_MASK_TEST_PATH = os.path.join(
@@ -55,6 +54,7 @@ def downsampled_stack(render):
                                     'COMPLETE',
                                     render=render)
     yield stack
+    renderapi.stack.delete_stack(stack, render=render)
 
 
 @pytest.fixture(scope='module')
@@ -66,6 +66,8 @@ def downsampled_collection(render):
                 json.load(f),
                 render=render)
     yield collection
+    renderapi.pointmatch.delete_collection(
+        collection, render=render)
 
 
 def zs_have_masks(render, stack):
