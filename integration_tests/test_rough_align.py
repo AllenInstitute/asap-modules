@@ -1278,3 +1278,80 @@ def test_filterNameList_warning_rendersection(tmpdir):
         "filterListName": "notafilter"}
     with pytest.warns(UserWarning):
         mod = RenderSectionAtScale(input_data=warn_input, args=[])
+
+
+def test_pairwise_rigid_alignment_coverage(
+        render,
+        montage_scape_stack,
+        rough_point_match_collection,
+        tmpdir_factory):
+    output_lowres_stack = '{}_DS_Pairwise_rigid'.format(montage_scape_stack)
+
+    output_directory = str(tmpdir_factory.mktemp('pwr_output_json'))
+
+    example = {
+            "render": dict(solver_example['render']),
+            "input_stack": montage_scape_stack,
+            "output_stack": output_lowres_stack,
+            "match_collection": rough_point_match_collection,
+            "close_stack": True,
+            "minZ": 1020,
+            "maxZ": 1022,
+            "gap_file": None,
+            "pool_size": 2,
+            "output_json": os.path.join(output_directory, 'output.json'),
+            "overwrite_zlayer": True,
+            "translate_to_positive": True,
+            "translation_buffer": [50, 50]
+            }
+
+    # normal
+    ex = dict(example)
+    pwmod = PairwiseRigidRoughAlignment(input_data=ex, args=[])
+    pwmod.run()
+    with open(ex['output_json'], 'r') as f:
+        outj = json.load(f)
+    assert(outj['masked'] == [])
+    assert(outj['missing'] == [])
+    assert(len(outj['residuals']) == 2)
+    renderapi.stack.delete_stack(
+            pwmod.output_stack, render=render)
+
+    # gap file
+    ex = dict(example)
+    gapfile = os.path.join(output_directory, "gapfile.json")
+    with open(gapfile, 'w') as f:
+        json.dump({"1020": "gap for some reason"}, f)
+    ex['gap_file'] = gapfile
+    pwmod = PairwiseRigidRoughAlignment(input_data=ex, args=[])
+    pwmod.run()
+    with open(ex['output_json'], 'r') as f:
+        outj = json.load(f)
+    assert(outj['masked'] == [])
+    assert(outj['missing'] == [1020])
+    assert(len(outj['residuals']) == 1)
+    renderapi.stack.delete_stack(
+            pwmod.output_stack, render=render)
+
+    # make one match missing
+    ex = dict(example)
+    render = renderapi.connect(**ex['render'])
+    matches = renderapi.pointmatch.get_matches_outside_group(
+            rough_point_match_collection,
+            "1020.0",
+            render=render)
+    new_collection = 'with_missing'
+    renderapi.pointmatch.import_matches(
+            new_collection,
+            matches,
+            render=render)
+    ex['match_collection'] = new_collection
+
+    with pytest.raises(RenderModuleException):
+        pwmod = PairwiseRigidRoughAlignment(input_data=ex, args=[])
+        pwmod.run()
+
+    renderapi.pointmatch.delete_collection(
+            new_collection, render=render)
+    renderapi.stack.delete_stack(
+            pwmod.output_stack, render=render)
