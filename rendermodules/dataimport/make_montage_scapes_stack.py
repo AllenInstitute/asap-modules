@@ -25,6 +25,7 @@ example = {
     "image_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch",
     "set_new_z":"False",
     "new_z_start": 1020,
+    "remap_section_ids": False,
     "imgformat":"png",
     "scale": 0.1,
     "apply_scale": "False",
