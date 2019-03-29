@@ -126,6 +126,11 @@ class MakeMontageScapeSectionStackParameters(OutputStackParameters):
         default=0,
         missing=0,
         metadata={'description':'new starting z index'})
+    remap_section_ids = Boolean(
+        required=False,
+        default=False,
+        missing=False,
+        metadata={'description':'change section ids to new z values. default = False'})
     imgformat = Str(
         required=False,
         default='tif',

@@ -204,6 +204,17 @@ test_rough_parameters = render_json_template(example_env,
     lastz = 1022
     )
 
+rough_solver_example = render_json_template(example_env, 'solver_montage_test.json',
+                                            render_project = rough_project,
+                                            render_host=render_host,
+                                            render_owner=render_test_owner,
+                                            render_port=render_port,
+                                            mongo_port=os.environ.get('MONGO_PORT', 27017),
+                                            render_mongo_host=os.environ.get('RENDER_MONGO_HOST', 'localhost'),
+                                            render_output_owner=render_test_owner,
+                                            render_client_scripts=client_script_location,
+                                            solver_output_dir=tempfile.mkdtemp())
+
 test_rough_parameters_python = render_json_template(example_env,
     'rough_align_python_input.json',
     render_host = render_host,
@@ -214,6 +225,7 @@ test_rough_parameters_python = render_json_template(example_env,
     firstz = 1020,
     lastz = 1022
     )
+
 
 apply_rough_alignment_example = {
     "render": {
