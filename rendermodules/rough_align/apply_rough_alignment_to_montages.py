@@ -58,6 +58,7 @@ example = {
     "tilespec_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch",
     "map_z": "False",
     "new_z": [251, 252, 253],
+    "remap_section_ids": "False",
     "consolidate_transforms": "True",
     "old_z": [1020, 1021, 1022],
     "scale": 0.1,
@@ -182,12 +183,12 @@ def apply_rough_alignment(render,
                           mask_exts,
                           Z,
                           apply_scale=False,
-                          consolidateTransforms=True):
-    z = Z[0]  # z value from the montage stack
-    # - to be mapped to the newz values in lowres stack
-    newz = Z[1]  # z value in the lowres stack for this montage
-
-    session = requests.session()
+                          consolidateTransforms=True,
+                          remap_section_ids=False):
+    z = Z[0] # z value from the montage stack - to be mapped to the newz values in lowres stack
+    newz = Z[1] # z value in the lowres stack for this montage
+    
+    session=requests.session()
     try:
         # get lowres stack tile specs
         logger.debug('getting tilespecs from {} z={}'.format(lowres_stack, z))
@@ -262,8 +263,9 @@ def apply_rough_alignment(render,
                     keep_ref_tforms=True)
                 t.tforms = newt
             t.z = newz
-            t.layout.sectionId = "%s.0" % str(int(newz))
-
+            if remap_section_ids:
+                t.layout.sectionId = "%s.0"%str(int(newz))
+        
         if filter_montage_output_with_masks:
             tf.M[0:2, 0:2] /= scale
             resolved_highrests1.tilespecs = highres_ts1
@@ -310,8 +312,8 @@ class ApplyRoughAlignmentTransform(RenderModule):
                         self.args['filter_montage_output_with_masks'],
                         self.args['mask_exts'],
                         apply_scale=self.args['apply_scale'],
-                        consolidateTransforms=self.args[
-                            'consolidate_transforms'])
+                        consolidateTransforms=self.args['consolidate_transforms'],
+                        remap_section_ids=self.args['remap_section_ids'])
 
         # Create the output stack if it doesn't exist
         if self.args['output_stack'] not in self.render.run(
