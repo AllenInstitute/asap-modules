@@ -36,7 +36,7 @@ from rendermodules.rough_align.apply_rough_alignment_to_montages import (ApplyRo
                                                                          apply_rough_alignment)
 from rendermodules.solver.solve import Solve_stack
 import shutil
-
+import numpy as np
 
 
 @pytest.fixture(scope='module')
