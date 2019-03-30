@@ -13,33 +13,33 @@ from marshmallow import post_load, ValidationError
 import argschema
 
 
-class RoughSlicerSchema(InputStackParameters, ProcessPoolParameters):
-    x_slice_locs = List(
-        Float,
-        required=False,
-        default=[0.5],
-        cli_as_single_argument=True,
-        description="fractional location of x_slices")
-    y_slice_locs = List(
-        Float,
-        required=False,
-        default=[0.5],
-        cli_as_single_argument=True,
-        description="fractional location of x_slices")
-    slice_locs_as_pixels = Bool(
-        required=False,
-        default=False,
-        missing=False,
-        description=("interpret slice_locs as absolute pixel "
-                     "coordinates instead of fractional."))
-    output_dir = OutputDir(
-        required=True,
-        description="Location_of_output_slices")
-    bounds_from_stack = Str(
-        require=False,
-        default=None,
-        missing=None,
-        description=("get bounds from this stack instead of input_stack"))
+# class RoughSlicerSchema(InputStackParameters, ProcessPoolParameters):
+#     x_slice_locs = List(
+#         Float,
+#         required=False,
+#         default=[0.5],
+#         cli_as_single_argument=True,
+#         description="fractional location of x_slices")
+#     y_slice_locs = List(
+#         Float,
+#         required=False,
+#         default=[0.5],
+#         cli_as_single_argument=True,
+#         description="fractional location of x_slices")
+#     slice_locs_as_pixels = Bool(
+#         required=False,
+#         default=False,
+#         missing=False,
+#         description=("interpret slice_locs as absolute pixel "
+#                      "coordinates instead of fractional."))
+#     output_dir = OutputDir(
+#         required=True,
+#         description="Location_of_output_slices")
+#     bounds_from_stack = Str(
+#         require=False,
+#         default=None,
+#         missing=None,
+#         description=("get bounds from this stack instead of input_stack"))
 
 
 class MakeAnchorStackSchema(InputStackParameters, OutputStackParameters):
