@@ -1575,6 +1575,6 @@ def test_pairwise_rigid_alignment_coverage(
             render=render)
     ex['match_collection'] = new_collection
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(RenderModuleException):
         pwmod = PairwiseRigidRoughAlignment(input_data=ex, args=[])
         pwmod.run()
