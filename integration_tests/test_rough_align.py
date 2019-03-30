@@ -26,6 +26,8 @@ from rendermodules.module.render_module import RenderModuleException
 from rendermodules.materialize.render_downsample_sections import RenderSectionAtScale, create_tilespecs_without_mipmaps
 from rendermodules.dataimport.make_montage_scapes_stack import MakeMontageScapeSectionStack, create_montage_scape_tile_specs
 from rendermodules.rough_align.do_rough_alignment import SolveRoughAlignmentModule
+from rendermodules.rough_align.pairwise_rigid_rough import \
+        PairwiseRigidRoughAlignment
 from rendermodules.solver.solve import Solve_stack
 from rendermodules.rough_align.apply_rough_alignment_to_montages import (ApplyRoughAlignmentTransform,
                                                                          #example as ex1,
