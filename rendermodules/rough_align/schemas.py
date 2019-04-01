@@ -133,22 +133,23 @@ class ApplyRoughAlignmentTransformParameters(RenderParameters):
         required=False,
         default=False,
         missing=False,
-        metadata={'description':
-                  "map the montage Z indices to the rough alignment "
-                  "indices (default - False)"})
-    # map_z_start = mm.fields.Int(
-    #     required=False,
-    #     default=-1,
-    #     missing=-1,
-    #     metadata={
-    #               'description':
-    #               'the starting index of the z in the montage stack'})
-    # minZ = mm.fields.Int(
-    #     required=True,
-    #     metadata={'description':'Minimum Z value'})
-    # maxZ = mm.fields.Int(
-    #     required=True,
-    #     metadata={'description':'Maximum Z value'})
+        metadata={'description':'map the montage Z indices to the rough alignment indices (default - False)'})
+    remap_section_ids = mm.fields.Boolean(
+        required=False,
+        default=False,
+        missing=False,
+        metadata={'description':'map section ids as well with the new z mapping. Default = False'})
+    #map_z_start = mm.fields.Int(
+    #    required=False,
+    #    default=-1,
+    #    missing=-1,
+    #    metadata={'description':'the starting index of the z in the montage stack'})
+    #minZ = mm.fields.Int(
+    #    required=True,
+    #    metadata={'description':'Minimum Z value'})
+    #maxZ = mm.fields.Int(
+    #    required=True,
+    #    metadata={'description':'Maximum Z value'})
     consolidate_transforms = mm.fields.Boolean(
         required=False,
         default=True,
@@ -220,6 +221,7 @@ class ApplyRoughAlignmentTransformParameters(RenderParameters):
                                       "not match with old_z list count")
         else:
             data['new_z'] = data['old_z']
+            data['remap_section_ids'] = False
 
 
 class LowresStackParameters(DefaultSchema):
