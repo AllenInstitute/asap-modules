@@ -113,7 +113,7 @@ class AddMipMapsToStack(StackTransitionModule):
         for z in zvalues:
             input_rs = renderapi.resolvedtiles.get_resolved_tiles_from_z(input_stack, z, render=self.render)
             output_rs = renderapi.resolvedtiles.get_resolved_tiles_from_z(output_stack, z, render=self.render)
-            if len(input_rs.tilespecs) != len(output_rs.tilespecs):
+            if len(input_rs.tilespecs) != len(output_rs.tilespecs): # pragma: no cover
                 missing_ts_zs.append(z)
         
         return missing_ts_zs
