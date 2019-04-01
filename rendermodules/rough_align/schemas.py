@@ -2,8 +2,8 @@ from argschema import InputDir
 import marshmallow as mm
 from argschema.fields import Bool, Float, Int, Nested, Str, InputFile, List
 from argschema.schemas import DefaultSchema
-from ..module.schemas import RenderParameters
-from marshmallow import post_load, ValidationError
+from ..module.schemas import RenderParameters, OutputStackParameters
+from marshmallow import post_load, ValidationError, pre_load
 import argschema
 
 
@@ -32,22 +32,23 @@ class ApplyRoughAlignmentTransformParameters(RenderParameters):
         required=False,
         default=False,
         missing=False,
-        metadata={'description':
-                  "map the montage Z indices to the rough alignment "
-                  "indices (default - False)"})
-    # map_z_start = mm.fields.Int(
-    #     required=False,
-    #     default=-1,
-    #     missing=-1,
-    #     metadata={
-    #               'description':
-    #               'the starting index of the z in the montage stack'})
-    # minZ = mm.fields.Int(
-    #     required=True,
-    #     metadata={'description':'Minimum Z value'})
-    # maxZ = mm.fields.Int(
-    #     required=True,
-    #     metadata={'description':'Maximum Z value'})
+        metadata={'description':'map the montage Z indices to the rough alignment indices (default - False)'})
+    remap_section_ids = mm.fields.Boolean(
+        required=False,
+        default=False,
+        missing=False,
+        metadata={'description':'map section ids as well with the new z mapping. Default = False'})
+    #map_z_start = mm.fields.Int(
+    #    required=False,
+    #    default=-1,
+    #    missing=-1,
+    #    metadata={'description':'the starting index of the z in the montage stack'})
+    #minZ = mm.fields.Int(
+    #    required=True,
+    #    metadata={'description':'Minimum Z value'})
+    #maxZ = mm.fields.Int(
+    #    required=True,
+    #    metadata={'description':'Maximum Z value'})
     consolidate_transforms = mm.fields.Boolean(
         required=False,
         default=True,
@@ -119,6 +120,7 @@ class ApplyRoughAlignmentTransformParameters(RenderParameters):
                                       "not match with old_z list count")
         else:
             data['new_z'] = data['old_z']
+            data['remap_section_ids'] = False
 
 
 class LowresStackParameters(DefaultSchema):
@@ -517,3 +519,47 @@ class ApplyRoughAlignmentOutputParameters(DefaultSchema):
             description="list of z values that were applied to")
     output_stack = argschema.fields.Str(
             description="stack where applied transforms were set")
+
+
+class DownsampleMaskHandlerSchema(RenderParameters):
+    stack = argschema.fields.Str(
+        required=True,
+        description="stack that is read and modified with masks")
+    close_stack = argschema.fields.Bool(
+        require=True,
+        default=True,
+        missing=True,
+        description="set COMPLETE or not")
+    mask_dir = argschema.fields.InputDir(
+        required=True,
+        missing=None,
+        default=None,
+        description=("directory containing masks, named <z>_*.png where"
+                     "<z> is a z value in input_stack and may be specified"
+                     "in z_apply"))
+    collection = argschema.fields.Str(
+        required=True,
+        missing=None,
+        default=None,
+        description=("name of collection to be filtered by mask, or reset"
+                     "can be None for no operation"))
+    zMask = argschema.fields.List(
+        argschema.fields.Int,
+        required=True,
+        missing=None,
+        default=None,
+        cli_as_single_argument=True,
+        description=("z values for which the masks will be set"))
+    zReset = argschema.fields.List(
+        argschema.fields.Int,
+        required=True,
+        missing=None,
+        default=None,
+        cli_as_single_argument=True,
+        description=("z values for which the masks will be reset"))
+    mask_exts = List(
+        Str,
+        required=False,
+        default=['png', 'tif'],
+        description="what kind of mask files to recognize")
+

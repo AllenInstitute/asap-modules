@@ -8,6 +8,8 @@ from rendermodules.rough_align.schemas import (
         ApplyRoughAlignmentTransformParameters,
         ApplyRoughAlignmentOutputParameters)
 from rendermodules.stack.consolidate_transforms import consolidate_transforms
+from rendermodules.rough_align.downsample_mask_handler \
+        import polygon_list_from_mask
 from functools import partial
 import logging
 import requests
@@ -56,6 +58,7 @@ example = {
     "tilespec_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch",
     "map_z": "False",
     "new_z": [251, 252, 253],
+    "remap_section_ids": "False",
     "consolidate_transforms": "True",
     "old_z": [1020, 1021, 1022],
     "scale": 0.1,
@@ -81,22 +84,18 @@ def get_mask_paths(
                 results[t.tileId] = t.ip[0].maskUrl
 
     elif mask_input_dir is not None:
-        tids = [t.tileId for t in tilespecs]
-        maskfiles = []
-        for ext in exts:
-            e = mask_input_dir + '/*.' + ext
-            maskfiles += glob.glob(e)
-        maskbasenames = np.array([os.path.basename(os.path.splitext(p)[0])
-                                  for p in maskfiles])
-        for t in tids:
-            ind = np.argwhere(maskbasenames == t).flatten()
-            if ind.size > 1:
-                raise RenderModuleException("more than one mask in "
-                                            "directory %s matches tileId %s" %
-                                            (mask_input_dir, t))
-            if ind.size == 0:
-                continue
-            results[t] = pathlib.Path(maskfiles[ind[0]]).as_uri()
+        for t in tilespecs:
+            for ext in exts:
+                e = os.path.join(
+                        mask_input_dir,
+                        t.tileId + os.extsep + ext)
+                if os.path.isfile(e):
+                    if t.tileId in results:
+                        raise RenderModuleException(
+                                "more than one mask in "
+                                "directory %s matches tileId %s" %
+                                (mask_input_dir, t))
+                    results[t.tileId] = pathlib.Path(e).as_uri()
 
     return results
 
@@ -145,26 +144,26 @@ def filter_highres_with_masks(resolved_highres, tspec_lowres, mask_map):
                  urllib.parse.urlparse(
                      mask_map[tspec_lowres.tileId]).path)
     maskim = cv2.imread(impath, 0)
-    maskim = 255 - maskim
-    _, contours, _ = cv2.findContours(
-                         maskim,
-                         cv2.RETR_TREE,
-                         cv2.CHAIN_APPROX_SIMPLE)
 
-    mask_polygons = []
-    for c in contours:
-        c = c.squeeze().astype('float')
-        for tf in tspec_lowres.tforms:
-            c = tf.tform(c)
-        mask_polygons.append(Polygon(c).buffer(0))
+    # in this case, it is easiest to outline regions where
+    # mask is zero, and then include tilespecs that do
+    # not intersect the mask. I think this handles some
+    # shapely cases where Polygon.contains() does not work
+    # well with polygons that overlap exactly on one edge
+    # or, there is some rounding/precision issue
+    mask_polygons = polygon_list_from_mask(
+            255 - maskim,
+            transforms=tspec_lowres.tforms)
 
     new_highres = []
     for t in resolved_highres.tilespecs:
         tc = t.bbox_transformed(
                     reference_tforms=resolved_highres.transforms)
         tpoly = Polygon(tc).buffer(0)
-        for p in mask_polygons:
-            if not p.intersects(tpoly):
+        pint = [not p.intersects(tpoly) for p in mask_polygons]
+        if np.all(pint):
+        #for p in mask_polygons:
+        #    if not p.intersects(tpoly):
                 new_highres.append(t)
 
     return new_highres
@@ -184,12 +183,12 @@ def apply_rough_alignment(render,
                           mask_exts,
                           Z,
                           apply_scale=False,
-                          consolidateTransforms=True):
-    z = Z[0]  # z value from the montage stack
-    # - to be mapped to the newz values in lowres stack
-    newz = Z[1]  # z value in the lowres stack for this montage
-
-    session = requests.session()
+                          consolidateTransforms=True,
+                          remap_section_ids=False):
+    z = Z[0] # z value from the montage stack - to be mapped to the newz values in lowres stack
+    newz = Z[1] # z value in the lowres stack for this montage
+    
+    session=requests.session()
     try:
         # get lowres stack tile specs
         logger.debug('getting tilespecs from {} z={}'.format(lowres_stack, z))
@@ -264,8 +263,9 @@ def apply_rough_alignment(render,
                     keep_ref_tforms=True)
                 t.tforms = newt
             t.z = newz
-            t.layout.sectionId = "%s.0" % str(int(newz))
-
+            if remap_section_ids:
+                t.layout.sectionId = "%s.0"%str(int(newz))
+        
         if filter_montage_output_with_masks:
             tf.M[0:2, 0:2] /= scale
             resolved_highrests1.tilespecs = highres_ts1
@@ -312,8 +312,8 @@ class ApplyRoughAlignmentTransform(RenderModule):
                         self.args['filter_montage_output_with_masks'],
                         self.args['mask_exts'],
                         apply_scale=self.args['apply_scale'],
-                        consolidateTransforms=self.args[
-                            'consolidate_transforms'])
+                        consolidateTransforms=self.args['consolidate_transforms'],
+                        remap_section_ids=self.args['remap_section_ids'])
 
         # Create the output stack if it doesn't exist
         if self.args['output_stack'] not in self.render.run(
