@@ -129,7 +129,7 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory,
     t.minIntensity = 0
     t.maxIntensity = 255
     t.z = newz
-    t.layout.sectionId = "%s.0" % str(int(newz))
+    #t.layout.sectionId = "%s.0" % str(int(newz))
     if apply_scale:
         t.tforms = [renderapi.transform.AffineModel(
             M00=(1./scale), M11=(1./scale))]
