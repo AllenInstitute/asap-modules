@@ -26,6 +26,9 @@ from bokeh.palettes import Plasma256, Viridis256
 from ..module.render_module import RenderModule, RenderModuleException
 from rendermodules.em_montage_qc.schemas import RoughQCSchema, RoughQCOutputSchema
 
+import matplotlib
+matplotlib.use('Agg')
+
 example = {
     "render":{
         "host": "http://em-131db2",
