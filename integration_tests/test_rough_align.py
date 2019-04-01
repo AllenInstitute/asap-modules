@@ -84,7 +84,7 @@ def montage_stack(render, resolvedtiles_from_json):
     assert(set(zvalues) == set(zs))
 
     yield test_montage_stack
-    renderapi.stack.delete_stack(test_montage_stack, render=render)
+    #renderapi.stack.delete_stack(test_montage_stack, render=render)
 
 
 
@@ -296,7 +296,7 @@ def montage_z_mapped_stack(render, montage_stack, downsample_sections_dir):
         assert(z in zvalues)
 
     yield output_stack
-    renderapi.stack.delete_stack(output_stack, render=render)
+    #renderapi.stack.delete_stack(output_stack, render=render)
 
 
 @pytest.fixture(scope='module')
@@ -385,60 +385,30 @@ def test_do_mapped_rough_alignment_python(render,
     yield output_lowres_stack
     renderapi.stack.delete_stack(output_lowres_stack, render=render)
 
+
 @pytest.fixture(scope='module')
-def test_do_rough_alignment_python(render, montage_scape_stack, rough_point_match_collection, 
-                                    tmpdir_factory, output_lowres_stack=None):
-    
+def test_do_rough_alignment_python(
+        render, montage_scape_stack, rough_point_match_collection,
+        tmpdir_factory, output_lowres_stack=None):
+
     if output_lowres_stack == None:
         output_lowres_stack = '{}_DS_Rough_python'.format(montage_scape_stack)
     output_directory = str(tmpdir_factory.mktemp('output_json'))
 
-    solver_ex_py = copy.deepcopy(solver_input)
-    solver_ex_py = dict(solver_ex_py, **{
-        'first_section': 1020,
-        'last_section': 1022,
-        'solve_type': "3D",
-        'transformation': "rigid",
-        'input_stack': dict(solver_input['input_stack'], **{
-            'name': montage_scape_stack,
-            'db_interface': "render"
-        }),
-        'output_stack': dict(solver_input['output_stack'], **{
-            "name": "temp_stack",
-            "db_interface": "render"
-        }),
-        'pointmatch': dict(solver_input['pointmatch'], **{
-            'name': rough_point_match_collection,
-            'db_interface': "render"
-        }),
-        'matrix_assembly': dict(solver_input['matrix_assembly'], **{
-            'montage_pt_weight': 0,
-            'cross_pt_weight': 1.0
-        })
-    })
+    solver_input = copy.deepcopy(test_rough_parameters_python)
+    solver_input['input_stack']['name'] = montage_scape_stack
+    solver_input['output_stack']['name'] = output_lowres_stack
+    solver_input['pointmatch']['name'] = rough_point_match_collection
+    solver_input['output_json'] = os.path.join(output_directory, 'python_rough_solve_output.json')
 
-    out_json = os.path.join(output_directory, "output.json")
-
-    mod = Solve_stack(input_data=solver_ex_py, args=["--output_json", out_json])
-    mod.run()
-
-    solver_ex_py['input_stack']['name'] = "temp_stack"
-    solver_ex_py['tranformation'] = "AffineModel"
-    solver_ex_py['output_stack']['name'] = output_lowres_stack
-    mod = Solve_stack(input_data=solver_ex_py, args=["--output_json", out_json])
-    mod.run()
-
-    stacks = renderapi.render.get_stacks_by_owner_project(render=render)
-    assert(output_lowres_stack in stacks)
+    smod = Solve_stack(input_data=solver_input, args=[])
+    smod.run()
 
     zvalues = render.run(renderapi.stack.get_z_values_for_stack, output_lowres_stack)
     zs = [1020, 1021, 1022]
     assert(set(zvalues) == set(zs))
 
-    renderapi.stack.delete_stack("temp_stack", render=render)
-
     yield output_lowres_stack
-    renderapi.stack.delete_stack(output_lowres_stack, render=render)
 
 
 @pytest.fixture(scope='module')
@@ -516,7 +486,8 @@ def rough_downsample_stack(render, montage_scape_stack, rough_point_match_collec
     out_stack = '{}_DS_Rough'.format(montage_scape_stack)
 
     output_directory = str(tmpdir_factory.mktemp('output_json'))
-    solver_ex_py = dict(solver_input, **{
+    solver_ex_py = copy.deepcopy(solver_input)
+    solver_ex_py = dict(solver_ex_py, **{
         'first_section': 1020,
         'last_section': 1022,
         'solve_type': "3D",
@@ -555,6 +526,7 @@ def rough_downsample_stack(render, montage_scape_stack, rough_point_match_collec
     yield out_stack 
     renderapi.stack.delete_stack(out_stack, render=render)  
 
+
 @pytest.fixture(scope='module')
 def test_do_rough_alignment_with_scale(render, montage_scape_stack_with_scale, rough_point_match_collection, tmpdir_factory, output_lowres_stack=None):
     if output_lowres_stack == None:
@@ -584,29 +556,6 @@ def test_do_rough_alignment_with_scale(render, montage_scape_stack_with_scale, r
     yield output_lowres_stack
     renderapi.stack.delete_stack(output_lowres_stack, render=render)
 
-@pytest.fixture(scope='module')
-def test_do_rough_alignment_python(
-        render, montage_scape_stack, rough_point_match_collection,
-        tmpdir_factory, output_lowres_stack=None):
-
-    if output_lowres_stack == None:
-        output_lowres_stack = '{}_DS_Rough_python'.format(montage_scape_stack)
-    output_directory = str(tmpdir_factory.mktemp('output_json'))
-
-    solver_input = copy.deepcopy(test_rough_parameters_python)
-    solver_input['input_stack']['name'] = montage_scape_stack
-    solver_input['output_stack']['name'] = output_lowres_stack
-    solver_input['pointmatch']['name'] = rough_point_match_collection
-    solver_input['output_json'] = os.path.join(output_directory, 'python_rough_solve_output.json')
-
-    smod = Solve_stack(input_data=solver_input, args=[])
-    smod.run()
-
-    zvalues = render.run(renderapi.stack.get_z_values_for_stack, output_lowres_stack)
-    zs = [1020, 1021, 1022]
-    assert(set(zvalues) == set(zs))
-
-    yield output_lowres_stack
 
 def test_montage_scape_stack(render, montage_scape_stack):
     zvalues = render.run(renderapi.stack.get_z_values_for_stack, montage_scape_stack)
@@ -618,14 +567,15 @@ def test_point_match_collection(render, rough_point_match_collection):
     groupIds = render.run(renderapi.pointmatch.get_match_groupIds, rough_point_match_collection)
     assert(('1020.0' in groupIds) and ('1021.0' in groupIds) and ('1022.0' in groupIds))
 
+
 def test_apply_rough_alignment_transform(render, 
         montage_stack, 
         rough_downsample_stack, 
         tmpdir_factory, 
         prealigned_stack=None, 
         output_stack=None):
-
-    ex = dict(ex1, **{
+    ex = copy.deepcopy(ex1)
+    ex = dict(ex, **{
         'render': dict(ex1['render'], **render_params),
         'montage_stack': montage_stack,
         'lowres_stack': rough_downsample_stack,
@@ -668,9 +618,12 @@ def test_apply_rough_alignment_transform(render,
                     for ts in out_resolvedtiles.tilespecs])
 
 
-def test_mapped_apply_rough_alignment_transform(render, montage_stack, test_do_mapped_rough_alignment, tmpdir_factory, prealigned_stack=None, output_stack=None):
-    ex = dict(ex1, **{
-        'render': dict(ex1['render'], **render_params),
+def test_mapped_apply_rough_alignment_transform(
+        render, montage_stack, test_do_mapped_rough_alignment, 
+        tmpdir_factory, prealigned_stack=None, output_stack=None):
+    ex = copy.deepcopy(ex1)
+    ex = dict(ex, **{
+        'render': dict(ex['render'], **render_params),
         'montage_stack': montage_stack,
         'lowres_stack': test_do_mapped_rough_alignment,
         'prealigned_stack': None,
@@ -697,51 +650,6 @@ def test_mapped_apply_rough_alignment_transform(render, montage_stack, test_do_m
 
     with pytest.raises(mm.ValidationError):
         mod = ApplyRoughAlignmentTransform(input_data=ex4, args=[])
-
-
-def test_apply_rough_alignment_transform(render, montage_stack, test_do_rough_alignment, tmpdir_factory, prealigned_stack=None, output_stack=None):
-
-     ex = dict(ex1, **{
-         'render': dict(ex1['render'], **render_params),
-         'montage_stack': montage_stack,
-         'lowres_stack': test_do_rough_alignment,
-         'prealigned_stack': None,
-         'output_stack': '{}_Rough'.format(montage_stack),
-         'tilespec_directory': str(tmpdir_factory.mktemp('scratch')),
-         'old_z': [1020, 1021, 1022],
-         'scale': 0.1,
-         'pool_size': pool_size,
-         'output_json': str(tmpdir_factory.mktemp('output').join('output.json')),
-         'loglevel': 'DEBUG'
-     })
-     #ex2 = dict(ex, **{'minZ': 1022, 'maxZ': 1020})
-     #ex4 = dict(ex, **{'map_z': True, 'map_z_start': -1})
-
-     mod = ApplyRoughAlignmentTransform(input_data=ex, args=[])
-     mod.run()
-
-     #zend = ex['maxZ']
-     #zstart = ex['minZ']
-     zstart = 1020
-     zend = 1022
-
-     zvalues = render.run(renderapi.stack.get_z_values_for_stack, ex['output_stack'])
-     zs = range(zstart, zend+1)
-
-     assert(set(zvalues) == set(zs))
-     for z in zs:
-         # WARNING: montage stack should be different than output stack
-         in_resolvedtiles = render.run(
-             renderapi.resolvedtiles.get_resolved_tiles_from_z,
-                 ex['montage_stack'], z)
-         out_resolvedtiles = render.run(
-             renderapi.resolvedtiles.get_resolved_tiles_from_z,
-                 ex['output_stack'], z)
-         assert in_resolvedtiles.transforms
-         assert in_resolvedtiles.transforms == out_resolvedtiles.transforms
-         assert all([isinstance(
-             ts.tforms[0], renderapi.transform.ReferenceTransform)
-                     for ts in out_resolvedtiles.tilespecs])
 
 
 def modular_test_for_masks(render, ex):
@@ -773,100 +681,101 @@ def modular_test_for_masks(render, ex):
 
 
 def test_apply_rough_alignment_with_masks(render, montage_stack, test_do_rough_alignment_python, tmpdir_factory, prealigned_stack=None, output_stack=None):
+    ex = copy.deepcopy(ex1)
+    ex = dict(ex, **{
+        'render': dict(ex['render'], **render_params),
+        'montage_stack': montage_stack,
+        'lowres_stack': test_do_rough_alignment_python,
+        'prealigned_stack': None,
+        'output_stack': '{}_Rough'.format(montage_stack),
+        'tilespec_directory': str(tmpdir_factory.mktemp('scratch')),
+        'old_z': [1020, 1021, 1022],
+        'scale': 0.1,
+        'pool_size': pool_size,
+        'output_json': str(tmpdir_factory.mktemp('output').join('output.json')),
+        'loglevel': 'DEBUG'
+    })
 
-     ex = dict(ex1, **{
-         'render': dict(ex1['render'], **render_params),
-         'montage_stack': montage_stack,
-         'lowres_stack': test_do_rough_alignment_python,
-         'prealigned_stack': None,
-         'output_stack': '{}_Rough'.format(montage_stack),
-         'tilespec_directory': str(tmpdir_factory.mktemp('scratch')),
-         'old_z': [1020, 1021, 1022],
-         'scale': 0.1,
-         'pool_size': pool_size,
-         'output_json': str(tmpdir_factory.mktemp('output').join('output.json')),
-         'loglevel': 'DEBUG'
-     })
+    ntiles_montage = len(renderapi.tilespec.get_tile_specs_from_stack(
+        ex['montage_stack'], render=render))
 
-     ntiles_montage = len(renderapi.tilespec.get_tile_specs_from_stack(
-         ex['montage_stack'], render=render))
+    # make some clones, redirect output
+    orig_montage = str(ex['montage_stack'])
+    orig_lowres = str(ex['lowres_stack'])
+    ex['montage_stack'] = "mask_montage_input_stack"
+    ex['lowres_stack'] = "mask_rough_stack"
+    renderapi.stack.clone_stack(orig_montage, ex['montage_stack'], render=render)
 
-     # make some clones, redirect output
-     orig_montage = str(ex['montage_stack'])
-     orig_lowres = str(ex['lowres_stack'])
-     ex['montage_stack'] = "mask_montage_input_stack"
-     ex['lowres_stack'] = "mask_rough_stack"
-     renderapi.stack.clone_stack(orig_montage, ex['montage_stack'], render=render)
+    # set mask, but neither boolean control
+    renderapi.stack.clone_stack(orig_lowres, ex['lowres_stack'], render=render)
+    ex['mask_input_dir'] = ROUGH_MASK_DIR
+    ex['filter_montage_output_with_masks'] = False
+    ex['update_lowres_with_masks'] = False
+    ex['output_stack'] = "mask_montage_output_stack_no_mask"
+    modular_test_for_masks(render, ex)
+    ntiles = len(renderapi.tilespec.get_tile_specs_from_stack(
+        ex['output_stack'], render=render))
+    assert(ntiles == ntiles_montage)
+    renderapi.stack.delete_stack(ex['lowres_stack'], render=render)
 
-     # set mask, but neither boolean control
-     renderapi.stack.clone_stack(orig_lowres, ex['lowres_stack'], render=render)
-     ex['mask_input_dir'] = ROUGH_MASK_DIR
-     ex['filter_montage_output_with_masks'] = False
-     ex['update_lowres_with_masks'] = False
-     ex['output_stack'] = "mask_montage_output_stack_no_mask"
-     modular_test_for_masks(render, ex)
-     ntiles = len(renderapi.tilespec.get_tile_specs_from_stack(
-         ex['output_stack'], render=render))
-     assert(ntiles == ntiles_montage)
-     renderapi.stack.delete_stack(ex['lowres_stack'], render=render)
+    # set mask and filter the highres output
+    for apply_scale in [True, False]:
+        renderapi.stack.clone_stack(orig_lowres, ex['lowres_stack'], render=render)
+        ex['mask_input_dir'] = ROUGH_MASK_DIR
+        ex['filter_montage_output_with_masks'] = True
+        ex['update_lowres_with_masks'] = False
+        ex['output_stack'] = "mask_montage_output_stack_with_mask"
+        ex['apply_scale'] = apply_scale
+        modular_test_for_masks(render, ex)
+        ntiles = len(renderapi.tilespec.get_tile_specs_from_stack(
+            ex['output_stack'], render=render))
+        assert(ntiles == ntiles_montage - 3)
+        renderapi.stack.delete_stack(ex['lowres_stack'], render=render)
+        renderapi.stack.delete_stack(ex['output_stack'], render=render)
 
-     # set mask and filter the highres output
-     for apply_scale in [True, False]:
-         renderapi.stack.clone_stack(orig_lowres, ex['lowres_stack'], render=render)
-         ex['mask_input_dir'] = ROUGH_MASK_DIR
-         ex['filter_montage_output_with_masks'] = True
-         ex['update_lowres_with_masks'] = False
-         ex['output_stack'] = "mask_montage_output_stack_with_mask"
-         ex['apply_scale'] = apply_scale
-         modular_test_for_masks(render, ex)
-         ntiles = len(renderapi.tilespec.get_tile_specs_from_stack(
-             ex['output_stack'], render=render))
-         assert(ntiles == ntiles_montage - 3)
-         renderapi.stack.delete_stack(ex['lowres_stack'], render=render)
-         renderapi.stack.delete_stack(ex['output_stack'], render=render)
+    # modify the input stack
+    renderapi.stack.clone_stack(orig_lowres, ex['lowres_stack'], render=render)
+    ex['mask_input_dir'] = ROUGH_MASK_DIR
+    ex['filter_montage_output_with_masks'] = True
+    ex['update_lowres_with_masks'] = True
+    ex['output_stack'] = "mask_montage_output_stack_with_mask"
+    modular_test_for_masks(render, ex)
+    ntiles = len(renderapi.tilespec.get_tile_specs_from_stack(
+        ex['output_stack'], render=render))
+    assert(ntiles == ntiles_montage - 3)
+    lrs = renderapi.tilespec.get_tile_specs_from_stack(
+        ex['lowres_stack'], render=render)
+    assert lrs[0].ip['0']['maskUrl'] is None
+    assert lrs[1].ip['0']['maskUrl'] is not None
+    assert lrs[2].ip['0']['maskUrl'] is None
+    renderapi.stack.delete_stack(ex['output_stack'], render=render)
 
-     # modify the input stack
-     renderapi.stack.clone_stack(orig_lowres, ex['lowres_stack'], render=render)
-     ex['mask_input_dir'] = ROUGH_MASK_DIR
-     ex['filter_montage_output_with_masks'] = True
-     ex['update_lowres_with_masks'] = True
-     ex['output_stack'] = "mask_montage_output_stack_with_mask"
-     modular_test_for_masks(render, ex)
-     ntiles = len(renderapi.tilespec.get_tile_specs_from_stack(
-         ex['output_stack'], render=render))
-     assert(ntiles == ntiles_montage - 3)
-     lrs = renderapi.tilespec.get_tile_specs_from_stack(
-         ex['lowres_stack'], render=render)
-     assert lrs[0].ip['0']['maskUrl'] is None
-     assert lrs[1].ip['0']['maskUrl'] is not None
-     assert lrs[2].ip['0']['maskUrl'] is None
-     renderapi.stack.delete_stack(ex['output_stack'], render=render)
+    # read the masks from the lowres stack (just modified above)
+    ex['read_masks_from_lowres_stack'] = True
+    modular_test_for_masks(render, ex)
+    ntiles = len(renderapi.tilespec.get_tile_specs_from_stack(
+        ex['output_stack'], render=render))
+    assert(ntiles == ntiles_montage - 3)
+    renderapi.stack.delete_stack(ex['lowres_stack'], render=render)
 
-     # read the masks from the lowres stack (just modified above)
-     ex['read_masks_from_lowres_stack'] = True
-     modular_test_for_masks(render, ex)
-     ntiles = len(renderapi.tilespec.get_tile_specs_from_stack(
-         ex['output_stack'], render=render))
-     assert(ntiles == ntiles_montage - 3)
-     renderapi.stack.delete_stack(ex['lowres_stack'], render=render)
-  
-     # make multiple matches for one tileId
-     mpath = urllib.parse.unquote(
-                 urllib.parse.urlparse(
-                     lrs[1].ip['0']['maskUrl']).path)
-     mbase = os.path.splitext(os.path.basename(mpath))[0]
-     tmp_dir = str(tmpdir_factory.mktemp('masks'))
-     shutil.copy(mpath, os.path.join(tmp_dir, mbase + '.png'))
-     shutil.copy(mpath, os.path.join(tmp_dir, mbase + '.tif'))
+    # make multiple matches for one tileId
+    mpath = urllib.parse.unquote(
+                urllib.parse.urlparse(
+                    lrs[1].ip['0']['maskUrl']).path)
+    mbase = os.path.splitext(os.path.basename(mpath))[0]
+    tmp_dir = str(tmpdir_factory.mktemp('masks'))
+    shutil.copy(mpath, os.path.join(tmp_dir, mbase + '.png'))
+    shutil.copy(mpath, os.path.join(tmp_dir, mbase + '.tif'))
 
-     renderapi.stack.clone_stack(orig_lowres, ex['lowres_stack'], render=render)
-     ex['read_masks_from_lowres_stack'] = False
-     ex['mask_input_dir'] = tmp_dir
-     ex['filter_montage_output_with_masks'] = True
-     ex['update_lowres_with_masks'] = True
-     ex['output_stack'] = "mask_montage_output_stack_with_mask"
-     with pytest.raises(RenderModuleException):
-         modular_test_for_masks(render, ex)
+    renderapi.stack.clone_stack(orig_lowres, ex['lowres_stack'], render=render)
+    ex['read_masks_from_lowres_stack'] = False
+    ex['mask_input_dir'] = tmp_dir
+    ex['filter_montage_output_with_masks'] = True
+    ex['update_lowres_with_masks'] = True
+    ex['output_stack'] = "mask_montage_output_stack_with_mask"
+    with pytest.raises(RenderModuleException):
+        modular_test_for_masks(render, ex)
+
 
 def test_mapped_apply_rough_alignment_transform(render, 
             montage_stack, 
@@ -874,7 +783,8 @@ def test_mapped_apply_rough_alignment_transform(render,
             tmpdir_factory, 
             prealigned_stack=None, 
             output_stack=None):
-    ex = dict(ex1, **{
+    ex = copy.deepcopy(ex1)
+    ex = dict(ex, **{
         'render': dict(ex1['render'], **render_params),
         'montage_stack': montage_stack,
         'lowres_stack': test_do_mapped_rough_alignment_python,
@@ -1017,6 +927,7 @@ def make_montage_stack_without_downsamples(render, montage_stack, tmpdir_factory
                                     params['imgformat'],
                                     Z,
                                     pool_size=pool_size)
+
 
 def test_make_montage_stack_module_without_downsamples(
         render, montage_stack, tmpdir_factory):
@@ -1165,6 +1076,7 @@ def test_setting_remap_section_ids(render,
     #    sectionid = renderapi.stack.get_sectionId_for_z(output_stack, z, render=render)
     #    assert(int(z) == int(float(sectionid)))
 
+
 def test_solver_default_options(render, montage_scape_stack, rough_point_match_collection, tmpdir_factory):
     output_lowres_stack = '{}_DS_Rough'.format(montage_scape_stack)
 
@@ -1229,7 +1141,6 @@ def test_solver_default_options(render, montage_scape_stack, rough_point_match_c
 
     with pytest.raises(mm.ValidationError):
         mod.run()
-
 
 
 def test_setting_new_z_montage_scape(render, montage_stack, downsample_sections_dir):
