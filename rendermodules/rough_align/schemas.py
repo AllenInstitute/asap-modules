@@ -6,8 +6,7 @@ from argschema.fields import (
 from argschema.schemas import DefaultSchema
 from ..module.schemas import (
         RenderParameters,
-        InputStackParameters,
-        OutputStackParameters,
+        StackTransitionParameters,
         ProcessPoolParameters)
 from marshmallow import post_load, ValidationError
 import argschema
@@ -42,7 +41,7 @@ import argschema
 #         description=("get bounds from this stack instead of input_stack"))
 
 
-class MakeAnchorStackSchema(InputStackParameters, OutputStackParameters):
+class MakeAnchorStackSchema(StackTransitionParameters):
     transform_json = InputFile(
         required=True,
         description=("Human generated list of transforms."
@@ -57,7 +56,7 @@ class MakeAnchorStackSchema(InputStackParameters, OutputStackParameters):
             description="not used in this module, keeps parents happy")
 
 
-class PairwiseRigidSchema(InputStackParameters, OutputStackParameters):
+class PairwiseRigidSchema(StackTransitionParameters):
     match_collection = Str(
         required=True,
         description="Point match collection name")

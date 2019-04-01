@@ -1,7 +1,7 @@
 import renderapi
 import json
 from rendermodules.module.render_module import (
-        StackInputModule, StackOutputModule, RenderModuleException)
+        StackTransitionModule, RenderModuleException)
 from rendermodules.rough_align.schemas import (
         MakeAnchorStackSchema)
 
@@ -21,7 +21,7 @@ example = {
         }
 
 
-class MakeAnchorStack(StackInputModule, StackOutputModule):
+class MakeAnchorStack(StackTransitionModule):
     default_schema = MakeAnchorStackSchema
 
     def run(self):

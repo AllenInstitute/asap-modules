@@ -2,8 +2,7 @@ import renderapi
 import numpy as np
 import json
 from rendermodules.module.render_module import (
-        StackInputModule,
-        StackOutputModule,
+        StackTransitionModule,
         RenderModuleException)
 from rendermodules.rough_align.schemas import (
         PairwiseRigidSchema,
@@ -122,7 +121,7 @@ def translate_to_positive(tilespecs, translation_buffer):
     return tilespecs
 
 
-class PairwiseRigidRoughAlignment(StackInputModule, StackOutputModule):
+class PairwiseRigidRoughAlignment(StackTransitionModule):
     default_schema = PairwiseRigidSchema
     default_output_schema = PairwiseRigidOutputSchema
 
