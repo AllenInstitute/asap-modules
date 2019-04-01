@@ -16,7 +16,8 @@ example = {
             "port": 8987,
             "owner": "TEM",
             "project": "17797_1R",
-            "client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts"
+            "client_scripts": ("/allen/aibs/pipeline/image_processing/"
+                               "volume_assembly/render-jars/production/scripts")
           },
         "input_stack": "em_2d_montage_solved_py_0_01_mapped",
         "anchor_stack": "full_rough_anchor_stack_plus",
