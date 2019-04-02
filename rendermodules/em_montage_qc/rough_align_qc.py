@@ -1,3 +1,4 @@
+import os
 import matplotlib
 if os.environ.get('DISPLAY', '') == '':
     matplotlib.use('Agg')
