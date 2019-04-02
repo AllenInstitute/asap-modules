@@ -67,7 +67,7 @@ def test_rough_align_qc(render, downsample_stack, outstack, tmpdir_factory):
     ex['minZ'] = 120214
     ex['maxZ'] = 120224
     ex['output_dir'] = outdir
-    ex['out_file_format'] = 0
+    ex['out_file_format'] = 'pdf'
 
     outjson = os.path.join(outdir, "output.json")
     
@@ -79,7 +79,7 @@ def test_rough_align_qc(render, downsample_stack, outstack, tmpdir_factory):
 
     assert(any([n.endswith("pdf") for n in items]))
 
-    ex['out_file_format'] = 1
+    ex['out_file_format'] = 'html'
 
     mod = RoughAlignmentQC(input_data=ex, args=['--output_json', outjson])
     mod.run()
@@ -87,6 +87,11 @@ def test_rough_align_qc(render, downsample_stack, outstack, tmpdir_factory):
     # check if there is a html file
 
     items = os.listdir(ex['output_dir'])
-    assert(any([n.endswith("html") for n in items]))
+    js = []
+    with open(outjson, "r") as f:
+        js = json.load(f)
+
+    assert(os.path.basename(js['iou_plot']) in items and os.path.basename(js['distortion_plot']) in items)
+    #assert(any([n.endswith("html") for n in items]))
 
 

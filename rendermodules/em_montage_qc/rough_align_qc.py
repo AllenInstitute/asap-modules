@@ -437,7 +437,7 @@ class RoughAlignmentQC(RenderModule):
         
         dist_plt_name = None
         iou_plt_name = None
-        if self.args['out_file_format'] == 0: # pdf plots
+        if self.args['out_file_format'] == 'pdf': # pdf plots
             dist_plt_name, iou_plt_name = generate_pdf_plots(ious, zrange, self.args['output_dir'], pre_boundary_polygons, 
                                                     boundary_polygons, dio, doi, distortion, zvalues)
         else:

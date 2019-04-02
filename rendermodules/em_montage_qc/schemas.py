@@ -1,4 +1,5 @@
 import argschema
+import marshmallow as mm 
 from marshmallow import post_load
 from ..module.schemas import (RenderParameters, ZValueParameters,
                               ProcessPoolParameters)
@@ -105,10 +106,11 @@ class RoughQCSchema(RenderParameters):
         default=None,
         missing=None,
         description="temp filename to save fig")
-    out_file_format = Int(
+    out_file_format = Str(
+        validator=mm.validate.OneOf(['html', 'pdf']),
         required=False,
-        default=0,
-        description="Do you want the output to be bokeh plots in html (option = 1) or pdf files for plots (option = 0, default)")
+        default="pdf",
+        description="Do you want the output to be bokeh plots in html (option = 'html') or pdf files for plots (option = 'pdf', default)")
     
 
 class RoughQCOutputSchema(argschema.schemas.DefaultSchema):
