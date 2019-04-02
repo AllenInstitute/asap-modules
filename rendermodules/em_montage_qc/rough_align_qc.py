@@ -1,10 +1,3 @@
-import os
-import matplotlib
-if os.environ.get('DISPLAY', '') == '':
-    matplotlib.use('Agg')
-    new_env = dict(os.environ)
-    new_env['DISPLAY'] = '0.0'
-
 
 import renderapi
 import numpy as np 
@@ -18,10 +11,9 @@ from functools import partial
 
 import tempfile
 import seaborn as sns
-import matplotlib.pyplot as plt, mpld3
-import matplotlib as mpl
+
 from descartes.patch import PolygonPatch
-from matplotlib.backends.backend_pdf import PdfPages
+from rendermodules.utilities.pillow_utils import plt, mpld3, mpl, PdfPages
 from bokeh.layouts import gridplot
 from bokeh.io import show, save
 from bokeh.plotting import figure, output_file
