@@ -2,6 +2,8 @@ import os
 import matplotlib
 if os.environ.get('DISPLAY', '') == '':
     matplotlib.use('Agg')
+    new_env = dict(os.environ)
+    new_env['DISPLAY'] = '0.0'
 
 
 import renderapi
