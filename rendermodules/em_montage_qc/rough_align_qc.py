@@ -41,7 +41,7 @@ example = {
     "maxZ": 27164,
     "pool_size": 20,
     "output_dir": "/home/gayathrim/Dropbox/render-modules",
-    "out_file_format": 1
+    "out_file_format": 'pdf'
 }
 
 
