@@ -92,6 +92,6 @@ def test_rough_align_qc(render, downsample_stack, outstack, tmpdir_factory):
         js = json.load(f)
 
     assert(os.path.basename(js['iou_plot']) in items and os.path.basename(js['distortion_plot']) in items)
-    #assert(any([n.endswith("html") for n in items]))
+    assert(any([n.endswith("html") for n in items]))
 
 
