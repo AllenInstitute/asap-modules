@@ -127,13 +127,11 @@ class PairwiseRigidRoughAlignment(StackTransitionModule):
     default_output_schema = PairwiseRigidOutputSchema
 
     def run(self):
-        self.args['zValues'] = np.array(self.get_inputstack_zs())
-        ind = (self.args['zValues'] >= self.args['minZ']) & \
-              (self.args['zValues'] <= self.args['maxZ'])
-        self.args['zValues'] = self.args['zValues'][ind]
+        z_overlap = self.get_overlapping_inputstack_zvalues(
+                zvalues=range(self.args['minZ'], self.args['maxZ'] + 1))
         self.args['zValues'] = np.array(get_zrange_with_skipped(
                 self.args['gap_file'],
-                self.args['zValues']))
+                z_overlap))
 
         if self.args['anchor_stack'] is None:
             anchor_specs = np.array(renderapi.tilespec.get_tile_specs_from_z(
