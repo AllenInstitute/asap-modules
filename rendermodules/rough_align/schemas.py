@@ -42,12 +42,21 @@ import argschema
 
 
 class MakeAnchorStackSchema(StackTransitionParameters):
+    transform_xml = InputFile(
+        required=False,
+        description=("xml transforms from trakem"
+                     "images from which these are made"
+                     "are assumed to be named <z>_*.png"))
     transform_json = InputFile(
         required=True,
+        default=None,
+        missing=None,
         description=("Human generated list of transforms."
+                     "or, json scraped from xml"
                      "Keys are of form <z>_*.png where z matches "
                      "a tilespec in input_stack and values are "
-                     "AffineModel transform jsons"))
+                     "AffineModel transform jsons"
+                     "will override xml input."))
     zValues = List(
             Int,
             required=True,

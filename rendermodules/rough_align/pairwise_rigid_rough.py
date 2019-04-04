@@ -20,13 +20,13 @@ example = {
                                "volume_assembly/render-jars/production/scripts")
           },
         "input_stack": "em_2d_montage_solved_py_0_01_mapped",
-        "anchor_stack": "full_rough_anchor_stack_plus",
-        "output_stack": "full_pre_rigid_with_anchors_plus",
+        "anchor_stack": None,
+        "output_stack": "test_pre_rigid_with_anchors_plus",
         "match_collection": "chunk_rough_align_point_matches",
         "close_stack": True,
-        "minZ": 25000,
-        "maxZ": 26000,
-        "gap_file": "/allen/programs/celltypes/workgroups/em-connectomics/danielk/pre_align_rigid/gap_reasons.json",
+        "minZ": 8500,
+        "maxZ": 9000,
+        "gap_file": "/allen/aibs/pipeline/image_processing/volume_assembly/rough_align_test_data/pairwise/gap_reasons.json",
         "pool_size": 20,
         "output_json": "test_output.json",
         "overwrite_zlayer": True,
@@ -127,8 +127,6 @@ class PairwiseRigidRoughAlignment(StackTransitionModule):
     default_output_schema = PairwiseRigidOutputSchema
 
     def run(self):
-        self.render = renderapi.connect(**self.args['render'])
-
         self.args['zValues'] = np.array(self.get_inputstack_zs())
         ind = (self.args['zValues'] >= self.args['minZ']) & \
               (self.args['zValues'] <= self.args['maxZ'])
