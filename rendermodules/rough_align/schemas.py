@@ -73,7 +73,10 @@ class PairwiseRigidSchema(StackTransitionParameters):
         required=False,
         default=None,
         missing=None,
-        description="json file {k: v} where int(k) is a z value to skip")
+        description="json file {k: v} where int(k) is a z value to skip"
+                    "entries in here that are not already missing will"
+                    "be omitted from the output stack"
+                    "i.e. this is a place one can skip sections")
     translate_to_positive = Bool(
         required=False,
         default=True,
