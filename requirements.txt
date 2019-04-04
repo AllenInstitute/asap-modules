@@ -17,3 +17,4 @@ scikit-image
 shapely
 triangle
 imageio
+lxml
