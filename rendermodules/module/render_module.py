@@ -109,6 +109,19 @@ class StackOutputModule(RenderModule):
             output_stack, tilespecs, sharedTransforms=sharedTransforms,
             pool_size=pool_size, close_stack=close_stack, render=render)
 
+    def validate_tilespecs(self, input_stack, output_stack, z, render=None):
+        missing_ts = []
+
+        render = self.render if render is None else render
+
+        input_rs = renderapi.resolvedtiles.get_resolved_tiles_from_z(input_stack, z, render=render)
+        output_rs = renderapi.resolvedtiles.get_resolved_tiles_from_z(output_stack, z, render=render)
+        if len(input_rs.tilespecs) != len(output_rs.tilespecs): # pragma: no cover
+            return False
+        else:
+            return True
+        
+
 
 class StackTransitionModule(StackOutputModule, StackInputModule):
     def __init__(self, *args, **kwargs):

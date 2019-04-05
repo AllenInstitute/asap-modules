@@ -126,6 +126,12 @@ class ApplyLensCorrectionOutput(DefaultSchema):
                 description='stack to which transformed tiles were written')
     refId = Str(required=True,
                 description='unique identifier string used as reference ID')
+    missing_ts_zs = List(Int,
+        required=False,
+        default=[],
+        missing=[],
+        cli_as_single_argument=True,
+        description="Z values for which apply mipmaps failed")
 
 
 class LensCorrectionParameters(ArgSchema):

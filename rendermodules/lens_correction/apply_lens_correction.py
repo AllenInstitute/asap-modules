@@ -112,10 +112,18 @@ class ApplyLensCorrection(StackTransitionModule):
         renderapi.stack.set_stack_state(outputStack, 'LOADING', render=r)
 
         self.output_tilespecs_to_stack(new_tspecs, sharedTransforms=[lc_tform])
+
+        missing_ts_zs = []
+        for z in self.zValues:
+            job_sucess = self.validate_tilespecs(self.input_stack, outputStack, z)
+            if not job_success:
+               missing_ts_zs.append(z) 
+
         # output dict
         output = {}
         output['stack'] = outputStack
         output['refId'] = refId
+        output['missing_ts_zs'] = missing_ts_zs
 
         try:
             self.output(output)

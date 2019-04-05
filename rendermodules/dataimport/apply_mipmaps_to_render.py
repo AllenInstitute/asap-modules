@@ -102,7 +102,13 @@ class AddMipMapsToStack(StackTransitionModule):
 
         self.output_tilespecs_to_stack(tilespecs, output_stack,
                                        sharedTransforms=identified_tforms)
-        self.output({"output_stack": output_stack})
+        
+        missing_ts_zs = []
+        for z in zvalues:
+            job_sucess = self.validate_tilespecs(self.args['input_stack'], self.args['output_stack'], z)
+            if not job_success:
+               missing_ts_zs.append(z) 
+        self.output({"output_stack": output_stack, "missing_tilespecs_zs": missing_ts_zs})
 
 
 if __name__ == "__main__":
