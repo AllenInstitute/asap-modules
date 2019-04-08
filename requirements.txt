@@ -19,3 +19,4 @@ triangle
 imageio
 seaborn
 mpld3
+descartes
