@@ -115,7 +115,7 @@ class ApplyLensCorrection(StackTransitionModule):
 
         missing_ts_zs = []
         for z in self.zValues:
-            job_sucess = self.validate_tilespecs(self.input_stack, outputStack, z)
+            job_success = self.validate_tilespecs(self.input_stack, outputStack, z)
             if not job_success:
                missing_ts_zs.append(z) 
 
