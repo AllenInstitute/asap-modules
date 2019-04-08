@@ -33,7 +33,7 @@ def downsample_stack(render):
     renderapi.client.import_tilespecs(pre_rough_stack, MONTAGE_SCAPES_TSPECS, render=render)
     renderapi.stack.set_stack_state(pre_rough_stack, "COMPLETE", render=render)
     yield pre_rough_stack
-    #render.run(renderapi.stack.delete_stack, pre_rough_stack)
+    render.run(renderapi.stack.delete_stack, pre_rough_stack)
 
 @pytest.fixture(scope='module')
 def rough_pt_match_collection(render):
@@ -66,7 +66,7 @@ def test_rough_align_qc(render, downsample_stack, outstack, tmpdir_factory):
     ex['output_downsampled_stack'] = outstack
     ex['minZ'] = 120214
     ex['maxZ'] = 120224
-    ex['output_dir'] = outdir
+    ex['OutputDir'] = outdir
     ex['out_file_format'] = 'pdf'
 
     outjson = os.path.join(outdir, "output.json")
@@ -75,7 +75,7 @@ def test_rough_align_qc(render, downsample_stack, outstack, tmpdir_factory):
     mod.run()
 
     # check if there is a pdf file
-    items = os.listdir(ex['output_dir'])
+    items = os.listdir(ex['OutputDir'])
 
     assert(any([n.endswith("pdf") for n in items]))
 
@@ -86,7 +86,7 @@ def test_rough_align_qc(render, downsample_stack, outstack, tmpdir_factory):
 
     # check if there is a html file
 
-    items = os.listdir(ex['output_dir'])
+    items = os.listdir(ex['OutputDir'])
     js = []
     with open(outjson, "r") as f:
         js = json.load(f)

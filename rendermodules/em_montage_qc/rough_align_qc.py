@@ -13,7 +13,7 @@ import tempfile
 import seaborn as sns
 
 from descartes.patch import PolygonPatch
-from rendermodules.utilities.pillow_utils import plt, mpld3, mpl, PdfPages
+from rendermodules.utilities.matplotlib_utils import plt, mpld3, mpl, PdfPages
 from bokeh.layouts import gridplot
 from bokeh.io import show, save
 from bokeh.plotting import figure, output_file
@@ -40,7 +40,7 @@ example = {
     "minZ": 27060,
     "maxZ": 27164,
     "pool_size": 20,
-    "output_dir": "/home/gayathrim/Dropbox/render-modules",
+    "OutputDir": "/home/gayathrim/Dropbox/render-modules",
     "out_file_format": 'pdf'
 }
 
@@ -417,8 +417,8 @@ class RoughAlignmentQC(RenderModule):
         for poly, z in zip(pre_boundary_polygons, zvalues):
             pre_polys[z] = poly
 
-        if self.args['output_dir'] is None:
-            self.args['output_dir'] = tempfile.mkdtemp()
+        if self.args['OutputDir'] is None:
+            self.args['OutputDir'] = tempfile.mkdtemp()
 
         # compute ious
         ious = compute_ious(post_polys, zvalues)
@@ -438,10 +438,10 @@ class RoughAlignmentQC(RenderModule):
         dist_plt_name = None
         iou_plt_name = None
         if self.args['out_file_format'] == 'pdf': # pdf plots
-            dist_plt_name, iou_plt_name = generate_pdf_plots(ious, zrange, self.args['output_dir'], pre_boundary_polygons, 
+            dist_plt_name, iou_plt_name = generate_pdf_plots(ious, zrange, self.args['OutputDir'], pre_boundary_polygons, 
                                                     boundary_polygons, dio, doi, distortion, zvalues)
         else:
-            plot_name = generate_bokeh_plots(ious, zrange, self.args['output_dir'], pre_boundary_polygons, 
+            plot_name = generate_bokeh_plots(ious, zrange, self.args['OutputDir'], pre_boundary_polygons, 
                                 boundary_polygons, dio, doi, distortion, zvalues)
             dist_plt_name = plot_name
             iou_plt_name = plot_name

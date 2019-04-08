@@ -101,7 +101,7 @@ class RoughQCSchema(RenderParameters):
         default=10,
         missing=10,
         description="Pool size")
-    output_dir = Str(
+    OutputDir = Str(
         required=False,
         default=None,
         missing=None,
