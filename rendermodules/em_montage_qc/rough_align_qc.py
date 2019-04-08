@@ -13,7 +13,7 @@ import tempfile
 import seaborn as sns
 
 from descartes.patch import PolygonPatch
-from rendermodules.utilities.matplotlib_utils import plt, mpld3, mpl, PdfPages
+from rendermodules.utilities.matplotlib_utils import plt, mpl, PdfPages
 from bokeh.layouts import gridplot
 from bokeh.io import show, save
 from bokeh.plotting import figure, output_file
