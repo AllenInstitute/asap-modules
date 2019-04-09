@@ -7,3 +7,4 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import mpld3
 from matplotlib.backends.backend_pdf import PdfPages
+from descartes.patch import PolygonPatch
