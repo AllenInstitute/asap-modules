@@ -12,7 +12,7 @@ from functools import partial
 import tempfile
 import seaborn as sns
 
-from rendermodules.utilities.matplotlib_utils import plt, mpl, PdfPages, PolygonPatch
+from rendermodules.utilities.pillow_utils import plt, mpl, PdfPages, PolygonPatch
 from bokeh.layouts import gridplot
 from bokeh.io import show, save
 from bokeh.plotting import figure, output_file
