@@ -84,7 +84,7 @@ def montage_stack(render, resolvedtiles_from_json):
     assert(set(zvalues) == set(zs))
 
     yield test_montage_stack
-    #renderapi.stack.delete_stack(test_montage_stack, render=render)
+    renderapi.stack.delete_stack(test_montage_stack, render=render)
 
 
 
