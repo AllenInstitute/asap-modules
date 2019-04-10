@@ -20,3 +20,4 @@ imageio
 seaborn
 mpld3
 descartes
+lxml
