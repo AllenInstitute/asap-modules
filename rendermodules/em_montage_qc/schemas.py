@@ -3,7 +3,7 @@ import marshmallow as mm
 from marshmallow import post_load
 from ..module.schemas import (RenderParameters, ZValueParameters,
                               ProcessPoolParameters)
-from argschema.fields import Bool, Int, Str, InputDir, OutputFile
+from argschema.fields import Bool, Int, Str, InputDir, OutputFile, OutputDir
 
 
 class DetectMontageDefectsParameters(
@@ -101,7 +101,7 @@ class RoughQCSchema(RenderParameters):
         default=10,
         missing=10,
         description="Pool size")
-    OutputDir = Str(
+    output_dir = OutputDir(
         required=False,
         default=None,
         missing=None,

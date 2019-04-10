@@ -66,7 +66,7 @@ def test_rough_align_qc(render, downsample_stack, outstack, tmpdir_factory):
     ex['output_downsampled_stack'] = outstack
     ex['minZ'] = 120214
     ex['maxZ'] = 120224
-    ex['OutputDir'] = outdir
+    ex['output_dir'] = outdir
     ex['out_file_format'] = 'pdf'
 
     outjson = os.path.join(outdir, "output.json")
@@ -75,7 +75,7 @@ def test_rough_align_qc(render, downsample_stack, outstack, tmpdir_factory):
     mod.run()
 
     # check if there is a pdf file
-    items = os.listdir(ex['OutputDir'])
+    items = os.listdir(ex['output_dir'])
 
     assert(any([n.endswith("pdf") for n in items]))
 
@@ -86,7 +86,7 @@ def test_rough_align_qc(render, downsample_stack, outstack, tmpdir_factory):
 
     # check if there is a html file
 
-    items = os.listdir(ex['OutputDir'])
+    items = os.listdir(ex['output_dir'])
     js = []
     with open(outjson, "r") as f:
         js = json.load(f)
