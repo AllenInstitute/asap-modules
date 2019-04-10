@@ -1,5 +1,5 @@
 from argschema import ArgSchema
-from argschema.fields import Bool, Float, Int, Nested, Str, InputFile
+from argschema.fields import Bool, Float, Int, Nested, Str, InputFile, List
 from argschema.schemas import DefaultSchema
 from marshmallow.validate import OneOf
 from rendermodules.module.schemas import StackTransitionParameters
