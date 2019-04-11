@@ -77,13 +77,13 @@ def proc_job(fargs):
 
     render = renderapi.connect(**rpar)
     try:
-        matches = renderapi.pointmatch.get_matches_within_group(
-                input_match_collection,
-                str(float(z)),
-                render=render)
         tspecs = renderapi.tilespec.get_tile_specs_from_z(
                 input_stack,
                 float(z),
+                render=render)
+        matches = renderapi.pointmatch.get_matches_within_group(
+                input_match_collection,
+                tspecs[0].layout.sectionID,
                 render=render)
     except renderapi.errors.RenderError as e:
         logger.warning(str(e))
