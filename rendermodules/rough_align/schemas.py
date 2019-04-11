@@ -1,10 +1,123 @@
 from argschema import InputDir
 import marshmallow as mm
-from argschema.fields import Bool, Float, Int, Nested, Str, InputFile, List
+from argschema.fields import (
+        Bool, Float, Int, Nested, OutputDir,
+        Str, InputFile, List, Dict)
 from argschema.schemas import DefaultSchema
-from ..module.schemas import RenderParameters, OutputStackParameters
-from marshmallow import post_load, ValidationError, pre_load
+from ..module.schemas import (
+        RenderParameters,
+        StackTransitionParameters,
+        ProcessPoolParameters)
+from marshmallow import post_load, ValidationError
 import argschema
+
+
+# class RoughSlicerSchema(InputStackParameters, ProcessPoolParameters):
+#     x_slice_locs = List(
+#         Float,
+#         required=False,
+#         default=[0.5],
+#         cli_as_single_argument=True,
+#         description="fractional location of x_slices")
+#     y_slice_locs = List(
+#         Float,
+#         required=False,
+#         default=[0.5],
+#         cli_as_single_argument=True,
+#         description="fractional location of x_slices")
+#     slice_locs_as_pixels = Bool(
+#         required=False,
+#         default=False,
+#         missing=False,
+#         description=("interpret slice_locs as absolute pixel "
+#                      "coordinates instead of fractional."))
+#     output_dir = OutputDir(
+#         required=True,
+#         description="Location_of_output_slices")
+#     bounds_from_stack = Str(
+#         require=False,
+#         default=None,
+#         missing=None,
+#         description=("get bounds from this stack instead of input_stack"))
+
+
+class MakeAnchorStackSchema(StackTransitionParameters):
+    transform_xml = InputFile(
+        required=False,
+        description=("xml transforms from trakem"
+                     "images from which these are made"
+                     "are assumed to be named <z>_*.png"))
+    transform_json = InputFile(
+        required=True,
+        default=None,
+        missing=None,
+        description=("Human generated list of transforms."
+                     "or, json scraped from xml"
+                     "Keys are of form <z>_*.png where z matches "
+                     "a tilespec in input_stack and values are "
+                     "AffineModel transform jsons"
+                     "will override xml input."))
+    zValues = List(
+            Int,
+            required=True,
+            missing=[1000],
+            default=[1000],
+            description="not used in this module, keeps parents happy")
+
+
+class PairwiseRigidSchema(StackTransitionParameters):
+    match_collection = Str(
+        required=True,
+        description="Point match collection name")
+    gap_file = InputFile(
+        required=False,
+        default=None,
+        missing=None,
+        description="json file {k: v} where int(k) is a z value to skip"
+                    "entries in here that are not already missing will"
+                    "be omitted from the output stack"
+                    "i.e. this is a place one can skip sections")
+    translate_to_positive = Bool(
+        required=False,
+        default=True,
+        missing=True,
+        description="translate output stack to positive space")
+    translation_buffer = List(
+        Float,
+        required=False,
+        default=[0, 0],
+        missing=[0, 0],
+        description=("minimum (x, y) of output stack if "
+                     "translate_to_positive=True"))
+    anchor_stack = Str(
+        require=False,
+        default=None,
+        missing=None,
+        description=("fix transforms using tiles in this stack"))
+
+
+class PairwiseRigidOutputSchema(DefaultSchema):
+    minZ = Int(
+        required=True,
+        description="minimum z value in output stack")
+    maxZ = Int(
+        required=True,
+        description="minimum z value in output stack")
+    output_stack = Str(
+        required=True,
+        description="name of output stack")
+    missing = List(
+        Int,
+        required=True,
+        description="list of z values missing in z range of output stack")
+    masked = List(
+        Int,
+        required=True,
+        description="list of z values masked in z range of output stack")
+    residuals = List(
+        Dict,
+        required=True,
+        description="pairwise residuals in output stack")
 
 
 class ApplyRoughAlignmentTransformParameters(RenderParameters):
@@ -562,4 +675,3 @@ class DownsampleMaskHandlerSchema(RenderParameters):
         required=False,
         default=['png', 'tif'],
         description="what kind of mask files to recognize")
-

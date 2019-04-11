@@ -33,7 +33,7 @@ example = {
 
 def polygon_list_from_mask(mask, transforms=None):
     """Shapely polygons from mask
-    
+
     Parameters
     ----------
     mask : numpy array, uint8
@@ -41,7 +41,7 @@ def polygon_list_from_mask(mask, transforms=None):
 
     Returns
     -------
-    list : 
+    list :
         shapely polygons which outline regions where mask is non-zero
         Render retains parts of image where mask==255
     """
@@ -79,7 +79,7 @@ def points_in_mask(mask, pts):
     mask_list = []
     for maskpoly in polygon_list_from_mask(mask):
         mask_list += [1.0 if maskpoly.contains(Point(pt)) else 0.0
-                     for pt in np.array(pts).transpose()]
+                      for pt in np.array(pts).transpose()]
     return mask_list
 
 
