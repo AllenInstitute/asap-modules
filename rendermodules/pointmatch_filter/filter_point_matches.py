@@ -83,7 +83,7 @@ def proc_job(fargs):
                 render=render)
         matches = renderapi.pointmatch.get_matches_within_group(
                 input_match_collection,
-                tspecs[0].layout.sectionID,
+                tspecs[0].layout.sectionId,
                 render=render)
     except renderapi.errors.RenderError as e:
         logger.warning(str(e))
