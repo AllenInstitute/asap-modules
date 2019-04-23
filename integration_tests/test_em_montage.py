@@ -9,13 +9,12 @@ import mock
 from test_data import (RAW_STACK_INPUT_JSON,
                       log_dir,
                       render_params,
-                      montage_project,
                       montage_z,
-                      test_em_montage_parameters as solver_example,
+                      solver_montage_parameters,
                       test_pointmatch_parameters as pointmatch_example,
                       test_pointmatch_parameters_qsub as pointmatch_example_qsub)
 
-from rendermodules.montage.run_montage_job_for_section import  SolveMontageSectionModule
+from rendermodules.solver.solve import Solve_stack
 from rendermodules.pointmatch.create_tilepairs import TilePairClientModule
 from rendermodules.pointmatch.generate_point_matches_spark import PointMatchClientModuleSpark
 from rendermodules.pointmatch.generate_point_matches_qsub import PointMatchClientModuleQsub
@@ -23,7 +22,7 @@ from rendermodules.module.render_module import RenderModuleException
 
 @pytest.fixture(scope='module')
 def render():
-    render_params['project'] = montage_project
+    render_params['project'] = solver_montage_parameters['input_stack']['project']
     render = renderapi.connect(**render_params)
     return render
 
@@ -145,55 +144,31 @@ def test_point_match_generation_qsub(render, test_create_montage_tile_pairs, tmp
     with pytest.raises(MockSubprocessException):
         mod.run()
 
-
-def test_run_montage_job_for_section(render,
-                                     raw_stack,
-                                     test_point_match_generation,
-                                     tmpdir_factory,
-                                     output_stack=None):
-    if output_stack is None:
-        output_stack = '{}_Montage'.format(raw_stack)
+def test_montage_solver(render, raw_stack, test_point_match_generation, tmpdir_factory):
     output_directory = str(tmpdir_factory.mktemp('output_json'))
-    solver_example['output_json']=os.path.join(output_directory,'output.json')
-    solver_example['source_collection']['stack'] = raw_stack
-    solver_example['target_collection']['stack'] = output_stack
-    solver_example['source_point_match_collection']['match_collection'] = test_point_match_generation
-    solver_example['z_value'] = montage_z
 
-    mod = SolveMontageSectionModule(input_data=solver_example, args=[])
+    parameters = dict(solver_montage_parameters)
+    parameters['input_stack']['name'] = raw_stack
+    parameters['pointmatch']['name'] = test_point_match_generation
+    parameters['pointmatch']['db_interface'] = 'render'
+    parameters['input_stack']['db_interface'] = 'render'
+    parameters['output_json'] = os.path.join(output_directory, "montage_solve.json")
+    #parameters['output_stack']['name'] = output_stack
+
+    # affine half size
+    parameters['transformation'] = "AffineModel"
+    parameters['fullsize_transform'] = False
+    
+    mod = Solve_stack(input_data=parameters, args=[])
     mod.run()
+    
+    precision=1e-7
+    assert mod.module.results['precision'] < precision
+    assert mod.module.results['error'] < 200
+    with open(parameters['output_json'], 'r') as f:
+        output_d = json.load(f)
+    
+    output_d['stack'] = eval(output_d['stack'])
+    output_d['stack'] = [e.encode('UTF8') for e in output_d['stack']]
+    assert parameters['output_stack']['name'] == output_d['stack']
 
-    # check if z value exists
-    zvalues = renderapi.stack.get_z_values_for_stack(output_stack, render=render)
-
-    assert len(zvalues) == 1
-    assert solver_example['z_value'] == zvalues[0]
-
-    # check the number of tiles in the montage
-    tilespecs = renderapi.tilespec.get_tile_specs_from_z(output_stack, solver_example['z_value'], render=render)
-    assert len(tilespecs) == 4
-
-    # run this job again with same target collection to make sure that existing z in target stack gets deleted
-    mod = SolveMontageSectionModule(input_data=solver_example, args=[])
-    mod.run()
-
-def test_fail_montage_job_for_section(render,
-                                     raw_stack,
-                                     test_point_match_generation,
-                                     tmpdir_factory,
-                                     output_stack=None):
-    if output_stack is None:
-        output_stack = '{}_Montage'.format(raw_stack)
-    output_directory = str(tmpdir_factory.mktemp('output_json'))
-    solver_example['output_json']=os.path.join(output_directory,'output.json')
-    solver_example['source_collection']['stack'] = raw_stack
-    solver_example['target_collection']['stack'] = output_stack
-    solver_example['source_point_match_collection']['match_collection'] = 'notacollection'
-    solver_example['z_value'] = montage_z
-    with pytest.raises(RenderModuleException):
-        mod = SolveMontageSectionModule(input_data=solver_example, args=[])
-        mod.run()
-
-    # code coverage for schema
-    solver_example['render']['host'] = 'http://' + solver_example['render']['host']
-    mod = SolveMontageSectionModule(input_data=solver_example, args=[])
