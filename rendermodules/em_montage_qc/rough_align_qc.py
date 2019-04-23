@@ -2,6 +2,7 @@
 import renderapi
 import numpy as np 
 from math import pi
+from rendermodules.utilities.matplotlib_utils import plt, mpl, PdfPages, PolygonPatch
 from shapely.geometry import Polygon
 from shapely.ops import cascaded_union
 import multiprocessing as mp 
@@ -11,7 +12,6 @@ from functools import partial
 
 import tempfile
 
-from rendermodules.utilities.matplotlib_utils import plt, mpl, PdfPages, PolygonPatch
 from bokeh.layouts import gridplot
 from bokeh.io import show, save
 from bokeh.plotting import figure, output_file
