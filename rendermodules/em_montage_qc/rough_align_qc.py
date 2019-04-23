@@ -2,7 +2,7 @@
 import renderapi
 import numpy as np 
 from math import pi
-from rendermodules.utilities.matplotlib_utils import plt, mpl, PdfPages, PolygonPatch
+from rendermodules.utilities.pillow_utils import plt, mpl, PdfPages, PolygonPatch
 from shapely.geometry import Polygon
 from shapely.ops import cascaded_union
 import multiprocessing as mp 
