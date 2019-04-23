@@ -168,7 +168,7 @@ def test_montage_solver(render, raw_stack, test_point_match_generation, tmpdir_f
     with open(parameters['output_json'], 'r') as f:
         output_d = json.load(f)
     
-    output_d['stack'] = eval(output_d['stack'])
-    output_d['stack'] = [e.encode('UTF8') for e in output_d['stack']]
+    #output_d['stack'] = eval(output_d['stack'])
+    #output_d['stack'] = [e.encode('UTF8') for e in output_d['stack']]
     assert parameters['output_stack']['name'] == output_d['stack']
 
