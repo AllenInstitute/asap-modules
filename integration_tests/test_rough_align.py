@@ -438,7 +438,7 @@ def test_do_rough_alignment_python(render, montage_scape_stack, rough_point_matc
     renderapi.stack.delete_stack("temp_stack", render=render)
 
     yield output_lowres_stack
-    #renderapi.stack.delete_stack(output_lowres_stack, render=render)
+    renderapi.stack.delete_stack(output_lowres_stack, render=render)
 
 
 @pytest.fixture(scope='module')
