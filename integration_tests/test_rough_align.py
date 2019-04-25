@@ -297,7 +297,7 @@ def montage_z_mapped_stack(render, montage_stack, downsample_sections_dir):
         assert(z in zvalues)
 
     yield output_stack
-    #renderapi.stack.delete_stack(output_stack, render=render)
+    renderapi.stack.delete_stack(output_stack, render=render)
 
 
 @pytest.fixture(scope='module')
