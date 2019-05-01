@@ -116,7 +116,9 @@ class StackOutputModule(RenderModule):
 
         input_rs = renderapi.resolvedtiles.get_resolved_tiles_from_z(input_stack, z, render=render)
         output_rs = renderapi.resolvedtiles.get_resolved_tiles_from_z(output_stack, z, render=render)
-        if len(input_rs.tilespecs) != len(output_rs.tilespecs): # pragma: no cover
+        in_ids = set([t.tileId for t in input_rs.tilespecs])                                                                               
+        out_ids = set([t.tileId for t in output_rs.tilespecs])                                                                             
+        if in_ids != out_ids: # pragma no cover
             return False
         else:
             return True
