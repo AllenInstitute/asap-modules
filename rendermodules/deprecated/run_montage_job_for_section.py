@@ -4,7 +4,7 @@ import subprocess
 import renderapi
 import tempfile
 from ..module.render_module import RenderModule, RenderModuleException
-from rendermodules.montage.schemas import SolveMontageSectionParameters
+from rendermodules.deprecated.schemas import SolveMontageSectionParameters
 from marshmallow import ValidationError
 import time
 

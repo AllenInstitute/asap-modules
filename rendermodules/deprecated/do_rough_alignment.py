@@ -7,7 +7,7 @@ from functools import partial
 import numpy as np
 import tempfile
 from ..module.render_module import RenderModule, RenderModuleException
-from rendermodules.rough_align.schemas import SolveRoughAlignmentParameters
+from rendermodules.deprecated.schemas import SolveRoughAlignmentParameters
 
 
 if __name__ == "__main__" and __package__ is None:
