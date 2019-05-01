@@ -121,12 +121,6 @@ class MeshLensCorrectionSchema(PointMatchOpenCVParameters):
         description="explicit mask setting from file")
 
 
-class MeshAndSolveOutputSchema(DefaultSchema):
-    output_json = Str(
-        required=True,
-        description="path to lens correction file")
-
-
 class DoMeshLensCorrectionOutputSchema(DefaultSchema):
     output_json = Str(
         required=True,
@@ -134,6 +128,3 @@ class DoMeshLensCorrectionOutputSchema(DefaultSchema):
     maskUrl = OutputFile(
         required=True,
         description="path to mask generated")
-    qc_json = Str(
-        required=True,
-        description="path to qc json file")

@@ -11,7 +11,7 @@ bokeh
 EMaligner==1.0.0
 em_stitch==0.2.0
 matplotlib
-opencv-contrib-python<3.4.3.0
+opencv-contrib-python>=3.4
 jinja2
 six
 scikit-image

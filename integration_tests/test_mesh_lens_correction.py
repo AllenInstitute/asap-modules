@@ -6,13 +6,10 @@ from shutil import copyfile, rmtree
 import cv2
 import numpy as np
 from EMaligner import jsongz
-
+from em_stitch.lens_correction.mesh_and_solve_transform import \
+        MeshAndSolveTransform, MeshLensCorrectionException
 from rendermodules.mesh_lens_correction.do_mesh_lens_correction import \
-        MeshLensCorrection, MeshAndSolveTransform, make_mask
-from rendermodules.mesh_lens_correction.MeshAndSolveTransform import \
-        MeshLensCorrectionException, \
-        find_delaunay_with_max_vertices, \
-        force_vertices_with_npoints
+        MeshLensCorrection, make_mask
 from test_data import render_params, TEST_DATA_ROOT
 
 example = {
@@ -142,6 +139,8 @@ def test_coarse_mesh_failure(
     example_for_input['match_collection'] = raw_lens_matches_1
     example_for_input['rerun_pointmatch'] = False
     outjson = os.path.join(outdir, 'mesh_lens_out0.json')
+
+    print(json.dumps(example_for_input, indent=2))
 
     meshmod = MeshLensCorrection(
             input_data=example_for_input,
@@ -322,44 +321,10 @@ def test_mesh_lens_correction(
     with open(js['output_json'], 'r') as f:
         new_tform_dict = json.load(f)
 
-    with open(js['qc_json'], 'r') as f:
-        qc = json.load(f)
-    assert len(qc.keys()) > 0
-
     assert(
             new_tform_dict['className'] ==
             "mpicbg.trakem2.transform.ThinPlateSplineTransform")
 
-    # some little bits of coverage
-    meshmod.args['rerun_pointmatch'] = False
-    meshmod.args['output_dir'] = None
-    meshmod.args['outfile'] = None
-    meshmod.run()
-
-    meshmod.args['good_solve']['error_std'] = 3.0
-    meshclass = MeshAndSolveTransform(
-            input_data=copy.deepcopy(meshmod.args),
-            args=['--output_json', outjson])
-    meshclass.run()
-
-    # gets into the iterative area adjustment in force_vertices
-    tmp_mesh, tmp_area_fac = \
-        find_delaunay_with_max_vertices(
-                meshclass.bbox,
-                4*meshclass.args['nvertex'])
-    tmp_mesh, tmp_area_fac = \
-        force_vertices_with_npoints(
-                tmp_area_fac,
-                meshclass.bbox,
-                meshclass.coords,
-                3)
-
-    # test for failure of good solve check
-    meshmod.args['good_solve']['error_std'] = 0.001
-    with pytest.raises(MeshLensCorrectionException):
-        meshmod.run()
-
-    renderapi.stack.delete_stack(meshclass.args['output_stack'], render=render)
     rmtree(outdir)
 
 
