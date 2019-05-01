@@ -67,7 +67,7 @@ def downsampled_collection(render):
                 render=render)
     yield collection
     renderapi.pointmatch.delete_collection(
-        collection, render=render)
+            collection, render=render)
 
 
 def zs_have_masks(render, stack):
