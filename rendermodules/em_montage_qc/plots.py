@@ -17,6 +17,14 @@ from bokeh.models import (HoverTool, ColumnDataSource,
                           Slider, WidgetBox)
 
 
+try:
+    # Python 2
+    xrange
+except NameError:
+    # Python 3, xrange is now named range
+    xrange = range
+
+
 def point_match_plot(tilespecsA, matches, tilespecsB=None):
     if tilespecsB is None:
         tilespecsB = tilespecsA
