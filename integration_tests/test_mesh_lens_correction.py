@@ -2,9 +2,10 @@ import json
 import pytest
 import renderapi
 import os
-from shutil import copyfile
+from shutil import copyfile, rmtree
 import cv2
 import numpy as np
+import gzip
 
 from rendermodules.mesh_lens_correction.do_mesh_lens_correction import \
         MeshLensCorrection, MeshAndSolveTransform, make_mask
@@ -41,6 +42,24 @@ example = {
 
 render_params['project'] = "mesh_lens_correction_test"
 
+RAW_LENS_MATCHES_1 = os.path.join(
+        TEST_DATA_ROOT,
+        "em_modules_test_data",
+        "mesh_lens_correction_3",
+        "mesh_lc_matches_3.json.gz")
+
+RAW_LENS_MATCHES_2 = os.path.join(
+        TEST_DATA_ROOT,
+        "em_modules_test_data",
+        "mesh_lens_correction_2",
+        "mesh_lc_matches_2.json.gz")
+
+RAW_LENS_MATCHES_3 = os.path.join(
+        TEST_DATA_ROOT,
+        "em_modules_test_data",
+        "mesh_lens_correction_2",
+        "mesh_lc_matches_2_mask.json.gz")
+
 
 @pytest.fixture(scope='module')
 def render():
@@ -48,7 +67,71 @@ def render():
     return render
 
 
-def test_coarse_mesh_failure(render, tmpdir_factory):
+@pytest.fixture(scope='module')
+def raw_lens_stack_1(render):
+    stack = "raw_lens_stack_1"
+    yield stack
+    renderapi.stack.delete_stack(stack, render=render)
+
+
+@pytest.fixture(scope='module')
+def raw_lens_stack_2(render):
+    stack = "raw_lens_stack_2"
+    yield stack
+    renderapi.stack.delete_stack(stack, render=render)
+
+
+@pytest.fixture(scope='module')
+def raw_lens_stack_3(render):
+    stack = "raw_lens_stack_3"
+    yield stack
+    renderapi.stack.delete_stack(stack, render=render)
+
+
+def jsongz_load(filepath):
+    with gzip.GzipFile(filepath, 'r') as f:
+        obj = json.loads(f.read().decode('utf-8'))
+    return obj
+
+
+@pytest.fixture(scope='module')
+def raw_lens_matches_1(render):
+    matches = jsongz_load(RAW_LENS_MATCHES_1)
+    collection = 'raw_lens_matches_1'
+    renderapi.pointmatch.import_matches(collection, matches, render=render)
+    yield collection
+    renderapi.pointmatch.delete_collection(collection, render=render)
+
+
+@pytest.fixture(scope='module')
+def raw_lens_matches_1b(render):
+    matches = jsongz_load(RAW_LENS_MATCHES_1)
+    collection = 'raw_lens_matches_1b'
+    renderapi.pointmatch.import_matches(collection, matches, render=render)
+    yield collection
+    renderapi.pointmatch.delete_collection(collection, render=render)
+
+
+@pytest.fixture(scope='module')
+def raw_lens_matches_2(render):
+    matches = jsongz_load(RAW_LENS_MATCHES_2)
+    collection = 'raw_lens_matches_2'
+    renderapi.pointmatch.import_matches(collection, matches, render=render)
+    yield collection
+    renderapi.pointmatch.delete_collection(collection, render=render)
+
+
+@pytest.fixture(scope='module')
+def raw_lens_matches_3(render):
+    matches = jsongz_load(RAW_LENS_MATCHES_3)
+    collection = 'raw_lens_matches_3'
+    renderapi.pointmatch.import_matches(collection, matches, render=render)
+    yield collection
+    renderapi.pointmatch.delete_collection(collection, render=render)
+
+
+def test_coarse_mesh_failure(
+        render, tmpdir_factory, raw_lens_stack_1, raw_lens_matches_1):
     outdir = str(tmpdir_factory.mktemp("mesh_lens"))
     out_html_dir = outdir
     example_for_input = dict(example)
@@ -60,6 +143,9 @@ def test_coarse_mesh_failure(render, tmpdir_factory):
     example_for_input['output_dir'] = outdir
     example_for_input['out_html_dir'] = out_html_dir
     example_for_input['z_index'] = 101
+    example_for_input['input_stack'] = raw_lens_stack_1
+    example_for_input['match_collection'] = raw_lens_matches_1
+    example_for_input['rerun_pointmatch'] = False
     outjson = os.path.join(outdir, 'mesh_lens_out0.json')
 
     meshmod = MeshLensCorrection(
@@ -68,6 +154,40 @@ def test_coarse_mesh_failure(render, tmpdir_factory):
 
     with pytest.raises(MeshLensCorrectionException):
         meshmod.run()
+
+    rmtree(outdir)
+
+
+def test_correction_call_ptmatch(
+        render, tmpdir_factory, raw_lens_stack_1, raw_lens_matches_1b):
+    outdir = str(tmpdir_factory.mktemp("mesh_lens"))
+    out_html_dir = outdir
+    example_for_input = dict(example)
+    example_for_input['render'] = render_params
+    example_for_input['metafile'] = os.path.join(TEST_DATA_ROOT,
+                                                 "em_modules_test_data",
+                                                 "mesh_lens_correction_3",
+                                                 "mesh_lens_metafile_3.json")
+    example_for_input['output_dir'] = outdir
+    example_for_input['out_html_dir'] = out_html_dir
+    example_for_input['z_index'] = 101
+    example_for_input['input_stack'] = raw_lens_stack_1
+    # just testing code, let's keep it fast
+    example_for_input['downsample_scale'] = 0.15
+    example_for_input['match_collection'] = raw_lens_matches_1b
+    # this will cover delete_matches_if_exist()
+    example_for_input['rerun_pointmatch'] = True
+    outjson = os.path.join(outdir, 'mesh_lens_out0.json')
+
+    meshmod = MeshLensCorrection(
+            input_data=example_for_input,
+            args=['--output_json', outjson])
+
+    # will raise Exception because there aren't many matches
+    with pytest.raises(MeshLensCorrectionException):
+        meshmod.run()
+
+    rmtree(outdir)
 
 
 def test_make_mask(tmpdir_factory):
@@ -147,7 +267,9 @@ def test_make_mask(tmpdir_factory):
                 basename=None)
 
 
-def test_mesh_lens_correction(render, tmpdir_factory):
+def test_mesh_lens_correction(
+        render, tmpdir_factory, raw_lens_stack_2, raw_lens_matches_2):
+
     outdir = str(tmpdir_factory.mktemp("mesh_lens"))
     out_html_dir = outdir
     example_for_input = dict(example)
@@ -161,28 +283,13 @@ def test_mesh_lens_correction(render, tmpdir_factory):
     example_for_input['outfile'] = os.path.join(outdir, 'out.json')
     outjson = os.path.join(outdir, 'mesh_lens_out.json')
     example_for_input['z_index'] = 100
+    example_for_input['input_stack'] = raw_lens_stack_2
+    example_for_input['match_collection'] = raw_lens_matches_2
+    example_for_input['rerun_pointmatch'] = False
 
     meshmod = MeshLensCorrection(
             input_data=example_for_input,
             args=['--output_json', outjson])
-
-    # add collection and a match so we cover deletion
-    sectionId = meshmod.get_sectionId_from_metafile(
-            example_for_input['metafile'])
-    match = {}
-    match['qId'] = 'qid'
-    match['pId'] = 'pid'
-    match['pGroupId'] = sectionId
-    match['qGroupId'] = sectionId
-    match['matches'] = {}
-    match['matches']['q'] = [[0], [1]]
-    match['matches']['p'] = [[2], [3]]
-    match['matches']['w'] = [0]
-    renderapi.pointmatch.import_matches(
-            example_for_input['match_collection'],
-            [match],
-            render=meshmod.render)
-
     meshmod.run()
 
     with open(outjson, 'r') as f:
@@ -228,7 +335,9 @@ def test_mesh_lens_correction(render, tmpdir_factory):
                 3)
 
 
-def test_mesh_with_mask(render, tmpdir_factory):
+def test_mesh_with_mask(
+        render, tmpdir_factory, raw_lens_stack_3, raw_lens_matches_3):
+
     outdir = str(tmpdir_factory.mktemp("mesh_lens"))
     out_html_dir = outdir
     example_for_input = dict(example)
@@ -245,6 +354,10 @@ def test_mesh_with_mask(render, tmpdir_factory):
     example_for_input["mask_coords"] = [
             [0, 100], [100, 0], [3840, 0], [3840, 3840], [0, 3840]]
     example_for_input["mask_dir"] = outdir
+    example_for_input['input_stack'] = raw_lens_stack_3
+    example_for_input['match_collection'] = raw_lens_matches_3
+    example_for_input['rerun_pointmatch'] = False
+
 
     meshmod = MeshLensCorrection(
             input_data=example_for_input,
@@ -263,3 +376,6 @@ def test_mesh_with_mask(render, tmpdir_factory):
             input_data=example_for_input,
             args=['--output_json', outjson])
     meshmod.run()
+
+    renderapi.stack.delete_stack(meshmod.args['output_stack'], render=render)
+    rmtree(outdir)
