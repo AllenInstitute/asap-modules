@@ -104,7 +104,7 @@ class RoughSlicer(StackInputModule):
         for z in zs:
             fargs.append([z, self.args['input_stack'], self.render, bounds])
 
-        with renderapi.client.WithPool(self.args['pool_size']) as pool:
+        with renderapi.client.WithPool(self.args['pool_size'], maxtasksperchild=40) as pool:
             for z, im in pool.map(zjob, fargs):
             #for z, im in pool.map(zjob, fargs[500:520]):
                 t0 = time.time()
