@@ -2,14 +2,12 @@ import os
 import json
 import renderapi
 import itertools
-import numpy as np 
+import numpy as np
 import cv2
 import shutil
 import tempfile
 import time
 import urllib
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 from numbers import Number
 from functools import partial
 from operator import itemgetter
@@ -17,6 +15,10 @@ from shapely.geometry import Polygon
 from jinja2 import FileSystemLoader, Environment
 from rendermodules.module.render_module import RenderModule
 from rendermodules.point_match_optimization.schemas import PtMatchOptimizationParameters, PtMatchOptimizationParametersOutput
+
+# FIXME unused matplotlib imports?
+# from rendermodules.utilities.matplotlib_utils import plt
+# import matplotlib.image as mpimg
 
 
 ex = {
@@ -46,7 +48,7 @@ ex = {
     "tilepair_file": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch/fine/tilePairs/MM2/tile_pairs_mm2_acquire_8bit_reimage_postVOXA_TEMCA2_Rough_rev1039_v2_z_1023_to_1034_dist_2_p000.json",
     "filter_tilepairs":False,
     "no_tilepairs_to_test":5,
-    "max_tilepairs_with_matches":4  
+    "max_tilepairs_with_matches":4
 }
 
 ex = {
@@ -79,7 +81,7 @@ ex = {
     "tilepair_file": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch/17797_1R/tilepairs/temca4_tilepair_test.json",
     "filter_tilepairs":False,
     "no_tilepairs_to_test":4,
-    "max_tilepairs_with_matches":4  
+    "max_tilepairs_with_matches":4
 }
 
 
@@ -119,7 +121,7 @@ def render_from_template(directory, template_name, **kwargs):
     return template.render(**kwargs)
 
 def draw_matches(render, stack, tile1, tile2, ptmatches, scale, outdir, url_options, color=None):
-    
+
     #im1_url = "%s:%d/render-ws/v1/owner/%s/project/%s/stack/%s/tile/%s/png-image?scale=%f&filter=%s&normalizeForMatching=%s"%(render.DEFAULT_HOST,
     #                render.DEFAULT_PORT,
     #                render.DEFAULT_OWNER,
@@ -147,9 +149,9 @@ def draw_matches(render, stack, tile1, tile2, ptmatches, scale, outdir, url_opti
     #img2 = np.asarray(bytearray(r.read()), dtype="uint8")
     #img2 = cv2.imdecode(img2, cv2.IMREAD_COLOR)
 
-    img1 = render.run(renderapi.image.get_tile_image_data, 
-                      stack, 
-                      tile1, 
+    img1 = render.run(renderapi.image.get_tile_image_data,
+                      stack,
+                      tile1,
                       normalizeForMatching=url_options['normalizeForMatching'],
                       scale=scale,
                       filter=url_options['renderWithFilter'])
@@ -164,7 +166,7 @@ def draw_matches(render, stack, tile1, tile2, ptmatches, scale, outdir, url_opti
         img2 = cv2.resize(img2, img1.shape)
     if img2.shape > img1.shape:
         img1 = cv2.resize(img1, img2.shape)
-    
+
     if len(img1.shape) == 3:
         new_shape = (max(img1.shape[0], img2.shape[0]), img1.shape[1]+img2.shape[1], img1.shape[2])
     elif len(img1.shape) == 2:
@@ -209,7 +211,7 @@ def draw_matches(render, stack, tile1, tile2, ptmatches, scale, outdir, url_opti
     #plt.savefig(tempfilename)
     #print(tempfilename.name)
     cv2.imwrite(tempfilename.name, new_img)
-    
+
     return tempfilename.name
 
 
@@ -219,12 +221,12 @@ def get_tile_pair_matched_image(render, stack, tileId1, tileId2, pGroupId, qGrou
     im2 = '%s.jpg'%tileId2
     im1 = os.path.join(outdir, "%s"%(renderScale), im1)
     im2 = os.path.join(outdir, "%s"%(renderScale), im2)
-    
+
     # check if the point match collection exists
-    collections = renderapi.pointmatch.get_matchcollections(owner=matchCollectionOwner, 
+    collections = renderapi.pointmatch.get_matchcollections(owner=matchCollectionOwner,
                                                             render=render)
     collectionIds = [f['collectionId']['name'] for f in collections]
-    
+
     ptmatches = []
     if (matchCollection in collectionIds):
         ptmatches = renderapi.pointmatch.get_matches_from_tile_to_tile(matchCollection,
@@ -234,11 +236,11 @@ def get_tile_pair_matched_image(render, stack, tileId1, tileId2, pGroupId, qGrou
                                                                     tileId2,
                                                                     owner=matchCollectionOwner,
                                                                     render=render)
-    
+
     ptmatch_count = 0
     if (len(ptmatches) > 0):
         ptmatch_count = len(ptmatches[0]['matches']['p'][0])
-    
+
     match_img_filename = draw_matches(render, stack, tileId1, tileId2, ptmatches, renderScale, outdir, url_options)
     return match_img_filename, ptmatch_count
 
@@ -265,7 +267,7 @@ def compute_point_matches_for_tilepair(render, stack, url_options, option_keys, 
                 argvs += ['--%s'%(param), value]
             #outdir += "_%s_%s"%(param, str(value))
             collection_name += '_%s'%(str(value).replace('.', 'D'))
-        
+
         return_struct['collection_name'] = collection_name
         return_struct['outdir'] = output_dir
 
@@ -273,7 +275,7 @@ def compute_point_matches_for_tilepair(render, stack, url_options, option_keys, 
         tile2 = tileID['tileId2']
         pGroupId = tileID['pGroupId']
         qGroupId = tileID['qGroupId']
-        
+
         # get canvas urls
         canvas_urls = get_canvas_url(render.DEFAULT_KWARGS, stack, tile1, tile2, url_options)
 
@@ -301,7 +303,7 @@ def compute_point_matches_for_tilepair(render, stack, url_options, option_keys, 
             shutil.copy2(os.path.join(output_dir, img1), os.path.join(output_dir, im1))
         if os.path.exists(os.path.join(output_dir, img2)):
             shutil.copy2(os.path.join(output_dir, img2), os.path.join(output_dir, im2))
-        
+
         # create the image showing the matched features and add it to an html file
         match_img_filename, ptmatch_count = get_tile_pair_matched_image(render,
                                                         stack,
@@ -313,7 +315,7 @@ def compute_point_matches_for_tilepair(render, stack, url_options, option_keys, 
                                                         render.DEFAULT_KWARGS['owner'],
                                                         collection_name,
                                                         renderScale)
-        
+
         # create the tilepair url for this parameter setting
         tilepair_base_url = '%s:%d/render-ws/view/tile-pair.html'%(render.DEFAULT_KWARGS['host'], render.DEFAULT_KWARGS['port'])
         tilepair_base_url += '?renderStackOwner=%s'%(render.DEFAULT_KWARGS['owner'])
@@ -337,7 +339,7 @@ def compute_point_matches_for_tilepair(render, stack, url_options, option_keys, 
 '''
 
 def compute_point_matches(render, stack, tileID, output_dir, url_options, option_keys, options):
-    
+
     return_struct = {}
     return_struct['options'] = options
     return_struct['keys'] = option_keys
@@ -352,14 +354,14 @@ def compute_point_matches(render, stack, tileID, output_dir, url_options, option
     for param, value in zip(option_keys, options):
         ops[param] = value
         collection_name += '_%s'%(str(value).replace('.', 'D'))
-    
+
     tileids = []
     for tID in tileID:
         tileids.append([tID['tileId1'], tID['tileId2']])
-    
-    renderapi.client.pointMatchClient(stack, 
-                                      collection_name, 
-                                      tileids, 
+
+    renderapi.client.pointMatchClient(stack,
+                                      collection_name,
+                                      tileids,
                                       SIFTfdSize=ops['SIFTfdSize'],
                                       SIFTmaxScale=ops['SIFTmaxScale'],
                                       SIFTminScale=ops['SIFTminScale'],
@@ -384,7 +386,7 @@ def compute_point_matches(render, stack, tileID, output_dir, url_options, option
                                       project=render.DEFAULT_PROJECT,
                                       client_script=os.path.join(render.DEFAULT_CLIENT_SCRIPTS,'run_ws_client.sh'),
                                       numberOfThreads=10)
-    
+
     return_struct['collection_name'] = collection_name
     return_struct['outdir'] = output_dir
 
@@ -404,7 +406,7 @@ def compute_point_matches(render, stack, tileID, output_dir, url_options, option
                                                         output_dir,
                                                         render.DEFAULT_KWARGS['owner'],
                                                         collection_name,
-                                                        url_options, 
+                                                        url_options,
                                                         ops['renderScale'])
 
         # create the tilepair url for this parameter setting
@@ -451,10 +453,10 @@ class PtMatchOptimization(RenderModule):
     '''
     def get_pt_match_matrix(self, keys, options, return_struct):
         pt_match_matrix = np.zeros((len(return_struct), self.args['no_tilepairs_to_test']), dtype=int)
-        
+
         for i, r in enumerate(return_struct):
             pt_match_matrix[i, :] = r['ptmatch_count']
-        
+
         # get the # of tilepairs that have pt matches for each parameter set
         non_zero_count = np.count_nonzero(pt_match_matrix, axis=1)
 
@@ -473,20 +475,20 @@ class PtMatchOptimization(RenderModule):
 
         tilepairs = tilepairf['neighborPairs']
         if self.args['filter_tilepairs']:
-            # this takes a lot of time 
+            # this takes a lot of time
             tilepairs = filter_tile_pairs(self.args['stack'], tilepairf['neighborPairs'], self.render, self.args['pool_size'])
-        
+
         # get no_tilepairs_to_test # of random integers
         tp_indices = np.random.choice(range(len(tilepairs)), self.args['no_tilepairs_to_test'], replace=False)
-        
+
         tileIds = []
         ts = []
         for tp in tp_indices:
             tid = {}
-            
+
             tileId1 = tilepairs[tp]['p']['id']
             tileId2 = tilepairs[tp]['q']['id']
-            
+
             ts1 = renderapi.tilespec.get_tile_spec(self.args['stack'], tileId1, render=self.render)
             ts2 = renderapi.tilespec.get_tile_spec(self.args['stack'], tileId2, render=self.render)
 
@@ -529,15 +531,15 @@ class PtMatchOptimization(RenderModule):
 
         return_struct = []
         for tileids in tileIds:
-            return_struct.append(compute_point_matches_for_tilepair(self.render, 
-                                                                    self.args['stack'], 
-                                                                    self.args['url_options'], 
-                                                                    keys, 
-                                                                    options, 
-                                                                    self.args['outputDirectory'], 
+            return_struct.append(compute_point_matches_for_tilepair(self.render,
+                                                                    self.args['stack'],
+                                                                    self.args['url_options'],
+                                                                    keys,
+                                                                    options,
+                                                                    self.args['outputDirectory'],
                                                                     tileids))
         '''
-        
+
         mypartial = partial(compute_point_matches,
                             self.render,
                             self.args['stack'],
@@ -545,32 +547,32 @@ class PtMatchOptimization(RenderModule):
                             self.args['outputDirectory'],
                             self.args['url_options'],
                             keys)
-        
+
         #print(options)
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
             return_struct = pool.map(mypartial, options)
-        
+
         #return_struct = []
         #for ops in options:
-        #    return_struct.append(compute_point_matches(self.render, 
-        #                                                self.args['stack'], 
-        #                                                tileIds, 
-        #                                                self.args['outputDirectory'], 
-        #                                                self.args['url_options'], 
-        #                                                keys, 
+        #    return_struct.append(compute_point_matches(self.render,
+        #                                                self.args['stack'],
+        #                                                tileIds,
+        #                                                self.args['outputDirectory'],
+        #                                                self.args['url_options'],
+        #                                                keys,
         #                                                ops))
-        
-        
+
+
         m = render_from_template(os.path.dirname(__file__), 'optimization_new.html', return_struct=return_struct, zipped=zipped)
         #m = render_from_template(os.path.dirname(__file__), 'optimization_tile.html', return_struct=return_struct, zipped=zipped)
-    
+
         tempfilename = tempfile.NamedTemporaryFile(prefix='match_html_', suffix='.html', dir=self.args['outputDirectory'], delete=False)
         tempfilename.close()
         ff = open(tempfilename.name, "w")
         ff.write(m)
         ff.close()
         self.output({"output_html": tempfilename.name})
-        
+
 
 if __name__ == "__main__":
     module = PtMatchOptimization(input_data=ex)

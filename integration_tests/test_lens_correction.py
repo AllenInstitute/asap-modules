@@ -11,7 +11,7 @@ from rendermodules.mesh_lens_correction.do_mesh_lens_correction import \
         make_mask
 from test_data import render_params, TILESPECS_NO_LC_JSON, TILESPECS_LC_JSON
 from test_data import calc_lens_parameters
-import matplotlib.pyplot as plt
+import imageio
 from six.moves import urllib
 import os
 
@@ -256,6 +256,6 @@ def test_apply_lens_correction_mask(
             mpath = urllib.parse.unquote(
                     urllib.parse.urlparse(mm.maskUrl).path)
             assert(os.path.isfile(mpath))
-            mask = plt.imread(mpath)
+            mask = imageio.imread(mpath)
             assert (mask.shape[0] == height / (2**int(lvl)))
             assert (mask.shape[1] == width / (2**int(lvl)))
