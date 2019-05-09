@@ -291,6 +291,15 @@ apply_rough_alignment_example = {
     "pool_size": 20
 }
 
+# Rough QC test data
+MONTAGE_SCAPES_TSPECS = render_json_template(example_env, 'rough_qc_montage_scapes_tspecs.json',
+                                                test_data_root=TEST_DATA_ROOT)
+
+ROUGH_QC_TEST_PT_MATCHES = os.path.join(TEST_DATA_ROOT, "em_modules_test_data/rough_align_test_data/rough_test_pt_matches.json")
+
+ROUGH_QC_OUT_STACK = render_json_template(example_env, 'rough_aligned_stack_ts_for_qc.json',
+                                                test_data_root=TEST_DATA_ROOT)
+
 # EM Montage QC data
 PRESTITCHED_STACK_INPUT_JSON = render_json_template(
         example_env,

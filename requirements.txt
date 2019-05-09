@@ -17,4 +17,7 @@ scikit-image
 shapely
 triangle
 imageio
+seaborn
+mpld3
+descartes
 lxml
