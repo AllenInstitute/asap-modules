@@ -1,5 +1,5 @@
 from argschema import ArgSchema
-from argschema.fields import Bool, Float, Int, Nested, Str, InputFile
+from argschema.fields import Bool, Float, Int, Nested, Str, InputFile, List
 from argschema.schemas import DefaultSchema
 from marshmallow.validate import OneOf
 from rendermodules.module.schemas import StackTransitionParameters
@@ -126,6 +126,12 @@ class ApplyLensCorrectionOutput(DefaultSchema):
                 description='stack to which transformed tiles were written')
     refId = Str(required=True,
                 description='unique identifier string used as reference ID')
+    missing_ts_zs = List(Int,
+        required=False,
+        default=[],
+        missing=[],
+        cli_as_single_argument=True,
+        description="Z values for which apply mipmaps failed")
 
 
 class LensCorrectionParameters(ArgSchema):

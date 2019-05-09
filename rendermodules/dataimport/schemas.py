@@ -1,6 +1,6 @@
 import warnings
 import marshmallow as mm
-from argschema.fields import InputDir, InputFile, Str, Int, Boolean, Float
+from argschema.fields import InputDir, InputFile, Str, Int, Boolean, Float, List
 from ..module.schemas import (StackTransitionParameters, InputStackParameters,
                               OutputStackParameters)
 from marshmallow import ValidationError, post_load
@@ -62,6 +62,12 @@ class GenerateMipMapsParameters(InputStackParameters):
 
 class AddMipMapsToStackOutput(DefaultSchema):
     output_stack = Str(required=True)
+    missing_ts_zs = List(Int,
+        required=False,
+        default=[],
+        missing=[],
+        cli_as_single_argument=True,
+        description="Z values for which apply mipmaps failed")
 
 
 class AddMipMapsToStackParameters(StackTransitionParameters):

@@ -1,4 +1,3 @@
-
 import os
 import pytest
 import logging
@@ -957,3 +956,4 @@ def test_filterNameList_warning_rendersection(tmpdir):
         "filterListName": "notafilter"}
     with pytest.warns(UserWarning):
         mod = RenderSectionAtScale(input_data=warn_input, args=[])
+
