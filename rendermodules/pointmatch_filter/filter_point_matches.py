@@ -206,14 +206,14 @@ class FilterMatches(RenderModule):
             results = pool.map(proc_job, fargs)
 
         with open(self.args['filter_output_file'], 'w') as f:
-            json.dump(
+            renderapi.utils.renderdump(
                     [x for x in results if x is not None],
                     f,
                     indent=2)
 
         with open(self.args['output_json'], 'w') as f:
             outj = {'filter_output_file': self.args['filter_output_file']}
-            json.dump(outj, f, indent=2)
+            renderapi.utils.renderdump(outj, f, indent=2)
 
 
 if __name__ == '__main__':
