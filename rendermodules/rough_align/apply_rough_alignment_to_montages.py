@@ -13,7 +13,7 @@ from rendermodules.rough_align.downsample_mask_handler \
 from functools import partial
 import logging
 import requests
-import pathlib
+import pathlib2 as pathlib
 import cv2
 from six.moves import urllib
 from shapely.geometry import Polygon
@@ -187,7 +187,7 @@ def apply_rough_alignment(render,
                           remap_section_ids=False):
     z = Z[0] # z value from the montage stack - to be mapped to the newz values in lowres stack
     newz = Z[1] # z value in the lowres stack for this montage
-    
+
     session=requests.session()
     try:
         # get lowres stack tile specs
@@ -265,7 +265,7 @@ def apply_rough_alignment(render,
             t.z = newz
             if remap_section_ids:
                 t.layout.sectionId = "%s.0"%str(int(newz))
-        
+
         if filter_montage_output_with_masks:
             tf.M[0:2, 0:2] /= scale
             resolved_highrests1.tilespecs = highres_ts1
