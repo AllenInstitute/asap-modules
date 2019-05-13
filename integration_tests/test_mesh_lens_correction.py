@@ -6,6 +6,7 @@ from shutil import copyfile, rmtree
 import cv2
 import numpy as np
 import gzip
+import copy
 
 from rendermodules.mesh_lens_correction.do_mesh_lens_correction import \
         MeshLensCorrection, MeshAndSolveTransform, make_mask
@@ -134,7 +135,7 @@ def test_coarse_mesh_failure(
         render, tmpdir_factory, raw_lens_stack_1, raw_lens_matches_1):
     outdir = str(tmpdir_factory.mktemp("mesh_lens"))
     out_html_dir = outdir
-    example_for_input = dict(example)
+    example_for_input = copy.deepcopy(example)
     example_for_input['render'] = render_params
     example_for_input['metafile'] = os.path.join(TEST_DATA_ROOT,
                                                  "em_modules_test_data",
@@ -162,7 +163,7 @@ def test_correction_call_ptmatch(
         render, tmpdir_factory, raw_lens_stack_1, raw_lens_matches_1b):
     outdir = str(tmpdir_factory.mktemp("mesh_lens"))
     out_html_dir = outdir
-    example_for_input = dict(example)
+    example_for_input = copy.deepcopy(example)
     example_for_input['render'] = render_params
     example_for_input['metafile'] = os.path.join(TEST_DATA_ROOT,
                                                  "em_modules_test_data",
@@ -272,7 +273,7 @@ def test_mesh_lens_correction(
 
     outdir = str(tmpdir_factory.mktemp("mesh_lens"))
     out_html_dir = outdir
-    example_for_input = dict(example)
+    example_for_input = copy.deepcopy(example)
     example_for_input['render'] = render_params
     example_for_input['metafile'] = os.path.join(TEST_DATA_ROOT,
                                                  "em_modules_test_data",
@@ -318,7 +319,7 @@ def test_mesh_lens_correction(
 
     meshmod.args['good_solve']['error_std'] = 3.0
     meshclass = MeshAndSolveTransform(
-            input_data=dict(meshmod.args),
+            input_data=copy.deepcopy(meshmod.args),
             args=['--output_json', outjson])
     meshclass.run()
 
@@ -340,7 +341,7 @@ def test_mesh_with_mask(
 
     outdir = str(tmpdir_factory.mktemp("mesh_lens"))
     out_html_dir = outdir
-    example_for_input = dict(example)
+    example_for_input = copy.deepcopy(example)
     example_for_input['render'] = render_params
     example_for_input['metafile'] = os.path.join(TEST_DATA_ROOT,
                                                  "em_modules_test_data",
