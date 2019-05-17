@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import renderapi
 import os
-import pathlib
+import pathlib2 as pathlib
 from rendermodules.module.render_module import StackTransitionModule
 from rendermodules.lens_correction.schemas import \
         ApplyLensCorrectionOutput, ApplyLensCorrectionParameters
@@ -117,7 +117,7 @@ class ApplyLensCorrection(StackTransitionModule):
         for z in self.zValues:
             job_success = self.validate_tilespecs(self.input_stack, outputStack, z)
             if not job_success:
-               missing_ts_zs.append(z) 
+               missing_ts_zs.append(z)
 
         # output dict
         output = {}

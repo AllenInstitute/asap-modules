@@ -6,7 +6,7 @@ from rendermodules.module.render_module import (
         RenderModule, RenderModuleException)
 import glob
 import os
-import pathlib
+import pathlib2 as pathlib
 import numpy as np
 import cv2
 from six.moves import urllib

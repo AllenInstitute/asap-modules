@@ -5,7 +5,7 @@ create tilespecs from TEMCA metadata file
 
 import json
 import os
-import pathlib
+import pathlib2 as pathlib
 import numpy
 import renderapi
 from rendermodules.module.render_module import (

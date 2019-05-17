@@ -4,7 +4,7 @@ change storage directory of imageUrl in a given mipMapLevel
 """
 import copy
 import os
-import pathlib
+import pathlib2 as pathlib
 
 import renderapi
 

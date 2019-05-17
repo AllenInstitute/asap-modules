@@ -3,7 +3,7 @@ from functools import partial
 import glob
 import os
 import numpy as np
-import pathlib
+import pathlib2 as pathlib
 import renderapi
 from rendermodules.utilities.pillow_utils import Image
 from rendermodules.materialize.render_downsample_sections import (
@@ -192,7 +192,7 @@ class MakeMontageScapeSectionStack(StackOutputModule):
 
     def run(self):
         self.logger.debug('Montage scape stack generation module')
-        
+
         # get the list of z indices
         zvalues = self.render.run(
             renderapi.stack.get_z_values_for_stack,
@@ -222,7 +222,7 @@ class MakeMontageScapeSectionStack(StackOutputModule):
             outzvalues = renderapi.stack.get_z_values_for_stack(
                             self.args['output_stack'],
                             render=self.render)
-            
+
             if self.overwrite_zlayer:
                 # stack has to be in loading state
                 renderapi.stack.set_stack_state(self.args['output_stack'],
@@ -230,10 +230,10 @@ class MakeMontageScapeSectionStack(StackOutputModule):
                                                 render=self.render)
                 for oldz, newz in zip(zvalues, newzvalues):
                     # delete the section from output stack
-                    renderapi.stack.delete_section(self.args['output_stack'], 
-                                                   newz, 
+                    renderapi.stack.delete_section(self.args['output_stack'],
+                                                   newz,
                                                    render=self.render)
-        
+
 
         # generate the tag string to add to output tilespec json file name
         tagstr = "%s_%s" % (min(zvalues), max(zvalues))

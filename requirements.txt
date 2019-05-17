@@ -3,7 +3,7 @@ argschema>=1.15.17
 numpy
 pillow
 tifffile
-pathlib
+pathlib2
 scipy
 rtree
 networkx
