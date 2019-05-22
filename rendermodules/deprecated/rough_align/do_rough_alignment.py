@@ -6,8 +6,8 @@ from marshmallow import ValidationError
 from functools import partial
 import numpy as np
 import tempfile
-from ..module.render_module import RenderModule, RenderModuleException
-from rendermodules.deprecated.schemas import SolveRoughAlignmentParameters
+from rendermodules.module.render_module import RenderModule, RenderModuleException
+from rendermodules.deprecated.rough_align.schemas import SolveRoughAlignmentParameters
 
 
 if __name__ == "__main__" and __package__ is None:
@@ -189,15 +189,15 @@ class SolveRoughAlignmentModule(RenderModule):
     def run(self):
         if "MCRROOT" not in os.environ:
             raise ValidationError("MCRROOT not set")
-			
+
         if self.args['first_section'] >= self.args['last_section']:
             raise RenderModuleException("First section z cannot be greater or equal to last section z")
 
-        zvalues = renderapi.stack.get_z_values_for_stack(self.args['source_collection']['stack'], 
+        zvalues = renderapi.stack.get_z_values_for_stack(self.args['source_collection']['stack'],
                                                          render=self.render)
         self.args['first_section'] = min(zvalues) if self.args['first_section'] > min(zvalues) else self.args['first_section']
         self.args['last_section'] = max(zvalues) if self.args['last_section'] > max(zvalues) else self.args['last_section']
-        
+
         # generate a temporary json to feed in to the solver
         tempjson = tempfile.NamedTemporaryFile(
             suffix=".json",
