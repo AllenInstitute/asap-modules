@@ -4,7 +4,7 @@ import subprocess
 import tempfile
 import shutil
 from argschema import ArgSchemaParser
-from rendermodules.lens_correction.schemas import (
+from rendermodules.deprecated.lens_correction.schemas import (
     LensCorrectionOutput, LensCorrectionParameters)
 from rendermodules.module.render_module import RenderModuleException
 
