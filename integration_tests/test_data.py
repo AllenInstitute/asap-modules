@@ -1,8 +1,8 @@
-
 import os
 from jinja2 import Environment, FileSystemLoader
 import json
 import tempfile
+import marshmallow
 
 pool_size = os.environ.get('RENDERMODULES_POOL_SIZE', 5)
 
@@ -346,3 +346,13 @@ FUSION_TILESPEC_JSON = render_json_template(
 FUSION_TRANSFORM_JSON = render_json_template(
     example_env, 'fusion_test_tform_ref.json', test_data_root=TEST_DATA_ROOT)
 
+# whether to test legacy (deprecated) modules
+b = marshmallow.fields.Boolean()
+test_legacy = b.deserialize(os.environ.get(
+    "RENDERMODULES_TEST_LEGACY", False))
+test_legacy_lens_correction = b.deserialize(os.environ.get(
+    "RENDERMODULES_TEST_LEGACY_LC", test_legacy))
+test_legacy_montage = b.deserialize(os.environ.get(
+    "RENDERMODULES_TEST_LEGACY_MONTAGE", test_legacy))
+test_legacy_rough = b.deserialize(os.environ.get(
+    "RENDERMODULES_TEST_LEGACY_ROUGH", test_legacy))

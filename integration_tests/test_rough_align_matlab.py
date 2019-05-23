@@ -19,7 +19,8 @@ from test_data import (
         test_rough_parameters as solver_example,
         apply_rough_alignment_example as ex1,
         rough_solver_example as solver_input,
-        pool_size)
+        pool_size,
+        test_legacy_rough)
 from rendermodules.module.render_module import RenderModuleException
 from rendermodules.materialize.render_downsample_sections import RenderSectionAtScale, create_tilespecs_without_mipmaps
 from rendermodules.dataimport.make_montage_scapes_stack import MakeMontageScapeSectionStack, create_montage_scape_tile_specs
@@ -29,6 +30,12 @@ from rendermodules.rough_align.apply_rough_alignment_to_montages import (ApplyRo
                                                                          apply_rough_alignment)
 import shutil
 import numpy as np
+
+# skip these tests if not explicitly asked for
+pytestmark = pytest.mark.skipif(not test_legacy_rough, reason=(
+    "legacy code not being tested -- to test, "
+    "set environment variable RENDERMODULES_TEST_LEGACY_ROUGH"))
+
 
 @pytest.fixture(scope='module')
 def render():
