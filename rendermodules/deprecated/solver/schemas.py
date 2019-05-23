@@ -1,8 +1,35 @@
-from argschema.fields import Bool, Float, Int, Nested, Str, InputDir, OutputDir
+from argschema.fields import (
+    Bool, Float, Int, Nested, Str, InputDir, OutputDir, InputFile)
 from argschema.schemas import DefaultSchema
-from rendermodules.rough_align.schemas import (
-    PointMatchParameters, PastixParameters,
-    LowresStackParameters)
+
+
+class PointMatchParameters(DefaultSchema):
+    NumRandomSamplingsMethod = Str(
+        required=False,
+        default="Desired confidence",
+        missing="Desired confidence",
+        description='Numerical Random sampling method')
+    MaximumRandomSamples = Int(
+        required=False,
+        default=5000,
+        missing=5000,
+        description='Maximum number of random samples')
+    DesiredConfidence = Float(
+        required=False,
+        default=99.9,
+        missing=99.9,
+        description='Desired confidence level')
+    PixelDistanceThreshold = Float(
+        required=False,
+        default=0.1,
+        missing=0.1,
+        description='Pixel distance threshold for filtering')
+    Transform = Str(
+        required=False,
+        default="AFFINE",
+        missing="AFFINE",
+        description="Transformation type parameter for point "
+                    "match filtering (default AFFINE)")
 
 
 class PointMatchFilteringOptions(DefaultSchema):
@@ -31,6 +58,26 @@ class PointMatchFilteringOptions(DefaultSchema):
         default=0.1,
         missing=0.1,
         description="Pixel distance threshold")
+
+
+class PastixParameters(DefaultSchema):
+    ncpus = Int(
+        required=False,
+        default=8,
+        missing=8,
+        allow_none=True,
+        description="No. of cpu cores. Default = 8")
+    parms_fn = InputFile(
+        required=False,
+        default=None,
+        missing=None,
+        description="Path to parameters pastix parameters file")
+    split = Int(
+        required=False,
+        default=1,
+        missing=1,
+        allow_none=True,
+        description="set to either 0 (no split) or 1 (split)")
 
 
 class PastixOptions(DefaultSchema):
