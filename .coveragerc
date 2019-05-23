@@ -21,3 +21,6 @@ exclude_lines =
     logger.critical
     # ignore name is main
     if __name__ == .__main__.
+
+omit =
+    rendermodules/deprecated/*
