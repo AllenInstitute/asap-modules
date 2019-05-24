@@ -1,11 +1,11 @@
 import os
 import pytest
-import logging 
-import renderapi 
+import logging
+import renderapi
 import json
-import glob 
+import glob
 import copy
-import marshmallow as mm 
+import marshmallow as mm
 from six.moves import urllib
 
 from test_data import (
@@ -23,12 +23,12 @@ from test_data import (
 from rendermodules.module.render_module import RenderModuleException
 from rendermodules.materialize.render_downsample_sections import RenderSectionAtScale, create_tilespecs_without_mipmaps
 from rendermodules.dataimport.make_montage_scapes_stack import MakeMontageScapeSectionStack, create_montage_scape_tile_specs
-from rendermodules.deprecated.do_rough_alignment import SolveRoughAlignmentModule
+from rendermodules.deprecated.rough_align.do_rough_alignment import SolveRoughAlignmentModule
 from rendermodules.rough_align.apply_rough_alignment_to_montages import (ApplyRoughAlignmentTransform,
                                                                          #example as ex1,
                                                                          apply_rough_alignment)
-import shutil 
-import numpy as np 
+import shutil
+import numpy as np
 
 @pytest.fixture(scope='module')
 def render():
@@ -96,10 +96,10 @@ def downsample_sections_dir(montage_stack, tmpdir_factory):
         "maxZ": 1022,
     }
     ex['output_json'] = os.path.join(image_directory, 'output.json')
-    
+
     # set bounds parameter to stack bounds
     ex['use_stack_bounds'] = "True"
-    
+
     mod = RenderSectionAtScale(input_data=ex, args=[])
     mod.run()
 
@@ -119,7 +119,7 @@ def downsample_sections_dir(montage_stack, tmpdir_factory):
 
     # set bounds to section bounds
     ex['use_stack_bounds'] = "False"
-    
+
     mod = RenderSectionAtScale(input_data=ex, args=[])
     mod.run()
 
@@ -577,4 +577,3 @@ def test_solver_default_options(render, montage_scape_stack, rough_point_match_c
 
     with pytest.raises(mm.ValidationError):
         mod.run()
-

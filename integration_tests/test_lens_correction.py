@@ -4,11 +4,12 @@ import logging
 import renderapi
 import numpy as np
 import math
-from rendermodules.lens_correction.apply_lens_correction import \
-        ApplyLensCorrection
-from rendermodules.lens_correction.lens_correction import LensCorrectionModule
-from rendermodules.mesh_lens_correction.do_mesh_lens_correction import \
-        make_mask
+from rendermodules.lens_correction.apply_lens_correction import (
+    ApplyLensCorrection)
+from rendermodules.deprecated.lens_correction.lens_correction import (
+    LensCorrectionModule)
+from rendermodules.mesh_lens_correction.do_mesh_lens_correction import (
+        make_mask)
 from test_data import render_params, TILESPECS_NO_LC_JSON, TILESPECS_LC_JSON
 from test_data import calc_lens_parameters
 import imageio

@@ -1,10 +1,11 @@
 import json
 import os
-import subprocess
 import renderapi
 import tempfile
-from ..module.render_module import RenderModule, RenderModuleException
-from rendermodules.deprecated.schemas import SolveMontageSectionParameters
+from rendermodules.module.render_module import (
+    RenderModule, RenderModuleException)
+from rendermodules.deprecated.montage.schemas import (
+    SolveMontageSectionParameters)
 from marshmallow import ValidationError
 import time
 

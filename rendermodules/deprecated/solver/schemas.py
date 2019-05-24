@@ -1,10 +1,35 @@
-from argschema.fields import Bool, Float, Int, Nested, Str, InputDir, OutputDir
+from argschema.fields import (
+    Bool, Float, Int, Nested, Str, InputDir, OutputDir, InputFile)
 from argschema.schemas import DefaultSchema
-import marshmallow as mm
-from marshmallow import Schema, validates_schema, post_load
-from ..module.render_module import RenderParameters
-from rendermodules.rough_align.schemas import *
-import os
+
+
+class PointMatchParameters(DefaultSchema):
+    NumRandomSamplingsMethod = Str(
+        required=False,
+        default="Desired confidence",
+        missing="Desired confidence",
+        description='Numerical Random sampling method')
+    MaximumRandomSamples = Int(
+        required=False,
+        default=5000,
+        missing=5000,
+        description='Maximum number of random samples')
+    DesiredConfidence = Float(
+        required=False,
+        default=99.9,
+        missing=99.9,
+        description='Desired confidence level')
+    PixelDistanceThreshold = Float(
+        required=False,
+        default=0.1,
+        missing=0.1,
+        description='Pixel distance threshold for filtering')
+    Transform = Str(
+        required=False,
+        default="AFFINE",
+        missing="AFFINE",
+        description="Transformation type parameter for point "
+                    "match filtering (default AFFINE)")
 
 
 class PointMatchFilteringOptions(DefaultSchema):
@@ -35,6 +60,26 @@ class PointMatchFilteringOptions(DefaultSchema):
         description="Pixel distance threshold")
 
 
+class PastixParameters(DefaultSchema):
+    ncpus = Int(
+        required=False,
+        default=8,
+        missing=8,
+        allow_none=True,
+        description="No. of cpu cores. Default = 8")
+    parms_fn = InputFile(
+        required=False,
+        default=None,
+        missing=None,
+        description="Path to parameters pastix parameters file")
+    split = Int(
+        required=False,
+        default=1,
+        missing=1,
+        allow_none=True,
+        description="set to either 0 (no split) or 1 (split)")
+
+
 class PastixOptions(DefaultSchema):
     ncpus = Int(
         required=False,
@@ -49,7 +94,6 @@ class PastixOptions(DefaultSchema):
         default=1,
         missing=1,
         description="split parameter for pastix solver")
-
 
 
 class SolverOptionsParameters(DefaultSchema):
@@ -224,11 +268,14 @@ class BaseStackParameters(DefaultSchema):
         missing=0,
         description="Verbose output from solver needed?")
 
+
 class SourceStackParameters(BaseStackParameters):
     pass
 
+
 class TargetStackParameters(BaseStackParameters):
     pass
+
 
 class PointMatchCollectionParameters(DefaultSchema):
     server = Str(
@@ -250,81 +297,6 @@ class PointMatchCollectionParameters(DefaultSchema):
         missing=0,
         description="Verbose output from point match loader needed?")
 
-
-class SolveMontageSectionParameters(RenderParameters):
-    first_section = Int(
-        required=True,
-        description="Z index of the first section")
-    last_section = Int(
-        required=True,
-        description="Z index of the last section")
-    clone_section_stack = Bool(
-        required=False,
-        default=True,
-        description="Whether to clone out a temporary single section stack from source_collection stack")
-    solver_executable = Str(
-        required=True,
-        description="Matlab solver executable with full path")
-    verbose = Int(
-        required=False,
-        default=0,
-        missing=0,
-        description="Verbose output from solver needed?")
-    solver_options = Nested(
-        SolverOptionsParameters,
-        required=True,
-        description="Solver parameters")
-    source_collection = Nested(
-        SourceStackParameters,
-        required=True,
-        description="Input stack parameters, will be created and deleted after from input_stack")
-    target_collection = Nested(
-        TargetStackParameters,
-        required=True,
-        description="Output stack parameters")
-    source_point_match_collection = Nested(
-        PointMatchCollectionParameters,
-        required=True,
-        description="Point match collection parameters")
-
-    @post_load
-    def add_missing_values(self, data):
-        # cannot create "lambda" as a variable name in SolverParameters
-        data['solver_options']['lambda'] = data['solver_options']['lambda_value']
-        data['solver_options'].pop('lambda_value', None)
-
-        if data['source_collection']['owner'] is None:
-            data['source_collection']['owner'] = data['render']['owner']
-        if data['source_collection']['project'] is None:
-            data['source_collection']['project'] = data['render']['project']
-        if data['source_collection']['service_host'] is None:
-            if data['render']['host'].find('http://') == 0:
-                data['source_collection']['service_host'] = data['render']['host'][7:] + ":" + str(data['render']['port'])
-            else:
-                data['source_collection']['service_host'] = data['render']['host'] + ":" + str(data['render']['port'])
-        if data['source_collection']['baseURL'] is None:
-            data['source_collection']['baseURL'] = "http://{}:{}/render-ws/v1".format(data['render']['host'],data['render']['port']) 
-        if data['source_collection']['renderbinPath'] is None:
-            data['source_collection']['renderbinPath'] = data['render']['client_scripts']
-
-        if data['target_collection']['owner'] is None:
-            data['target_collection']['owner'] = data['render']['owner']
-        if data['target_collection']['project'] is None:
-            data['target_collection']['project'] = data['render']['project']
-        if data['target_collection']['service_host'] is None:
-            if data['render']['host'].find('http://') == 0:
-                data['target_collection']['service_host'] = data['render']['host'][7:] + ":" + str(data['render']['port'])
-            else:
-                data['target_collection']['service_host'] = data['render']['host'] + ":" + str(data['render']['port'])
-        if data['target_collection']['baseURL'] is None:
-            data['target_collection']['baseURL'] = "http://{}:{}/render-ws/v1".format(data['render']['host'],data['render']['port']) 
-        if data['target_collection']['renderbinPath'] is None:
-            data['target_collection']['renderbinPath'] = data['render']['client_scripts']
-
-        if data['source_point_match_collection']['server'] is None:
-            data['source_point_match_collection']['server'] = data['source_collection']['baseURL']
-        if data['source_point_match_collection']['owner'] is None:
-            data['source_point_match_collection']['owner'] = data['render']['owner']
 
 class SolverParameters(DefaultSchema):
     # NOTE: Khaled's EM_aligner needs some of the boolean variables as Integers
@@ -470,105 +442,3 @@ class SolverParameters(DefaultSchema):
         default=None,
         missing=None,
         description="Pastix parameters if solving using Pastix")
-
-
-class SolveRoughAlignmentParameters(RenderParameters):
-    first_section = Int(
-        required=True,
-        description="Min Z value")
-    last_section = Int(
-        required=True,
-        description="Max Z value")
-    verbose = Int(
-        required=False,
-        default=0,
-        missing=0,
-        description='Is verbose output required')
-    source_collection = Nested(
-        LowresStackParameters,
-        required=True)
-    target_collection = Nested(
-        OutputLowresStackParameters,
-        required=True)
-    solver_options = Nested(
-        SolverParameters,
-        required=True)
-    source_point_match_collection = Nested(
-        PointMatchCollectionParameters,
-        required=True)
-    solver_executable = Str(
-        required=True,
-        description="Rough alignment solver executable file with full path")
-
-    @post_load
-    def add_missing_values(self, data):
-        # cannot create "lambda" as a variable
-        # name in SolverParameters. So, adding it here
-        data['solver_options']['lambda'] = \
-                data['solver_options']['lambda_value']
-        data['solver_options'].pop('lambda_value', None)
-        if data['solver_options']['pastix'] is None:
-            data['solver_options'].pop('pastix', None)
-
-        host = ""
-        if data['render']['host'].find('http://') == 0:
-            host = data['render']['host']
-        else:
-            host = "http://%s" % (data['render']['host'])
-
-        if data['source_collection']['owner'] is None:
-            data['source_collection']['owner'] = data['render']['owner']
-        if data['source_collection']['project'] is None:
-            data['source_collection']['project'] = data['render']['project']
-        if data['source_collection']['service_host'] is None:
-            if data['render']['host'].find('http://') == 0:
-                data['source_collection']['service_host'] = (
-                        data['render']['host'][7:] +
-                        ":" + str(data['render']['port']))
-            else:
-                data['source_collection']['service_host'] = (
-                        data['render']['host'] +
-                        ":" + str(data['render']['port']))
-        if data['source_collection']['baseURL'] is None:
-            data['source_collection']['baseURL'] = (
-                    host + ":" +
-                    str(data['render']['port']) + '/render-ws/v1')
-        if data['source_collection']['renderbinPath'] is None:
-            data['source_collection']['renderbinPath'] = \
-                    data['render']['client_scripts']
-
-        if data['target_collection']['owner'] is None:
-            data['target_collection']['owner'] = data['render']['owner']
-        if data['target_collection']['project'] is None:
-            data['target_collection']['project'] = data['render']['project']
-        if data['target_collection']['service_host'] is None:
-            if data['render']['host'].find('http://') == 0:
-                data['target_collection']['service_host'] = (
-                        data['render']['host'][7:] +
-                        ":" + str(data['render']['port']))
-            else:
-                data['target_collection']['service_host'] = (
-                        data['render']['host'] +
-                        ":" + str(data['render']['port']))
-        if data['target_collection']['baseURL'] is None:
-            data['target_collection']['baseURL'] = (
-                    host + ":" + str(data['render']['port']) + '/render-ws/v1')
-        if data['target_collection']['renderbinPath'] is None:
-            data['target_collection']['renderbinPath'] = \
-                    data['render']['client_scripts']
-
-        if data['source_point_match_collection']['server'] is None:
-            data['source_point_match_collection']['server'] = \
-                    data['source_collection']['baseURL']
-        if data['source_point_match_collection']['owner'] is None:
-            data['source_point_match_collection']['owner'] = \
-                    data['render']['owner']
-
-        # if solver is "pastix" then
-        # data['solver_options']['pastix'] is required
-        if data['solver_options']['solver'] is "pastix":
-            pastix = data['solver_options']['pastix']
-            if pastix['ncpus'] is None:
-                data['solver_options']['pastix']['ncpus'] = 8
-            if pastix['split'] is None:
-                data['solver_options']['pastix']['split'] = 1
