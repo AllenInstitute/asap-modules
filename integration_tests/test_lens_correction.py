@@ -10,8 +10,9 @@ from rendermodules.deprecated.lens_correction.lens_correction import (
     LensCorrectionModule)
 from rendermodules.mesh_lens_correction.do_mesh_lens_correction import (
         make_mask)
-from test_data import render_params, TILESPECS_NO_LC_JSON, TILESPECS_LC_JSON
-from test_data import calc_lens_parameters
+from test_data import (
+    render_params, TILESPECS_NO_LC_JSON, TILESPECS_LC_JSON,
+    calc_lens_parameters, test_legacy_lens_correction)
 import imageio
 from six.moves import urllib
 import os
@@ -124,6 +125,9 @@ def compute_lc_norm_and_max(test_example_tform, test_new_tform):
     assert tform_norm < 1
 
 
+@pytest.mark.skipif(not test_legacy_lens_correction, reason=(
+    "legacy code not being tested -- to test, "
+    "set environment variable RENDERMODULES_TEST_LEGACY_LC"))
 def test_calc_lens_correction(example_tform_dict, test_points, tmpdir):
     outfile = str(tmpdir.join('test_LC_out.json'))
     print(outfile)

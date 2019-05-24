@@ -13,13 +13,20 @@ from test_data import (RAW_STACK_INPUT_JSON,
                       montage_z,
                       test_em_montage_parameters as solver_example,
                       test_pointmatch_parameters as pointmatch_example,
-                      test_pointmatch_parameters_qsub as pointmatch_example_qsub)
+                      test_pointmatch_parameters_qsub as pointmatch_example_qsub,
+                      test_legacy_montage)
 
 from rendermodules.deprecated.montage.run_montage_job_for_section import  SolveMontageSectionModule
 from rendermodules.pointmatch.create_tilepairs import TilePairClientModule
 from rendermodules.pointmatch.generate_point_matches_spark import PointMatchClientModuleSpark
 from rendermodules.pointmatch.generate_point_matches_qsub import PointMatchClientModuleQsub
 from rendermodules.module.render_module import RenderModuleException
+
+# skip these tests if not explicitly asked for
+pytestmark = pytest.mark.skipif(not test_legacy_montage, reason=(
+    "legacy code not being tested -- to test, "
+    "set environment variable RENDERMODULES_TEST_LEGACY_MONTAGE"))
+
 
 @pytest.fixture(scope='module')
 def render():
