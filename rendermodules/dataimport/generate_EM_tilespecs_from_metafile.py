@@ -5,13 +5,15 @@ create tilespecs from TEMCA metadata file
 
 import json
 import os
-import pathlib2 as pathlib
 import numpy
 import renderapi
 from rendermodules.module.render_module import (
     StackOutputModule, RenderModuleException)
 from rendermodules.dataimport.schemas import (GenerateEMTileSpecsOutput,
                                               GenerateEMTileSpecsParameters)
+
+from rendermodules.utilities import uri_utils
+
 
 example_input = {
     "render": {
@@ -54,7 +56,7 @@ class GenerateEMTileSpecsModule(StackOutputModule):
     def sectionId_from_z(z):
         return str(float(z))
 
-    def ts_from_imgdata(self, imgdata, imgdir, x, y,
+    def ts_from_imgdata(self, imgdata, imgprefix, x, y,
                         minint=0, maxint=255, maskUrl=None,
                         width=3840, height=3840, z=None, sectionId=None,
                         scopeId=None, cameraId=None, pixelsize=None):
@@ -62,11 +64,14 @@ class GenerateEMTileSpecsModule(StackOutputModule):
         sectionId = (self.sectionId_from_z(z) if sectionId is None
                      else sectionId)
         raw_tforms = [renderapi.transform.AffineModel(B0=x, B1=y)]
-        imageUrl = pathlib.Path(
-            os.path.abspath(os.path.join(
-                imgdir, imgdata['img_path']))).as_uri()
-        if maskUrl is not None:
-                maskUrl = pathlib.Path(maskUrl).as_uri()
+
+        imageUrl = uri_utils.uri_join(imgprefix, imgdata['img_path'])
+
+        # imageUrl = pathlib.Path(
+        #     os.path.abspath(os.path.join(
+        #         imgdir, imgdata['img_path']))).as_uri()
+        # if maskUrl is not None:
+        #         maskUrl = pathlib.Path(maskUrl).as_uri()
 
         ip = renderapi.image_pyramid.ImagePyramid()
         ip[0] = renderapi.image_pyramid.MipMap(imageUrl=imageUrl,
@@ -85,8 +90,9 @@ class GenerateEMTileSpecsModule(StackOutputModule):
             rotation=imgdata['img_meta']['angle'], pixelsize=pixelsize)
 
     def run(self):
-        with open(self.args['metafile'], 'r') as f:
-            meta = json.load(f)
+        # with open(self.args['metafile'], 'r') as f:
+        #     meta = json.load(f)
+        meta = json.loads(uri_utils.uri_readbytes(self.args['metafile_uri']))
         roidata = meta[0]['metadata']
         imgdata = meta[1]['data']
         img_coords = {img['img_path']: self.image_coords_from_stage(
@@ -97,15 +103,16 @@ class GenerateEMTileSpecsModule(StackOutputModule):
 
         if not imgdata:
             raise RenderModuleException(
-                "No relevant image metadata found for metafile {}".format(
-                    self.args['metafile']))
+                "No relevant image metadata found for metadata at {}".format(
+                    self.args['metafile_uri']))
 
         minX, minY = numpy.min(numpy.array(list(img_coords.values())), axis=0)
         # assume isotropic pixels
         pixelsize = roidata['calibration']['highmag']['x_nm_per_pix']
 
         imgdir = self.args.get(
-            'image_directory', os.path.dirname(self.args['metafile']))
+            'image_prefix',
+            uri_utils.uri_prefix(self.args['metafile_uri']))
 
         tspecs = [
                 self.ts_from_imgdata(
@@ -120,7 +127,7 @@ class GenerateEMTileSpecsModule(StackOutputModule):
                     scopeId=roidata['temca_id'],
                     cameraId=roidata['camera_info']['camera_id'],
                     pixelsize=pixelsize,
-                    maskUrl = self.args['maskUrl']) for img in imgdata]
+                    maskUrl=self.args['maskUrl_uri']) for img in imgdata]
 
         self.output_tilespecs_to_stack(tspecs)
 

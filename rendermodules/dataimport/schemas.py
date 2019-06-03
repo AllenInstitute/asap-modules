@@ -1,10 +1,13 @@
 import warnings
+
 import marshmallow as mm
 from argschema.fields import InputDir, InputFile, Str, Int, Boolean, Float, List
 from ..module.schemas import (StackTransitionParameters, InputStackParameters,
                               OutputStackParameters)
-from marshmallow import ValidationError, post_load
+from marshmallow import ValidationError, post_load, pre_load
 from argschema.schemas import DefaultSchema
+
+import rendermodules.utilities.schema_utils
 
 
 class GenerateMipMapsOutput(DefaultSchema):
@@ -14,8 +17,10 @@ class GenerateMipMapsOutput(DefaultSchema):
 
 class GenerateMipMapsParameters(InputStackParameters):
     output_dir = mm.fields.Str(
-        required=True,
+        required=False,
         description='directory to which the mipmaps will be stored')
+    output_prefix = mm.fields.Str(
+        required=True, description=("uri prefix for generated mipmaps"))
     method = mm.fields.Str(
         required=True, default="block_reduce",
         validator=mm.validate.OneOf(["PIL", "block_reduce"]),
@@ -59,6 +64,12 @@ class GenerateMipMapsParameters(InputStackParameters):
         exc_fields = excluded_fields[options['method']]
         return cls(exclude=exc_fields).dump(options)
 
+    # TODO test this
+    @pre_load
+    def directory_to_prefix(self, data):
+        rendermodules.utilities.schema_utils.posix_to_uri(
+            data, "output_dir", "output_prefix")
+
 
 class AddMipMapsToStackOutput(DefaultSchema):
     output_stack = Str(required=True)
@@ -72,8 +83,11 @@ class AddMipMapsToStackOutput(DefaultSchema):
 
 class AddMipMapsToStackParameters(StackTransitionParameters):
     mipmap_dir = InputDir(
-        required=True,
+        required=False,
         description='directory to which the mipmaps will be stored')
+    mipmap_prefix = Str(
+        required=True, description=(
+            "uri prefix from which mipmap locations are built."))
     levels = mm.fields.Int(
         required=False, default=6,
         description='number of levels of mipmaps, default is 6')
@@ -81,22 +95,41 @@ class AddMipMapsToStackParameters(StackTransitionParameters):
         required=False, default="tiff",
         description='mipmap image format, default is tiff')
 
+    # TODO test this
+    @pre_load
+    def mipmap_directory_to_prefix(self, data):
+        rendermodules.utilities.schema_utils.posix_to_uri(
+            data, "mipmap_dir", "mipmap_prefix")
 
 
 class GenerateEMTileSpecsParameters(OutputStackParameters):
     metafile = InputFile(
-        required=True,
+        required=False,
         description="metadata file containing TEMCA acquisition data")
+    metafile_uri = Str(
+        required=True, description=(
+            "uri of metadata containing TEMCA acquisition data"))
+    # FIXME maskUrl and image_directory are not required -- posix_to_uri should support this
     maskUrl = InputFile(
         required=False,
-        default = None,
-        missing = None,
+        default=None,
+        missing=None,
         description="absolute path to image mask to apply")
+    maskUrl_uri = Str(
+        required=False,
+        default=None,
+        missing=None,
+        description=("uri of image mask to apply"))
     image_directory = InputDir(
         required=False,
         description=("directory used in determining absolute paths to images. "
                      "Defaults to parent directory containing metafile "
                      "if omitted."))
+    image_prefix = Str(
+        required=False, description=(
+            "prefix used in determining full uris of images in metadata. "
+            "Defaults to using the / delimited prefix to "
+            "the metadata_uri if omitted"))
     maximum_intensity = Int(
         required=False, default=255,
         description=("intensity value to interpret as white"))
@@ -108,6 +141,22 @@ class GenerateEMTileSpecsParameters(OutputStackParameters):
         description=("sectionId to apply to tiles during ingest.  "
                      "If unspecified will default to a string "
                      "representation of the float value of z_index."))
+
+    @pre_load
+    def metafile_to_uri(self, data):
+        rendermodules.utilities.schema_utils.posix_to_uri(
+            data, "metafile", "metafile_uri")
+
+    # FIXME not required -- does this work
+    @pre_load
+    def maskUrl_to_uri(self, data):
+        rendermodules.utilities.schema_utils.posix_to_uri(
+            data, "storage_directory", "storage_prefix")
+
+    @pre_load
+    def image_directory_to_prefix(self, data):
+        rendermodules.utilities.schema_utils.posix_to_uri(
+            data, "image_directory", "image_prefix")
 
 
 class GenerateEMTileSpecsOutput(DefaultSchema):
