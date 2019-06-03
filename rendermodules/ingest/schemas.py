@@ -1,5 +1,11 @@
+import logging
+
 import argschema
 from argschema.fields import DateTime, Nested, InputDir, Str, Int
+import marshmallow
+import pathlib2 as pathlib
+
+import rendermodules.utilities.schema_utils
 
 
 class Camera(argschema.schemas.DefaultSchema):
@@ -25,10 +31,20 @@ class Section(argschema.schemas.DefaultSchema):
 
 class TileSetIngestSchema(argschema.ArgSchema):
     storage_directory = InputDir(
-        required=True, description="")
+        required=False, description=(
+            "Directory which stores acquisition data. "
+            "Non-file uris must use storage_prefix"))
+    storage_prefix = Str(required=True, description=(
+        "uri prefix for acquisition data."))
     section = Nested(Section, required=False,
                      description="")
     acquisition_data = Nested(AcquisitionData, required=False)
+
+    # TODO test this
+    @marshmallow.pre_load
+    def directory_to_storage_prefix(self, data):
+        rendermodules.utilities.schema_utils.posix_to_uri(
+            data, "storage_directory", "storage_prefix")
 
 
 class EMMontageSetIngestSchema(TileSetIngestSchema):
