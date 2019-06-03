@@ -1,11 +1,14 @@
 #!/usr/bin/env python
-import renderapi
 import os
-import pathlib2 as pathlib
+
+import renderapi
+from six.moves import urllib
+
 from rendermodules.module.render_module import StackTransitionModule
 from rendermodules.lens_correction.schemas import \
         ApplyLensCorrectionOutput, ApplyLensCorrectionParameters
-from rendermodules.dataimport.create_mipmaps import create_mipmaps
+from rendermodules.dataimport.create_mipmaps import create_mipmaps_uri
+from rendermodules.utilities import uri_utils
 
 example_input = {
     "render": {
@@ -86,10 +89,11 @@ class ApplyLensCorrection(StackTransitionModule):
         # make mask mipmaps
         mask_mm_list = {}
         if self.args['maskUrl'] is not None:
-            root, ext = os.path.splitext(self.args['maskUrl'])
-            mask_mm_list = create_mipmaps(
-                self.args['maskUrl'],
-                outputDirectory=os.path.dirname(self.args['maskUrl']),
+            root, ext = os.path.splitext(
+                urllib.parse.urlparse(self.args['maskUrl']).path)
+            mask_mm_list = create_mipmaps_uri(
+                self.args['maskUrl_uri'],
+                outputDirectory=uri_utils.uri_prefix(self.args['maskUrl_uri']),  # os.path.dirname(self.args['maskUrl']),
                 mipmaplevels=levels,
                 outputformat=ext.split('.')[-1],
                 convertTo8bit=False,
@@ -105,7 +109,7 @@ class ApplyLensCorrection(StackTransitionModule):
             for ts in tspecs:
                 ts.tforms = [ref_lc] + ts.tforms
                 for lvl, maskUrl in mask_mm_list.items():
-                    ts.ip[lvl].maskUrl = pathlib.Path(maskUrl).as_uri()
+                    ts.ip[lvl].maskUrl = maskUrl  # pathlib.Path(maskUrl).as_uri()
                 new_tspecs.append(ts)
 
         renderapi.stack.create_stack(outputStack, render=r)

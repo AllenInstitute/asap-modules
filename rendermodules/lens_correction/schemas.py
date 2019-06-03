@@ -2,7 +2,10 @@ from argschema import ArgSchema
 from argschema.fields import Bool, Float, Int, Nested, Str, InputFile, List
 from argschema.schemas import DefaultSchema
 from marshmallow.validate import OneOf
+import marshmallow
+
 from rendermodules.module.schemas import StackTransitionParameters
+import rendermodules.utilities.schema_utils
 
 
 class TransformParameters(DefaultSchema):
@@ -31,6 +34,16 @@ class ApplyLensCorrectionParameters(StackTransitionParameters):
             missing=None,
             description='path to level 0 maskUrl to apply to stack'
             )
+    maskUrl_uri = Str(
+        required=False,
+        default=None,
+        missing=None,
+        description="uri for level 0 mask image to apply")
+
+    @marshmallow.pre_load
+    def maskUrl_to_uri(self, data):
+        rendermodules.utilities.schema_utils.posix_to_uri(
+            data, "maskUrl", "maskUrl_uri")
 
 
 class ApplyLensCorrectionOutput(DefaultSchema):

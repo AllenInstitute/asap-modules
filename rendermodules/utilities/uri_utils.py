@@ -35,7 +35,7 @@ def get_prefix_path(path, delimiter='/'):
     if len(split_path) == 1:
         return delimiter
     else:
-        return delimiter.join(split_path)
+        return delimiter.join(split_path[:-1])
 
 
 def uri_prefix(uri, delimiter='/'):
