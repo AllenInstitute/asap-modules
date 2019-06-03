@@ -12,7 +12,8 @@ import rendermodules.utilities.schema_utils
 
 class GenerateMipMapsOutput(DefaultSchema):
     levels = Int(required=True)
-    output_dir = Str(required=True)
+    # output_dir = Str(required=True)
+    output_prefix = Str(required=True)
 
 
 class GenerateMipMapsParameters(InputStackParameters):

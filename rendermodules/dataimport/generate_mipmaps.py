@@ -1,6 +1,7 @@
 import renderapi
 from six.moves import urllib
-from rendermodules.dataimport.create_mipmaps import create_mipmaps
+from rendermodules.dataimport.create_mipmaps import (
+    create_mipmaps, create_mipmaps_uri)
 from functools import partial
 from ..module.render_module import StackInputModule, RenderModuleException
 from rendermodules.dataimport.schemas import (
@@ -40,6 +41,16 @@ def create_mipmap_from_tuple(mipmap_tuple, levels=[1, 2, 3],
                           force_redo=force_redo, **kwargs)
 
 
+def create_mipmap_from_tuple_uri(mipmap_tuple, levels=[1, 2, 3],
+                                 imgformat='tif', convertTo8bit=True,
+                                 force_redo=True, **kwargs):
+    (filepath, downdir) = mipmap_tuple
+    return create_mipmaps_uri(filepath, outputDirectory=downdir,
+                              mipmaplevels=levels, convertTo8bit=convertTo8bit,
+                              outputformat=imgformat,
+                              force_redo=force_redo, **kwargs)
+
+
 def get_filepath_from_tilespec(ts):
     mml = ts.ip[0]
 
@@ -49,7 +60,7 @@ def get_filepath_from_tilespec(ts):
     return filepath_in
 
 
-def make_tilespecs_and_cmds(render, inputStack, output_dir, zvalues, levels,
+def make_tilespecs_and_cmds(render, inputStack, output_prefix, zvalues, levels,
                             imgformat, convert_to_8bit, force_redo, pool_size,
                             method):
     mipmap_args = []
@@ -59,11 +70,13 @@ def make_tilespecs_and_cmds(render, inputStack, output_dir, zvalues, levels,
                                inputStack, z)
 
         for ts in tilespecs:
-            filepath_in = get_filepath_from_tilespec(ts)
-            mipmap_args.append((filepath_in, output_dir))
+            # filepath_in = get_filepath_from_tilespec(ts)
+            # mipmap_args.append((filepath_in, output_dir))
+            mipmap_args.append((ts.ip[0].imageUrl, output_prefix))
 
     mypartial = partial(
-        create_mipmap_from_tuple, method=method, levels=list(range(1, levels + 1)),
+        create_mipmap_from_tuple_uri, method=method,
+        levels=list(range(1, levels + 1)),
         convertTo8bit=convert_to_8bit, force_redo=force_redo,
         imgformat=imgformat)
 
@@ -106,7 +119,7 @@ class GenerateMipMaps(StackInputModule):
 
         mipmap_args = make_tilespecs_and_cmds(self.render,
                                               self.args['input_stack'],
-                                              self.args['output_dir'],
+                                              self.args['output_prefix'],
                                               zvalues,
                                               self.args['levels'],
                                               self.args['imgformat'],
@@ -115,9 +128,8 @@ class GenerateMipMaps(StackInputModule):
                                               self.args['pool_size'],
                                               self.args['method'])
 
-
         self.output({"levels": self.args["levels"],
-                     "output_dir": self.args["output_dir"]})
+                     "output_prefix": self.args["output_prefix"]})
 
 
 if __name__ == "__main__":
