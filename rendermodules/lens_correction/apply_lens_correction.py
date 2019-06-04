@@ -90,7 +90,8 @@ class ApplyLensCorrection(StackTransitionModule):
         mask_mm_list = {}
         if self.args['maskUrl'] is not None:
             root, ext = os.path.splitext(
-                urllib.parse.urlparse(self.args['maskUrl']).path)
+                urllib.parse.unquote(urllib.parse.urlparse(
+                    self.args['maskUrl']).path))
             mask_mm_list = create_mipmaps_uri(
                 self.args['maskUrl_uri'],
                 outputDirectory=uri_utils.uri_prefix(self.args['maskUrl_uri']),  # os.path.dirname(self.args['maskUrl']),
