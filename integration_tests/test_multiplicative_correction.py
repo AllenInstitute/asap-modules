@@ -120,8 +120,9 @@ def test_single_tile(test_apply_correction,render,tmpdir):
     # mult intensity correct each tilespecs and return tilespecs
     N, M, C = getImage(corr_tilespecs[0])
 
-	#process_tile(C, dirout, stackname, clip,scale_factor,clip_min,clip_max,input_ts)
+	#process_tile(C, corr_dict, dirout, stackname, clip,scale_factor,clip_min,clip_max,input_ts)
     process_tile(C,
+                 {},
                  test_apply_correction.args['output_directory'],
                  test_apply_correction.args['output_stack'],
 		 True, 1.0,0,65535,
