@@ -108,6 +108,14 @@ MULTIPLICATIVE_INPUT_JSON = render_json_template(
 #     'allen/aibs/pipeline/image_processing/volume_assembly/lc_test_data/')
 
 
+multiplicative_multichan_correction_example_dir = os.path.join(
+    TEST_DATA_ROOT, 'multichannel_test_data')
+
+MULTIPLICATIVE_MULTICHAN_INPUT_JSON = render_json_template(
+        example_env,
+        'multichan_intensity_correction_template.json',
+        test_data_root=TEST_DATA_ROOT)
+
 calc_lens_parameters = render_json_template(
         example_env,
         'calc_lens_correction_parameters.json',
