@@ -9,7 +9,7 @@ import random
 from test_data import (MULTIPLICATIVE_MULTICHAN_INPUT_JSON, multiplicative_multichan_correction_example_dir,
                        render_params)
 from rendermodules.intensity_correction.calculate_multiplicative_correction import MakeMedian
-from rendermodules.intensity_correction.apply_multiplicative_correction import MultIntensityCorr, getImage, process_tile
+from rendermodules.intensity_correction.apply_multiplicative_correction import MultIntensityCorr, getImage, process_tile_multichan
 
 
 @pytest.fixture(scope='module')
@@ -123,8 +123,8 @@ def test_single_tile(test_apply_correction,render,tmpdir):
     for channel in ["DAPI_1","PSD95"]:
         _, _, corr_dict[channel] = getImage(corr_tilespecs[0], channel=channel)
 
-	#process_tile(C, corr_dict, dirout, stackname, clip,scale_factor,clip_min,clip_max,input_ts)
-    process_tile(C,
+	#process_tile_multichan(C, corr_dict, dirout, stackname, clip, scale_factor, clip_min, clip_max, input_ts)
+    process_tile_multichan(C,
                  corr_dict,
                  test_apply_correction.args['output_directory'],
                  test_apply_correction.args['output_stack'],

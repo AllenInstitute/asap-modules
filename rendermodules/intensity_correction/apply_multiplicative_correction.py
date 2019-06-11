@@ -104,7 +104,7 @@ def write_image(dirout, orig_imageurl, Res, stackname, z):
     tifffile.imsave(outImage, Res)
     return outImage
 
-def process_tile(C, corr_dict, dirout, stackname, clip,scale_factor,clip_min,clip_max,input_ts):
+def process_tile_multichan(C, corr_dict, dirout, stackname, clip, scale_factor, clip_min, clip_max, input_ts):
     """function to correct each tile in the input_ts with the matrix C,
     and potentially move the original tiles to a new location.abs
 
@@ -112,8 +112,9 @@ def process_tile(C, corr_dict, dirout, stackname, clip,scale_factor,clip_min,cli
     ==========
     C: numpy.array
         a 2d numpy array of uint16 or uint8 that represents the correction to apply
-    corr_dict: dict
-        a dictionary with keys of strings of channel names and values of corrections (as with C)
+    corr_dict: dict or None
+        a dictionary with keys of strings of channel names and values of corrections (as with C).
+        If None, C will be applied to each channel, if they exist.
     dirout: str
         the path to the directory to save all corrected images
     input_ts: renderapi.tilespec.TileSpec
@@ -131,7 +132,10 @@ def process_tile(C, corr_dict, dirout, stackname, clip,scale_factor,clip_min,cli
     if output_ts.channels is not None:
         for chan in output_ts.channels:
             [N1, M1, I] = getImage(output_ts, chan.name)
-            CC = corr_dict[chan.name]
+            if corr_dict:
+                CC = corr_dict[chan.name]
+            else:
+                CC = C
             CRes = intensity_corr(I, CC, clip, scale_factor, clip_min, clip_max)
             chan_outImage = write_image(dirout, chan.ip[0].imageUrl, CRes, stackname, input_ts.z)
             mm = renderapi.image_pyramid.MipMap(imageUrl = chan_outImage)
@@ -139,6 +143,10 @@ def process_tile(C, corr_dict, dirout, stackname, clip,scale_factor,clip_min,cli
             chan.ip[0]=mm
 
     return output_ts
+
+def process_tile(C, dirout, stackname, clip, scale_factor, clip_min, clip_max, input_ts):
+    """function to maintain the existing process_tile prototype"""
+    return process_tile_multichan(C, None, dirout, stackname, clip, scale_factor, clip_min, clip_max, input_ts)
 
 
 class MultIntensityCorr(StackTransitionModule):
@@ -169,7 +177,7 @@ class MultIntensityCorr(StackTransitionModule):
             os.makedirs(outdir)
 
         mypartial = partial(
-            process_tile,
+            process_tile_multichan,
             C,
             corr_dict,
             self.args['output_directory'],
