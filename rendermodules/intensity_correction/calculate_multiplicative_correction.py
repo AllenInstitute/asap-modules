@@ -103,7 +103,11 @@ class MakeMedian(RenderModule):
 
         stackInfo = renderapi.stack.get_full_stack_metadata(self.args['input_stack'],
                                                             render=self.render)
-        channel_names = stackInfo['stats'].get('channelNames', [None])
+        channel_names = stackInfo['stats'].get('channelNames', [])
+        # Quick fix to have the empty channel logic work when channelNames=[]
+        if len(channel_names) == 0:     
+            channel_names = [None]
+
         #figure out which of our channels is the default channel
         if channel_names[0] is not None:
             try:
