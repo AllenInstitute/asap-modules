@@ -26,12 +26,13 @@ class ConsolidateTransformsParameters(RenderParameters):
         required=False, default=False,
         description=("whether to remove the existing layer from the "
                      "target stack before uploading."))
-
+    close_stack = Boolean(required=False, default=False)
 
 
 class ConsolidateTransformsOutputParameters(DefaultSchema):
     output_stack = Str(required=True, description="name of output stack")
     numZ = Int(required=True, description="Number of z values processed")
+
 
 
 class MipMapDirectories(DefaultSchema):
@@ -62,7 +63,7 @@ class RemapZsOutput(DefaultSchema):
 
 class SwapZsParameters(RenderParameters):
     source_stack = List(
-        Str, 
+        Str,
         required=True,
         description="List of source stacks")
     target_stack = List(
