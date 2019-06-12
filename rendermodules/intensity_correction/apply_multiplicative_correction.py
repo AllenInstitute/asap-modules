@@ -168,8 +168,6 @@ class MultIntensityCorr(StackTransitionModule):
                 corr_dict[chan.name] = CC
         
         outdir = self.args['output_directory']
-        if not os.path.exists(outdir):
-            os.makedirs(outdir)
 
         mypartial = partial(
             process_tile,

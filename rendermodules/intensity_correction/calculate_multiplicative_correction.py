@@ -118,7 +118,6 @@ class MakeMedian(RenderModule):
         outdir = self.args['output_directory']
         if not os.path.exists(outdir):
             os.makedirs(outdir)
-        print("channel_name",channel_names)
         out_images = []
         for chan_name in channel_names:
             chan_str = chan_name if chan_name is not None else ""
