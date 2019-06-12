@@ -104,7 +104,7 @@ def write_image(dirout, orig_imageurl, Res, stackname, z):
     tifffile.imsave(outImage, Res)
     return outImage
 
-def process_tile_multichan(C, corr_dict, dirout, stackname, clip, scale_factor, clip_min, clip_max, input_ts):
+def process_tile(C, dirout, stackname, clip, scale_factor, clip_min, clip_max, input_ts, corr_dict=None):
     """function to correct each tile in the input_ts with the matrix C,
     and potentially move the original tiles to a new location.abs
 
@@ -144,11 +144,6 @@ def process_tile_multichan(C, corr_dict, dirout, stackname, clip, scale_factor, 
 
     return output_ts
 
-def process_tile(C, dirout, stackname, clip, scale_factor, clip_min, clip_max, input_ts):
-    """function to maintain the existing process_tile prototype"""
-    return process_tile_multichan(C, None, dirout, stackname, clip, scale_factor, clip_min, clip_max, input_ts)
-
-
 class MultIntensityCorr(StackTransitionModule):
     default_schema = MultIntensityCorrParams
 
@@ -177,15 +172,15 @@ class MultIntensityCorr(StackTransitionModule):
             os.makedirs(outdir)
 
         mypartial = partial(
-            process_tile_multichan,
+            process_tile,
             C,
-            corr_dict,
             self.args['output_directory'],
             self.args['output_stack'],
             self.args['clip'],
             self.args['scale_factor'],
             self.args['clip_min'],
-            self.args['clip_max'])
+            self.args['clip_max'],
+            corr_dict=corr_dict)
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
             output_tilespecs = pool.map(mypartial, inp_tilespecs)
 
