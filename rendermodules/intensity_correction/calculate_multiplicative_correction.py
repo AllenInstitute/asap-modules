@@ -176,6 +176,3 @@ class MakeMedian(RenderModule):
 if __name__ == "__main__":
     mod = MakeMedian(input_data=example_input)
     mod.run()
-
-
-mylist = [i*i for i in range(5) if i<4]
