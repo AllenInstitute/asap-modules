@@ -7,22 +7,24 @@ import numpy as np
 import tifffile
 from ..module.render_module import RenderModule
 from ..module.render_module import StackTransitionModule
+from ..module.render_module import RenderModuleException
 from rendermodules.intensity_correction.schemas import MultIntensityCorrParams
 from six.moves import urllib
 
+
 example_input = {
     "render": {
-        "host": "ibs-forrestc-ux1",
-        "port": 8080,
-        "owner": "M246930_Scnn1a",
-        "project": "M246930_Scnn1a_4",
-        "client_scripts": "/var/www/render/render-ws-java-client/src/main/scripts"
+        "host": "10.128.24.33",
+        "port": 80,
+        "owner": "multchan",
+        "project": "M335503_Ai139_smallvol",
+        "client_scripts": '/shared/render/render-ws-java-client/src/main/scripts'
     },
-    "input_stack": "Acquisition_DAPI_1",
-    "correction_stack": "Median_TEST_DAPI_1",
-    "output_stack": "Flatfield_TEST_DAPI_1",
-    "output_directory": "/nas/data/M246930_Scnn1a_4/processed/FlatfieldTEST",
-    "z": 102,
+    "input_stack": "TESTAcquisition_Session1",
+    "correction_stack": "TESTMedian_Session1",
+    "output_stack": "TESTFlatfield_Session1",
+    "output_directory": "/nas2/data/M335503_Ai139_smallvol/processed/TESTFlatfield",
+    "z": 501,
     "pool_size": 20
 }
 
@@ -61,7 +63,7 @@ def intensity_corr(img, ff,clip,scale_factor,clip_min,clip_max):
     return result_int
 
 
-def getImage(ts):
+def getImage(ts, channel=None):
     """Simple function to get the level 0 image of this tilespec
     as a numpy array
 
@@ -70,22 +72,39 @@ def getImage(ts):
     ts: renderapi.tilespec.TileSpec
         tilespec to get images from
         (presently assumes this is a tiff image whose URL can be read with tifffile)
-
+    channel: str
+        channel name to get image of, default=None which will default to the non channel image pyramid
     Returns
     =======
     numpy.array
         2d numpy array of this image
     """
-    d = ts.to_dict()
-    mml = ts.ip[0]
+    if channel is None:
+        mml = ts.ip[0]
+    else:
+        if ts.channels is None:
+            raise RenderModuleException('No channels exist for this tilespec (ts.tileId={}'.format(ts.tileId))
+        else:
+            try:
+                chan = next(ch for ch in ts.channels if ch.name==channel)
+                mml = chan.ip[0]
+            except StopIteration as e:
+                raise RenderModuleException('Tilespec {} does not contain channel {}'.format(ts.tileId,channel))
+
     url = urllib.parse.unquote(urllib.parse.urlparse(
         str(mml.imageUrl)).path)
     img0 = tifffile.imread(url)
     (N, M) = img0.shape
     return N, M, img0
 
+def write_image(dirout, orig_imageurl, Res, stackname, z):
+    [head, tail] = os.path.split(orig_imageurl)
+    outImage = os.path.join("%s" % dirout, "%s_%04d_%s" %
+                            (stackname, z, tail))
+    tifffile.imsave(outImage, Res)
+    return outImage
 
-def process_tile(C, dirout, stackname, clip,scale_factor,clip_min,clip_max,input_ts):
+def process_tile(C, dirout, stackname, clip, scale_factor, clip_min, clip_max, input_ts, corr_dict=None):
     """function to correct each tile in the input_ts with the matrix C,
     and potentially move the original tiles to a new location.abs
 
@@ -93,6 +112,9 @@ def process_tile(C, dirout, stackname, clip,scale_factor,clip_min,clip_max,input
     ==========
     C: numpy.array
         a 2d numpy array of uint16 or uint8 that represents the correction to apply
+    corr_dict: dict or None
+        a dictionary with keys of strings of channel names and values of corrections (as with C).
+        If None, C will be applied to each channel, if they exist.
     dirout: str
         the path to the directory to save all corrected images
     input_ts: renderapi.tilespec.TileSpec
@@ -100,20 +122,27 @@ def process_tile(C, dirout, stackname, clip,scale_factor,clip_min,clip_max,input
     """
     [N1, M1, I] = getImage(input_ts)
     Res = intensity_corr(I, C, clip, scale_factor, clip_min, clip_max)
-
-    [head, tail] = os.path.split(input_ts.ip[0].imageUrl)
-    outImage = os.path.join("%s" % dirout, "%s_%04d_%s" %
-                            (stackname, input_ts.z, tail))
-    tifffile.imsave(outImage, Res)
-
+    outImage = write_image(dirout, input_ts.ip[0].imageUrl, Res, stackname, input_ts.z)
+    
     output_ts = input_ts
     mm = renderapi.image_pyramid.MipMap(imageUrl=outImage)
-
     output_ts.ip = renderapi.image_pyramid.ImagePyramid()
     output_ts.ip[0] = mm
 
-    return output_ts
+    if output_ts.channels is not None:
+        for chan in output_ts.channels:
+            [N1, M1, I] = getImage(output_ts, chan.name)
+            if corr_dict:
+                CC = corr_dict[chan.name]
+            else:
+                CC = C
+            CRes = intensity_corr(I, CC, clip, scale_factor, clip_min, clip_max)
+            chan_outImage = write_image(dirout, chan.ip[0].imageUrl, CRes, stackname, input_ts.z)
+            mm = renderapi.image_pyramid.MipMap(imageUrl = chan_outImage)
+            chan.ip = renderapi.image_pyramid.ImagePyramid()
+            chan.ip[0]=mm
 
+    return output_ts
 
 class MultIntensityCorr(StackTransitionModule):
     default_schema = MultIntensityCorrParams
@@ -127,9 +156,29 @@ class MultIntensityCorr(StackTransitionModule):
         corr_tilespecs = renderapi.tilespec.get_tile_specs_from_z(
             self.args['correction_stack'], Z, render=self.render)
         # mult intensity correct each tilespecs and return tilespecs
-        N, M, C = getImage(corr_tilespecs[0])
+        corr_ts = corr_tilespecs[0]
+
+        N, M, C = getImage(corr_ts)
+
+        # construct a dictionary with the correction factors
+        corr_dict = {}
+        if corr_ts.channels is not None:
+            for chan in corr_ts.channels:
+                Nc, Mc, CC = getImage(corr_ts, chan.name)
+                corr_dict[chan.name] = CC
+        
+        outdir = self.args['output_directory']
+
         mypartial = partial(
-            process_tile, C, self.args['output_directory'], self.args['output_stack'],self.args['clip'],self.args['scale_factor'],self.args['clip_min'],self.args['clip_max'])
+            process_tile,
+            C,
+            self.args['output_directory'],
+            self.args['output_stack'],
+            self.args['clip'],
+            self.args['scale_factor'],
+            self.args['clip_min'],
+            self.args['clip_max'],
+            corr_dict=corr_dict)
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
             output_tilespecs = pool.map(mypartial, inp_tilespecs)
 

@@ -1,4 +1,4 @@
-from argschema.fields import Str, Float, Int, Bool
+from argschema.fields import Str, Float, Int, Bool, OutputDir
 from ..module.schemas import StackTransitionParameters
 
 
@@ -13,7 +13,7 @@ class MakeMedianParams(StackTransitionParameters):
 class MultIntensityCorrParams(StackTransitionParameters):
     correction_stack = Str(required=True,
                            description='Correction stack (usually median stack for AT data)')
-    output_directory = Str(required=True,
+    output_directory = OutputDir(required=True,
                                  description='Directory for storing Images')
     # TODO add create_stack metadata
     cycle_number = Int(required=False, default=2,
