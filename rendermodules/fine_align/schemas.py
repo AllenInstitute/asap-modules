@@ -68,7 +68,7 @@ class MakeFineInputStackSchema(
         required=False,
         default=None,
         missing=None,
-        description-"")
+        description="")
 
 
 class MakeFineOutputStackSchema(DefaultSchema):
