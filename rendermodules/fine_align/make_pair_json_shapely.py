@@ -209,7 +209,7 @@ class MakePairJsonShapely(argschema.ArgSchemaParser):
                 fname)
         if self.args['compress_output']:
             self.tilepairfile += '.gz'
-            fout = gzip.open(self.tilepairfile, 'w')
+            fout = gzip.open(self.tilepairfile, 'wt', encoding="ascii")
         else:
             fout = open(self.tilepairfile, 'w')
         json.dump(outd, fout, indent=2)
