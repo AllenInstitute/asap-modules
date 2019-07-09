@@ -9,6 +9,7 @@ import pathlib2 as pathlib
 import numpy
 import renderapi
 from EMaligner import jsongz
+import urllib
 from rendermodules.module.render_module import (
     StackOutputModule, RenderModuleException)
 from rendermodules.dataimport.schemas import (GenerateEMTileSpecsOutput,

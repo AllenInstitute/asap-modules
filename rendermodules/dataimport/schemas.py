@@ -87,7 +87,7 @@ class GenerateEMTileSpecsParameters(OutputStackParameters):
     metafile = InputFile(
         required=True,
         description="metadata file containing TEMCA acquisition data")
-    resolved_file = InputFile(
+    resolved_file = Str(
         required=False,
         default=None,
         missing=None,
