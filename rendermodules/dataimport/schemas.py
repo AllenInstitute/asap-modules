@@ -87,6 +87,13 @@ class GenerateEMTileSpecsParameters(OutputStackParameters):
     metafile = InputFile(
         required=True,
         description="metadata file containing TEMCA acquisition data")
+    resolved_file = InputFile(
+        required=False,
+        default=None,
+        missing=None,
+        description=("basename of .json or .json.gz resolved tile file."
+                     "If present, will read tilespecs and transforms from"
+                     "this file and write to render."))
     maskUrl = InputFile(
         required=False,
         default = None,

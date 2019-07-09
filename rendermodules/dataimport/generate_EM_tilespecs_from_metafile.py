@@ -8,6 +8,7 @@ import os
 import pathlib2 as pathlib
 import numpy
 import renderapi
+from EMaligner import jsongz
 from rendermodules.module.render_module import (
     StackOutputModule, RenderModuleException)
 from rendermodules.dataimport.schemas import (GenerateEMTileSpecsOutput,
@@ -85,6 +86,40 @@ class GenerateEMTileSpecsModule(StackOutputModule):
             rotation=imgdata['img_meta']['angle'], pixelsize=pixelsize)
 
     def run(self):
+        if self.args['resolved_file']:
+            tspecs, tforms = self.run_from_resolved()
+        else:
+            tspecs, tforms = self.run_from_metafile()
+
+        self.output_tilespecs_to_stack(tspecs, sharedTransforms=tforms)
+
+        try:
+            self.output({'stack': self.output_stack})
+        except AttributeError as e:
+            self.logger.error(e)
+
+    def run_from_resolved(self):
+        # read in the resolved tilespecs
+        mdir = os.path.dirname(self.args['metafile'])
+        rpath = os.path.join(
+                mdir,
+                self.args['resolved_file'])
+        resolved = renderapi.resolvedtiles.ResolvedTiles(
+                json=jsongz.load(rpath))
+
+        # update the urls
+        for t in resolved.tilespecs:
+            for k in ['imageUrl', 'maskUrl']:
+                s = t.ip['0'][k]
+                if s:
+                    orig = urllib.parse.unquote(urllib.parse.urlparse(s).path)
+                    t.ip['0'][k] = pathlib.PurePosixPath(
+                            mdir,
+                            os.path.basename(orig)).as_uri()
+
+        return resolved.tilespecs, resolved.transforms
+
+    def run_from_metafile(self):
         with open(self.args['metafile'], 'r') as f:
             meta = json.load(f)
         roidata = meta[0]['metadata']
@@ -122,12 +157,8 @@ class GenerateEMTileSpecsModule(StackOutputModule):
                     pixelsize=pixelsize,
                     maskUrl = self.args['maskUrl']) for img in imgdata]
 
-        self.output_tilespecs_to_stack(tspecs)
+        return tspecs, None
 
-        try:
-            self.output({'stack': self.output_stack})
-        except AttributeError as e:
-            self.logger.error(e)
 
 
 if __name__ == "__main__":
