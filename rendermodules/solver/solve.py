@@ -73,7 +73,7 @@ class Solve_stack(argschema.ArgSchemaParser):
         self.module = EMaligner.EMaligner(input_data=self.args, args=[])
         self.module.run()
         self.output(
-            {"stack": self.args['output_stack']['name']})
+            {"stack": self.args['output_stack']['name'][0]})
 
 
 if __name__ == "__main__":

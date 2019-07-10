@@ -3,6 +3,7 @@ import renderapi
 import json
 import os
 from rendermodules.solver.solve import Solve_stack
+import numpy as np
 from test_data import (render_params,
                        example_dir,
                        solver_montage_parameters)
@@ -49,11 +50,11 @@ def montage_pointmatches(render):
 def one_solve(parameters, precision=1e-7):
     mod = Solve_stack(input_data=parameters, args=[])
     mod.run()
-    assert mod.module.results['precision'] < precision
-    assert mod.module.results['error'] < 200
+    assert np.all(np.array(mod.module.results['precision']) < precision)
+    assert np.all(np.array(mod.module.results['error']) < 200)
     with open(parameters['output_json'], 'r') as f:
         output_d = json.load(f)
-    assert output_d['stack'] == parameters['output_stack']['name']
+    assert output_d['stack'] == parameters['output_stack']['name'][0]
 
 
 def test_solver_montage_test(render, montage_pointmatches, raw_stack, tmpdir):

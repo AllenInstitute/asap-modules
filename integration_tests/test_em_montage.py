@@ -6,6 +6,7 @@ import json
 import glob
 import subprocess
 import mock
+import numpy as np
 from test_data import (RAW_STACK_INPUT_JSON,
                       log_dir,
                       render_params,
@@ -163,12 +164,12 @@ def test_montage_solver(render, raw_stack, test_point_match_generation, tmpdir_f
     mod.run()
     
     precision=1e-7
-    assert mod.module.results['precision'] < precision
-    assert mod.module.results['error'] < 200
+    assert np.all(np.array(mod.module.results['precision']) < precision)
+    assert np.all(np.array(mod.module.results['error'])) < 200
     with open(parameters['output_json'], 'r') as f:
         output_d = json.load(f)
     
     #output_d['stack'] = eval(output_d['stack'])
     #output_d['stack'] = [e.encode('UTF8') for e in output_d['stack']]
-    assert parameters['output_stack']['name'] == output_d['stack']
+    assert parameters['output_stack']['name'][0] == output_d['stack']
 
