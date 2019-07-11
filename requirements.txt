@@ -9,9 +9,9 @@ rtree
 networkx
 bokeh
 EMaligner==1.0.0
-em_stitch==0.2.1
-matplotlib
 opencv-contrib-python<3.4.3.0
+em_stitch==0.2.2
+matplotlib
 jinja2
 six
 scikit-image
