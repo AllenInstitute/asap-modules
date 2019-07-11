@@ -116,10 +116,6 @@ class MeshLensCorrection(RenderModule):
     default_output_schema = DoMeshLensCorrectionOutputSchema
 
     @staticmethod
-    def get_sectionId_from_z(z):
-        return str(float(z))
-
-    @staticmethod
     def get_sectionId_from_metafile(metafile):
         j = json.load(open(metafile, 'r'))
         sectionId = j[0]['metadata']['grid']
