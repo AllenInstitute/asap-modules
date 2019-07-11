@@ -147,8 +147,6 @@ def test_coarse_mesh_failure(
     example_for_input['rerun_pointmatch'] = False
     outjson = os.path.join(output_directory, 'mesh_lens_out0.json')
 
-    print(json.dumps(example_for_input, indent=2))
-
     meshmod = MeshLensCorrection(
             input_data=example_for_input,
             args=['--output_json', outjson])
