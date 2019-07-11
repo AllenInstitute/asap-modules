@@ -93,9 +93,21 @@ class GenerateEMTileSpecsModule(StackOutputModule):
             tspecs, tforms = self.run_from_metafile()
 
         self.output_tilespecs_to_stack(tspecs, sharedTransforms=tforms)
+        output = {'stack': self.output_stack}
+
+        if self.args['collection']:
+            matches = jsongz.load(
+                    os.path.join(
+                        os.path.dirname(self.args['metafile']),
+                        self.args['collection_file']))
+            renderapi.pointmatch.import_matches(
+                    self.args['collection'],
+                    matches,
+                    render=self.render)
+            output['collection'] = self.args['collection']
 
         try:
-            self.output({'stack': self.output_stack})
+            self.output(output)
         except AttributeError as e:
             self.logger.error(e)
 

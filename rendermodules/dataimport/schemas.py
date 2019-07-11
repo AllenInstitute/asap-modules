@@ -94,6 +94,20 @@ class GenerateEMTileSpecsParameters(OutputStackParameters):
         description=("basename of .json or .json.gz resolved tile file."
                      "If present, will read tilespecs and transforms from"
                      "this file and write to render."))
+    collection_file = Str(
+        required=False,
+        default="collection.json.gz",
+        missing="collection.json.gz",
+        description=("basename of collection file (json or json.gz) from the "
+                     "scopes to copy into a render pointmatch collection of "
+                     "of the same owner as the output stack. Only happens if "
+                     "collection is specified"))
+    collection = Str(
+        required=False,
+        default=None,
+        missing=None,
+        description=("name of render pointmatch collection that will hold on-scope "
+                     "template match results."))
     maskUrl = InputFile(
         required=False,
         default = None,
@@ -120,6 +134,9 @@ class GenerateEMTileSpecsParameters(OutputStackParameters):
 class GenerateEMTileSpecsOutput(DefaultSchema):
     stack = Str(required=True,
                 description="stack to which generated tiles were added")
+    collection = Str(
+            required=False,
+            description="collection to which matches were copied")
 
 
 class MakeMontageScapeSectionStackParameters(OutputStackParameters):
