@@ -215,8 +215,9 @@ class MeshLensCorrection(RenderModule):
         if self.args['rerun_pointmatch']:
             # generate tile pairs for this section in the input stack
             tp_example = self.generate_tilepair_example()
-            tp_mod = TilePairClientModule(input_data=tp_example,
-                                          args=['--output_json', out_file.name])
+            tp_mod = TilePairClientModule(
+                    input_data=tp_example,
+                    args=['--output_json', out_file.name])
             tp_mod.run()
 
             with open(tp_mod.args['output_json'], 'r') as f:
