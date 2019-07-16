@@ -25,6 +25,12 @@ class ApplyLensCorrectionParameters(StackTransitionParameters):
         allow_none=True, required=True,
         description=('Reference ID to use when uploading transform to '
                      'render database (Not Implemented)'))
+    labels = List(
+        Str,
+        required=True,
+        missing=['lens'],
+        default=['lens'],
+        description="labels for the lens correction transform")
     maskUrl = InputFile(
             required=False,
             default=None,

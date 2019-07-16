@@ -171,7 +171,8 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc,
         "transform": example_tform_dict,
         "refId": None,
         "pool_size": 5,
-        "overwrite_zlayer": True
+        "overwrite_zlayer": True,
+        "labels": ["lens"]
     }
 
     out_fn = 'test_ALC_out.json'
@@ -199,6 +200,7 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc,
         new_tform = tforms[0]
         print(new_tform.to_dict())
         assert new_tform.transformId == refId
+        assert new_tform.labels == params['labels']
         assert np.array_equal(
             [example_tform.height, example_tform.width, example_tform.length,
                 example_tform.dimension],
