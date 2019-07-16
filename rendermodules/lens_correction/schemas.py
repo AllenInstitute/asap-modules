@@ -1,5 +1,5 @@
 from argschema import ArgSchema
-from argschema.fields import Bool, Float, Int, Nested, Str, InputFile, List
+from argschema.fields import Bool, Float, Int, Nested, Str, InputFile, List, Dict
 from argschema.schemas import DefaultSchema
 from marshmallow.validate import OneOf
 from rendermodules.module.schemas import StackTransitionParameters
@@ -17,6 +17,9 @@ class TransformParameters(DefaultSchema):
     dataString = Str(
         required=True,
         description='mpicbg-compatible dataString')
+    metaData = Dict(
+        required=False,
+        description="in this schema, otherwise will be stripped")
 
 
 class ApplyLensCorrectionParameters(StackTransitionParameters):

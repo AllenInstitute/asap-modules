@@ -97,6 +97,16 @@ def stack_lc(render):
     renderapi.stack.set_stack_state(stack, 'COMPLETE', render=render)
     yield stack
 
+
+@pytest.fixture(scope='module')
+def stack_lc_label(render):
+    stack = "test_lc_label"
+    renderapi.stack.create_stack(stack, render=render)
+    tspecs = [renderapi.tilespec.TileSpec(json=tspec)
+              for tspec in TILESPECS_LC_JSON]
+    renderapi.client.import_tilespecs(stack, tspecs, render=render)
+    renderapi.stack.set_stack_state(stack, 'COMPLETE', render=render)
+    yield stack
     renderapi.stack.delete_stack(stack, render=render)
 
 
@@ -210,12 +220,12 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc,
         compute_lc_norm_and_max(test_example_tform, test_new_tform)
 
 
-def test_label_append(render, stack_no_lc, stack_lc,
+def test_label_append(render, stack_no_lc, stack_lc_label,
                                example_tform_dict, test_points):
     params = {
         "render": render_params,
         "inputStack": stack_no_lc,
-        "outputStack": stack_lc,
+        "outputStack": stack_lc_label,
         "zs": [2266],
         "transform": dict(example_tform_dict),
         "refId": None,
@@ -224,7 +234,10 @@ def test_label_append(render, stack_no_lc, stack_lc,
         "labels": ["lens"]
     }
 
-    params['transform']['metadata'] = {'labels': ['something']}
+    params['transform']['metaData'] = {'labels': ['something']}
+
+    r = renderapi.transform.load_transform_json(params['transform'])
+    assert 'something' in r.labels
 
     out_fn = 'test_ALC_out2.json'
     mod = ApplyLensCorrection(input_data=params,
