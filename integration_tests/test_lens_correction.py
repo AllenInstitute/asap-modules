@@ -210,6 +210,34 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc,
         compute_lc_norm_and_max(test_example_tform, test_new_tform)
 
 
+def test_label_append(render, stack_no_lc, stack_lc,
+                               example_tform_dict, test_points):
+    params = {
+        "render": render_params,
+        "inputStack": stack_no_lc,
+        "outputStack": stack_lc,
+        "zs": [2266],
+        "transform": dict(example_tform_dict),
+        "refId": None,
+        "pool_size": 5,
+        "overwrite_zlayer": True,
+        "labels": ["lens"]
+    }
+
+    params['transform']['metadata'] = {'labels': ['something']}
+
+    out_fn = 'test_ALC_out2.json'
+    mod = ApplyLensCorrection(input_data=params,
+                              args=['--output_json', out_fn])
+    mod.run()
+
+    for z in params['zs']:
+        resolvedtiles = renderapi.resolvedtiles.get_resolved_tiles_from_z(
+            params['output_stack'], z, render=render)
+        assert 'something' in resolvedtiles.transforms[0].labels
+        assert 'lens' in resolvedtiles.transforms[0].labels
+
+
 def test_apply_lens_correction_mask(
         render, stack_no_lc, stack_lc,
         example_tform_dict, test_points, tmpdir_factory):
