@@ -10,7 +10,7 @@ networkx
 bokeh
 EMaligner==1.0.0
 opencv-contrib-python<3.4.3.0
-em_stitch==0.2.2
+em_stitch==0.2.3
 matplotlib
 jinja2
 six

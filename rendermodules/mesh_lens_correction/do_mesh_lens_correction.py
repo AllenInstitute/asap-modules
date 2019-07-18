@@ -255,7 +255,8 @@ class MeshLensCorrection(RenderModule):
                 'output_dir': self.args['output_dir'],
                 'outfile': 'resolvedtiles.json.gz',
                 'compress_output': False,
-                'log_level': self.args['log_level']}
+                'log_level': self.args['log_level'],
+                'timestamp': True}
 
         meshclass = MeshAndSolveTransform(
                 input_data=solver_args, args=[])
