@@ -169,6 +169,13 @@ class MatchDerivationParameters(argschema.schemas.DefaultSchema):
         "Maximum trust for filtering such that candidates with cost larger "
         "than matchMaxTrust * median cost are rejected. "
         "3.0 if excluded or None"))
+    matchFilter = Str(
+            required=False,
+            validator=validate.OneOf(
+            ['SINGLE_SET', 'CONSENSUS_SETS', 'AGGREGATED_CONSENSUS_SETS']),
+            description=("whether to match one set of matches, or multiple "
+                " sets. And, whether to keep them separate, or aggregate them. "
+                "SINGLE_SET if excluded or None."))
 
 
 class MatchWebServiceParameters(WebServiceParameters):

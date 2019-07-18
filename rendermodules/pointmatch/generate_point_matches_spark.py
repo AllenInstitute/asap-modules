@@ -96,6 +96,7 @@ class PointMatchClientModuleSpark(SparkModule):
                             rootFeatureDirectory=None,
                             renderFilterListName=None,
                             requireStoredFeatures=None,
+                            matchFilter=None,
                             **kwargs):
         get_cmd_opt = cls.get_cmd_opt
         cmd = (
@@ -111,6 +112,7 @@ class PointMatchClientModuleSpark(SparkModule):
             get_cmd_opt(matchModelType, '--matchModelType') +
             get_cmd_opt(matchIterations, '--matchIterations') +
             get_cmd_opt(matchMaxEpsilon, '--matchMaxEpsilon') +
+            get_cmd_opt(matchFilter, '--matchFilter') +
             get_cmd_opt(matchMinInlierRatio, '--matchMinInlierRatio') +
             get_cmd_opt(matchMinNumInliers, '--matchMinNumInliers') +
             get_cmd_opt(matchMaxNumInliers, '--matchMaxNumInliers') +
