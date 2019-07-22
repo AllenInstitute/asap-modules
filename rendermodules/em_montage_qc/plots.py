@@ -18,6 +18,13 @@ from bokeh.models import (HoverTool, ColumnDataSource,
                           TapTool, OpenURL, Div, ColorBar,
                           Slider, WidgetBox)
 
+try:
+    # Python 2
+    xrange
+except NameError:
+    # Python 3, xrange is now named range
+    xrange = range
+
 
 try:
     # Python 2
