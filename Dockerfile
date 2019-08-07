@@ -18,6 +18,6 @@ RUN source activate render-modules &&\
  # will try to respect it
  echo $(cat requirements.txt | grep opencv) > opencv_requirements.txt &&\
  pip install -r opencv_requirements.txt &&\
- pip install -r requirements.txt &&\
+ pip install -no-binary em_stitch -r requirements.txt &&\
  python setup.py install
 ENTRYPOINT ["/bin/bash","/shared/render-modules/entrypoint.sh"]
