@@ -15,8 +15,8 @@ RUN source activate render-modules &&\
  # with the render-modules opencv contrib version
  # had tried to fix in em_stitch setup.py
  # but pip install does not respect that somehow
- python setup.py install
+ python setup.py install &&\
  echo $(cat requirements.txt | grep opencv) > opencv_requirements.txt &&\
  pip uninstall -y opencv-python opencv-contrib-python &&\
- pip install -r opencv_requirements.txt &&\
+ pip install -r opencv_requirements.txt
 ENTRYPOINT ["/bin/bash","/shared/render-modules/entrypoint.sh"]
