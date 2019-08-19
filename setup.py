@@ -4,12 +4,22 @@ from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 import logging
 
-class PyTest(TestCommand):
+class PyTest(TestCommand, object):
     user_options = [('pytest-args=', 'a', "Arguments to pass to pytest")]
 
     def initialize_options(self):
         TestCommand.initialize_options(self)
         self.pytest_args = ""
+
+    def run(self):
+        try:
+            import cv2
+            import em_stitch
+            self.distribution.install_requires = [i for i in self.distribution.install_requires if not i.startswith('em_stitch')]
+        except ImportError:
+            pass
+        print(self.distribution.install_requires)
+        super(PyTest, self).run()
 
     def run_tests(self):
         # import here, cause outside the eggs aren't loaded
