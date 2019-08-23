@@ -1,0 +1,157 @@
+{
+  "transformIdToSpecMap": {},
+  "tileIdToSpecMap": {
+    "20181120075933007_17797_1R_Tape127_TEMCA6_03_000650_0_62_0.150650.0": {
+      "tileId": "20181120075933007_17797_1R_Tape127_TEMCA6_03_000650_0_62_0.150650.0",
+      "z": 25378.0,
+      "width": 3236.0,
+      "height": 2353.0,
+      "minIntensity": 0.0,
+      "maxIntensity": 255.0,
+      "layout": {
+        "sectionId": "25378.0",
+        "temca": "temca6",
+        "camera": "BJMAB1820032",
+        "imageRow": 0,
+        "imageCol": 62,
+        "stageX": -789428.0,
+        "stageY": 24752.0,
+        "rotation": 179.0
+      },
+      "mipmapLevels": {
+        "0": {
+          "imageUrl": "file:///allen/programs/celltypes/production/wijem/workflow_data/production/long_term/em_montage_17797_1R_z150650_2018_11_20_15_57_21_00_00/17797_1R/em_2d_montage_solved_py_no_mml_zs150650_ze150650_t121018_025718/sections_at_0.01/150/6/150650.0.png"
+        }
+      },
+      "transforms": {
+        "type": "list",
+        "specList": [
+          {
+            "type": "leaf",
+            "className": "mpicbg.trakem2.transform.AffineModel2D",
+            "dataString": "0.9212788748 -0.0406009339 0.0395281290 0.9613916802 106.9451471389 16.8641167510"
+          },
+          {
+            "type": "leaf",
+            "className": "mpicbg.trakem2.transform.ThinPlateSplineTransform",
+            "dataString": "ThinPlateSplineR2LogR 2 25 eJwBMADP/78qLyTg0QGCvvI7oB1OkLW++yQ/I8WYlb8XsoT6xiHZP+c4znys1klAB8gqa2jE/1I4GOU= eJw9zFlM0nEcAPCYNodauWQti2bHZq0WgVaW2TcEpPShggaLuUD+SSYODI3MawOPdczUjlFSSol0aZIPZiV8s4MhLnVKx6Y9tHWMZW02Q1256uX/+z9+Xj79eymlbCUm9xuksjttV74Lz4ah4PftV4ybH8q4NbU9jJ0lrOrIiUjG9xeNm/3TXcT99CcstxT4KZmEfIzpjzH9MaY/YuZrCv1b7qoQMh8x+YjJR0w+2sx3XfDpWTHFYz5i8hGTj5h8tJmvzZuXktjewHzE5CMmHzH5aGNRx5AlcuARGl0BL29Mh6caUm/ZOYdRrxieUNmyIF+uT+9UJqB2Y+2O8j/luP/S4Lw4MxoLE1uG1vXcQ0XHlFe8zwrmppwU5+ZCpJTSrYpYE+SyF7L2uKthqVUVOrBKjoJR8+Wyshqo0iV4hO5eLB45uLtO8wJ2RSfNuD6aITVKXXWz7j1Iwo6YIF8FFqNgjWhTMlZVbBNxn99AfZd2bGo2ArNY04Phlm+Q2+rbMiReBpbgPJur/gpGU99az4puKIkPdPMzJlDok8cEdB6s3OnoC6Yb0DLq4RgEOjj2RJu2gOJB6Run6e2IFNTDrzfExWmw9Izm/Ev3VTwdf2IuguJjRsDx+VfQBlSl/bjZ2Q6qxY2++plxLNou6pXmsPHIuaRaW/MU5ptcnA7OU8z0T7cbHygg27rE1bj+Asom5d2tkyzIi/pycUCbjdSHn8qEuXpIk2jr9NdiQftDcvfQ7Ds42vmXZQ/Nwknu49URpvr/kvN+fA=="
+          }
+        ]
+      }
+    },
+    "20181107181421295_17797_1R_Tape151_TEMCA2_24_004011_0_89_0.134011.0": {
+      "tileId": "20181107181421295_17797_1R_Tape151_TEMCA2_24_004011_0_89_0.134011.0",
+      "z": 18512.0,
+      "width": 3144.0,
+      "height": 2211.0,
+      "minIntensity": 0.0,
+      "maxIntensity": 255.0,
+      "layout": {
+        "sectionId": "18512.0",
+        "temca": "temca2",
+        "camera": "49600328",
+        "imageRow": 0,
+        "imageCol": 89,
+        "stageX": -1436790.0,
+        "stageY": 1256323.0,
+        "rotation": 180.0
+      },
+      "mipmapLevels": {
+        "0": {
+          "imageUrl": "file:///allen/programs/celltypes/production/wijem/workflow_data/production/long_term/em_montage_17797_1R_z134011_2018_11_08_02_13_03_00_00/17797_1R/em_2d_montage_solved_py_no_mml_zs134011_ze134011_t121018_122112/sections_at_0.01/134/0/134011.0.png"
+        }
+      },
+      "transforms": {
+        "type": "list",
+        "specList": [
+          {
+            "type": "leaf",
+            "className": "mpicbg.trakem2.transform.AffineModel2D",
+            "dataString": "0.9555266476 -0.0249147754 0.0154876070 0.9853143167 -74.3410916983 137.7406785812"
+          },
+          {
+            "type": "leaf",
+            "className": "mpicbg.trakem2.transform.ThinPlateSplineTransform",
+            "dataString": "ThinPlateSplineR2LogR 2 25 eJwBMADP/78ajzXApy71PwENyBbj2n+/KozYMzd4oL8QkV1DmvXUQBKTm1+SYvA/5GkeTjx/li8pFs0= eJw9zFtIk2EYAGBjYGWI5hzCBhnWlFWKC6W5uVebFDFosNTMw6zWtnJtzjwvcy62ksIDtBiT5pGSDjKiIp38fCwMo4RNK3UXriIwc7U1hHKtybr5v//yuXlcmhNy28A2h0s8af92sPhusSlB42N5flK2WvS5OaEMyqPzvvBaNIvyw4pY5ZRRiO0iv+LrzqEvTYd/4I8y+VEmP8rkh019d/qr39zv+UV92PjDxh82/khTn/3o9/QkYx31YeMPG3/Y+CNNfWMRvkBYsEF92PjDxh82/kgj00zJ/nCzAbUTeYLn7A9QJPpUt/VYBoaJWy8IKQtu6nY9S/rHRqY90x5OUQ3SZ+7sZo6Pgqi8eyrQuRda+0IcNs0FXRyDxngtCxnS8pMbzhKoNT2uMuL3goIzOzdi74WLsglLpJAH8kS9qjwUh7Q09QFiS4TKTPFvRVIuNCyl+Pl/d4CEqVzUytSoZvVewE2UIv7nPzOn1e9BDpNRofUdaDoZX29E/bCP686IT/Uipb5QJKwwIZVgvCxB7AXloSEt5JuRaoQoSVybQ/pozMrUOYF7BWTe2mF0YXDT8VLSAm0bR27ztIuoYjMijlQdR13B7SsKNw2ks2nB5bZhdKkH9bkJG7S7UkIDyQw45sj4aHH6UEdVx+sgfQyqG9nzUjkDqXJzzvScC0PLguKU3moGdemDJyu1AXQ59XeIt1AA51+Z6evZ06jMs2JjLTug+eTTWHZ9EzQKMnev9wZBElqtz3vUAbqr9CV6tP8/x8yOiw=="
+          }
+        ]
+      }
+    },
+    "20181004170148276_17797_1R_Tape149_TEMCA4_24_004024_0_91_0.124024.0": {
+      "tileId": "20181004170148276_17797_1R_Tape149_TEMCA4_24_004024_0_91_0.124024.0",
+      "z": 13425.0,
+      "width": 3263.0,
+      "height": 2330.0,
+      "minIntensity": 0.0,
+      "maxIntensity": 255.0,
+      "layout": {
+        "sectionId": "13425.0",
+        "temca": "temca4",
+        "camera": "44500428",
+        "imageRow": 0,
+        "imageCol": 91,
+        "stageX": -1324201.0,
+        "stageY": -273271.0,
+        "rotation": 185.0
+      },
+      "mipmapLevels": {
+        "0": {
+          "imageUrl": "file:///allen/programs/celltypes/production/wijem/workflow_data/production/long_term/em_montage_17797_1R_z124024_2018_10_05_00_00_26_00_00/17797_1R/em_2d_montage_solved_py_no_mml_zs124024_ze124024_t113018_181841/sections_at_0.01/124/0/124024.0.png"
+        }
+      },
+      "transforms": {
+        "type": "list",
+        "specList": [
+          {
+            "type": "leaf",
+            "className": "mpicbg.trakem2.transform.AffineModel2D",
+            "dataString": "0.9547583552 -0.0217072448 0.0249707148 0.9855951824 22.9606409727 25.1169761654"
+          },
+          {
+            "type": "leaf",
+            "className": "mpicbg.trakem2.transform.ThinPlateSplineTransform",
+            "dataString": "ThinPlateSplineR2LogR 2 25 eJwBMADP/78xaMqSHmhfPzHjQ0YzEpe/HJjoPvMQID8WPuEgshS9QC39MGrUXZjAKuKmYVU49fBvFUc= eJw9zFtIU3EcAOCHLC+omyZsDza6Y8GK9hAG85dlYY2JaJpdjCLPws2DSh21oa2tNhXT6TrK1A2jDGpqrnRCpPxcks2lhAzMKEehFuWt1BmlJb2c/3n8Xj73pV/LX3PFk27qVslc4IgjsSJEFL5LVcm7afdK5VLuQ96t1I/B74KjvNsOUp4zMzJiN/cl6vJxL3PnA/l4cx9v7uPNfcT8Z/F0Rr9/u53/iMlHTD5i8nHmP9tyhy1Gm8J/xOQjJh8x+TjzX6tgzPI4Ws5/xOQjJh8x+Tgj+zM+W/I5FSvenTgNL3Vwiuku/rgwDtaNx80akxLun2cjBv0j2EAPj8W252H1i8UnwsRsZDbk1EuHMuD2it5pzkwAdqdtSvzJjHcX1LXmYgnqxZLSjKIGYOR9RQOv45DZ/1yonBZiQU/tP8Zaj6aqqC3zlgDcZEebZw/9AetUe9FMgQ11msWRiSoHsoIMRUBhx7M5sdfL1UFgGVAveWIM0Eg/euU3R+FlW0RC3/QeZKtFPc32SDgZSi9FxjnROHRD2LU6ig1PtQlJV0tQD54da9ZWMGyOc30bagJ9f1lQSr4EI4MvhgmUYVj3xmXsKO1FOiR4fJN0H5T7ss6lqfqhQqFzzIibwFQoTk/2+ZH6qyqcLw+B5Dxjn5yiwVB7zfts+Ato6+ZavC0s6I+lN9pTu+CKdH6V2rYVZGtZk97eNlA7J9bDQ1MxzaDJ7J7V4uGSzrIH6z5UBlyiAwXxSN3rcf+uuYBJtLemSzbyHx//kdE="
+          }
+        ]
+      }
+    },
+    "20181017104449248_17797_1R_Tape162_TEMCA3_15_003059_0_60_0.143059.0": {
+      "tileId": "20181017104449248_17797_1R_Tape162_TEMCA3_15_003059_0_60_0.143059.0",
+      "z": 22543.0,
+      "width": 3367.0,
+      "height": 2460.0,
+      "minIntensity": 0.0,
+      "maxIntensity": 255.0,
+      "layout": {
+        "sectionId": "22543.0",
+        "temca": "temca3",
+        "camera": "BJMAB1820017",
+        "imageRow": 0,
+        "imageCol": 60,
+        "stageX": -1476716.0,
+        "stageY": 568041.0,
+        "rotation": 181.5
+      },
+      "mipmapLevels": {
+        "0": {
+          "imageUrl": "file:///allen/programs/celltypes/production/wijem/workflow_data/production/long_term/em_montage_17797_1R_z143059_2018_10_17_17_42_23_00_00/17797_1R/em_2d_montage_solved_py_no_mml_zs143059_ze143059_t110818_142607/sections_at_0.01/143/0/143059.0.png"
+        }
+      },
+      "transforms": {
+        "type": "list",
+        "specList": [
+          {
+            "type": "leaf",
+            "className": "mpicbg.trakem2.transform.AffineModel2D",
+            "dataString": "0.9577939305 0.0366351473 -0.0260771866 0.9895484564 94.6198331089 -220.5537265758"
+          },
+          {
+            "type": "leaf",
+            "className": "mpicbg.trakem2.transform.ThinPlateSplineTransform",
+            "dataString": "ThinPlateSplineR2LogR 2 25 eJwBMADP/z8B7+95OyKlPv8GqBiLV8Y/I2nWuabgnr8O5bewVXIxQCaHlKbMoz1ACIaRBp6t/jGQF1U= eJw7kLA/9+C5lY8OlB77se6fdINDhwgnl4i0Apw/S/vbId8PsXD+ErUv9SdeToXzV5u/nZd16zeMfwBqnkOZ3pKd7jrPYObB+VDz4HyoeXA+1DwYH27ehE6BjmTZYLh5MD7MPBgfZh6MDzMPyoebN7ut/FFJfg7cPBgfZh6MDzMPxoeZB+XDzVvs+H6e04PDcPNgfJh5MD7MPBgfZh6Ub5fpoLxSU/yJnXG169Qf87v35Uqtnu5WzbOviPOMvEKd1b6M7tZzq2c9tZP5WJH1+s+9fUlP42UsVwrtC9yi/y3T95Kd2adTT9XOLbKzu+73JkJz2b5yI21O3ln9+xpFNFIMT0rY5V5IYjLmOmZXVfoj4CdjqF22MYPJmYyt+xok2xkmzd2/r+FAfcbO9BK7vMd9Rz46cNiVnb4dq6fWaZcbJp3u/n/Lvrqi/uPNUSv2VbJaeF7kybKzeBBktN3Q2C7tt6ny423n7ZItBG6va/m+L7764rff8xbsC6qX9DDsmmcXYO88uT32kV3g/z/7bpVt2RcuZb7K5/vffQWqF2ZbCGbsK3Y+Y6Uc7m9nea6qb/2F+Xa5tn9uPNxksc8z57ibhvz+fQXq06v3Jx3e1xjlv8wyjnWfvWrpEW5VFrui19oGh4Mz9iX9rBfWleyyC3e99UkxV3efa12MIeOdHrvcqoNf7PbZ2yUuVD4RKXd1X/EPpYkzr8yxq7d+lmOyN8iuxk6MOeIXs13F8sJfVX2r7UK7Egw9rhfvK5nQOeHB7VgAqbaJcw=="
+          }
+        ]
+      }
+    }
+  }
+}

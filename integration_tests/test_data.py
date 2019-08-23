@@ -300,6 +300,14 @@ apply_rough_alignment_example = {
     "pool_size": 20
 }
 
+NONLINEAR_ROUGH_DS_RESOLVEDTILES_JSON = os.path.join(
+    example_dir, "nonlinear_rough_ds_resolvedtiles.json")
+
+NONLINEAR_ROUGH_RAW_RESOLVEDTILES_JSON = os.path.join(
+    example_dir, "nonlinear_rough_raw_resolvedtiles.json")
+
+NONLINEAR_ROUGH_DS_SCALE = 0.01
+
 # Rough QC test data
 MONTAGE_SCAPES_TSPECS = render_json_template(example_env, 'rough_qc_montage_scapes_tspecs.json',
                                                 test_data_root=TEST_DATA_ROOT)
