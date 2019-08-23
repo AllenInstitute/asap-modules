@@ -1093,7 +1093,7 @@ def test_multiple_transform_apply_rough(
         l2w_pts_raw = [
             {'tileId': ts.tileId, 'visible': False,
              'local': [ts.width // 2, ts.height // 2]}
-            for ts in random.choices(raw_rt.tilespecs, k=num_sampletspecs)]
+            for ts in random.sample(raw_rt.tilespecs, num_sampletspecs)]
 
         raw_wpts = renderapi.coordinate.local_to_world_coordinates_batch(
             multiple_transform_raw_stack, l2w_pts_raw, oldz, render=render)
