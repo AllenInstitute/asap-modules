@@ -8,7 +8,7 @@ scipy
 rtree
 networkx
 bokeh
-EMaligner==1.0.0
+EMaligner==1.0.1
 opencv-contrib-python<3.4.3.0
 em_stitch==0.2.3
 matplotlib
