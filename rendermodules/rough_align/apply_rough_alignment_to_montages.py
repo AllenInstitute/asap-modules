@@ -70,6 +70,10 @@ example = {
 logger = logging.getLogger()
 
 
+class ApplyRoughAlignmentException(RenderModuleException):
+    """Something is wrong in ApplyRough...."""
+
+
 def get_mask_paths(
         mask_input_dir,
         tilespecs,
@@ -209,12 +213,29 @@ def apply_rough_alignment(render,
 
         # get the lowres stack rough alignment transformation
         tforms = lowres_ts[0].tforms
-        tf = tforms[-1]
 
-        if apply_scale:
-            tf.M[0:2, 0:2] *= scale
-        else:
-            tf.M[:2, -1] /= scale
+        # if all_transforms:
+        #     tforms = consolidate_transforms(tforms)
+
+        # tf = tforms[-1]
+        for i, tf in enumerate(tforms):
+            if isinstance(tf, renderapi.transform.leaf.AffineModel):
+                if apply_scale:
+                    tf.M[0:2, 0:2] *= scale
+                else:
+                    tf.M[:2, -1] /= scale
+            elif isinstance(
+                    tf, renderapi.transform.leaf.ThinPlateSplineTransform):
+                if apply_scale:
+                    raise ApplyRoughAlignmentException(
+                        "apply_scale is not implemented for "
+                        "ThinPlateSplineTransform.")
+                else:
+                    tforms[i] = tf.scale_coordinates(1./scale)
+            else:
+                raise ApplyRoughAlignmentException(
+                    "apply rough is not implemented for {}".format(
+                        tf.className))
 
         sectionbounds = render.run(
                                 renderapi.stack.get_bounds_from_z,
