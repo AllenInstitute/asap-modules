@@ -17,6 +17,7 @@ six
 scikit-image
 shapely
 triangle
+uri_handler
 imageio
 seaborn
 mpld3

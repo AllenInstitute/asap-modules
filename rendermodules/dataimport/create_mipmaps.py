@@ -1,10 +1,14 @@
+import io
 import os
 
 import numpy
+import pathlib2 as pathlib
+from six.moves import urllib
 from skimage.measure import block_reduce
 
 from rendermodules.utilities.pillow_utils import Image
 from rendermodules.module.render_module import RenderModuleException
+from rendermodules.utilities import uri_utils
 
 try:
     xrange
@@ -33,21 +37,34 @@ class CreateMipMapException(RenderModuleException):
 
 
 def writeImage(img, outpath, force_redo):
-    try:
-        os.makedirs(os.path.dirname(outpath), 0o775)
-    except OSError as e:
-        pass  # TODO better validation
+    if not force_redo:
+        # FIXME uri_handler writebytes implementation allows force_redo....
+        raise NotImplementedError(
+            "toggling force_redo is not supported in this version. "
+            "Mipmaps must be regenerated.")
 
-    makeImage = force_redo or not os.path.isfile(outpath)
-    if makeImage:
-        try:
-            img.save(outpath)
-        except KeyError as e:
-            # unknown output format
-            raise(CreateMipMapException('KeyError - "%s"' % str(e)))
-        except IOError as e:
-            # file cannot be written to disk
-            raise(CreateMipMapException('IOError - "%s"' % str(e)))
+    # TODO does this need a step to try to register the extension?
+    imgfmt = Image.EXTENSION[os.path.splitext(
+        urllib.parse.urlparse(outpath).path)[-1]]
+
+    imgio = io.BytesIO()
+    img.save(imgio, format=imgfmt)
+    uri_utils.uri_writebytes(outpath, imgio.getvalue())
+    # try:
+    #     os.makedirs(os.path.dirname(outpath), 0o775)
+    # except OSError as e:
+    #     pass  # TODO better validation
+
+    # makeImage = force_redo or not os.path.isfile(outpath)
+    # if makeImage:
+    #     try:
+    #         img.save(outpath)
+    #     except KeyError as e:
+    #         # unknown output format
+    #         raise(CreateMipMapException('KeyError - "%s"' % str(e)))
+    #     except IOError as e:
+    #         # file cannot be written to disk
+    #         raise(CreateMipMapException('IOError - "%s"' % str(e)))
 
 
 def mipmap_block_reduce(im, levels_file_map, block_func="mean",
@@ -94,10 +111,10 @@ method_funcs = {
 }
 
 
-def create_mipmaps(inputImage, outputDirectory='.', method="block_reduce",
-                   mipmaplevels=[1, 2, 3], outputformat='tif',
-                   convertTo8bit=True, force_redo=True,
-                   **kwargs):
+def create_mipmaps_uri(inputImage, outputDirectory=None, method="block_reduce",
+                       mipmaplevels=[1, 2, 3], outputformat='tif',
+                       convertTo8bit=True, force_redo=True,
+                       **kwargs):
     """function to create downsampled images from an input image
 
     Parameters
@@ -132,21 +149,46 @@ def create_mipmaps(inputImage, outputDirectory='.', method="block_reduce",
         if an image cannot be created for some reason
     """
     # Need to check if the level 0 image exists
-    im = Image.open(inputImage)
+    # TODO this is for uri implementation
+    inputImagepath = urllib.parse.urlparse(inputImage).path
+    im = Image.open(io.BytesIO(uri_utils.uri_readbytes(inputImage)))
+    # im = Image.open(inputImage)
     if convertTo8bit:
         table = [i//256 for i in range(65536)]
         im = im.convert('I')
         im = im.point(table, 'L')
 
-    levels_file_map = {int(level): os.path.join(
+    levels_uri_map = {int(level): uri_utils.uri_join(
         outputDirectory, str(level), '{basename}.{fmt}'.format(
-            basename=inputImage.lstrip(os.sep), fmt=outputformat))
+            basename=inputImagepath.lstrip("/"), fmt=outputformat))
                        for level in mipmaplevels}
+    # levels_file_map = {int(level): os.path.join(
+    #     outputDirectory, str(level), '{basename}.{fmt}'.format(
+    #         basename=inputImage.lstrip(os.sep), fmt=outputformat))
+    #                    for level in mipmaplevels}
+    # levels_uri_map = levels_file_map
 
     try:
         method_funcs[method](
-            im, levels_file_map, force_redo=force_redo, **kwargs)
+            im, levels_uri_map, force_redo=force_redo, **kwargs)
     except KeyError as e:
         raise CreateMipMapException("invalid method {}".format(e))
 
+    return levels_uri_map
+
+
+def create_mipmaps_legacy(inputImage, outputDirectory='.', *args, **kwargs):
+    """legacy create_mipmaps function"""
+
+    outputDirectory_uri = pathlib.Path(outputDirectory).resolve().as_uri()
+    inputImage_uri = pathlib.Path(inputImage).resolve().as_uri()
+    levels_uri_map = create_mipmaps_uri(
+        inputImage_uri, outputDirectory_uri, *args, **kwargs)
+
+    levels_file_map = {
+        l: urllib.parse.unquote(urllib.parse.urlparse(u).path)
+        for l, u in levels_uri_map.items()}
     return levels_file_map
+
+
+create_mipmaps = create_mipmaps_legacy
