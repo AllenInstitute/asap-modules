@@ -6,7 +6,7 @@ import cv2
 import os
 from shutil import copyfile
 import datetime
-from EMaligner import jsongz
+from bigfeta import jsongz
 
 from ..module.render_module import RenderModule, RenderModuleException
 
