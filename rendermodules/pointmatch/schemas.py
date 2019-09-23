@@ -116,7 +116,7 @@ class PointMatchClientOutputSchema(mm.Schema):
 class PointMatchClientParametersQsub(
         RenderParameters, SIFTPointMatchParameters, SparkOptions):
     sparkhome = InputDir(
-        required=True,
+        required=False,
         default="/allen/aibs/pipeline/image_processing/"
         "volume_assembly/utils/spark",
         missing="/allen/aibs/pipeline/image_processing/"
