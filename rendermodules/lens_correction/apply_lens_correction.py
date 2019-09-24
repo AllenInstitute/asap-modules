@@ -82,6 +82,12 @@ class ApplyLensCorrection(StackTransitionModule):
         lc_tform.transformId = refId
         ref_lc = renderapi.transform.ReferenceTransform(
             refId=lc_tform.transformId)
+        if lc_tform.labels is None:
+            lc_tform.labels = self.args['labels']
+        else:
+            for label in self.args['labels']:
+                if label not in lc_tform.labels:
+                    lc_tform.labels.append(label)
 
         tspecs = renderapi.tilespec.get_tile_specs_from_z(
             self.input_stack, self.zValues[0], render=r)

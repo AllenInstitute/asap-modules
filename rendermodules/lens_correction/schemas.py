@@ -1,5 +1,5 @@
 from argschema import ArgSchema
-from argschema.fields import Bool, Float, Int, Nested, Str, InputFile, List
+from argschema.fields import Bool, Float, Int, Nested, Str, InputFile, List, Dict
 from argschema.schemas import DefaultSchema
 from marshmallow.validate import OneOf
 import marshmallow
@@ -20,6 +20,9 @@ class TransformParameters(DefaultSchema):
     dataString = Str(
         required=True,
         description='mpicbg-compatible dataString')
+    metaData = Dict(
+        required=False,
+        description="in this schema, otherwise will be stripped")
 
 
 class ApplyLensCorrectionParameters(StackTransitionParameters):
@@ -28,6 +31,12 @@ class ApplyLensCorrectionParameters(StackTransitionParameters):
         allow_none=True, required=True,
         description=('Reference ID to use when uploading transform to '
                      'render database (Not Implemented)'))
+    labels = List(
+        Str,
+        required=True,
+        missing=['lens'],
+        default=['lens'],
+        description="labels for the lens correction transform")
     maskUrl = InputFile(
             required=False,
             default=None,
