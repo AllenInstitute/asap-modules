@@ -97,6 +97,16 @@ def stack_lc(render):
     renderapi.stack.set_stack_state(stack, 'COMPLETE', render=render)
     yield stack
 
+
+@pytest.fixture(scope='module')
+def stack_lc_label(render):
+    stack = "test_lc_label"
+    renderapi.stack.create_stack(stack, render=render)
+    tspecs = [renderapi.tilespec.TileSpec(json=tspec)
+              for tspec in TILESPECS_LC_JSON]
+    renderapi.client.import_tilespecs(stack, tspecs, render=render)
+    renderapi.stack.set_stack_state(stack, 'COMPLETE', render=render)
+    yield stack
     renderapi.stack.delete_stack(stack, render=render)
 
 
@@ -171,7 +181,8 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc,
         "transform": example_tform_dict,
         "refId": None,
         "pool_size": 5,
-        "overwrite_zlayer": True
+        "overwrite_zlayer": True,
+        "labels": ["lens"]
     }
 
     out_fn = 'test_ALC_out.json'
@@ -199,6 +210,7 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc,
         new_tform = tforms[0]
         print(new_tform.to_dict())
         assert new_tform.transformId == refId
+        assert new_tform.labels == params['labels']
         assert np.array_equal(
             [example_tform.height, example_tform.width, example_tform.length,
                 example_tform.dimension],
@@ -206,6 +218,37 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc,
                 new_tform.dimension])
         test_new_tform = new_tform.tform(test_points)
         compute_lc_norm_and_max(test_example_tform, test_new_tform)
+
+
+def test_label_append(render, stack_no_lc, stack_lc_label,
+                               example_tform_dict, test_points):
+    params = {
+        "render": render_params,
+        "inputStack": stack_no_lc,
+        "outputStack": stack_lc_label,
+        "zs": [2266],
+        "transform": dict(example_tform_dict),
+        "refId": None,
+        "pool_size": 5,
+        "overwrite_zlayer": True,
+        "labels": ["lens"]
+    }
+
+    params['transform']['metaData'] = {'labels': ['something']}
+
+    r = renderapi.transform.load_transform_json(params['transform'])
+    assert 'something' in r.labels
+
+    out_fn = 'test_ALC_out2.json'
+    mod = ApplyLensCorrection(input_data=params,
+                              args=['--output_json', out_fn])
+    mod.run()
+
+    for z in params['zs']:
+        resolvedtiles = renderapi.resolvedtiles.get_resolved_tiles_from_z(
+            params['output_stack'], z, render=render)
+        assert 'something' in resolvedtiles.transforms[0].labels
+        assert 'lens' in resolvedtiles.transforms[0].labels
 
 
 def test_apply_lens_correction_mask(

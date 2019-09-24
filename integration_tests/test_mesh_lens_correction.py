@@ -5,7 +5,7 @@ import os
 from shutil import copyfile, rmtree
 import cv2
 import numpy as np
-from EMaligner import jsongz
+from bigfeta import jsongz
 from em_stitch.lens_correction.mesh_and_solve_transform import \
         MeshLensCorrectionException
 from rendermodules.mesh_lens_correction.do_mesh_lens_correction import \
