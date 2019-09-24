@@ -48,7 +48,7 @@ class MakeAnchorStackSchema(StackTransitionParameters):
                      "images from which these are made"
                      "are assumed to be named <z>_*.png"))
     transform_json = InputFile(
-        required=True,
+        required=False,
         default=None,
         missing=None,
         description=("Human generated list of transforms."
@@ -59,7 +59,7 @@ class MakeAnchorStackSchema(StackTransitionParameters):
                      "will override xml input."))
     zValues = List(
             Int,
-            required=True,
+            required=False,
             missing=[1000],
             default=[1000],
             description="not used in this module, keeps parents happy")
