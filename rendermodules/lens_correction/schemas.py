@@ -33,7 +33,7 @@ class ApplyLensCorrectionParameters(StackTransitionParameters):
                      'render database (Not Implemented)'))
     labels = List(
         Str,
-        required=True,
+        required=False,
         missing=['lens'],
         default=['lens'],
         description="labels for the lens correction transform")
