@@ -2,7 +2,7 @@
 from argschema.schemas import DefaultSchema
 from argschema.fields import Str, Int, Bool, \
         Nested, Float, OutputDir, \
-        InputFile, NumpyArray, OutputFile
+        InputFile, List, OutputFile
 from ..pointmatch.schemas import PointMatchOpenCVParameters
 
 
@@ -102,8 +102,8 @@ class MeshLensCorrectionSchema(PointMatchOpenCVParameters):
         required=True,
         default="xxx",
         description="section Id")
-    mask_coords = NumpyArray(
-        Int,
+    mask_coords = List(
+        List(Int),
         required=False,
         default=None,
         missing=None,
