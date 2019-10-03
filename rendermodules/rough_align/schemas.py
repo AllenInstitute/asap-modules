@@ -48,7 +48,7 @@ class MakeAnchorStackSchema(StackTransitionParameters):
                      "images from which these are made"
                      "are assumed to be named <z>_*.png"))
     transform_json = InputFile(
-        required=True,
+        required=False,
         default=None,
         description=("Human generated list of transforms."
                      "or, json scraped from xml"
