@@ -363,8 +363,9 @@ class DownsampleMaskHandlerSchema(RenderParameters):
         description=("z values for which the masks will be set"))
     zReset = argschema.fields.List(
         argschema.fields.Int,
-        required=True,
+        required=False,
         default=None,
+        missing=None,
         cli_as_single_argument=True,
         description=("z values for which the masks will be reset"))
     mask_exts = List(
