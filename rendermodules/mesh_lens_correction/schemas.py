@@ -85,7 +85,7 @@ class MeshLensCorrectionSchema(PointMatchOpenCVParameters):
     nvertex = Int(
         required=False,
         default=1000,
-        missinf=1000,
+        missing=1000,
         description="maximum number of vertices to attempt")
     output_dir = OutputDir(
         required=False,
