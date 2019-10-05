@@ -50,6 +50,7 @@ class MakeAnchorStackSchema(StackTransitionParameters):
     transform_json = InputFile(
         required=False,
         default=None,
+        missing=None,
         description=("Human generated list of transforms."
                      "or, json scraped from xml"
                      "Keys are of form <z>_*.png where z matches "
@@ -357,8 +358,9 @@ class DownsampleMaskHandlerSchema(RenderParameters):
                      "can be None for no operation"))
     zMask = argschema.fields.List(
         argschema.fields.Int,
-        required=True,
+        required=False,
         default=None,
+        missing=None,
         cli_as_single_argument=True,
         description=("z values for which the masks will be set"))
     zReset = argschema.fields.List(
