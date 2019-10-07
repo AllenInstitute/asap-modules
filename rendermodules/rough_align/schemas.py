@@ -342,35 +342,32 @@ class DownsampleMaskHandlerSchema(RenderParameters):
         required=True,
         description="stack that is read and modified with masks")
     close_stack = argschema.fields.Bool(
-        require=True,
+        required=True,
         default=True,
-        missing=True,
         description="set COMPLETE or not")
     mask_dir = argschema.fields.InputDir(
         required=True,
-        missing=None,
         default=None,
         description=("directory containing masks, named <z>_*.png where"
                      "<z> is a z value in input_stack and may be specified"
                      "in z_apply"))
     collection = argschema.fields.Str(
         required=True,
-        missing=None,
         default=None,
         description=("name of collection to be filtered by mask, or reset"
                      "can be None for no operation"))
     zMask = argschema.fields.List(
         argschema.fields.Int,
-        required=True,
-        missing=None,
+        required=False,
         default=None,
+        missing=None,
         cli_as_single_argument=True,
         description=("z values for which the masks will be set"))
     zReset = argschema.fields.List(
         argschema.fields.Int,
-        required=True,
-        missing=None,
+        required=False,
         default=None,
+        missing=None,
         cli_as_single_argument=True,
         description=("z values for which the masks will be reset"))
     mask_exts = List(
