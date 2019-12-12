@@ -9,6 +9,7 @@ from argschema import ArgSchemaParser
 from .schemas import \
         PointMatchOpenCVParameters, \
         PointMatchClientOutputSchema
+from rendermodules.utilities import uri_utils
 
 
 example = {
@@ -86,7 +87,8 @@ def ransac_chunk(fargs):
 
 
 def read_downsample_equalize_mask(impath, scale, CLAHE_grid=None, CLAHE_clip=None):
-    im = cv2.imread(impath[0], 0)
+    # im = cv2.imread(impath[0], 0)
+    im = cv2.imdecode(np.fromstring(uri_utils.uri_readbytes(impath[0]), np.uint8), 0)
 
     im = cv2.resize(im, (0, 0),
                     fx=scale,
@@ -102,7 +104,9 @@ def read_downsample_equalize_mask(impath, scale, CLAHE_grid=None, CLAHE_clip=Non
         im = cv2.equalizeHist(im)
 
     if impath[1] is not None:
-        mask = cv2.imread(impath[1], 0)
+        mask = cv2.imdecode(np.fromstring(uri_utils.uri_readbytes(impath[1]), np.uint8), 0)
+
+        # mask = cv2.imread(impath[1], 0)
         mask = cv2.resize(mask, (0, 0),
                           fx=scale,
                           fy=scale,
@@ -267,13 +271,15 @@ class GeneratePointMatchesOpenCV(ArgSchemaParser):
 
             fargs = []
             for i in index_list:
-                impaths = [
-                           [urllib.parse.unquote(
-                               urllib.parse.urlparse(url).path)
-                               if url is not None else None
-                               for url in [t.ip[0].imageUrl, t.ip[0].maskUrl]]
-                           for t in tilespecs[tile_index[i]]
-                          ]
+                impaths = [[t.ip[0].imageUrl, t.ip[0].maskUrl]
+                           for t in tilespecs[tile_index[i]]]
+                # impaths = [
+                #            [urllib.parse.unquote(
+                #                urllib.parse.urlparse(url).path)
+                #                if url is not None else None
+                #                for url in [t.ip[0].imageUrl, t.ip[0].maskUrl]]
+                #            for t in tilespecs[tile_index[i]]
+                #           ]
                 ids = [t.tileId for t in tilespecs[tile_index[i]]]
                 gids = [t.layout.sectionId
                         for t in tilespecs[tile_index[i]]]
