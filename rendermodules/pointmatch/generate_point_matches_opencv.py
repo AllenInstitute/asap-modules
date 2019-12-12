@@ -1,11 +1,14 @@
-import numpy as np
 import json
-import renderapi
-import cv2
-import multiprocessing
-from six.moves import urllib
 import logging
+import multiprocessing
+
 from argschema import ArgSchemaParser
+import cv2
+import numpy as np
+import pathlib2 as pathlib
+import renderapi
+from six.moves import urllib
+
 from .schemas import \
         PointMatchOpenCVParameters, \
         PointMatchClientOutputSchema
@@ -86,7 +89,8 @@ def ransac_chunk(fargs):
     return k1, k2
 
 
-def read_downsample_equalize_mask(impath, scale, CLAHE_grid=None, CLAHE_clip=None):
+def read_downsample_equalize_mask_uri(
+        impath, scale, CLAHE_grid=None, CLAHE_clip=None):
     # im = cv2.imread(impath[0], 0)
     im = cv2.imdecode(np.fromstring(uri_utils.uri_readbytes(impath[0]), np.uint8), 0)
 
@@ -116,15 +120,21 @@ def read_downsample_equalize_mask(impath, scale, CLAHE_grid=None, CLAHE_clip=Non
     return im
 
 
+def read_downsample_equalize_mask(
+        impath, *args, **kwargs):
+    uri_impath = [pathlib.Path(fn).as_uri() for fn in impath]
+    return read_downsample_equalize_mask_uri(uri_impath, *args, **kwargs)
+
+
 def find_matches(fargs):
     [impaths, ids, gids, args] = fargs
 
-    pim = read_downsample_equalize_mask(
+    pim = read_downsample_equalize_mask_uri(
             impaths[0],
             args['downsample_scale'],
             CLAHE_grid=args['CLAHE_grid'],
             CLAHE_clip=args['CLAHE_clip'])
-    qim = read_downsample_equalize_mask(
+    qim = read_downsample_equalize_mask_uri(
             impaths[1],
             args['downsample_scale'],
             CLAHE_grid=args['CLAHE_grid'],

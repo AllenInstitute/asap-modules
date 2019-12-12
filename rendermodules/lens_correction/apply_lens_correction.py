@@ -94,15 +94,19 @@ class ApplyLensCorrection(StackTransitionModule):
         levels = [int(l) for l in tspecs[0].ip.levels]
         # make mask mipmaps
         mask_mm_list = {}
-        if self.args['maskUrl'] is not None:
-            root, ext = os.path.splitext(
-                urllib.parse.unquote(urllib.parse.urlparse(
-                    self.args['maskUrl']).path))
+        if self.args['maskUrl_uri'] is not None:
+            # root, ext = os.path.splitext(
+            #     urllib.parse.unquote(urllib.parse.urlparse(
+            #         self.args['maskUrl']).path))
+            fmt = os.path.splitext(
+                uri_utils.uri_basename(
+                    self.args["maskUrl_uri"]))[-1].lstrip(".")
             mask_mm_list = create_mipmaps_uri(
                 self.args['maskUrl_uri'],
                 outputDirectory=uri_utils.uri_prefix(self.args['maskUrl_uri']),  # os.path.dirname(self.args['maskUrl']),
                 mipmaplevels=levels,
-                outputformat=ext.split('.')[-1],
+                outputformat=fmt,
+                # outputformat=ext.split('.')[-1],
                 convertTo8bit=False,
                 force_redo=True,
                 block_func="min")
