@@ -118,8 +118,6 @@ class MeshLensCorrection(RenderModule):
 
     @staticmethod
     def get_sectionId_from_metafile_uri(metafile_uri):
-        # j = json.load(open(metafile, 'r'))
-        # TODO json load uh
         j = json.loads(uri_utils.uri_readbytes(
             metafile_uri))
         sectionId = j[0]['metadata']['grid']
@@ -200,7 +198,8 @@ class MeshLensCorrection(RenderModule):
                 metafile[0]['metadata']['camera_info']['height'],
                 self.args['mask_coords'],
                 mask_file=self.args['mask_file'],
-                basename=os.path.basename(self.args['metafile']) + '.png')
+                basename=uri_utils.uri_basename(
+                    self.args['metafile_uri']) + '.png')
 
         # argschema doesn't like the NumpyArray after processing it once
         # we don't need it after mask creation
