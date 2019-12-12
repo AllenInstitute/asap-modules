@@ -1,8 +1,12 @@
 
 from argschema.schemas import DefaultSchema
-from argschema.fields import Str, Int, Bool, \
-        Nested, Float, OutputDir, \
-        InputFile, List, OutputFile
+from argschema.fields import (
+        Str, Int, Bool,
+        Nested, Float, OutputDir,
+        InputFile, List, OutputFile)
+import marshmallow
+
+import rendermodules.utilities.schema_utils
 from ..pointmatch.schemas import PointMatchOpenCVParameters
 
 
@@ -73,8 +77,11 @@ class MeshLensCorrectionSchema(PointMatchOpenCVParameters):
         required=True,
         description="name of point match collection")
     metafile = Str(
-        required=True,
+        required=False,
         description="fullpath of metadata file")
+    metafile_uri = Str(
+        required=True,
+        description="uri_handler uri of metafile object")
     z_index = Int(
         required=True,
         description="z value for the lens correction data in stack")
@@ -119,6 +126,11 @@ class MeshLensCorrectionSchema(PointMatchOpenCVParameters):
         default=None,
         missing=None,
         description="explicit mask setting from file")
+
+    @marshmallow.pre_load
+    def metafile_to_uri(self, data):
+        rendermodules.utilities.schema_utils.posix_to_uri(
+            data, "metafile", "metafile_uri")
 
 
 class DoMeshLensCorrectionOutputSchema(DefaultSchema):

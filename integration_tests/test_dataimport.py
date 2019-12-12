@@ -27,7 +27,7 @@ def test_generate_EM_metadata(render):
     assert isinstance(render, renderapi.render.RenderClient)
     with open(METADATA_FILE, 'r') as f:
         md = json.load(f)
-    ex = copy.copy(generate_EM_tilespecs_from_metafile.example_input)
+    ex = copy.deepcopy(generate_EM_tilespecs_from_metafile.example_input)
     ex['render'] = render.make_kwargs()
     ex['metafile'] = METADATA_FILE
     with tempfile.NamedTemporaryFile(suffix='.json') as probablyemptyfn:
@@ -92,11 +92,11 @@ def outfile_test_and_remove(f, output_fn):
     return val
 
 def apply_generated_mipmaps(r, output_stack, generate_params,z=None):
-    ex = copy.copy(apply_mipmaps_to_render.example)
+    ex = copy.deepcopy(apply_mipmaps_to_render.example)
     ex['render'] = r.make_kwargs()
     ex['input_stack'] = generate_params['input_stack']
     ex['output_stack'] = output_stack
-    ex['mipmap_dir'] = generate_params['output_dir']
+    ex['mipmap_prefix'] = generate_params['output_prefix']
     ex['overwrite_zlayer'] = True
     zvalues = renderapi.stack.get_z_values_for_stack(ex['input_stack'],render=r)
     if z is not None:
@@ -209,7 +209,7 @@ def test_mipmaps(render, input_stack, resolvedtiles_to_mipmap, method, tmpdir,
                     is None else output_stack)
 
     tspecs = resolvedtiles_to_mipmap.tilespecs
-    ex = copy.copy(generate_mipmaps.example)
+    ex = copy.deepcopy(generate_mipmaps.example)
     ex['render'] = render.make_kwargs()
     ex['input_stack'] = input_stack
     ex['zstart'] = min([ts.z for ts in tspecs])

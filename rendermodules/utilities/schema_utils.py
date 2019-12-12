@@ -3,7 +3,7 @@ import logging
 import pathlib2 as pathlib
 
 
-def posix_to_uri(data, pos_key, uri_key):
+def posix_to_uri(data, pos_key, uri_key, delete_pos=True):
     """
     pre_load option for supporting both posix and uri arg specification
     """
@@ -18,3 +18,7 @@ def posix_to_uri(data, pos_key, uri_key):
                 "{} is being ignored.".format(
                     uri_key, data[uri_key],
                     pos_key, data[pos_key]))
+        try:
+            del data[pos_key]
+        except KeyError:
+            return
