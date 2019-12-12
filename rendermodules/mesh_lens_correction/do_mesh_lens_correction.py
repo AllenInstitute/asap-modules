@@ -20,6 +20,7 @@ from em_stitch.lens_correction.mesh_and_solve_transform \
         import MeshAndSolveTransform
 from rendermodules.pointmatch.generate_point_matches_opencv \
         import GeneratePointMatchesOpenCV
+from rendermodules.utilities import uri_utils
 
 example = {
     "render": {
@@ -116,8 +117,11 @@ class MeshLensCorrection(RenderModule):
     default_output_schema = DoMeshLensCorrectionOutputSchema
 
     @staticmethod
-    def get_sectionId_from_metafile(metafile):
-        j = json.load(open(metafile, 'r'))
+    def get_sectionId_from_metafile_uri(metafile_uri):
+        # j = json.load(open(metafile, 'r'))
+        # TODO json load uh
+        j = json.loads(uri_utils.uri_readbytes(
+            metafile_uri))
         sectionId = j[0]['metadata']['grid']
         return sectionId
 
@@ -129,7 +133,7 @@ class MeshLensCorrection(RenderModule):
         ex['render']['owner'] = self.render.DEFAULT_OWNER
         ex['render']['project'] = self.render.DEFAULT_PROJECT
         ex['render']['client_scripts'] = self.render.DEFAULT_CLIENT_SCRIPTS
-        ex['metafile'] = self.args['metafile']
+        ex['metafile_uri'] = self.args['metafile_uri']
         ex['stack'] = self.args['input_stack']
         ex['overwrite_zlayer'] = self.args['overwrite_zlayer']
         ex['close_stack'] = self.args['close_stack']
@@ -169,8 +173,8 @@ class MeshLensCorrection(RenderModule):
         return args_for_pm
 
     def run(self):
-        self.args['sectionId'] = self.get_sectionId_from_metafile(
-                self.args['metafile'])
+        self.args['sectionId'] = self.get_sectionId_from_metafile_uri(
+                self.args['metafile_uri'])
 
         if self.args['output_dir'] is None:
             self.args['output_dir'] = tempfile.mkdtemp()
@@ -187,8 +191,9 @@ class MeshLensCorrection(RenderModule):
 
         args_for_input = dict(self.args)
 
-        with open(self.args['metafile'], 'r') as f:
-                metafile = json.load(f)
+        metafile = json.loads(uri_utils.uri_readbytes(
+            self.args['metafile_uri']))
+
         self.maskUrl = make_mask(
                 self.args['mask_dir'],
                 metafile[0]['metadata']['camera_info']['width'],
