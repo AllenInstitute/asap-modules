@@ -200,7 +200,7 @@ def plot_ious_pdf(ious, zvalues, out_dir):
     pdf = PdfPages(out_pdf.name)
 
     per_row = 50
-    dz = (ious.shape[1]-1)/2
+    dz = (ious.shape[1]-1)//2
     ylabels = [str(z) for z in range(-dz, dz+1)]
 
     tabs = []
@@ -216,9 +216,9 @@ def plot_ious_pdf(ious, zvalues, out_dir):
             newiou = ious[i:i+199,:]
 
         if len(newz)%per_row == 0:
-            rows = len(newz) / per_row
+            rows = len(newz) // per_row
         else:
-            rows = (len(newz) / per_row) + 1
+            rows = (len(newz) // per_row) + 1
         fig, ax = plt.subplots(nrows=rows, figsize=(6*rows, 3*rows))
 
         if rows > 1:
@@ -241,7 +241,7 @@ def plot_ious_pdf(ious, zvalues, out_dir):
 
 def plot_ious_bokeh(ious, zvalues):
     per_row = 50
-    dz = (ious.shape[1]-1)/2
+    dz = (ious.shape[1]-1)//2
     ylabels = [z for z in range(-dz, dz+1)]
 
     mapper = LinearColorMapper(palette=Plasma256, low=0.0, high=1.0)
@@ -265,9 +265,9 @@ def plot_ious_bokeh(ious, zvalues):
             newiou = ious[i:i+199,:]
 
         if len(newz)%per_row == 0:
-            rows = len(newz) / per_row
+            rows = len(newz) // per_row
         else:
-            rows = (len(newz) / per_row) + 1
+            rows = (len(newz) // per_row) + 1
 
         plots = []
 
@@ -338,7 +338,7 @@ def compute_ious(polys, zvalues):
     adjlist = [(x,y) for x,y in zip(zvalues, zvalues[1:]) if abs(x-y) == 1]
 
     #account for any missing zvalues
-    diff = [(y+x)/2 for x, y in zip(zvalues, zvalues[1:]) if abs(x-y) > 1]
+    diff = [(y+x)//2 for x, y in zip(zvalues, zvalues[1:]) if abs(x-y) > 1]
     # compute IoU
     ious = np.zeros((len(zvalues)+len(diff), 3))
 
