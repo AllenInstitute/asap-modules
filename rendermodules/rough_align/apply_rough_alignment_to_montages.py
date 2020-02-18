@@ -220,6 +220,9 @@ def apply_rough_alignment(render,
         # tf = tforms[-1]
         for i, tf in enumerate(tforms):
             if isinstance(tf, renderapi.transform.leaf.AffineModel):
+                # apply_scale in montagescape stack means
+                #   translation components are correct, otherwise
+                #   nonhomogeneous are correct
                 if apply_scale:
                     tf.M[0:2, 0:2] *= scale
                 else:
@@ -288,7 +291,13 @@ def apply_rough_alignment(render,
                 t.layout.sectionId = "%s.0"%str(int(newz))
 
         if filter_montage_output_with_masks:
-            tf.M[0:2, 0:2] /= scale
+            # tf.M[0:2, 0:2] /= scale
+
+            # prepend a scaling transformation to the scaled transforms
+            #   to map mask coordinates correctly
+            lowres_ts[0].tforms.insert(0, renderapi.transform.AffineModel(
+               M00=1./scale, M11=1./scale))
+
             resolved_highrests1.tilespecs = highres_ts1
             highres_ts1 = filter_highres_with_masks(
                     resolved_highrests1,
