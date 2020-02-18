@@ -2,6 +2,8 @@ import errno
 from functools import partial
 import glob
 import os
+import uuid
+
 import numpy as np
 import pathlib2 as pathlib
 import renderapi
