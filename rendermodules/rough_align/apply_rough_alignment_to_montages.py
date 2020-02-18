@@ -364,11 +364,12 @@ class ApplyRoughAlignmentTransform(RenderModule):
             raise RenderModuleException(
                     "Failed to rough align z values {}".format(failed_zs))
 
-        # set stack state to complete
-        self.render.run(
-            renderapi.stack.set_stack_state,
-            self.args['output_stack'],
-            state='COMPLETE')
+        if self.args["close_stack"]:
+            # set stack state to complete
+            self.render.run(
+                renderapi.stack.set_stack_state,
+                self.args['output_stack'],
+                state='COMPLETE')
 
         if self.args['update_lowres_with_masks']:
             # return the lowres stack to original state

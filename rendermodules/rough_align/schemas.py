@@ -218,6 +218,10 @@ class ApplyRoughAlignmentTransformParameters(RenderParameters):
         required=False,
         default=['png', 'tif'],
         description="what kind of mask files to recognize")
+    close_stack = argschema.fields.Bool(
+        required=False, default=True,
+        missing=True, description=(
+            "whether to set output stack to COMPLETE"))
 
     @post_load
     def validate_data(self, data):
