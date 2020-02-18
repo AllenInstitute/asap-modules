@@ -214,6 +214,11 @@ class MakeMontageScapeSectionStackParameters(OutputStackParameters):
         "number of processes to generate missing downsamples"))
     filterListName = Str(required=False, description=(
         "Apply specified filter list to all renderings"))
+    uuid_prefix = Boolean(
+        required=False, default=True, description=(
+            "Prepend uuid to generated tileIds to prevent collisions"))
+    uuid_length = Int(required=False, default=10, description=(
+        "length of uuid4 string used in uuid prefix"))
 
     @post_load
     def validate_data(self, data):

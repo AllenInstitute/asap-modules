@@ -59,7 +59,8 @@ example = {
 
 def create_montage_scape_tile_specs(render, input_stack, image_directory,
                                     scale, project, tagstr, imgformat,
-                                    Z, apply_scale=False, uuid_prefix_length=10,
+                                    Z, apply_scale=False, uuid_prefix=True,
+                                    uuid_prefix_length=10,
                                     **kwargs):
     z = Z[0]
     newz = Z[1]
@@ -123,9 +124,10 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory,
     # tileId is the first tileId from source z
     t = tilespecs[0]
 
-    t.tileId = "ds{uid}_{tId}".format(
-        uid=uuid.uuid4().hex[:uuid_prefix_length],
-        tId=t.tileId)
+    if uuid_prefix:
+        t.tileId = "ds{uid}_{tId}".format(
+            uid=uuid.uuid4().hex[:uuid_prefix_length],
+            tId=t.tileId)
 
     with Image.open(filename) as im:
         t.width, t.height = im.size
@@ -279,6 +281,8 @@ class MakeMontageScapeSectionStack(StackOutputModule):
             pool_size=1,
             doFilter=self.args['doFilter'],
             fillWithNoise=self.args['fillWithNoise'],
+            uuid_prefix=self.args["uuid_prefix"],
+            uuid_prefix_length=self.args["uuid_length"],
             do_mp=False)
 
         with renderapi.client.WithPool(
