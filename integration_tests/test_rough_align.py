@@ -6,6 +6,7 @@ import random
 import json
 import glob
 import copy
+import re
 import marshmallow as mm
 import six
 from six.moves import urllib
@@ -178,7 +179,6 @@ def rough_mapped_pt_matches_from_json():
     pt_matches = [d for d in ROUGH_MAPPED_PT_MATCH_COLLECTION]
     return pt_matches
 
-
 @pytest.fixture(scope='module')
 def montage_scape_stack(render, montage_stack, downsample_sections_dir):
     output_stack = '{}_DS'.format(montage_stack)
@@ -190,7 +190,8 @@ def montage_scape_stack(render, montage_stack, downsample_sections_dir):
         "imgformat": "png",
         "scale":0.1,
         "zstart": 1020,
-        "zend": 1022
+        "zend": 1022,
+        "uuid_prefix": False
     }
     outjson = 'test_montage_scape_output.json'
     mod = MakeMontageScapeSectionStack(input_data=params, args=['--output_json', outjson])
@@ -215,7 +216,8 @@ def montage_scape_stack_with_scale(render, montage_stack, downsample_sections_di
         "scale":0.1,
         "apply_scale": "True",
         "zstart": 1020,
-        "zend": 1022
+        "zend": 1022,
+        "uuid_prefix": False
     }
     outjson = 'test_montage_scape_output.json'
     mod = MakeMontageScapeSectionStack(input_data=params, args=['--output_json', outjson])
@@ -242,7 +244,8 @@ def montage_z_mapped_stack(render, montage_stack, downsample_sections_dir):
         "zstart": 1020,
         "zend": 1021,
         "set_new_z": True,
-        "new_z_start": 251
+        "new_z_start": 251,
+        "uuid_prefix": False
     }
     outjson = 'test_montage_scape_output.json'
     mod = MakeMontageScapeSectionStack(input_data=params, args=['--output_json', outjson])
@@ -265,7 +268,8 @@ def montage_z_mapped_stack(render, montage_stack, downsample_sections_dir):
         "zstart": 1022,
         "zend": 1022,
         "set_new_z": True,
-        "new_z_start": 253
+        "new_z_start": 253,
+        "uuid_prefix": False
     }
     mod = MakeMontageScapeSectionStack(input_data=params1, args=['--output_json', outjson])
     mod.run()
@@ -288,7 +292,8 @@ def montage_z_mapped_stack(render, montage_stack, downsample_sections_dir):
         "zend": 1022,
         "set_new_z": True,
         "new_z_start": 253,
-        "close_stack": True
+        "close_stack": True,
+        "uuid_prefix": False
     }
     mod = MakeMontageScapeSectionStack(input_data=params2, args=['--output_json', outjson])
     mod.run()
@@ -929,6 +934,39 @@ def test_setting_new_z_montage_scape(render, montage_stack, downsample_sections_
     zvalues = renderapi.stack.get_z_values_for_stack(output_stack, render=render)
     assert(set(zvalues) == set([1020, 1021, 1022]))
 
+
+def test_make_montage_stack_uuid(
+        render, montage_stack, tmpdir_factory):
+    # testing for make montage scape stack without having downsamples generated
+    tmp_dir = str(tmpdir_factory.mktemp('downsample'))
+    output_stack = '{}_Downsample_uuid'.format(montage_stack)
+    uuid_len = 5
+    params = {
+        "render": render_params,
+        "montage_stack": montage_stack,
+        "output_stack": output_stack,
+        "image_directory": tmp_dir,
+        "imgformat": "png",
+        "scale": 0.1,
+        "zstart": 1020,
+        "zend": 1020,
+        "uuid_length": uuid_len,
+        "uuid_prefix": True
+    }
+
+    outjson = 'test_montage_scape_output_uuid.json'
+    mod = MakeMontageScapeSectionStack(
+        input_data=params, args=['--output_json', outjson])
+    mod.run()
+
+    base_tid = renderapi.tilespec.get_tile_specs_from_z(
+        montage_stack, 1020, render=render)[0].tileId
+
+    tspecs = render.run(
+        renderapi.tilespec.get_tile_specs_from_stack, output_stack)
+    assert len(tspecs) == 1
+    restring  = "^ds[0-9a-fA-F]{5}_" + base_tid + "$"
+    assert re.match(restring, tspecs[0].tileId)
 
 def test_filterNameList_warning_makemontagescapes(tmpdir):
     warn_input = {
