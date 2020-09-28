@@ -2,8 +2,9 @@ import os
 from jinja2 import Environment, FileSystemLoader
 import json
 import tempfile
+import marshmallow
 
-pool_size = os.environ.get('RENDERMODULES_POOL_SIZE',5)
+pool_size = os.environ.get('RENDERMODULES_POOL_SIZE', 5)
 
 render_host = os.environ.get(
     'RENDER_HOST', 'renderservice')
@@ -19,7 +20,7 @@ client_script_location = os.environ.get(
 
 # rendermodules test compares with integer
 try:
-    render_port=int(render_port)
+    render_port = int(render_port)
 except ValueError:
     pass
 
@@ -39,8 +40,13 @@ try:
 except OSError as e:
     pass
 
+TEST_DATA_ROOT = os.environ.get(
+    'RENDER_TEST_DATA_ROOT',
+    '/allen/aibs/pipeline/image_processing/volume_assembly')
+
 log_dir = os.environ.get(
-    'LOG_DIR', '/allen/aibs/pipeline/image_processing/volume_assembly/logs/')
+    'LOG_DIR',
+    os.path.join(TEST_DATA_ROOT, 'logs'))
 
 try:
     os.makedirs(log_dir)
@@ -50,16 +56,17 @@ except OSError as e:
 example_dir = os.path.join(os.path.dirname(__file__), 'test_files')
 example_env = Environment(loader=FileSystemLoader(example_dir))
 
-TEST_DATA_ROOT = os.environ.get(
-    'RENDER_TEST_DATA_ROOT', '/allen/aibs/pipeline/image_processing/volume_assembly')
 
 FIJI_PATH = os.environ.get(
-    'FIJI_PATH', '/allen/aibs/pipeline/image_processing/volume_assembly/Fiji.app')
+    'FIJI_PATH',
+    os.path.join(TEST_DATA_ROOT, 'Fiji.app'))
 
 
-#ROUGH_SOLVER_EXECUTABLE = os.environ.get(
-#    'ROUGH_SOLVER_EXECUTABLE',
-#    '/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/matlab_compiled/do_rough_alignment')
+# ROUGH_SOLVER_EXECUTABLE = os.environ.get(
+#         'ROUGH_SOLVER_EXECUTABLE',
+#         os.path.join(
+#             TEST_DATA_ROOT,
+#             'EM_aligner/matlab_compiled/do_rough_alignment'))
 
 
 def render_json_template(env, template_file, **kwargs):
@@ -72,34 +79,58 @@ def render_json_template(env, template_file, **kwargs):
 METADATA_FILE = os.path.join(example_dir, 'TEMCA_mdfile.json')
 
 MIPMAP_TILESPECS_JSON = render_json_template(
-    example_env, 'mipmap_tilespecs_ref.json', test_data_root=TEST_DATA_ROOT)
+        example_env,
+        'mipmap_tilespecs_ref.json',
+        test_data_root=TEST_DATA_ROOT)
 MIPMAP_TRANSFORMS_JSON = render_json_template(
-    example_env, 'mipmap_ref_tforms.json', test_data_root=TEST_DATA_ROOT)
+        example_env,
+        'mipmap_ref_tforms.json',
+        test_data_root=TEST_DATA_ROOT)
 
-cons_ex_tilespec_json = render_json_template(example_env, 'cycle1_step1_acquire_tiles.json',
-                                             test_data_root=TEST_DATA_ROOT)
+cons_ex_tilespec_json = render_json_template(
+        example_env,
+        'cycle1_step1_acquire_tiles.json',
+        test_data_root=TEST_DATA_ROOT)
 
-cons_ex_transform_json = render_json_template(example_env,  'cycle1_step1_acquire_transforms.json',
-                                              test_data_root=TEST_DATA_ROOT)
+cons_ex_transform_json = render_json_template(
+        example_env,
+        'cycle1_step1_acquire_transforms.json',
+        test_data_root=TEST_DATA_ROOT)
 
 multiplicative_correction_example_dir = os.path.join(
     TEST_DATA_ROOT, 'intensitycorrection_test_data')
 
-MULTIPLICATIVE_INPUT_JSON = render_json_template(example_env, 'intensity_correction_template.json',
-                                                 test_data_root=TEST_DATA_ROOT)
+MULTIPLICATIVE_INPUT_JSON = render_json_template(
+        example_env,
+        'intensity_correction_template.json',
+        test_data_root=TEST_DATA_ROOT)
 # lc_example_dir = os.environ.get('RENDER_MODULES_LC_TEST_DATA',
 #     'allen/aibs/pipeline/image_processing/volume_assembly/lc_test_data/')
 
 
-calc_lens_parameters = render_json_template(example_env, 'calc_lens_correction_parameters.json',
-                                            test_data_root=TEST_DATA_ROOT,
-                                            fiji_path=FIJI_PATH,
-                                            test_output=tempfile.mkdtemp())
+multiplicative_multichan_correction_example_dir = os.path.join(
+    TEST_DATA_ROOT, 'multichannel_test_data')
 
-TILESPECS_NO_LC_JSON = render_json_template(example_env, 'test_noLC.json',
-                                            test_data_root=TEST_DATA_ROOT)
-TILESPECS_LC_JSON = render_json_template(example_env, 'test_LC.json',
-                                         test_data_root=TEST_DATA_ROOT)
+MULTIPLICATIVE_MULTICHAN_INPUT_JSON = render_json_template(
+        example_env,
+        'multichan_intensity_correction_template.json',
+        test_data_root=TEST_DATA_ROOT)
+
+calc_lens_parameters = render_json_template(
+        example_env,
+        'calc_lens_correction_parameters.json',
+        test_data_root=TEST_DATA_ROOT,
+        fiji_path=FIJI_PATH,
+        test_output=tempfile.mkdtemp())
+
+TILESPECS_NO_LC_JSON = render_json_template(
+        example_env,
+        'test_noLC.json',
+        test_data_root=TEST_DATA_ROOT)
+TILESPECS_LC_JSON = render_json_template(
+        example_env,
+        'test_LC.json',
+        test_data_root=TEST_DATA_ROOT)
 
 # materialization testing
 MATERIALIZE_BOX_JSON = render_json_template(
@@ -115,62 +146,75 @@ swap_pt_matches1 = render_json_template(example_env, 'swap_pt_matches1.json')
 
 swap_pt_matches2 = render_json_template(example_env, 'swap_pt_matches2.json')
 
-RAW_STACK_INPUT_JSON = render_json_template(example_env, 'raw_tile_specs_for_em_montage.json',
-                                            test_data_root=TEST_DATA_ROOT)
+RAW_STACK_INPUT_JSON = render_json_template(
+        example_env,
+        'raw_tile_specs_for_em_montage.json',
+        test_data_root=TEST_DATA_ROOT)
 
-MATLAB_SOLVER_PATH = os.environ.get('MATLAB_SOLVER_PATH',
-    '/allen/aibs/pipeline/image_processing/volume_assembly/EMAligner/dev/allen_templates')
+MATLAB_SOLVER_PATH = os.environ.get(
+        'MATLAB_SOLVER_PATH',
+        os.path.join(TEST_DATA_ROOT, 'EMAligner/dev/allen_templates'))
 
-MONTAGE_SOLVER_BIN = os.path.join(MATLAB_SOLVER_PATH,'run_em_solver.sh')
+MONTAGE_SOLVER_BIN = os.path.join(MATLAB_SOLVER_PATH, 'run_em_solver.sh')
 RENDER_SPARK_JAR = os.environ['RENDER_SPARK_JAR']
-SPARK_HOME = os.environ.get('SPARK_HOME','/shared/spark')
+SPARK_HOME = os.environ.get('SPARK_HOME', '/shared/spark')
 montage_project = "em_montage_test"
 montage_collection = "test_montage_collection"
 montage_z = 1015
-log4propertiesfile = os.environ.get("SPARK_LOG_PROPERTIES",
-    "/allen/aibs/pipeline/image_processing/volume_assembly/utils/spark/conf/log4j.properties.template")
-pbs_template=os.environ.get("PBS_TEMPLATE",
-    "/allen/aibs/pipeline/image_processing/volume_assembly/utils/code/spark_submit/spinup_spark.pbs")
+log4propertiesfile = os.environ.get(
+        "SPARK_LOG_PROPERTIES",
+        os.path.join(
+            TEST_DATA_ROOT,
+            'utils/spark/conf/log4j.properties.template'))
+pbs_template = os.environ.get(
+        "PBS_TEMPLATE",
+        os.path.join(
+            TEST_DATA_ROOT,
+            'utils/code/spark_submit/spinup_spark.pbs'))
 
-test_pointmatch_parameters = render_json_template(example_env,
-    'point_match_parameters.json',
-    render_host = render_host,
-    render_port = render_port,
-    render_project = montage_project,
-    render_owner = render_test_owner,
-    render_client_scripts = client_script_location,
-    spark_log_dir = tempfile.mkdtemp(),
-    render_spark_jar = RENDER_SPARK_JAR,
-    spark_master_url = os.environ['SPARK_MASTER_URL'],
-    spark_home = SPARK_HOME,
-    point_match_collection = montage_collection,
-    spark_logging_properties = log4propertiesfile)
+test_pointmatch_parameters = render_json_template(
+        example_env,
+        'point_match_parameters.json',
+        render_host=render_host,
+        render_port=render_port,
+        render_project=montage_project,
+        render_owner=render_test_owner,
+        render_client_scripts=client_script_location,
+        spark_log_dir=tempfile.mkdtemp(),
+        render_spark_jar=RENDER_SPARK_JAR,
+        spark_master_url=os.environ['SPARK_MASTER_URL'],
+        spark_home=SPARK_HOME,
+        point_match_collection=montage_collection,
+        spark_logging_properties=log4propertiesfile)
 
-test_pointmatch_parameters_qsub = render_json_template(example_env,
-    'point_match_parameters_qsub.json',
-    render_host = render_host,
-    render_port = render_port,
-    render_project = montage_project,
-    render_owner = render_test_owner,
-    render_client_scripts = client_script_location,
-    spark_log_dir = tempfile.mkdtemp(),
-    render_spark_jar = RENDER_SPARK_JAR,
-    spark_home = SPARK_HOME,
-    point_match_collection = montage_collection,
-    spark_logging_properties = log4propertiesfile,
-    pbs_template=pbs_template)
+test_pointmatch_parameters_qsub = render_json_template(
+        example_env,
+        'point_match_parameters_qsub.json',
+        render_host=render_host,
+        render_port=render_port,
+        render_project=montage_project,
+        render_owner=render_test_owner,
+        render_client_scripts=client_script_location,
+        spark_log_dir=tempfile.mkdtemp(),
+        render_spark_jar=RENDER_SPARK_JAR,
+        spark_home=SPARK_HOME,
+        point_match_collection=montage_collection,
+        spark_logging_properties=log4propertiesfile,
+        pbs_template=pbs_template)
 
-test_em_montage_parameters = render_json_template(example_env,
-    'run_montage_job_for_section_template.json',
-    render_host = render_host,
-    render_port = render_port,
-    render_project = montage_project,
-    render_owner = render_test_owner,
-    render_client_scripts = client_script_location,
-    em_solver_bin = MONTAGE_SOLVER_BIN,
-    scratch_dir = tempfile.mkdtemp(),
-    point_match_collection = montage_collection,
-    montage_z = montage_z)
+
+test_em_montage_parameters = render_json_template(
+        example_env,
+        'run_montage_job_for_section_template.json',
+        render_host=render_host,
+        render_port=render_port,
+        render_project=montage_project,
+        render_owner=render_test_owner,
+        render_client_scripts=client_script_location,
+        em_solver_bin=MONTAGE_SOLVER_BIN,
+        scratch_dir=tempfile.mkdtemp(),
+        point_match_collection=montage_collection,
+        montage_z=montage_z)
 
 # rough alignment parameters' data
 ROUGH_MONTAGE_TILESPECS_JSON = render_json_template(
@@ -180,28 +224,59 @@ ROUGH_MONTAGE_TRANSFORM_JSON = render_json_template(
     example_env, 'rough_align_montage_ref_transforms.json',
     test_data_root=TEST_DATA_ROOT)
 
-ROUGH_DS_TEST_TILESPECS_JSON = render_json_template(example_env, 'rough_align_downsample_test_tilespecs.json',
-                                                    test_data_root=TEST_DATA_ROOT)
+ROUGH_DS_TEST_TILESPECS_JSON = render_json_template(
+        example_env,
+        'rough_align_downsample_test_tilespecs.json',
+        test_data_root=TEST_DATA_ROOT)
 
-ROUGH_POINT_MATCH_COLLECTION = render_json_template(example_env, 'rough_align_point_matches.json')
+ROUGH_POINT_MATCH_COLLECTION = render_json_template(
+        example_env, 'rough_align_point_matches.json')
 
-ROUGH_MAPPED_PT_MATCH_COLLECTION = render_json_template(example_env, 'rough_align_mapped_point_matches.json')
+ROUGH_MAPPED_PT_MATCH_COLLECTION = render_json_template(
+        example_env, 'rough_align_mapped_point_matches.json')
 
 rough_project = "rough_align_test"
 
+ROUGH_MASK_DIR = os.path.join(
+        TEST_DATA_ROOT,
+        'em_modules_test_data/rough_align_test_data/masks')
 
-test_rough_parameters = render_json_template(example_env,
-    'run_rough_job_for_chunk_template.json',
-    render_host = render_host,
-    render_port = render_port,
-    render_project = rough_project,
-    render_owner = render_test_owner,
-    render_client_scripts = client_script_location,
-    em_solver_bin = MONTAGE_SOLVER_BIN,
-    scratch_dir = tempfile.mkdtemp(),
-    firstz = 1020,
-    lastz = 1022
-    )
+test_rough_parameters = render_json_template(
+        example_env,
+        'run_rough_job_for_chunk_template.json',
+        render_host=render_host,
+        render_port=render_port,
+        render_project=rough_project,
+        render_owner=render_test_owner,
+        render_client_scripts=client_script_location,
+        em_solver_bin=MONTAGE_SOLVER_BIN,
+        scratch_dir=tempfile.mkdtemp(),
+        firstz=1020,
+        lastz=1022)
+
+rough_solver_example = render_json_template(
+        example_env, 'solver_montage_test.json',
+        render_project = rough_project,
+        render_host=render_host,
+        render_owner=render_test_owner,
+        render_port=render_port,
+        mongo_port=os.environ.get('MONGO_PORT', 27017),
+        render_mongo_host=os.environ.get('RENDER_MONGO_HOST', 'localhost'),
+        render_output_owner=render_test_owner,
+        render_client_scripts=client_script_location,
+        solver_output_dir=tempfile.mkdtemp())
+
+test_rough_parameters_python = render_json_template(
+        example_env,
+        'rough_align_python_input.json',
+        render_host=render_host,
+        render_port=render_port,
+        render_project=rough_project,
+        render_owner=render_test_owner,
+        render_client_scripts=client_script_location,
+        firstz=1020,
+        lastz=1022)
+
 
 apply_rough_alignment_example = {
     "render": {
@@ -225,35 +300,60 @@ apply_rough_alignment_example = {
     "pool_size": 20
 }
 
+NONLINEAR_ROUGH_DS_RESOLVEDTILES_JSON = os.path.join(
+    example_dir, "nonlinear_rough_ds_resolvedtiles.json")
 
+NONLINEAR_ROUGH_RAW_RESOLVEDTILES_JSON = os.path.join(
+    example_dir, "nonlinear_rough_raw_resolvedtiles.json")
+
+NONLINEAR_ROUGH_DS_SCALE = 0.01
+
+# Rough QC test data
+MONTAGE_SCAPES_TSPECS = render_json_template(example_env, 'rough_qc_montage_scapes_tspecs.json',
+                                                test_data_root=TEST_DATA_ROOT)
+
+ROUGH_QC_TEST_PT_MATCHES = os.path.join(TEST_DATA_ROOT, "em_modules_test_data/rough_align_test_data/rough_test_pt_matches.json")
+
+ROUGH_QC_OUT_STACK = render_json_template(example_env, 'rough_aligned_stack_ts_for_qc.json',
+                                                test_data_root=TEST_DATA_ROOT)
 
 # EM Montage QC data
-PRESTITCHED_STACK_INPUT_JSON = render_json_template(example_env, 'em_montage_qc_pre_tilespecs.json',
-                                                    test_data_root=TEST_DATA_ROOT)
+PRESTITCHED_STACK_INPUT_JSON = render_json_template(
+        example_env,
+        'em_montage_qc_pre_tilespecs.json',
+        test_data_root=TEST_DATA_ROOT)
 
-POSTSTITCHED_STACK_INPUT_JSON = render_json_template(example_env, 'em_montage_qc_post_tilespecs.json',
-                                                    test_data_root=TEST_DATA_ROOT)
+POSTSTITCHED_STACK_INPUT_JSON = render_json_template(
+        example_env,
+        'em_montage_qc_post_tilespecs.json',
+        test_data_root=TEST_DATA_ROOT)
 
-MONTAGE_QC_POINT_MATCH_JSON = render_json_template(example_env, 'em_montage_qc_point_matches.json')
+MONTAGE_QC_POINT_MATCH_JSON = render_json_template(
+        example_env,
+        'em_montage_qc_point_matches.json')
 
 montage_qc_project = "em_montage_qc_test"
 
 # Point match optimization
-PT_MATCH_STACK_TILESPECS = render_json_template(example_env, 'pt_match_optimization_tilespecs.json',
-                                                test_data_root=TEST_DATA_ROOT)
+PT_MATCH_STACK_TILESPECS = render_json_template(
+        example_env,
+        'pt_match_optimization_tilespecs.json',
+        test_data_root=TEST_DATA_ROOT)
 
 
 # Solver testing
-solver_montage_parameters = render_json_template(example_env, 'solver_montage_test.json',
-                                                 render_project = "solver_montage_project",
-                                                 render_host=render_host,
-                                                 render_owner=render_test_owner,
-                                                 render_port=render_port,
-                                                 mongo_port=os.environ.get('MONGO_PORT', 27017),
-                                                 render_mongo_host=os.environ.get('RENDER_MONGO_HOST', 'localhost'),
-                                                 render_output_owner=render_test_owner,
-                                                 render_client_scripts=client_script_location,
-                                                 solver_output_dir=tempfile.mkdtemp())
+solver_montage_parameters = render_json_template(
+        example_env,
+        'solver_montage_test.json',
+        render_project="solver_montage_project",
+        render_host=render_host,
+        render_owner=render_test_owner,
+        render_port=render_port,
+        mongo_port=os.environ.get('MONGO_PORT', 27017),
+        render_mongo_host=os.environ.get('RENDER_MONGO_HOST', 'localhost'),
+        render_output_owner=render_test_owner,
+        render_client_scripts=client_script_location,
+        solver_output_dir=tempfile.mkdtemp())
 
 FUSION_TILESPEC_JSON = render_json_template(
     example_env, 'fusion_test_tilespecs_ref.json',
@@ -261,3 +361,14 @@ FUSION_TILESPEC_JSON = render_json_template(
 
 FUSION_TRANSFORM_JSON = render_json_template(
     example_env, 'fusion_test_tform_ref.json', test_data_root=TEST_DATA_ROOT)
+
+# whether to test legacy (deprecated) modules
+b = marshmallow.fields.Boolean()
+test_legacy = b.deserialize(os.environ.get(
+    "RENDERMODULES_TEST_LEGACY", False))
+test_legacy_lens_correction = b.deserialize(os.environ.get(
+    "RENDERMODULES_TEST_LEGACY_LC", test_legacy))
+test_legacy_montage = b.deserialize(os.environ.get(
+    "RENDERMODULES_TEST_LEGACY_MONTAGE", test_legacy))
+test_legacy_rough = b.deserialize(os.environ.get(
+    "RENDERMODULES_TEST_LEGACY_ROUGH", test_legacy))

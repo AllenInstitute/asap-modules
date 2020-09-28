@@ -77,13 +77,13 @@ def proc_job(fargs):
 
     render = renderapi.connect(**rpar)
     try:
-        matches = renderapi.pointmatch.get_matches_within_group(
-                input_match_collection,
-                str(float(z)),
-                render=render)
         tspecs = renderapi.tilespec.get_tile_specs_from_z(
                 input_stack,
                 float(z),
+                render=render)
+        matches = renderapi.pointmatch.get_matches_within_group(
+                input_match_collection,
+                tspecs[0].layout.sectionId,
                 render=render)
     except renderapi.errors.RenderError as e:
         logger.warning(str(e))
@@ -206,7 +206,9 @@ class FilterMatches(RenderModule):
             results = pool.map(proc_job, fargs)
 
         with open(self.args['filter_output_file'], 'w') as f:
+
             # using renderapi dump allows py3 numpy integer serialization
+
             renderapi.utils.renderdump(
                     [x for x in results if x is not None],
                     f,
@@ -214,7 +216,7 @@ class FilterMatches(RenderModule):
 
         with open(self.args['output_json'], 'w') as f:
             outj = {'filter_output_file': self.args['filter_output_file']}
-            json.dump(outj, f, indent=2)
+            renderapi.utils.renderdump(outj, f, indent=2)
 
 
 if __name__ == '__main__':

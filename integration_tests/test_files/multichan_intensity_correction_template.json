@@ -1,0 +1,491 @@
+[
+    {
+        "tileId": "104000000000000",
+        "layout": {
+            "sectionId": "4000",
+            "temca": "Leica",
+            "camera": "zyla",
+            "imageRow": 0,
+            "imageCol": 0,
+            "stageX": -10629.9,
+            "stageY": 28068.0,
+            "rotation": 0.0
+        },
+        "z": 400.0,
+        "minX": 0.0,
+        "minY": 0.0,
+        "maxX": 2048.0,
+        "maxY": 2048.0,
+        "width": 2048.0,
+        "height": 2048.0,
+        "minIntensity": 0.0,
+        "maxIntensity": 50000.0,
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "file:{{test_data_root}}/multichannel_test_data/M33Quarter/raw/DAPI_1/DAPI_1_S0000_F0000_Z00.tif"
+            }
+        },
+        "channels": [
+            {
+                "name": "PSD95",
+                "minIntensity": 0.0,
+                "maxIntensity": 50000.0,
+                "mipmapLevels": {
+                    "0": {
+                        "imageUrl": "file:{{test_data_root}}/multichannel_test_data/M33Quarter/raw/PSD95/PSD95_S0000_F0000_Z00.tif"
+                    }
+                }
+            },
+            {
+                "name": "DAPI_1",
+                "minIntensity": 0.0,
+                "maxIntensity": 50000.0,
+                "mipmapLevels": {
+                    "0": {
+                        "imageUrl": "file:{{test_data_root}}/multichannel_test_data/M33Quarter/raw/DAPI_1/DAPI_1_S0000_F0000_Z00.tif"
+                    }
+                }
+            }
+        ],
+        "transforms": {
+            "type": "list",
+            "specList": [
+                {
+                    "type": "leaf",
+                    "className": "mpicbg.trakem2.transform.AffineModel2D",
+                    "dataString": "1.0000000000 0.0000000000 0.0000000000 1.0000000000 0.9692270414 0.0000000000"
+                }
+            ]
+        },
+        "meshCellSize": 64.0
+    },
+    {
+        "tileId": "104000000001000",
+        "layout": {
+            "sectionId": "4000",
+            "temca": "Leica",
+            "camera": "zyla",
+            "imageRow": 0,
+            "imageCol": 0,
+            "stageX": -10460.9,
+            "stageY": 28068.0,
+            "rotation": 0.0
+        },
+        "z": 400.0,
+        "minX": 1638.0,
+        "minY": 0.0,
+        "maxX": 3686.0,
+        "maxY": 2048.0,
+        "width": 2048.0,
+        "height": 2048.0,
+        "minIntensity": 0.0,
+        "maxIntensity": 50000.0,
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "file:{{test_data_root}}/multichannel_test_data/M33Quarter/raw/DAPI_1/DAPI_1_S0000_F0001_Z00.tif"
+            }
+        },
+        "channels": [
+            {
+                "name": "PSD95",
+                "minIntensity": 0.0,
+                "maxIntensity": 50000.0,
+                "mipmapLevels": {
+                    "0": {
+                        "imageUrl": "file:{{test_data_root}}/multichannel_test_data/M33Quarter/raw/PSD95/PSD95_S0000_F0001_Z00.tif"
+                    }
+                }
+            },
+            {
+                "name": "DAPI_1",
+                "minIntensity": 0.0,
+                "maxIntensity": 50000.0,
+                "mipmapLevels": {
+                    "0": {
+                        "imageUrl": "file:{{test_data_root}}/multichannel_test_data/M33Quarter/raw/DAPI_1/DAPI_1_S0000_F0001_Z00.tif"
+                    }
+                }
+            }
+        ],
+        "transforms": {
+            "type": "list",
+            "specList": [
+                {
+                    "type": "leaf",
+                    "className": "mpicbg.trakem2.transform.AffineModel2D",
+                    "dataString": "1.0000000000 0.0000000000 0.0000000000 1.0000000000 1638.9629270657 0.0000000000"
+                }
+            ]
+        },
+        "meshCellSize": 64.0
+    },
+    {
+        "tileId": "104000000002000",
+        "layout": {
+            "sectionId": "4000",
+            "temca": "Leica",
+            "camera": "zyla",
+            "imageRow": 0,
+            "imageCol": 0,
+            "stageX": -10291.8,
+            "stageY": 28068.0,
+            "rotation": 0.0
+        },
+        "z": 400.0,
+        "minX": 3277.0,
+        "minY": 0.0,
+        "maxX": 5325.0,
+        "maxY": 2048.0,
+        "width": 2048.0,
+        "height": 2048.0,
+        "minIntensity": 0.0,
+        "maxIntensity": 50000.0,
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "file:{{test_data_root}}/multichannel_test_data/M33Quarter/raw/DAPI_1/DAPI_1_S0000_F0002_Z00.tif"
+            }
+        },
+        "channels": [
+            {
+                "name": "PSD95",
+                "minIntensity": 0.0,
+                "maxIntensity": 50000.0,
+                "mipmapLevels": {
+                    "0": {
+                        "imageUrl": "file:{{test_data_root}}/multichannel_test_data/M33Quarter/raw/PSD95/PSD95_S0000_F0002_Z00.tif"
+                    }
+                }
+            },
+            {
+                "name": "DAPI_1",
+                "minIntensity": 0.0,
+                "maxIntensity": 50000.0,
+                "mipmapLevels": {
+                    "0": {
+                        "imageUrl": "file:{{test_data_root}}/multichannel_test_data/M33Quarter/raw/DAPI_1/DAPI_1_S0000_F0002_Z00.tif"
+                    }
+                }
+            }
+        ],
+        "transforms": {
+            "type": "list",
+            "specList": [
+                {
+                    "type": "leaf",
+                    "className": "mpicbg.trakem2.transform.AffineModel2D",
+                    "dataString": "1.0000000000 0.0000000000 0.0000000000 1.0000000000 3277.9258541313 0.0000000000"
+                }
+            ]
+        },
+        "meshCellSize": 64.0
+    },
+    {
+        "tileId": "104000000003000",
+        "layout": {
+            "sectionId": "4000",
+            "temca": "Leica",
+            "camera": "zyla",
+            "imageRow": 0,
+            "imageCol": 0,
+            "stageX": -10123.0,
+            "stageY": 28068.0,
+            "rotation": 0.0
+        },
+        "z": 400.0,
+        "minX": 4913.0,
+        "minY": 0.0,
+        "maxX": 6961.0,
+        "maxY": 2048.0,
+        "width": 2048.0,
+        "height": 2048.0,
+        "minIntensity": 0.0,
+        "maxIntensity": 50000.0,
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "file:{{test_data_root}}/multichannel_test_data/M33Quarter/raw/DAPI_1/DAPI_1_S0000_F0003_Z00.tif"
+            }
+        },
+        "channels": [
+            {
+                "name": "PSD95",
+                "minIntensity": 0.0,
+                "maxIntensity": 50000.0,
+                "mipmapLevels": {
+                    "0": {
+                        "imageUrl": "file:{{test_data_root}}/multichannel_test_data/M33Quarter/raw/PSD95/PSD95_S0000_F0003_Z00.tif"
+                    }
+                }
+            },
+            {
+                "name": "DAPI_1",
+                "minIntensity": 0.0,
+                "maxIntensity": 50000.0,
+                "mipmapLevels": {
+                    "0": {
+                        "imageUrl": "file:{{test_data_root}}/multichannel_test_data/M33Quarter/raw/DAPI_1/DAPI_1_S0000_F0003_Z00.tif"
+                    }
+                }
+            }
+        ],
+        "transforms": {
+            "type": "list",
+            "specList": [
+                {
+                    "type": "leaf",
+                    "className": "mpicbg.trakem2.transform.AffineModel2D",
+                    "dataString": "1.0000000000 0.0000000000 0.0000000000 1.0000000000 4913.9811000727 0.0000000000"
+                }
+            ]
+        },
+        "meshCellSize": 64.0
+    },
+    {
+        "tileId": "104000000004000",
+        "layout": {
+            "sectionId": "4000",
+            "temca": "Leica",
+            "camera": "zyla",
+            "imageRow": 0,
+            "imageCol": 0,
+            "stageX": -10122.7,
+            "stageY": 28237.3,
+            "rotation": 0.0
+        },
+        "z": 400.0,
+        "minX": 4916.0,
+        "minY": 1640.0,
+        "maxX": 6964.0,
+        "maxY": 3688.0,
+        "width": 2048.0,
+        "height": 2048.0,
+        "minIntensity": 0.0,
+        "maxIntensity": 50000.0,
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "file:{{test_data_root}}/multichannel_test_data/M33Quarter/raw/DAPI_1/DAPI_1_S0000_F0004_Z00.tif"
+            }
+        },
+        "channels": [
+            {
+                "name": "PSD95",
+                "minIntensity": 0.0,
+                "maxIntensity": 50000.0,
+                "mipmapLevels": {
+                    "0": {
+                        "imageUrl": "file:{{test_data_root}}/multichannel_test_data/M33Quarter/raw/PSD95/PSD95_S0000_F0004_Z00.tif"
+                    }
+                }
+            },
+            {
+                "name": "DAPI_1",
+                "minIntensity": 0.0,
+                "maxIntensity": 50000.0,
+                "mipmapLevels": {
+                    "0": {
+                        "imageUrl": "file:{{test_data_root}}/multichannel_test_data/M33Quarter/raw/DAPI_1/DAPI_1_S0000_F0004_Z00.tif"
+                    },
+                    "1": {
+                        "imageUrl": "file:/data/atp-testdata/input/M33Quarter//./processed/helloworldD/downsamp_images/data/Ribbon0004/session01/DAPI_1_S0000_F0004_Z00_mip01.jpg"
+                    },
+                    "2": {
+                        "imageUrl": "file:/data/atp-testdata/input/M33Quarter//./processed/helloworldD/downsamp_images/data/Ribbon0004/session01/DAPI_1_S0000_F0004_Z00_mip02.jpg"
+                    },
+                    "3": {
+                        "imageUrl": "file:/data/atp-testdata/input/M33Quarter//./processed/helloworldD/downsamp_images/data/Ribbon0004/session01/DAPI_1_S0000_F0004_Z00_mip03.jpg"
+                    }
+                }
+            }
+        ],
+        "transforms": {
+            "type": "list",
+            "specList": [
+                {
+                    "type": "leaf",
+                    "className": "mpicbg.trakem2.transform.AffineModel2D",
+                    "dataString": "1.0000000000 0.0000000000 0.0000000000 1.0000000000 4916.8887811970 1640.9013811485"
+                }
+            ]
+        },
+        "meshCellSize": 64.0
+    },
+    {
+        "tileId": "104000000005000",
+        "layout": {
+            "sectionId": "4000",
+            "temca": "Leica",
+            "camera": "zyla",
+            "imageRow": 0,
+            "imageCol": 0,
+            "stageX": -10291.9,
+            "stageY": 28237.1,
+            "rotation": 0.0
+        },
+        "z": 400.0,
+        "minX": 3276.0,
+        "minY": 1638.0,
+        "maxX": 5324.0,
+        "maxY": 3686.0,
+        "width": 2048.0,
+        "height": 2048.0,
+        "minIntensity": 0.0,
+        "maxIntensity": 50000.0,
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "file:{{test_data_root}}/multichannel_test_data/M33Quarter/raw/DAPI_1/DAPI_1_S0000_F0005_Z00.tif"
+            }
+        },
+        "channels": [
+            {
+                "name": "PSD95",
+                "minIntensity": 0.0,
+                "maxIntensity": 50000.0,
+                "mipmapLevels": {
+                    "0": {
+                        "imageUrl": "file:{{test_data_root}}/multichannel_test_data/M33Quarter/raw/PSD95/PSD95_S0000_F0005_Z00.tif"
+                    }
+                }
+            },
+            {
+                "name": "DAPI_1",
+                "minIntensity": 0.0,
+                "maxIntensity": 50000.0,
+                "mipmapLevels": {
+                    "0": {
+                        "imageUrl": "file:{{test_data_root}}/multichannel_test_data/M33Quarter/raw/DAPI_1/DAPI_1_S0000_F0005_Z00.tif"
+                    }
+                }
+            }
+        ],
+        "transforms": {
+            "type": "list",
+            "specList": [
+                {
+                    "type": "leaf",
+                    "className": "mpicbg.trakem2.transform.AffineModel2D",
+                    "dataString": "1.0000000000 0.0000000000 0.0000000000 1.0000000000 3276.9566270899 1638.9629270657"
+                }
+            ]
+        },
+        "meshCellSize": 64.0
+    },
+    {
+        "tileId": "104000000006000",
+        "layout": {
+            "sectionId": "4000",
+            "temca": "Leica",
+            "camera": "zyla",
+            "imageRow": 0,
+            "imageCol": 0,
+            "stageX": -10461.0,
+            "stageY": 28237.1,
+            "rotation": 0.0
+        },
+        "z": 400.0,
+        "minX": 1637.0,
+        "minY": 1638.0,
+        "maxX": 3685.0,
+        "maxY": 3686.0,
+        "width": 2048.0,
+        "height": 2048.0,
+        "minIntensity": 0.0,
+        "maxIntensity": 50000.0,
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "file:{{test_data_root}}/multichannel_test_data/M33Quarter/raw/DAPI_1/DAPI_1_S0000_F0006_Z00.tif"
+            }
+        },
+        "channels": [
+            {
+                "name": "PSD95",
+                "minIntensity": 0.0,
+                "maxIntensity": 50000.0,
+                "mipmapLevels": {
+                    "0": {
+                        "imageUrl": "file:{{test_data_root}}/multichannel_test_data/M33Quarter/raw/PSD95/PSD95_S0000_F0006_Z00.tif"
+                    }
+                }
+            },
+            {
+                "name": "DAPI_1",
+                "minIntensity": 0.0,
+                "maxIntensity": 50000.0,
+                "mipmapLevels": {
+                    "0": {
+                        "imageUrl": "file:{{test_data_root}}/multichannel_test_data/M33Quarter/raw/DAPI_1/DAPI_1_S0000_F0006_Z00.tif"
+                    }
+                }
+            }
+        ],
+        "transforms": {
+            "type": "list",
+            "specList": [
+                {
+                    "type": "leaf",
+                    "className": "mpicbg.trakem2.transform.AffineModel2D",
+                    "dataString": "1.0000000000 0.0000000000 0.0000000000 1.0000000000 1637.9937000242 1638.9629270657"
+                }
+            ]
+        },
+        "meshCellSize": 64.0
+    },
+    {
+        "tileId": "104000000007000",
+        "layout": {
+            "sectionId": "4000",
+            "temca": "Leica",
+            "camera": "zyla",
+            "imageRow": 0,
+            "imageCol": 0,
+            "stageX": -10630.0,
+            "stageY": 28237.1,
+            "rotation": 0.0
+        },
+        "z": 400.0,
+        "minX": 0.0,
+        "minY": 1638.0,
+        "maxX": 2048.0,
+        "maxY": 3686.0,
+        "width": 2048.0,
+        "height": 2048.0,
+        "minIntensity": 0.0,
+        "maxIntensity": 50000.0,
+        "mipmapLevels": {
+            "0": {
+                "imageUrl": "file:{{test_data_root}}/multichannel_test_data/M33Quarter/raw/DAPI_1/DAPI_1_S0000_F0007_Z00.tif"
+            }
+        },
+        "channels": [
+            {
+                "name": "PSD95",
+                "minIntensity": 0.0,
+                "maxIntensity": 50000.0,
+                "mipmapLevels": {
+                    "0": {
+                        "imageUrl": "file:{{test_data_root}}/multichannel_test_data/M33Quarter/raw/PSD95/PSD95_S0000_F0007_Z00.tif"
+                    }
+                }
+            },
+            {
+                "name": "DAPI_1",
+                "minIntensity": 0.0,
+                "maxIntensity": 50000.0,
+                "mipmapLevels": {
+                    "0": {
+                        "imageUrl": "file:{{test_data_root}}/multichannel_test_data/M33Quarter/raw/DAPI_1/DAPI_1_S0000_F0007_Z00.tif"
+                    }
+                }
+            }
+        ],
+        "transforms": {
+            "type": "list",
+            "specList": [
+                {
+                    "type": "leaf",
+                    "className": "mpicbg.trakem2.transform.AffineModel2D",
+                    "dataString": "1.0000000000 0.0000000000 0.0000000000 1.0000000000 0.0000000000 1638.9629270657"
+                }
+            ]
+        },
+        "meshCellSize": 64.0
+    }
+]

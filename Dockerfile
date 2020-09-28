@@ -11,5 +11,12 @@ RUN source activate render-modules &&\
  conda install -y -c conda-forge fast-histogram &&\
  pip uninstall -y opencv-python opencv-contrib-python &&\
  pip install -r requirements.txt &&\
- python setup.py install
+ # there is a gotcha here, that em_stitch could possibly not work
+ # with the render-modules opencv contrib version
+ # had tried to fix in em_stitch setup.py
+ # but pip install does not respect that somehow
+ python setup.py install &&\
+ echo $(cat requirements.txt | grep opencv) > opencv_requirements.txt &&\
+ pip uninstall -y opencv-python opencv-contrib-python &&\
+ pip install -r opencv_requirements.txt
 ENTRYPOINT ["/bin/bash","/shared/render-modules/entrypoint.sh"]

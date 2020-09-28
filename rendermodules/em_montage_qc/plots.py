@@ -2,6 +2,8 @@ import numpy as np
 import tempfile
 import renderapi
 import requests
+import os
+import datetime
 from functools import partial
 
 from rendermodules.residuals import compute_residuals as cr
@@ -17,9 +19,11 @@ from bokeh.models import (HoverTool, ColumnDataSource,
                           Slider, WidgetBox)
 
 try:
+
     xrange
 except NameError:
     xrange = range
+
 
 def point_match_plot(tilespecsA, matches, tilespecsB=None):
     if tilespecsB is None:
@@ -132,10 +136,14 @@ def plot_defects(render, stack, out_html_dir, args):
         #else:
         #    residual.append(50) # a high value for residual for that tile
 
-    out_html = tempfile.NamedTemporaryFile(suffix=".html", delete=False, mode='w', dir=out_html_dir)
-    out_html.close()
+    out_html = os.path.join(
+            out_html_dir,
+            "%s_%d_%s.html" % (
+                stack,
+                z,
+                datetime.datetime.now().strftime('%Y%m%d%H%S%M%f')))
 
-    output_file(out_html.name)
+    output_file(out_html)
     xs = []
     ys = []
     alphas = []
@@ -216,7 +224,7 @@ def plot_defects(render, stack, out_html_dir, args):
 
     save(plot_tabs)
 
-    return out_html.name
+    return out_html
 
 
 def plot_section_maps(render, stack, post_tspecs, matches, disconnected_tiles, gap_tiles, seam_centroids, stats, zvalues, out_html_dir=None, pool_size=5):

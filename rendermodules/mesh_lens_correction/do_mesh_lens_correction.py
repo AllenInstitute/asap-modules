@@ -6,6 +6,7 @@ import cv2
 import os
 from shutil import copyfile
 import datetime
+from bigfeta import jsongz
 
 from ..module.render_module import RenderModule, RenderModuleException
 
@@ -15,12 +16,11 @@ from rendermodules.dataimport.generate_EM_tilespecs_from_metafile \
         import GenerateEMTileSpecsModule
 from rendermodules.pointmatch.create_tilepairs \
         import TilePairClientModule
-from rendermodules.mesh_lens_correction.MeshAndSolveTransform \
+from em_stitch.lens_correction.mesh_and_solve_transform \
         import MeshAndSolveTransform
-from rendermodules.em_montage_qc.detect_montage_defects \
-        import DetectMontageDefectsModule
 from rendermodules.pointmatch.generate_point_matches_opencv \
         import GeneratePointMatchesOpenCV
+from rendermodules.utilities import uri_utils
 
 example = {
     "render": {
@@ -117,12 +117,9 @@ class MeshLensCorrection(RenderModule):
     default_output_schema = DoMeshLensCorrectionOutputSchema
 
     @staticmethod
-    def get_sectionId_from_z(z):
-        return str(float(z))
-
-    @staticmethod
-    def get_sectionId_from_metafile(metafile):
-        j = json.load(open(metafile, 'r'))
+    def get_sectionId_from_metafile_uri(metafile_uri):
+        j = json.loads(uri_utils.uri_readbytes(
+            metafile_uri))
         sectionId = j[0]['metadata']['grid']
         return sectionId
 
@@ -134,7 +131,7 @@ class MeshLensCorrection(RenderModule):
         ex['render']['owner'] = self.render.DEFAULT_OWNER
         ex['render']['project'] = self.render.DEFAULT_PROJECT
         ex['render']['client_scripts'] = self.render.DEFAULT_CLIENT_SCRIPTS
-        ex['metafile'] = self.args['metafile']
+        ex['metafile_uri'] = self.args['metafile_uri']
         ex['stack'] = self.args['input_stack']
         ex['overwrite_zlayer'] = self.args['overwrite_zlayer']
         ex['close_stack'] = self.args['close_stack']
@@ -165,22 +162,6 @@ class MeshLensCorrection(RenderModule):
         ex['outfile'] = self.args['outfile']
         return ex
 
-    def get_qc_example(self):
-        ex = {}
-        ex['render'] = {}
-        ex['render']['host'] = self.render.DEFAULT_HOST
-        ex['render']['port'] = self.render.DEFAULT_PORT
-        ex['render']['owner'] = self.render.DEFAULT_OWNER
-        ex['render']['project'] = self.render.DEFAULT_PROJECT
-        ex['render']['client_scripts'] = self.render.DEFAULT_CLIENT_SCRIPTS
-        ex['match_collection'] = self.args['match_collection']
-        ex['prestitched_stack'] = self.args['input_stack']
-        ex['poststitched_stack'] = self.args['output_stack']
-        ex['out_html_dir'] = self.args['output_dir']
-        ex['minZ'] = self.args['z_index']
-        ex['maxZ'] = self.args['z_index']
-        return ex
-
     def get_pm_args(self):
         args_for_pm = dict(self.args)
         args_for_pm['render'] = self.args['render']
@@ -190,8 +171,8 @@ class MeshLensCorrection(RenderModule):
         return args_for_pm
 
     def run(self):
-        self.args['sectionId'] = self.get_sectionId_from_metafile(
-                self.args['metafile'])
+        self.args['sectionId'] = self.get_sectionId_from_metafile_uri(
+                self.args['metafile_uri'])
 
         if self.args['output_dir'] is None:
             self.args['output_dir'] = tempfile.mkdtemp()
@@ -208,15 +189,17 @@ class MeshLensCorrection(RenderModule):
 
         args_for_input = dict(self.args)
 
-        with open(self.args['metafile'], 'r') as f:
-                metafile = json.load(f)
+        metafile = json.loads(uri_utils.uri_readbytes(
+            self.args['metafile_uri']))
+
         self.maskUrl = make_mask(
                 self.args['mask_dir'],
                 metafile[0]['metadata']['camera_info']['width'],
                 metafile[0]['metadata']['camera_info']['height'],
                 self.args['mask_coords'],
                 mask_file=self.args['mask_file'],
-                basename=os.path.basename(self.args['metafile']) + '.png')
+                basename=uri_utils.uri_basename(
+                    self.args['metafile_uri']) + '.png')
 
         # argschema doesn't like the NumpyArray after processing it once
         # we don't need it after mask creation
@@ -229,19 +212,19 @@ class MeshLensCorrection(RenderModule):
                                         args=['--output_json', out_file.name])
         mod.run()
 
-        # generate tile pairs for this section in the input stack
-        tp_example = self.generate_tilepair_example()
-        tp_mod = TilePairClientModule(input_data=tp_example,
-                                      args=['--output_json', out_file.name])
-        tp_mod.run()
-
-        with open(tp_mod.args['output_json'], 'r') as f:
-            js = json.load(f)
-        self.args['pairJson'] = js['tile_pair_file']
-
-        self.logger.setLevel(self.args['log_level'])
-
         if self.args['rerun_pointmatch']:
+            # generate tile pairs for this section in the input stack
+            tp_example = self.generate_tilepair_example()
+            tp_mod = TilePairClientModule(
+                    input_data=tp_example,
+                    args=['--output_json', out_file.name])
+            tp_mod.run()
+
+            with open(tp_mod.args['output_json'], 'r') as f:
+                js = json.load(f)
+            self.args['pairJson'] = js['tile_pair_file']
+
+            self.logger.setLevel(self.args['log_level'])
             delete_matches_if_exist(
                     self.render,
                     self.args['render']['owner'],
@@ -254,27 +237,50 @@ class MeshLensCorrection(RenderModule):
                     args=['--output_json', out_file.name])
             pmgen.run()
 
+        # load these up in memory to pass to actual solver
+        rawtilespecs = renderapi.tilespec.get_tile_specs_from_z(
+                ts_example['output_stack'],
+                ts_example['z'],
+                render=renderapi.connect(**ts_example['render']))
+        rawtdict = [t.to_dict() for t in rawtilespecs]
+        matches = renderapi.pointmatch.get_matches_within_group(
+                self.args['match_collection'],
+                self.args['sectionId'],
+                render=renderapi.connect(**self.args['render']))
+
         self.logger.setLevel(self.args['log_level'])
 
+        solver_args = {
+                'nvertex': self.args['nvertex'],
+                'regularization': self.args['regularization'],
+                'good_solve': self.args['good_solve'],
+                'tilespecs': rawtdict,
+                'matches': matches,
+                'output_dir': self.args['output_dir'],
+                'outfile': 'resolvedtiles.json.gz',
+                'compress_output': False,
+                'log_level': self.args['log_level'],
+                'timestamp': True}
+
         meshclass = MeshAndSolveTransform(
-                input_data=args_for_input,
-                args=['--output_json', out_file.name])
+                input_data=solver_args, args=[])
         # find the lens correction, write out to new stack
         meshclass.run()
+        with open(meshclass.args['output_json'], 'r') as f:
+            jout = json.load(f)
+        resolved = renderapi.resolvedtiles.ResolvedTiles(
+                json=jsongz.load(jout['resolved_tiles']))
 
-        if self.args['do_montage_QC']:
-            # run montage qc on the new stack
-            qc_example = self.get_qc_example()
-            qc_mod = DetectMontageDefectsModule(
-                    input_data=qc_example,
-                    args=['--output_json', out_file.name])
-            qc_mod.run()
+        tform_out = os.path.join(
+                self.args['output_dir'],
+                'lens_correction_out.json')
+        with open(tform_out, 'w') as f:
+            json.dump(resolved.transforms[0].to_dict(), f)
 
         try:
             self.output(
-                    {'output_json': meshclass.args['outfile'],
-                     'maskUrl': self.maskUrl,
-                     'qc_json': out_file.name})
+                    {'output_json': tform_out,
+                     'maskUrl': self.maskUrl})
         except AttributeError as e:
             self.logger.error(e)
 

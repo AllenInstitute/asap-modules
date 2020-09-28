@@ -2,6 +2,8 @@ import renderapi
 from rendermodules.module.render_module import RenderModule, RenderModuleException
 from rendermodules.stack.schemas import SwapZsParameters, SwapZsOutput
 import time
+import requests
+from functools import partial
 
 example = {
     "render": {
@@ -17,52 +19,71 @@ example = {
     "delete_source_stack": "False"
 }
 
+def delete_temp_stacks(render, temp_stack_list):
+    for temps in temp_stack_list:
+        try:
+            renderapi.stack.delete_stack(temps, render=render)
+        except Exception as e:
+            print("Could not delete stack {}".format(temps))
+
+
+def swap_section(render, source_stack, target_stack, z, pool_size=5):
+    session = requests.Session()
+    session.mount('http://', requests.adapters.HTTPAdapter(max_retries=5))
+
+    source_ts = renderapi.resolvedtiles.get_resolved_tiles_from_z(source_stack, z, render=render)
+    target_ts = renderapi.resolvedtiles.get_resolved_tiles_from_z(target_stack, z, render=render)
+
+    source_tileids = [ts.tileId for ts in source_ts.tilespecs]
+    target_tileids = [ts.tileId for ts in target_ts.tilespecs]
+
+    if set(source_tileids) & set(target_tileids):
+        print("{} and {} stack have same tileIds for Z = {}".format(source_stack, target_stack, z))
+        return False
+
+    # write these tilespecs to the appropriate stacks
+    try:
+        renderapi.stack.set_stack_state(source_stack, "LOADING", render=render)
+        render.run(renderapi.client.import_tilespecs_parallel,
+                   source_stack,
+                   target_ts.tilespecs,
+                   sharedTransforms=target_ts.transforms,
+                   poolsize=pool_size,
+                   close_stack=False)
+    except Exception as e:
+        print("Cannot import tilespecs to {} from {}".format(source_stack, target_stack))
+        return False
+
+    try:
+        renderapi.stack.set_stack_state(target_stack, "LOADING", render=render)
+        render.run(renderapi.client.import_tilespecs_parallel,
+                   target_stack,
+                   source_ts.tilespecs,
+                   sharedTransforms=source_ts.transforms,
+                   poolsize=pool_size,
+                   close_stack=False)
+    except Exception as e:
+        print("Cannot import tilespecs to {} from {}".format(target_stack, source_stack))
+        return False
+    
+    try:
+        for ts in source_ts.tilespecs:
+            renderapi.stack.delete_tile(source_stack, ts.tileId, session=session, render=render)
+    except Exception as e:
+        print("Cannot delete old tile ids from {}, error: e".format(source_stack, e))
+    
+    try:
+        for ts in target_ts.tilespecs:
+            renderapi.stack.delete_tile(target_stack, ts.tileId, session=session, render=render)
+    except Exception as e:
+        print("Cannot delete old tile ids from {}, error: e".format(target_stack, e))
+    
+    return True
+
+
 class SwapZsModule(RenderModule):
     default_schema = SwapZsParameters
     default_output_schema = SwapZsOutput
-
-    def swap_zs_from_stacks(self, source_stack, target_stack, zvalues):
-        minz = min(zvalues)
-        maxz = max(zvalues)
-        # copy the section from target to a temp stack
-        temp_stack = "em_2d_montage_solved_swap_temp_zs_{}_ze_{}_t{}".format(int(minz), int(maxz), time.strftime("%m%d%y_%H%M%S"))
-
-        renderapi.stack.clone_stack(target_stack, temp_stack, zvalues, render=self.render)
-
-        # set target stack in loading state
-        renderapi.stack.set_stack_state(target_stack, state='LOADING', render=self.render)
-
-        # delete those sections from the target stack
-        for z in zvalues:
-            renderapi.stack.delete_section(target_stack, z, render=self.render)
-        
-        # copy sections from source stack to target stack
-        renderapi.stack.clone_stack(source_stack, target_stack, zs=zvalues, render=self.render)
-        
-        # set source stack in loading state
-        renderapi.stack.set_stack_state(source_stack, state='LOADING', render=self.render)
-        
-        # delete those sections from source stack
-        for z in zvalues:
-            renderapi.stack.delete_section(source_stack, z, render=self.render)
-        
-        # copy sections from temp stack to source stack
-        renderapi.stack.clone_stack(temp_stack, source_stack, zs=zvalues, render=self.render)
-
-        if self.args['complete_source_stack']:
-            renderapi.stack.set_stack_state(source_stack, state='COMPLETE', render=self.render)
-        
-        if self.args['complete_target_stack']:
-            renderapi.stack.set_stack_state(target_stack, state='COMPLETE', render=self.render)
-
-        # delete temp stack
-        renderapi.stack.delete_stack(temp_stack, render=self.render)
-
-        # delete source stack if specified in input
-        if self.args['delete_source_stack']: # pragma: no cover
-            renderapi.stack.delete_stack(source_stack, render=self.render)
-
-        
 
     def run(self):
         if len(self.args['source_stack']) != len(self.args['target_stack']):
@@ -91,13 +112,43 @@ class SwapZsModule(RenderModule):
             avail_zs = set(szvalues).intersection(tzvalues)
             final_zs = list(set(zVals).intersection(avail_zs))
 
-            source_stacks.append(source_stack)
-            target_stacks.append(target_stack)
-            zvalues.append(final_zs)
+            #source_stacks.append(source_stack)
+            #target_stacks.append(target_stack)
+            #zvalues.append(final_zs)
+            print(final_zs)
+            #mypartial = partial(swap_section, self.render, source_stack, target_stack)
 
-            self.swap_zs_from_stacks(source_stack, target_stack, final_zs)
+            #with renderapi.client.WithPool(self.args['pool_size']) as pool:
+            #    output_bool = pool.map(mypartial, final_zs)
+        
+            output_bool = []
+            for z in final_zs:
+                outbool = swap_section(self.render, source_stack, target_stack, z)
+                output_bool.append(outbool)
 
-        self.output({"source_stacks": source_stacks, "target_stacks": target_stacks, "zvalues": zvalues})
+            for z, n in zip(final_zs, output_bool):
+                if n:
+                    zvalues.append(z)
+                    source_stacks.append(source_stack)
+                    target_stacks.append(target_stack)
+
+            #zs = [z for z, n in zip(final_zs, output_bool) if n]
+            #zvalues.append(zs)
+            
+
+            if self.args['complete_source_stack']:
+                renderapi.stack.set_stack_state(source_stack, state='COMPLETE', render=self.render)
+        
+            if self.args['complete_target_stack']:
+                renderapi.stack.set_stack_state(target_stack, state='COMPLETE', render=self.render)
+
+            # delete source stack if specified in input
+            if self.args['delete_source_stack']: # pragma: no cover
+                renderapi.stack.delete_stack(source_stack, render=self.render)
+
+            #self.swap_zs_from_stacks(source_stack, target_stack, final_zs)
+
+        self.output({"source_stacks": source_stacks, "target_stacks": target_stacks, "swapped_zvalues": zvalues})
 
 if __name__ == "__main__":
     mod = SwapZsModule(input_data=example)

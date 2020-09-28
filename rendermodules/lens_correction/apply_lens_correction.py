@@ -1,11 +1,14 @@
 #!/usr/bin/env python
-import renderapi
 import os
-import pathlib
+
+import renderapi
+from six.moves import urllib
+
 from rendermodules.module.render_module import StackTransitionModule
 from rendermodules.lens_correction.schemas import \
         ApplyLensCorrectionOutput, ApplyLensCorrectionParameters
-from rendermodules.dataimport.create_mipmaps import create_mipmaps
+from rendermodules.dataimport.create_mipmaps import create_mipmaps_uri
+from rendermodules.utilities import uri_utils
 
 example_input = {
     "render": {
@@ -79,19 +82,31 @@ class ApplyLensCorrection(StackTransitionModule):
         lc_tform.transformId = refId
         ref_lc = renderapi.transform.ReferenceTransform(
             refId=lc_tform.transformId)
+        if lc_tform.labels is None:
+            lc_tform.labels = self.args['labels']
+        else:
+            for label in self.args['labels']:
+                if label not in lc_tform.labels:
+                    lc_tform.labels.append(label)
 
         tspecs = renderapi.tilespec.get_tile_specs_from_z(
             self.input_stack, self.zValues[0], render=r)
         levels = [int(l) for l in tspecs[0].ip.levels]
         # make mask mipmaps
         mask_mm_list = {}
-        if self.args['maskUrl'] is not None:
-            root, ext = os.path.splitext(self.args['maskUrl'])
-            mask_mm_list = create_mipmaps(
-                self.args['maskUrl'],
-                outputDirectory=os.path.dirname(self.args['maskUrl']),
+        if self.args['maskUrl_uri'] is not None:
+            # root, ext = os.path.splitext(
+            #     urllib.parse.unquote(urllib.parse.urlparse(
+            #         self.args['maskUrl']).path))
+            fmt = os.path.splitext(
+                uri_utils.uri_basename(
+                    self.args["maskUrl_uri"]))[-1].lstrip(".")
+            mask_mm_list = create_mipmaps_uri(
+                self.args['maskUrl_uri'],
+                outputDirectory=uri_utils.uri_prefix(self.args['maskUrl_uri']),  # os.path.dirname(self.args['maskUrl']),
                 mipmaplevels=levels,
-                outputformat=ext.split('.')[-1],
+                outputformat=fmt,
+                # outputformat=ext.split('.')[-1],
                 convertTo8bit=False,
                 force_redo=True,
                 block_func="min")
@@ -105,17 +120,25 @@ class ApplyLensCorrection(StackTransitionModule):
             for ts in tspecs:
                 ts.tforms = [ref_lc] + ts.tforms
                 for lvl, maskUrl in mask_mm_list.items():
-                    ts.ip[lvl].maskUrl = pathlib.Path(maskUrl).as_uri()
+                    ts.ip[lvl].maskUrl = maskUrl  # pathlib.Path(maskUrl).as_uri()
                 new_tspecs.append(ts)
 
         renderapi.stack.create_stack(outputStack, render=r)
         renderapi.stack.set_stack_state(outputStack, 'LOADING', render=r)
 
         self.output_tilespecs_to_stack(new_tspecs, sharedTransforms=[lc_tform])
+
+        missing_ts_zs = []
+        for z in self.zValues:
+            job_success = self.validate_tilespecs(self.input_stack, outputStack, z)
+            if not job_success:
+               missing_ts_zs.append(z)
+
         # output dict
         output = {}
         output['stack'] = outputStack
         output['refId'] = refId
+        output['missing_ts_zs'] = missing_ts_zs
 
         try:
             self.output(output)

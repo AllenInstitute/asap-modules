@@ -1,8 +1,12 @@
 
 from argschema.schemas import DefaultSchema
-from argschema.fields import Str, Int, Bool, \
-        Nested, Float, OutputDir, \
-        InputFile, NumpyArray, OutputFile
+from argschema.fields import (
+        Str, Int, Bool,
+        Nested, Float, OutputDir,
+        InputFile, List, OutputFile)
+import marshmallow
+
+import rendermodules.utilities.schema_utils
 from ..pointmatch.schemas import PointMatchOpenCVParameters
 
 
@@ -73,8 +77,11 @@ class MeshLensCorrectionSchema(PointMatchOpenCVParameters):
         required=True,
         description="name of point match collection")
     metafile = Str(
-        required=True,
+        required=False,
         description="fullpath of metadata file")
+    metafile_uri = Str(
+        required=True,
+        description="uri_handler uri of metafile object")
     z_index = Int(
         required=True,
         description="z value for the lens correction data in stack")
@@ -85,7 +92,7 @@ class MeshLensCorrectionSchema(PointMatchOpenCVParameters):
     nvertex = Int(
         required=False,
         default=1000,
-        missinf=1000,
+        missing=1000,
         description="maximum number of vertices to attempt")
     output_dir = OutputDir(
         required=False,
@@ -102,8 +109,8 @@ class MeshLensCorrectionSchema(PointMatchOpenCVParameters):
         required=True,
         default="xxx",
         description="section Id")
-    mask_coords = NumpyArray(
-        Int,
+    mask_coords = List(
+        List(Int),
         required=False,
         default=None,
         missing=None,
@@ -120,11 +127,10 @@ class MeshLensCorrectionSchema(PointMatchOpenCVParameters):
         missing=None,
         description="explicit mask setting from file")
 
-
-class MeshAndSolveOutputSchema(DefaultSchema):
-    output_json = Str(
-        required=True,
-        description="path to lens correction file")
+    @marshmallow.pre_load
+    def metafile_to_uri(self, data):
+        rendermodules.utilities.schema_utils.posix_to_uri(
+            data, "metafile", "metafile_uri")
 
 
 class DoMeshLensCorrectionOutputSchema(DefaultSchema):
@@ -134,6 +140,3 @@ class DoMeshLensCorrectionOutputSchema(DefaultSchema):
     maskUrl = OutputFile(
         required=True,
         description="path to mask generated")
-    qc_json = Str(
-        required=True,
-        description="path to qc json file")

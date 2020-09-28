@@ -116,7 +116,7 @@ class PointMatchClientOutputSchema(mm.Schema):
 class PointMatchClientParametersQsub(
         RenderParameters, SIFTPointMatchParameters, SparkOptions):
     sparkhome = InputDir(
-        required=True,
+        required=False,
         default="/allen/aibs/pipeline/image_processing/"
         "volume_assembly/utils/spark",
         missing="/allen/aibs/pipeline/image_processing/"
@@ -240,6 +240,11 @@ class SwapPointMatches(RenderParameters):
         Int,
         required=True,
         description="List of integer group ids")
+    pool_size = Int(
+        required=False,
+        default=5,
+        missing=5,
+        description="Pool size")
 
 class SwapPointMatchesOutput(DefaultSchema):
     source_collection = Str(

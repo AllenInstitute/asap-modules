@@ -2,8 +2,10 @@ import errno
 from functools import partial
 import glob
 import os
+import uuid
+
 import numpy as np
-import pathlib
+import pathlib2 as pathlib
 import renderapi
 from rendermodules.utilities.pillow_utils import Image
 from rendermodules.materialize.render_downsample_sections import (
@@ -25,6 +27,7 @@ example = {
     "image_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch",
     "set_new_z":"False",
     "new_z_start": 1020,
+    "remap_section_ids": False,
     "imgformat":"png",
     "scale": 0.1,
     "apply_scale": "False",
@@ -54,10 +57,11 @@ example = {
 }
 '''
 
-
 def create_montage_scape_tile_specs(render, input_stack, image_directory,
                                     scale, project, tagstr, imgformat,
-                                    Z, apply_scale=False, **kwargs):
+                                    Z, apply_scale=False, uuid_prefix=True,
+                                    uuid_prefix_length=10,
+                                    **kwargs):
     z = Z[0]
     newz = Z[1]
 
@@ -119,6 +123,11 @@ def create_montage_scape_tile_specs(render, input_stack, image_directory,
     # generate tilespec for downsampled montage
     # tileId is the first tileId from source z
     t = tilespecs[0]
+
+    if uuid_prefix:
+        t.tileId = "ds{uid}_{tId}".format(
+            uid=uuid.uuid4().hex[:uuid_prefix_length],
+            tId=t.tileId)
 
     with Image.open(filename) as im:
         t.width, t.height = im.size
@@ -191,7 +200,7 @@ class MakeMontageScapeSectionStack(StackOutputModule):
 
     def run(self):
         self.logger.debug('Montage scape stack generation module')
-        
+
         # get the list of z indices
         zvalues = self.render.run(
             renderapi.stack.get_z_values_for_stack,
@@ -221,7 +230,7 @@ class MakeMontageScapeSectionStack(StackOutputModule):
             outzvalues = renderapi.stack.get_z_values_for_stack(
                             self.args['output_stack'],
                             render=self.render)
-            
+
             if self.overwrite_zlayer:
                 # stack has to be in loading state
                 renderapi.stack.set_stack_state(self.args['output_stack'],
@@ -229,10 +238,10 @@ class MakeMontageScapeSectionStack(StackOutputModule):
                                                 render=self.render)
                 for oldz, newz in zip(zvalues, newzvalues):
                     # delete the section from output stack
-                    renderapi.stack.delete_section(self.args['output_stack'], 
-                                                   newz, 
+                    renderapi.stack.delete_section(self.args['output_stack'],
+                                                   newz,
                                                    render=self.render)
-        
+
 
         # generate the tag string to add to output tilespec json file name
         tagstr = "%s_%s" % (min(zvalues), max(zvalues))
@@ -272,6 +281,8 @@ class MakeMontageScapeSectionStack(StackOutputModule):
             pool_size=1,
             doFilter=self.args['doFilter'],
             fillWithNoise=self.args['fillWithNoise'],
+            uuid_prefix=self.args["uuid_prefix"],
+            uuid_prefix_length=self.args["uuid_length"],
             do_mp=False)
 
         with renderapi.client.WithPool(

@@ -1,7 +1,7 @@
 import argschema
-from EMaligner import EMaligner
+from bigfeta import bigfeta
 
-from rendermodules.solver.schemas import EMA_Schema, EMA_Output_Schema
+from rendermodules.solver.schemas import BigFetaSchema, BigFetaOutputSchema
 
 montage_example = {
    "first_section": 1020,
@@ -66,14 +66,14 @@ montage_example = {
 
 
 class Solve_stack(argschema.ArgSchemaParser):
-    default_schema = EMA_Schema
-    default_output_schema = EMA_Output_Schema
+    default_schema = BigFetaSchema
+    default_output_schema = BigFetaOutputSchema
 
     def run(self):
-        self.module = EMaligner.EMaligner(input_data=self.args, args=[])
+        self.module = bigfeta.BigFeta(input_data=self.args, args=[])
         self.module.run()
         self.output(
-            {"stack": self.args['output_stack']['name']})
+            {"stack": self.args['output_stack']['name'][0]})
 
 
 if __name__ == "__main__":

@@ -26,12 +26,13 @@ class ConsolidateTransformsParameters(RenderParameters):
         required=False, default=False,
         description=("whether to remove the existing layer from the "
                      "target stack before uploading."))
-
+    close_stack = Boolean(required=False, default=False)
 
 
 class ConsolidateTransformsOutputParameters(DefaultSchema):
     output_stack = Str(required=True, description="name of output stack")
     numZ = Int(required=True, description="Number of z values processed")
+
 
 
 class MipMapDirectories(DefaultSchema):
@@ -62,7 +63,7 @@ class RemapZsOutput(DefaultSchema):
 
 class SwapZsParameters(RenderParameters):
     source_stack = List(
-        Str, 
+        Str,
         required=True,
         description="List of source stacks")
     target_stack = List(
@@ -87,6 +88,11 @@ class SwapZsParameters(RenderParameters):
         default=False,
         missing=False,
         description="Do you want to delete source stack after copying its contents?. Default=False")
+    pool_size = Int(
+        required=False,
+        default=5,
+        missing=5,
+        description="Pool size")
 
 class SwapZsOutput(DefaultSchema):
     source_stacks = List(
@@ -97,6 +103,6 @@ class SwapZsOutput(DefaultSchema):
         Str,
         required=True,
         description="List of target stacks that have been successfully swapped")
-    zvalues = List(List(
+    swapped_zvalues = List(List(
         Int,
         required=True))

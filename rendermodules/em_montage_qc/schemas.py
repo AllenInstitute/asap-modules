@@ -1,8 +1,9 @@
 import argschema
+import marshmallow as mm 
 from marshmallow import post_load
 from ..module.schemas import (RenderParameters, ZValueParameters,
                               ProcessPoolParameters)
-from argschema.fields import Bool, Int, Str, InputDir
+from argschema.fields import Bool, Int, Str, InputDir, OutputFile, OutputDir
 
 
 class DetectMontageDefectsParameters(
@@ -79,3 +80,44 @@ class DetectMontageDefectsParametersOutput(argschema.schemas.DefaultSchema):
         dtype='object',
         required=True,
         description='An array of (x,y) positions of seams for each section with seams')
+
+
+
+class RoughQCSchema(RenderParameters):
+    input_downsampled_stack = Str(
+        required=True,
+        description="Pre rough aligned downsampled stack")
+    output_downsampled_stack = Str(
+        required=True,
+        description="Rough aligned stack name")
+    minZ = Int(
+        required=True,
+        description="min z")
+    maxZ = Int(
+        required=True,
+        description="max z")
+    pool_size = Int(
+        required=False,
+        default=10,
+        missing=10,
+        description="Pool size")
+    output_dir = OutputDir(
+        required=False,
+        default=None,
+        missing=None,
+        description="temp filename to save fig")
+    out_file_format = Str(
+        validator=mm.validate.OneOf(['html', 'pdf']),
+        required=False,
+        default="pdf",
+        description="Do you want the output to be bokeh plots in html (option = 'html') or pdf files for plots (option = 'pdf', default)")
+    
+
+class RoughQCOutputSchema(argschema.schemas.DefaultSchema):
+    iou_plot = OutputFile(
+        required=True,
+        description="Pdf/html file showing IOU plots")
+    distortion_plot = OutputFile(
+        required=True,
+        description="Pdf/html file with distortion plots")
+    
