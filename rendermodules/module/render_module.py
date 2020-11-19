@@ -92,7 +92,6 @@ class StackOutputModule(RenderModule):
         overwrite_zlayer = (self.overwrite_zlayer if overwrite_zlayer is None
                             else overwrite_zlayer)
 
-        renderapi.stack.create_stack(output_stack, render=render)
         if output_stack not in render.run(
                 renderapi.render.get_stacks_by_owner_project):
             # stack does not exist
