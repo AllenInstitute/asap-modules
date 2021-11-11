@@ -1,4 +1,3 @@
-
 from argschema.schemas import DefaultSchema
 from argschema.fields import (
         Str, Int, Bool,
@@ -7,7 +6,7 @@ from argschema.fields import (
 import marshmallow
 
 import rendermodules.utilities.schema_utils
-from ..pointmatch.schemas import PointMatchOpenCVParameters
+from rendermodules.pointmatch.schemas import PointMatchOpenCVParameters
 
 
 class regularization(DefaultSchema):

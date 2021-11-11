@@ -4,7 +4,8 @@ Materialize Render sections using BetterBox client
 """
 import os
 
-from rendermodules.module.render_module import (RenderModuleException, SparkModule)
+from rendermodules.module.render_module import (
+    RenderModuleException, SparkModule)
 from rendermodules.materialize.schemas import (MaterializeSectionsParameters,
                                                MaterializeSectionsOutput)
 
@@ -89,5 +90,5 @@ class MaterializeSectionsModule(SparkModule):
 
 
 if __name__ == "__main__":
-    mod = MaterializeSectionsModule(input_data=example_input)
+    mod = MaterializeSectionsModule()
     mod.run()

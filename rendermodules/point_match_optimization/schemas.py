@@ -1,8 +1,9 @@
-from argschema.fields import Bool, Float, Int, Nested, Str, InputDir, OutputDir, List, InputFile
+from argschema.fields import Bool, Int, Nested, Str, OutputDir, List, InputFile
 from argschema.schemas import DefaultSchema
-from marshmallow import ValidationError, post_load
-from rendermodules.module.render_module import RenderParameters
+from marshmallow import post_load
 from marshmallow import fields
+
+from rendermodules.module.render_module import RenderParameters
 
 
 class url_options(DefaultSchema):
@@ -45,21 +46,24 @@ class SIFT_options(DefaultSchema):
         cli_as_single_argument=True,
         default=[8],
         missing=[8],
-        description='SIFT feature descriptor size: how many samples per row and column')
+        description=('SIFT feature descriptor size: '
+                     'how many samples per row and column'))
     SIFTmaxScale = List(
         fields.Float,
         required=False,
         cli_as_single_argument=True,
         default=[0.85],
         missing=[0.85],
-        description='SIFT maximum scale: minSize * minScale < size < maxSize * maxScale')
+        description=('SIFT maximum scale: minSize * minScale '
+                     '< size < maxSize * maxScale'))
     SIFTminScale = List(
         fields.Float,
         required=False,
         cli_as_single_argument=True,
         default=[0.5],
         missing=[0.5],
-        description='SIFT minimum scale: minSize * minScale < size < maxSize * maxScale')
+        description=('SIFT minimum scale: minSize * minScale '
+                     '< size < maxSize * maxScale'))
     SIFTsteps = List(
         fields.Int,
         required=False,
@@ -94,14 +98,16 @@ class SIFT_options(DefaultSchema):
         cli_as_single_argument=True,
         default=[3.0],
         missing=[3.0],
-        description='Reject match candidates with a cost larger than maxTrust * median cost')
+        description=('Reject match candidates with a cost larger '
+                     'than maxTrust * median cost'))
     matchMinInlierRatio = List(
         fields.Float,
         required=False,
         cli_as_single_argument=True,
         default=[0.0],
         missing=[0.0],
-        description='Minimal ratio of inliers to candidates for match filtering')
+        description=(
+            'Minimal ratio of inliers to candidates for match filtering'))
     matchMinNumInliers = List(
         fields.Int,
         required=False,
@@ -115,7 +121,8 @@ class SIFT_options(DefaultSchema):
         default=['AFFINE'],
         missing=['AFFINE'],
         cli_as_single_argument=True,
-        description='Type of model for match filtering Possible Values: [TRANSLATION, RIGID, SIMILARITY, AFFINE]')
+        description=('Type of model for match filtering Possible Values: '
+                     '[TRANSLATION, RIGID, SIMILARITY, AFFINE]'))
     matchRod = List(
         fields.Float,
         required=False,
@@ -135,7 +142,8 @@ class SIFT_options(DefaultSchema):
 class PtMatchOptimizationParameters(RenderParameters):
     stack = Str(
         required=True,
-        description='Name of the stack containing the tile pair (not the base stack)')
+        description=(
+            'Name of the stack containing the tile pair (not the base stack)'))
     tile_stack = Str(
         required=False,
         default=None,
@@ -148,17 +156,20 @@ class PtMatchOptimizationParameters(RenderParameters):
         required=False,
         default=10,
         missing=10,
-        description='Number of tilepairs to be tested for optimization - default = 10')
+        description=('Number of tilepairs to be tested for '
+                     'optimization - default = 10'))
     filter_tilepairs = Bool(
         required=False,
         default=False,
         missing=False,
-        description="Do you want filter the tilpair file for pairs that overlap? - default = False")
+        description=("Do you want filter the tilpair file for pairs "
+                     "that overlap? - default = False"))
     max_tilepairs_with_matches = Int(
         required=False,
         default=0,
         missing=0,
-        description='How many tilepairs with matches required for selection of optimized parameter set')
+        description=('How many tilepairs with matches required for '
+                     'selection of optimized parameter set'))
     numberOfThreads = Int(
         required=False,
         default=5,
@@ -167,14 +178,16 @@ class PtMatchOptimizationParameters(RenderParameters):
     SIFT_options = Nested(SIFT_options, required=True)
     outputDirectory = OutputDir(
         required=True,
-        description='Parent directory in which subdirectories will be created to store images and point-match results from SIFT')
+        description=(
+            'Parent directory in which subdirectories will be '
+            'created to store images and point-match results from SIFT'))
     url_options = Nested(url_options, required=True)
     pool_size = Int(
         required=False,
         default=10,
         missing=10,
         description='Pool size for parallel processing')
-        
+
     @post_load
     def validate_data(self, data):
         if data['max_tilepairs_with_matches'] == 0:
@@ -184,7 +197,8 @@ class PtMatchOptimizationParameters(RenderParameters):
 class PtMatchOptimizationParametersOutput(DefaultSchema):
     output_html = Str(
         required=True,
-        description='Output html file that shows all the tilepair plot and results')
+        description=(
+            'Output html file that shows all the tilepair plot and results'))
 
 
 class PointMatchOptimizationParameters(RenderParameters):
@@ -210,12 +224,14 @@ class PointMatchOptimizationParameters(RenderParameters):
     SIFT_options = Nested(SIFT_options, required=True)
     outputDirectory = OutputDir(
         required=True,
-        description='Parent directory in which subdirectories will be created to store images and point-match results from SIFT')
+        description=(
+            'Parent directory in which subdirectories will be '
+            'created to store images and point-match results from SIFT'))
     url_options = Nested(url_options, required=True)
 
 
 class PointMatchOptimizationParametersOutput(DefaultSchema):
     output_html = Str(
         required=True,
-        description='Output html file that shows all the tilepair plot and results')
-        
+        description=(
+            'Output html file that shows all the tilepair plot and results'))

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 delete materializations in a tilesource directory
 """
@@ -24,7 +25,7 @@ class DeleteMaterializedSectionsModule(argschema.ArgSchemaParser):
 
     @staticmethod
     def get_ts5_tiles(basedir, zs, levels=None):
-        levels = ([int(l) for l in os.listdir(basedir) if l.isdigit()]
+        levels = ([int(lvl) for lvl in os.listdir(basedir) if lvl.isdigit()]
                   if levels is None else levels)
         for lvl in sorted(levels):
             lvldir = os.path.join(basedir, str(lvl))
@@ -44,7 +45,7 @@ class DeleteMaterializedSectionsModule(argschema.ArgSchemaParser):
 
     @staticmethod
     def get_ts5_directories(basedir, zs, levels=None):
-        levels = ([int(l) for l in os.listdir(basedir) if l.isdigit()]
+        levels = ([int(lvl) for lvl in os.listdir(basedir) if lvl.isdigit()]
                   if levels is None else levels)
         for lvl in sorted(levels):
             lvldir = os.path.join(basedir, str(lvl))
@@ -88,5 +89,5 @@ class DeleteMaterializedSectionsModule(argschema.ArgSchemaParser):
 
 
 if __name__ == "__main__":
-    mod = DeleteMaterializedSectionsModule(input_data=example_input)
+    mod = DeleteMaterializedSectionsModule()
     mod.run()

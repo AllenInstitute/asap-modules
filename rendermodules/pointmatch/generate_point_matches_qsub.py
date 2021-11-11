@@ -1,15 +1,10 @@
-
-import json
-import os
+#!/usr/bin/env python
 import subprocess
-from argschema.fields import Bool, Float, Int, Nested, Str, InputDir
-from argschema.schemas import DefaultSchema
-import marshmallow as mm
-import renderapi
 import tempfile
+
 from rendermodules.module.render_module import RenderModule
 from rendermodules.pointmatch.schemas import PointMatchClientParametersQsub
-from rendermodules.pointmatch.generate_point_matches_spark import form_sift_params_list, add_arg
+from rendermodules.pointmatch.generate_point_matches_spark import form_sift_params_list
 
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.pointmatch.generate_point_matches_qsub"
@@ -25,12 +20,12 @@ example = {
     "no_nodes": 30,
     "ppn": 30,
     "queue_name": "emconnectome",
-    "pbs_template":"/allen/aibs/pipeline/image_processing/volume_assembly/utils/code/spark_submit/spinup_spark.pbs",
+    "pbs_template": "/allen/aibs/pipeline/image_processing/volume_assembly/utils/code/spark_submit/spinup_spark.pbs",
     "sparkhome": "/allen/programs/celltypes/workgroups/em-connectomics/ImageProcessing/utils/spark/",
     "logdir": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch/sparkLogs/",
     "jarfile": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_20170613/render-ws-spark-client/target/render-ws-spark-client-0.3.0-SNAPSHOT-standalone.jar",
-    "className":"org.janelia.render.client.spark.SIFTPointMatchClient",
-    "baseDataUrl":"http://em-131fs:8998/render-ws/v1",
+    "className": "org.janelia.render.client.spark.SIFTPointMatchClient",
+    "baseDataUrl": "http://em-131fs:8998/render-ws/v1",
     "owner": "gayathri_MM2",
     "collection": "mm2_rough_align_test",
     "pairJson": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch/rough/tilePairs/tile_pairs_mm2_montage_scape_test_z_1015_to_1035_dist_5.json",
@@ -70,21 +65,23 @@ class PointMatchClientModuleQsub(RenderModule):
         sparkargs = "\" --owner {}".format(self.args['owner'])
         sparkargs += " --baseDataUrl {}".format(self.args['baseDataUrl'])
         sparkargs += " --collection {}".format(self.args['collection'])
-        sparkargs += " pairJson {} {}\"".format(self.args['pairJson'], " ".join(sift_params))
+        sparkargs += " pairJson {} {}\"".format(
+            self.args['pairJson'], " ".join(sift_params))
 
         env = "sparkhome={},".format(self.args['sparkhome'])
         env += "sparkjar={},".format(self.args['jarfile'])
         env += "sparkclass={},".format(self.args['className'])
         env += "sparkargs={}".format(sparkargs)
- 
-        cmd_to_submit = ["qsub","-l","nodes={}:ppn={}".format(self.args['no_nodes'], self.args['ppn'])]
-        cmd_to_submit += ["-q",self.args['queue_name'],"-v",self.args['logdir']]
-        cmd_to_submit += [env,self.args['pbs_template']]
+
+        cmd_to_submit = ["qsub", "-l", "nodes={}:ppn={}".format(
+            self.args['no_nodes'], self.args['ppn'])]
+        cmd_to_submit += ["-q", self.args['queue_name'],
+                          "-v", self.args['logdir']]
+        cmd_to_submit += [env, self.args['pbs_template']]
 
         subprocess.check_call(cmd_to_submit)
 
 
 if __name__ == "__main__":
-    module = PointMatchClientModuleQsub(input_data=example)
-    #module = PointMatchClientModuleQsub(schema_type=PointMatchClientParameters)
+    module = PointMatchClientModuleQsub()
     module.run()

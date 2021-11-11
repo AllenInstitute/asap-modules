@@ -1,18 +1,19 @@
 import warnings
 
 import marshmallow as mm
-from argschema.fields import InputDir, InputFile, Str, Int, Boolean, Float, List
-from ..module.schemas import (StackTransitionParameters, InputStackParameters,
-                              OutputStackParameters)
 from marshmallow import ValidationError, post_load, pre_load
-from argschema.schemas import DefaultSchema
 
+from argschema.schemas import DefaultSchema
+from argschema.fields import (
+    InputDir, InputFile, Str, Int, Boolean, Float, List)
+
+from rendermodules.module.schemas import (
+    StackTransitionParameters, InputStackParameters, OutputStackParameters)
 import rendermodules.utilities.schema_utils
 
 
 class GenerateMipMapsOutput(DefaultSchema):
     levels = Int(required=True)
-    # output_dir = Str(required=True)
     output_prefix = Str(required=True)
 
 
@@ -29,7 +30,6 @@ class GenerateMipMapsParameters(InputStackParameters):
             "method to downsample mipmapLevels, "
             "'PIL' for PIL Image (currently NEAREST) filtered resize, "
             "can be 'block_reduce' for skimage based area downsampling"))
-# "'render' for render-ws based rendering.  "
     convert_to_8bit = mm.fields.Boolean(
         required=False, default=True,
         description='convert the data from 16 to 8 bit (default True)')
@@ -65,7 +65,6 @@ class GenerateMipMapsParameters(InputStackParameters):
         exc_fields = excluded_fields[options['method']]
         return cls(exclude=exc_fields).dump(options)
 
-    # TODO test this
     @pre_load
     def directory_to_prefix(self, data):
         rendermodules.utilities.schema_utils.posix_to_uri(
@@ -74,7 +73,8 @@ class GenerateMipMapsParameters(InputStackParameters):
 
 class AddMipMapsToStackOutput(DefaultSchema):
     output_stack = Str(required=True)
-    missing_ts_zs = List(Int,
+    missing_ts_zs = List(
+        Int,
         required=False,
         default=[],
         missing=[],
@@ -96,7 +96,6 @@ class AddMipMapsToStackParameters(StackTransitionParameters):
         required=False, default="tiff",
         description='mipmap image format, default is tiff')
 
-    # TODO test this
     @pre_load
     def mipmap_directory_to_prefix(self, data):
         rendermodules.utilities.schema_utils.posix_to_uri(
@@ -110,7 +109,8 @@ class GenerateEMTileSpecsParameters(OutputStackParameters):
     metafile_uri = Str(
         required=True, description=(
             "uri of metadata containing TEMCA acquisition data"))
-    # FIXME maskUrl and image_directory are not required -- posix_to_uri should support this
+    # FIXME maskUrl and image_directory are not
+    #   required -- posix_to_uri should support this
     maskUrl = InputFile(
         required=False,
         default=None,
@@ -148,7 +148,6 @@ class GenerateEMTileSpecsParameters(OutputStackParameters):
         rendermodules.utilities.schema_utils.posix_to_uri(
             data, "metafile", "metafile_uri")
 
-    # FIXME not required -- does this work
     @pre_load
     def maskUrl_to_uri(self, data):
         rendermodules.utilities.schema_utils.posix_to_uri(
@@ -168,38 +167,41 @@ class GenerateEMTileSpecsOutput(DefaultSchema):
 class MakeMontageScapeSectionStackParameters(OutputStackParameters):
     montage_stack = Str(
         required=True,
-        metadata={'description':'stack to make a downsample version of'})
+        description='stack to make a downsample version of')
     image_directory = Str(
         required=True,
-        metadata={'description':'directory that stores the montage scapes'})
+        description='directory that stores the montage scapes')
     set_new_z = Boolean(
         required=False,
         default=False,
         missing=False,
-        metadata={'description':'set to assign new z values starting from 0 (default - False)'})
+        description=(
+            'set to assign new z values starting from 0 (default - False)'))
     new_z_start = Int(
         required=False,
         default=0,
         missing=0,
-        metadata={'description':'new starting z index'})
+        description='new starting z index')
     remap_section_ids = Boolean(
         required=False,
         default=False,
         missing=False,
-        metadata={'description':'change section ids to new z values. default = False'})
+        description='change section ids to new z values. default = False')
     imgformat = Str(
         required=False,
         default='tif',
         missing='tif',
-        metadata={'description':'image format of the montage scapes (default - tif)'})
+        description='image format of the montage scapes (default - tif)')
     scale = Float(
         required=True,
-        metadata={'description':'scale of montage scapes'})
+        description='scale of montage scapes')
     apply_scale = Boolean(
         required=False,
         default=False,
         missing=False,
-        metadata={'description':'Do you want to scale the downsample to the size of section? Default = False'})
+        description=(
+            "Do you want to scale the downsample to "
+            "the size of section? Default = False"))
     doFilter = Boolean(required=False, default=True, description=(
         "whether to apply default filtering when generating "
         "missing downsamples"))

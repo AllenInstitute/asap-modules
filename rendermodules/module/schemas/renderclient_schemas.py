@@ -1,9 +1,8 @@
 import argschema
-from argschema.fields import (Str, OutputDir, Int, Boolean, Nested, Float,
-                              InputDir)
-
+from argschema.fields import Str, OutputDir, Int, Boolean, Nested, Float
 from marshmallow import validate, post_load
-from .schemas import RenderClientParameters
+
+from rendermodules.module.schemas import RenderClientParameters
 
 
 class MaterializedBoxParameters(argschema.schemas.DefaultSchema):
@@ -172,9 +171,10 @@ class MatchDerivationParameters(argschema.schemas.DefaultSchema):
     matchFilter = Str(
             required=False,
             validator=validate.OneOf(
-            ['SINGLE_SET', 'CONSENSUS_SETS', 'AGGREGATED_CONSENSUS_SETS']),
-            description=("whether to match one set of matches, or multiple "
-                " sets. And, whether to keep them separate, or aggregate them. "
+                ['SINGLE_SET', 'CONSENSUS_SETS', 'AGGREGATED_CONSENSUS_SETS']),
+            description=(
+                "whether to match one set of matches, or multiple "
+                "sets. And, whether to keep them separate, or aggregate them. "
                 "SINGLE_SET if excluded or None."))
 
 

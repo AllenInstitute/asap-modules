@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import argschema
 from bigfeta import bigfeta
 
@@ -56,7 +57,7 @@ montage_example = {
        "cross_pt_weight": 0.5,
        "npts_min": 5,
        "npts_max": 500,
-       "inverse_dz":"True"
+       "inverse_dz": "True"
    },
    "regularization": {
        "default_lambda": 1.0e3,
@@ -77,5 +78,5 @@ class Solve_stack(argschema.ArgSchemaParser):
 
 
 if __name__ == "__main__":
-    module = Solve_stack(input_data=montage_example)
+    module = Solve_stack()
     module.run()

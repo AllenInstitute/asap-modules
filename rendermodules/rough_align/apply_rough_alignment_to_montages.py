@@ -1,48 +1,28 @@
-
+#!/usr/bin/env python
+from functools import partial
+import logging
 import os
-import renderapi
-import glob
+import pathlib2 as pathlib
+
+import cv2
 import numpy as np
-from ..module.render_module import RenderModule, RenderModuleException
+import renderapi
+import requests
+from six.moves import urllib
+from shapely.geometry import Polygon
+
+from rendermodules.module.render_module import (
+    RenderModule, RenderModuleException)
 from rendermodules.rough_align.schemas import (
         ApplyRoughAlignmentTransformParameters,
         ApplyRoughAlignmentOutputParameters)
 from rendermodules.stack.consolidate_transforms import consolidate_transforms
 from rendermodules.rough_align.downsample_mask_handler \
         import polygon_list_from_mask
-from functools import partial
-import logging
-import requests
-import pathlib2 as pathlib
-import cv2
-from six.moves import urllib
-from shapely.geometry import Polygon
 
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.rough_align.apply_rough_alignment_to_montages"
-'''
-example = {
-    "render": {
-        "host": "http://em-131fs",
-        "port": 8080,
-        "owner": "gayathri",
-        "project": "Tests",
-        "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts"
-    },
-    "montage_stack": "rough_test_montage_stack",
-    "prealigned_stack": "rough_test_montage_stack",
-    "lowres_stack": "rough_test_downsample_rough_stack",
-    "output_stack": "rough_test_rough_stack",
-    "tilespec_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch/rough/jsonFiles",
-    "map_z": "False",
-    "map_z_start": 251,
-    "consolidate_transforms": "True",
-    "minZ": 1020,
-    "maxZ": 1022,
-    "scale": 0.1,
-    "pool_size": 20
-}
-'''
+
 example = {
     "render": {
         "host": "http://em-131fs",
@@ -166,9 +146,7 @@ def filter_highres_with_masks(resolved_highres, tspec_lowres, mask_map):
         tpoly = Polygon(tc).buffer(0)
         pint = [not p.intersects(tpoly) for p in mask_polygons]
         if np.all(pint):
-        #for p in mask_polygons:
-        #    if not p.intersects(tpoly):
-                new_highres.append(t)
+            new_highres.append(t)
 
     return new_highres
 
@@ -189,10 +167,10 @@ def apply_rough_alignment(render,
                           apply_scale=False,
                           consolidateTransforms=True,
                           remap_section_ids=False):
-    z = Z[0] # z value from the montage stack - to be mapped to the newz values in lowres stack
-    newz = Z[1] # z value in the lowres stack for this montage
+    z = Z[0]  # z value from the montage stack - to be mapped to the newz values in lowres stack
+    newz = Z[1]  # z value in the lowres stack for this montage
 
-    session=requests.session()
+    session = requests.session()
     try:
         # get lowres stack tile specs
         logger.debug('getting tilespecs from {} z={}'.format(lowres_stack, z))
@@ -214,10 +192,6 @@ def apply_rough_alignment(render,
         # get the lowres stack rough alignment transformation
         tforms = lowres_ts[0].tforms
 
-        # if all_transforms:
-        #     tforms = consolidate_transforms(tforms)
-
-        # tf = tforms[-1]
         for i, tf in enumerate(tforms):
             if isinstance(tf, renderapi.transform.leaf.AffineModel):
                 # apply_scale in montagescape stack means
@@ -255,8 +229,8 @@ def apply_rough_alignment(render,
         tx = 0
         ty = 0
         if input_stack == prealigned_stack:
-            tx = -int(sectionbounds['minX'])  # - int(prestackbounds['minX'])
-            ty = -int(sectionbounds['minY'])  # - int(prestackbounds['minY'])
+            tx = -int(sectionbounds['minX'])
+            ty = -int(sectionbounds['minY'])
         else:
             tx = int(sectionbounds['minX']) - int(presectionbounds['minX'])
             ty = int(sectionbounds['minY']) - int(presectionbounds['minY'])
@@ -288,11 +262,9 @@ def apply_rough_alignment(render,
                 t.tforms = newt
             t.z = newz
             if remap_section_ids:
-                t.layout.sectionId = "%s.0"%str(int(newz))
+                t.layout.sectionId = "%s.0" % str(int(newz))
 
         if filter_montage_output_with_masks:
-            # tf.M[0:2, 0:2] /= scale
-
             # prepend a scaling transformation to the scaled transforms
             #   to map mask coordinates correctly
             lowres_ts[0].tforms.insert(0, renderapi.transform.AffineModel(
@@ -328,22 +300,22 @@ class ApplyRoughAlignmentTransform(RenderModule):
              if a in allzvalues]
 
         mypartial = partial(
-                        apply_rough_alignment,
-                        self.render,
-                        self.args['montage_stack'],
-                        self.args['prealigned_stack'],
-                        self.args['lowres_stack'],
-                        self.args['output_stack'],
-                        self.args['tilespec_directory'],
-                        self.args['scale'],
-                        self.args['mask_input_dir'],
-                        self.args['update_lowres_with_masks'],
-                        self.args['read_masks_from_lowres_stack'],
-                        self.args['filter_montage_output_with_masks'],
-                        self.args['mask_exts'],
-                        apply_scale=self.args['apply_scale'],
-                        consolidateTransforms=self.args['consolidate_transforms'],
-                        remap_section_ids=self.args['remap_section_ids'])
+            apply_rough_alignment,
+            self.render,
+            self.args['montage_stack'],
+            self.args['prealigned_stack'],
+            self.args['lowres_stack'],
+            self.args['output_stack'],
+            self.args['tilespec_directory'],
+            self.args['scale'],
+            self.args['mask_input_dir'],
+            self.args['update_lowres_with_masks'],
+            self.args['read_masks_from_lowres_stack'],
+            self.args['filter_montage_output_with_masks'],
+            self.args['mask_exts'],
+            apply_scale=self.args['apply_scale'],
+            consolidateTransforms=self.args['consolidate_transforms'],
+            remap_section_ids=self.args['remap_section_ids'])
 
         # Create the output stack if it doesn't exist
         if self.args['output_stack'] not in self.render.run(
@@ -394,5 +366,5 @@ class ApplyRoughAlignmentTransform(RenderModule):
 
 
 if __name__ == "__main__":
-    mod = ApplyRoughAlignmentTransform(input_data=example)
+    mod = ApplyRoughAlignmentTransform()
     mod.run()

@@ -1,23 +1,26 @@
+#!/usr/bin/env python
+import datetime
 import json
-import renderapi
-import tempfile
-import numpy as np
-import cv2
 import os
 from shutil import copyfile
-import datetime
+import tempfile
+
 from bigfeta import jsongz
+import cv2
+import numpy as np
+import renderapi
 
-from ..module.render_module import RenderModule, RenderModuleException
+from em_stitch.lens_correction.mesh_and_solve_transform \
+    import MeshAndSolveTransform
 
-from .schemas \
+from rendermodules.module.render_module import (
+    RenderModule, RenderModuleException)
+from rendermodules.mesh_lens_correction.schemas \
         import MeshLensCorrectionSchema, DoMeshLensCorrectionOutputSchema
 from rendermodules.dataimport.generate_EM_tilespecs_from_metafile \
         import GenerateEMTileSpecsModule
 from rendermodules.pointmatch.create_tilepairs \
         import TilePairClientModule
-from em_stitch.lens_correction.mesh_and_solve_transform \
-        import MeshAndSolveTransform
 from rendermodules.pointmatch.generate_point_matches_opencv \
         import GeneratePointMatchesOpenCV
 from rendermodules.utilities import uri_utils

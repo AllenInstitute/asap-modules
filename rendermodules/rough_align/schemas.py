@@ -1,44 +1,15 @@
+import argschema
 from argschema import InputDir
 import marshmallow as mm
+from marshmallow import post_load, ValidationError
 from argschema.fields import (
-        Bool, Float, Int, Nested, OutputDir,
+        Bool, Float, Int,
         Str, InputFile, List, Dict)
 from argschema.schemas import DefaultSchema
-from ..module.schemas import (
+
+from rendermodules.module.schemas import (
         RenderParameters,
-        StackTransitionParameters,
-        ProcessPoolParameters)
-from marshmallow import post_load, ValidationError
-import argschema
-
-
-# class RoughSlicerSchema(InputStackParameters, ProcessPoolParameters):
-#     x_slice_locs = List(
-#         Float,
-#         required=False,
-#         default=[0.5],
-#         cli_as_single_argument=True,
-#         description="fractional location of x_slices")
-#     y_slice_locs = List(
-#         Float,
-#         required=False,
-#         default=[0.5],
-#         cli_as_single_argument=True,
-#         description="fractional location of x_slices")
-#     slice_locs_as_pixels = Bool(
-#         required=False,
-#         default=False,
-#         missing=False,
-#         description=("interpret slice_locs as absolute pixel "
-#                      "coordinates instead of fractional."))
-#     output_dir = OutputDir(
-#         required=True,
-#         description="Location_of_output_slices")
-#     bounds_from_stack = Str(
-#         require=False,
-#         default=None,
-#         missing=None,
-#         description=("get bounds from this stack instead of input_stack"))
+        StackTransitionParameters)
 
 
 class MakeAnchorStackSchema(StackTransitionParameters):
@@ -123,64 +94,55 @@ class PairwiseRigidOutputSchema(DefaultSchema):
 class ApplyRoughAlignmentTransformParameters(RenderParameters):
     montage_stack = mm.fields.Str(
         required=True,
-        metadata={'description': 'stack to make a downsample version of'})
+        description='stack to make a downsample version of')
     prealigned_stack = mm.fields.Str(
         required=False,
         default=None,
         missing=None,
-        metadata={'description':
-                  "stack with dropped tiles corrected for stitching errors"})
+        description=(
+            "stack with dropped tiles corrected for stitching errors"))
     lowres_stack = mm.fields.Str(
         required=True,
-        metadata={'description':
-                  'montage scape stack with rough aligned transform'})
+        description='montage scape stack with rough aligned transform')
     output_stack = mm.fields.Str(
         required=True,
-        metadata={'description':
-                  'output high resolution rough aligned stack'})
+        description='output high resolution rough aligned stack')
     tilespec_directory = mm.fields.Str(
         required=True,
-        metadata={'description': 'path to save section images'})
+        description='path to save section images')
     map_z = mm.fields.Boolean(
         required=False,
         default=False,
         missing=False,
-        metadata={'description':'map the montage Z indices to the rough alignment indices (default - False)'})
+        description=(
+            'map the montage Z indices to the rough alignment '
+            'indices (default - False)'))
     remap_section_ids = mm.fields.Boolean(
         required=False,
         default=False,
         missing=False,
-        metadata={'description':'map section ids as well with the new z mapping. Default = False'})
-    #map_z_start = mm.fields.Int(
-    #    required=False,
-    #    default=-1,
-    #    missing=-1,
-    #    metadata={'description':'the starting index of the z in the montage stack'})
-    #minZ = mm.fields.Int(
-    #    required=True,
-    #    metadata={'description':'Minimum Z value'})
-    #maxZ = mm.fields.Int(
-    #    required=True,
-    #    metadata={'description':'Maximum Z value'})
+        description=(
+            'map section ids as well with the new z '
+            'mapping. Default = False'))
     consolidate_transforms = mm.fields.Boolean(
         required=False,
         default=True,
         missing=True,
-        metadata={'description':
-                  'should the transforms be consolidated? (default - True)'})
+        description=(
+            'should the transforms be consolidated? (default - True)'))
     scale = mm.fields.Float(
         required=True,
-        metadata={'description': 'scale of montage scapes'})
+        description='scale of montage scapes')
     apply_scale = mm.fields.Boolean(
         required=False,
         default=False,
         missing=False,
-        metadata={'description': 'do you want to apply scale'})
+        description='do you want to apply scale')
     pool_size = mm.fields.Int(
         require=False,
         default=10,
         missing=10,
-        metadata={'description': 'pool size for parallel processing'})
+        description='pool size for parallel processing')
     new_z = List(
         Int,
         required=False,

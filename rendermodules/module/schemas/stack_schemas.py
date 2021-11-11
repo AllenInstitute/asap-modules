@@ -1,8 +1,9 @@
 import warnings
 
-import argschema
 from marshmallow import ValidationError, validate, post_load, pre_load
-from .schemas import RenderParameters
+import argschema
+
+from rendermodules.module.schemas import RenderParameters
 
 
 class OverridableParameterSchema(argschema.schemas.DefaultSchema):
@@ -28,8 +29,7 @@ class ProcessPoolParameters(argschema.schemas.DefaultSchema):
     pool_size = argschema.fields.Int(required=False, default=1)
 
 
-class ZValueParameters(  # argschema.schemas.DefaultSchema,
-                       OverridableParameterSchema):
+class ZValueParameters(OverridableParameterSchema):
     """template schema which interprets z values on which to act
     assumes a hierarchy such that minZ, maxZ are
     superceded by z which is superceded by zValues.

@@ -1,7 +1,7 @@
 import argschema
-from ..module.schemas import (RenderParameters, ZValueParameters,
-                              ProcessPoolParameters)
 from argschema.fields import Bool, Str, Float, OutputFile
+from rendermodules.module.schemas import (RenderParameters, ZValueParameters,
+                                          ProcessPoolParameters)
 
 
 class FilterSchema(RenderParameters, ZValueParameters, ProcessPoolParameters):

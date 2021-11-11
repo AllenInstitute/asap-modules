@@ -1,9 +1,10 @@
-import argschema
-import marshmallow as mm 
+import marshmallow as mm
 from marshmallow import post_load
-from ..module.schemas import (RenderParameters, ZValueParameters,
-                              ProcessPoolParameters)
+import argschema
 from argschema.fields import Bool, Int, Str, InputDir, OutputFile, OutputDir
+
+from rendermodules.module.schemas import (
+    RenderParameters, ZValueParameters, ProcessPoolParameters)
 
 
 class DetectMontageDefectsParameters(
@@ -26,22 +27,30 @@ class DetectMontageDefectsParameters(
         required=False,
         default=4,
         missing=4,
-        description='threshold value to filter residuals for detecting seams (default = 4)')
+        description=(
+            'threshold value to filter residuals '
+            'for detecting seams (default = 4)'))
     neighbors_distance = Int(
         required=False,
         default=80,
         missing=80,
-        description='distance in pixels to look for neighboring points in seam detection (default = 60)')
+        description=(
+            'distance in pixels to look for '
+            'neighboring points in seam detection (default = 60)'))
     min_cluster_size = Int(
         required=False,
         default=12,
         missing=12,
-        description='minimum number of point matches required in each cluster for taking it into account for seam detection (default = 7)')
+        description=(
+            'minimum number of point matches required in each cluster '
+            'for taking it into account for seam detection (default = 7)'))
     plot_sections = Bool(
         required=False,
         default=True,
         missing=True,
-        description="Do you want to plot the sections with defects (holes or gaps)?. Will plot Bokeh plots in a html file")
+        description=(
+            "Do you want to plot the sections with defects "
+            "(holes or gaps)?. Will plot Bokeh plots in a html file"))
     out_html_dir = InputDir(
         required=False,
         default=None,
@@ -59,7 +68,9 @@ class DetectMontageDefectsParametersOutput(argschema.schemas.DefaultSchema):
         argschema.fields.Str,
         required=False,
         default=None,
-        description='Output html file with Bokeh plots showing holes and stitching gaps')
+        description=(
+            'Output html file with Bokeh plots '
+            'showing holes and stitching gaps'))
     qc_passed_sections = argschema.fields.List(
         argschema.fields.Int,
         required=True,
@@ -79,8 +90,9 @@ class DetectMontageDefectsParametersOutput(argschema.schemas.DefaultSchema):
     seam_centroids = argschema.fields.NumpyArray(
         dtype='object',
         required=True,
-        description='An array of (x,y) positions of seams for each section with seams')
-
+        description=(
+            'An array of (x,y) positions of '
+            'seams for each section with seams'))
 
 
 class RoughQCSchema(RenderParameters):
@@ -110,8 +122,11 @@ class RoughQCSchema(RenderParameters):
         validator=mm.validate.OneOf(['html', 'pdf']),
         required=False,
         default="pdf",
-        description="Do you want the output to be bokeh plots in html (option = 'html') or pdf files for plots (option = 'pdf', default)")
-    
+        description=(
+            "Do you want the output to be bokeh plots in html "
+            "(option = 'html') or pdf files for plots "
+            "(option = 'pdf', default)"))
+
 
 class RoughQCOutputSchema(argschema.schemas.DefaultSchema):
     iou_plot = OutputFile(
@@ -120,4 +135,3 @@ class RoughQCOutputSchema(argschema.schemas.DefaultSchema):
     distortion_plot = OutputFile(
         required=True,
         description="Pdf/html file with distortion plots")
-    
