@@ -8,7 +8,10 @@ from six.moves import urllib
 from test_data import (
         render_params, example_env,
         render_json_template, TEST_DATA_ROOT)
-from rendermodules.pointmatch.generate_point_matches_opencv import *
+from rendermodules.pointmatch.generate_point_matches_opencv import (
+    read_downsample_equalize_mask,
+    GeneratePointMatchesOpenCV
+    )
 from rendermodules.mesh_lens_correction.do_mesh_lens_correction import \
     make_mask_from_coords
 

@@ -3,7 +3,6 @@ Test stack fusion by affine-based registration and transform interpolation
 '''
 import copy
 import json
-import logging
 import os
 import random
 
@@ -218,8 +217,8 @@ def test_register_all_stacks(render, stack_DAG):
     registerchildrentest(stack_DAG)
 
 
-def compare_stacks_tilecenters(render, stack_hyp, stack_true, distance_thres=1.,
-                               testzs=None):
+def compare_stacks_tilecenters(render, stack_hyp, stack_true,
+                               distance_thres=1., testzs=None):
     validzs = set(renderapi.stack.get_z_values_for_stack(
         stack_true, render=render))
     zs = set(renderapi.stack.get_z_values_for_stack(

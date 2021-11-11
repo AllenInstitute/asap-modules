@@ -221,7 +221,7 @@ def test_apply_lens_correction(render, stack_no_lc, stack_lc,
 
 
 def test_label_append(render, stack_no_lc, stack_lc_label,
-                               example_tform_dict, test_points):
+                      example_tform_dict, test_points):
     params = {
         "render": render_params,
         "inputStack": stack_no_lc,
