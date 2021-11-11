@@ -13,11 +13,11 @@ from test_data import (
     test_pointmatch_parameters as pointmatch_example,
     test_pointmatch_parameters_qsub as pointmatch_example_qsub)
 
-from rendermodules.solver.solve import Solve_stack
-from rendermodules.pointmatch.create_tilepairs import TilePairClientModule
-from rendermodules.pointmatch.generate_point_matches_spark import (
+from asap.solver.solve import Solve_stack
+from asap.pointmatch.create_tilepairs import TilePairClientModule
+from asap.pointmatch.generate_point_matches_spark import (
     PointMatchClientModuleSpark)
-from rendermodules.pointmatch.generate_point_matches_qsub import (
+from asap.pointmatch.generate_point_matches_qsub import (
     PointMatchClientModuleQsub)
 
 

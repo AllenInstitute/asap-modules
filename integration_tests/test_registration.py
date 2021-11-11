@@ -4,7 +4,7 @@ import numpy as np
 
 from test_data import (
     render_params, example_env, render_json_template, TEST_DATA_ROOT)
-from rendermodules.registration.register_sections import (
+from asap.registration.register_sections import (
     RegisterSectionByPointMatch
     )
 

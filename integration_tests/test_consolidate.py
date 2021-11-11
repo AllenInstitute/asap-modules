@@ -8,10 +8,10 @@ import renderapi
 from test_data import (render_params,
                        cons_ex_tilespec_json,
                        cons_ex_transform_json)
-from rendermodules.module.render_module import RenderModuleException
-from rendermodules.stack.consolidate_transforms import (
+from asap.module.render_module import RenderModuleException
+from asap.stack.consolidate_transforms import (
     ConsolidateTransforms, consolidate_transforms)
-from rendermodules.stack import redirect_mipmaps, remap_zs
+from asap.stack import redirect_mipmaps, remap_zs
 
 EPSILON = .001
 render_params['project'] = "consolidate_test"

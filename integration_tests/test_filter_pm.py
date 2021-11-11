@@ -3,7 +3,7 @@ import pytest
 import renderapi
 import json
 import numpy as np
-from rendermodules.pointmatch_filter.filter_point_matches \
+from asap.pointmatch_filter.filter_point_matches \
         import FilterMatches, filter_plot
 from matplotlib.figure import Figure
 from test_data import (PRESTITCHED_STACK_INPUT_JSON,

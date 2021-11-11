@@ -1,4 +1,4 @@
-from rendermodules.module.render_module import (
+from asap.module.render_module import (
     RenderModule, RenderModuleException
     )
 import argschema

@@ -5,9 +5,9 @@ from test_data import (
         TEST_DATA_ROOT,
         render_params)
 
-from rendermodules.rough_align.downsample_mask_handler import (
+from asap.rough_align.downsample_mask_handler import (
         DownsampleMaskHandler, points_in_mask, polygon_list_from_mask)
-from rendermodules.module.render_module import \
+from asap.module.render_module import \
         RenderModuleException
 import pytest
 import numpy as np

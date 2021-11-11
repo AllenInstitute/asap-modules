@@ -3,10 +3,10 @@ import pytest
 import renderapi
 import json
 from test_data import TEST_DATA_ROOT, render_params
-from rendermodules.module.render_module import RenderModuleException
-from rendermodules.rough_align.pairwise_rigid_rough import \
+from asap.module.render_module import RenderModuleException
+from asap.rough_align.pairwise_rigid_rough import \
         PairwiseRigidRoughAlignment
-from rendermodules.rough_align.make_anchor_stack import \
+from asap.rough_align.make_anchor_stack import \
         MakeAnchorStack
 import numpy as np
 

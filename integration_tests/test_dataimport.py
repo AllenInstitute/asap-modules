@@ -6,11 +6,11 @@ import logging
 import pytest
 import renderapi
 import marshmallow as mm
-from rendermodules.utilities.pillow_utils import Image
-from rendermodules.module.render_module import RenderModuleException
-from rendermodules.dataimport import generate_EM_tilespecs_from_metafile
-from rendermodules.dataimport import generate_mipmaps
-from rendermodules.dataimport import apply_mipmaps_to_render
+from asap.utilities.pillow_utils import Image
+from asap.module.render_module import RenderModuleException
+from asap.dataimport import generate_EM_tilespecs_from_metafile
+from asap.dataimport import generate_mipmaps
+from asap.dataimport import apply_mipmaps_to_render
 from test_data import (render_params,
                        METADATA_FILE, MIPMAP_TILESPECS_JSON,
                        MIPMAP_TRANSFORMS_JSON, scratch_dir)

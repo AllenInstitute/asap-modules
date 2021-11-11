@@ -6,9 +6,9 @@ from test_data import (render_params,
                        swap_z_tspecs2,
                        swap_pt_matches1,
                        swap_pt_matches2)
-from rendermodules.module.render_module import RenderModuleException
-from rendermodules.stack import swap_zs
-from rendermodules.pointmatch.swap_point_match_collections import (
+from asap.module.render_module import RenderModuleException
+from asap.stack import swap_zs
+from asap.pointmatch.swap_point_match_collections import (
     SwapPointMatchesModule)
 
 

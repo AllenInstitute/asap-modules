@@ -10,10 +10,10 @@ from test_data import (PRESTITCHED_STACK_INPUT_JSON,
                        render_params,
                        montage_qc_project)
 
-from rendermodules.em_montage_qc.detect_montage_defects import (
+from asap.em_montage_qc.detect_montage_defects import (
     DetectMontageDefectsModule)
-from rendermodules.module.render_module import RenderModuleException
-from rendermodules.em_montage_qc import detect_montage_defects
+from asap.module.render_module import RenderModuleException
+from asap.em_montage_qc import detect_montage_defects
 
 
 @pytest.fixture(scope='module')

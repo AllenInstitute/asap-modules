@@ -5,7 +5,7 @@ import tempfile
 from jinja2 import Environment, FileSystemLoader
 import marshmallow
 
-pool_size = os.environ.get('RENDERMODULES_POOL_SIZE', 5)
+pool_size = os.environ.get('ASAP_POOL_SIZE', 5)
 
 render_host = os.environ.get(
     'RENDER_HOST', 'renderservice')
@@ -19,7 +19,7 @@ client_script_location = os.environ.get(
     ('/shared/render/render-ws-java-client/'
      'src/main/scripts/'))
 
-# rendermodules test compares with integer
+# asap test compares with integer
 try:
     render_port = int(render_port)
 except ValueError:
@@ -370,10 +370,10 @@ FUSION_TRANSFORM_JSON = render_json_template(
 # whether to test legacy (deprecated) modules
 b = marshmallow.fields.Boolean()
 test_legacy = b.deserialize(os.environ.get(
-    "RENDERMODULES_TEST_LEGACY", False))
+    "ASAP_TEST_LEGACY", False))
 test_legacy_lens_correction = b.deserialize(os.environ.get(
-    "RENDERMODULES_TEST_LEGACY_LC", test_legacy))
+    "ASAP_TEST_LEGACY_LC", test_legacy))
 test_legacy_montage = b.deserialize(os.environ.get(
-    "RENDERMODULES_TEST_LEGACY_MONTAGE", test_legacy))
+    "ASAP_TEST_LEGACY_MONTAGE", test_legacy))
 test_legacy_rough = b.deserialize(os.environ.get(
-    "RENDERMODULES_TEST_LEGACY_ROUGH", test_legacy))
+    "ASAP_TEST_LEGACY_ROUGH", test_legacy))

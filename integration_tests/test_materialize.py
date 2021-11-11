@@ -9,8 +9,8 @@ import pytest
 
 
 import renderapi
-from rendermodules.utilities.pillow_utils import Image
-from rendermodules.materialize import materialize_sections
+from asap.utilities.pillow_utils import Image
+from asap.materialize import materialize_sections
 from test_data import (render_params,
                        MATERIALIZE_BOX_JSON)
 
