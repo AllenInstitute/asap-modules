@@ -8,8 +8,8 @@ import copy
 import renderapi
 from six import viewkeys
 
-from ..module.render_module import RenderModule
-from .schemas import FuseStacksParameters, FuseStacksOutput
+from rendermodules.module.render_module import RenderModule
+from rendermodules.fusion.schemas import FuseStacksParameters, FuseStacksOutput
 
 example_parameters = {
     "render": {
@@ -201,5 +201,5 @@ class FuseStacksModule(RenderModule):
 
 
 if __name__ == "__main__":
-    mod = FuseStacksModule(input_data=example_parameters)
+    mod = FuseStacksModule()
     mod.run()

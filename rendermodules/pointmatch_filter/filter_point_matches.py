@@ -1,9 +1,12 @@
-import json
-import renderapi
-import numpy as np
-from rendermodules.module.render_module import RenderModule
-from .schemas import FilterSchema, FilterOutputSchema
+#!/usr/bin/env python
 import logging
+
+import numpy as np
+import renderapi
+
+from rendermodules.module.render_module import RenderModule
+from rendermodules.pointmatch_filter.schemas import (
+    FilterSchema, FilterOutputSchema)
 
 example = {
     "render": {
@@ -217,5 +220,5 @@ class FilterMatches(RenderModule):
 
 
 if __name__ == '__main__':
-    fmod = FilterMatches(input_data=example)
+    fmod = FilterMatches()
     fmod.run()

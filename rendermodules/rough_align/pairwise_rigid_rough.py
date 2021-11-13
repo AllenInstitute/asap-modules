@@ -1,13 +1,16 @@
-import renderapi
-import numpy as np
+#!/usr/bin/env python
+from functools import partial
 import json
+
+import numpy as np
+import renderapi
+
 from rendermodules.module.render_module import (
         StackTransitionModule,
         RenderModuleException)
 from rendermodules.rough_align.schemas import (
         PairwiseRigidSchema,
         PairwiseRigidOutputSchema)
-from functools import partial
 
 
 example = {
@@ -222,7 +225,7 @@ class PairwiseRigidRoughAlignment(StackTransitionModule):
             result = {}
             result['residuals'] = []
             for r in pool.map(check_func, fargs):
-                    result['residuals'].append(r['avg_residual'])
+                result['residuals'].append(r['avg_residual'])
 
         zall = np.arange(
                 self.args['minZ'],
@@ -274,5 +277,5 @@ class PairwiseRigidRoughAlignment(StackTransitionModule):
 
 
 if __name__ == '__main__':
-    prmod = PairwiseRigidRoughAlignment(input_data=example)
+    prmod = PairwiseRigidRoughAlignment()
     prmod.run()

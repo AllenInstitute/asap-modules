@@ -57,5 +57,5 @@ class RemapZsModule(StackTransitionModule):
 
 
 if __name__ == "__main__":
-    mod = RemapZsModule(input_data=example_input)
+    mod = RemapZsModule()
     mod.run()

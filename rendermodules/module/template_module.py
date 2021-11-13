@@ -1,6 +1,6 @@
-import renderapi
 from rendermodules.module.render_module import RenderModule
-from rendermodules.module.schemas import TemplateOutputParameters, TemplateParameters
+from rendermodules.module.schemas import (
+    TemplateOutputParameters, TemplateParameters)
 
 example_json = {
     "render": {

@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import json
 import logging
 import multiprocessing
@@ -7,11 +9,10 @@ import cv2
 import numpy as np
 import pathlib2 as pathlib
 import renderapi
-from six.moves import urllib
 
-from .schemas import \
-        PointMatchOpenCVParameters, \
-        PointMatchClientOutputSchema
+from rendermodules.pointmatch.schemas import (
+    PointMatchOpenCVParameters,
+    PointMatchClientOutputSchema)
 from rendermodules.utilities import uri_utils
 
 
@@ -91,8 +92,9 @@ def ransac_chunk(fargs):
 
 def read_downsample_equalize_mask_uri(
         impath, scale, CLAHE_grid=None, CLAHE_clip=None):
-    # im = cv2.imread(impath[0], 0)
-    im = cv2.imdecode(np.fromstring(uri_utils.uri_readbytes(impath[0]), np.uint8), 0)
+    im = cv2.imdecode(
+        np.fromstring(uri_utils.uri_readbytes(impath[0]), np.uint8),
+        0)
 
     im = cv2.resize(im, (0, 0),
                     fx=scale,
@@ -108,9 +110,10 @@ def read_downsample_equalize_mask_uri(
         im = cv2.equalizeHist(im)
 
     if impath[1] is not None:
-        mask = cv2.imdecode(np.fromstring(uri_utils.uri_readbytes(impath[1]), np.uint8), 0)
+        mask = cv2.imdecode(
+            np.fromstring(uri_utils.uri_readbytes(impath[1]), np.uint8),
+            0)
 
-        # mask = cv2.imread(impath[1], 0)
         mask = cv2.resize(mask, (0, 0),
                           fx=scale,
                           fy=scale,
@@ -283,13 +286,6 @@ class GeneratePointMatchesOpenCV(ArgSchemaParser):
             for i in index_list:
                 impaths = [[t.ip[0].imageUrl, t.ip[0].maskUrl]
                            for t in tilespecs[tile_index[i]]]
-                # impaths = [
-                #            [urllib.parse.unquote(
-                #                urllib.parse.urlparse(url).path)
-                #                if url is not None else None
-                #                for url in [t.ip[0].imageUrl, t.ip[0].maskUrl]]
-                #            for t in tilespecs[tile_index[i]]
-                #           ]
                 ids = [t.tileId for t in tilespecs[tile_index[i]]]
                 gids = [t.layout.sectionId
                         for t in tilespecs[tile_index[i]]]
@@ -310,5 +306,5 @@ class GeneratePointMatchesOpenCV(ArgSchemaParser):
 
 
 if __name__ == '__main__':
-    pm_mod = GeneratePointMatchesOpenCV(input_data=example)
+    pm_mod = GeneratePointMatchesOpenCV()
     pm_mod.run()

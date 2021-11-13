@@ -1,18 +1,13 @@
-import json
-import os
-import subprocess
-# from urlparse import urlparse
+#!/usr/bin/env python
 try:
     from urlparse import urlparse
 except ImportError:
     from urllib.parse import urlparse
-from argschema.fields import Bool, Float, Int, Nested, Str, InputDir
-from argschema.schemas import DefaultSchema
-import marshmallow as mm
 import renderapi
-from rendermodules.module.render_module import RenderModule, RenderModuleException
+
 from rendermodules.module.render_module import SparkModule
-from rendermodules.pointmatch.schemas import PointMatchClientParametersSpark,PointMatchClientOutputSchema
+from rendermodules.pointmatch.schemas import (
+    PointMatchClientParametersSpark, PointMatchClientOutputSchema)
 
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.pointmatch.generate_point_matches_spark"
@@ -26,11 +21,11 @@ example = {
         "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_20170613/render-ws-java-client/src/main/scripts"
     },
     "sparkhome": "/allen/programs/celltypes/workgroups/em-connectomics/ImageProcessing/utils/spark/",
-    "masterUrl":"spark://10.128.124.100:7077",
+    "masterUrl": "spark://10.128.124.100:7077",
     "logdir": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch/sparkLogs/",
     "jarfile": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_20170613/render-ws-spark-client/target/render-ws-spark-client-0.3.0-SNAPSHOT-standalone.jar",
-    "className":"org.janelia.render.client.spark.SIFTPointMatchClient",
-    "baseDataUrl":"http://em-131fs:8080/render-ws/v1",
+    "className": "org.janelia.render.client.spark.SIFTPointMatchClient",
+    "baseDataUrl": "http://em-131fs:8080/render-ws/v1",
     "owner": "gayathri_MM2",
     "collection": "mm2_rough_align_test",
     "pairJson": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch/rough/tilePairs/tile_pairs_mm2_montage_scape_test_z_1015_to_1035_dist_5.json",
@@ -47,27 +42,29 @@ example = {
     "matchMaxNumInliers": 200
 }
 
-def add_arg(l,argname,args):
-    value = args.get(argname,None)
+
+def add_arg(l, argname, args):
+    value = args.get(argname, None)
     if value is not None:
-        l+=["--{}".format(argname),"{}".format(args[argname])]
+        l += ["--{}".format(argname), "{}".format(args[argname])]
+
 
 def form_sift_params_list(args):
     sift_params = []
 
-    add_arg(sift_params,'SIFTfdSize',args)
-    add_arg(sift_params,'SIFTsteps',args)
-    add_arg(sift_params,'matchMaxEpsilon',args)
-    add_arg(sift_params,'maxFeatureCacheGb',args)
-    add_arg(sift_params,'SIFTminScale',args)
-    add_arg(sift_params,'SIFTmaxScale',args)
-    add_arg(sift_params,'renderScale',args)
-    add_arg(sift_params,'matchRod',args)
-    add_arg(sift_params,'matchMinInlierRatio',args)
-    add_arg(sift_params,'matchMinNumInliers',args)
-    add_arg(sift_params,'matchMaxNumInliers',args)
-    add_arg(sift_params,'clipWidth',args)
-    add_arg(sift_params,'clipHeight',args)
+    add_arg(sift_params, 'SIFTfdSize', args)
+    add_arg(sift_params, 'SIFTsteps', args)
+    add_arg(sift_params, 'matchMaxEpsilon', args)
+    add_arg(sift_params, 'maxFeatureCacheGb', args)
+    add_arg(sift_params, 'SIFTminScale', args)
+    add_arg(sift_params, 'SIFTmaxScale', args)
+    add_arg(sift_params, 'renderScale', args)
+    add_arg(sift_params, 'matchRod', args)
+    add_arg(sift_params, 'matchMinInlierRatio', args)
+    add_arg(sift_params, 'matchMinNumInliers', args)
+    add_arg(sift_params, 'matchMaxNumInliers', args)
+    add_arg(sift_params, 'clipWidth', args)
+    add_arg(sift_params, 'clipHeight', args)
     return sift_params
 
 
@@ -75,6 +72,7 @@ def get_host_port_dict_from_url(url):
     p = urlparse(url)
     return {'host': '{}://{}'.format(p.scheme, p.hostname),
             'port': p.port}
+
 
 class PointMatchClientModuleSpark(SparkModule):
     default_schema = PointMatchClientParametersSpark
@@ -135,14 +133,12 @@ class PointMatchClientModuleSpark(SparkModule):
     def get_args(cls, **kwargs):
         return cls.sanitize_cmd(cls.get_pointmatch_args(**kwargs))
 
-
     def run(self):
         r = self.run_spark_command()
         self.logger.debug("spark run completed with code {}".format(r))
 
-
-
-        # FIXME render object should be able to initialize without needing to be RenderModule
+        # FIXME render object should be able to initialize without
+        #   needing to be RenderModule
         mc = renderapi.pointmatch.get_matchcollections(
             self.args['owner'], **get_host_port_dict_from_url(
                 self.args['baseDataUrl']))
@@ -154,6 +150,5 @@ class PointMatchClientModuleSpark(SparkModule):
 
 
 if __name__ == "__main__":
-    module = PointMatchClientModuleSpark(input_data=example)
-    #module = PointMatchClientModuleSpark(schema_type=PointMatchClientParameters)
+    module = PointMatchClientModuleSpark()
     module.run()

@@ -1,16 +1,19 @@
+#!/usr/bin/env python
+import glob
+import os
+import pathlib2 as pathlib
+
+import cv2
+import numpy as np
 import renderapi
 from renderapi.errors import RenderError
+from shapely.geometry import Polygon, Point
+from six.moves import urllib
+
 from rendermodules.rough_align.schemas import (
         DownsampleMaskHandlerSchema)
 from rendermodules.module.render_module import (
         RenderModule, RenderModuleException)
-import glob
-import os
-import pathlib2 as pathlib
-import numpy as np
-import cv2
-from six.moves import urllib
-from shapely.geometry import Polygon, Point
 
 
 example = {
@@ -227,5 +230,5 @@ class DownsampleMaskHandler(RenderModule):
 
 
 if __name__ == "__main__":
-    dsmod = DownsampleMaskHandler(input_data=example, args=[])
+    dsmod = DownsampleMaskHandler()
     dsmod.run()

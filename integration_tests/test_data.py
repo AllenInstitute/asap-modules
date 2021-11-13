@@ -1,7 +1,8 @@
 import os
-from jinja2 import Environment, FileSystemLoader
 import json
 import tempfile
+
+from jinja2 import Environment, FileSystemLoader
 import marshmallow
 
 pool_size = os.environ.get('RENDERMODULES_POOL_SIZE', 5)
@@ -256,7 +257,7 @@ test_rough_parameters = render_json_template(
 
 rough_solver_example = render_json_template(
         example_env, 'solver_montage_test.json',
-        render_project = rough_project,
+        render_project=rough_project,
         render_host=render_host,
         render_owner=render_test_owner,
         render_port=render_port,
@@ -309,13 +310,17 @@ NONLINEAR_ROUGH_RAW_RESOLVEDTILES_JSON = os.path.join(
 NONLINEAR_ROUGH_DS_SCALE = 0.01
 
 # Rough QC test data
-MONTAGE_SCAPES_TSPECS = render_json_template(example_env, 'rough_qc_montage_scapes_tspecs.json',
-                                                test_data_root=TEST_DATA_ROOT)
+MONTAGE_SCAPES_TSPECS = render_json_template(
+    example_env, 'rough_qc_montage_scapes_tspecs.json',
+    test_data_root=TEST_DATA_ROOT)
 
-ROUGH_QC_TEST_PT_MATCHES = os.path.join(TEST_DATA_ROOT, "em_modules_test_data/rough_align_test_data/rough_test_pt_matches.json")
+ROUGH_QC_TEST_PT_MATCHES = os.path.join(
+    TEST_DATA_ROOT,
+    "em_modules_test_data/rough_align_test_data/rough_test_pt_matches.json")
 
-ROUGH_QC_OUT_STACK = render_json_template(example_env, 'rough_aligned_stack_ts_for_qc.json',
-                                                test_data_root=TEST_DATA_ROOT)
+ROUGH_QC_OUT_STACK = render_json_template(
+    example_env, 'rough_aligned_stack_ts_for_qc.json',
+    test_data_root=TEST_DATA_ROOT)
 
 # EM Montage QC data
 PRESTITCHED_STACK_INPUT_JSON = render_json_template(

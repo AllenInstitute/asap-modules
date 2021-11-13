@@ -110,5 +110,5 @@ class ValidateMaterialization(argschema.ArgSchemaParser):
 
 
 if __name__ == "__main__":
-    mod = ValidateMaterialization(input_data=example_input)
+    mod = ValidateMaterialization()
     mod.run()

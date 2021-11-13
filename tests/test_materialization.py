@@ -76,9 +76,9 @@ def basedir_mvparams_mvfiles(tmpdir):
                 raise
 
 
-def truncatefile(fn, l):
+def truncatefile(fn, length):
     """subprocess-based truncate for python2 on linux"""
-    subprocess.call(["truncate", "-s", str(int(l)), fn])
+    subprocess.call(["truncate", "-s", str(int(length)), fn])
 
 
 @pytest.mark.parametrize("excluded_keys", [

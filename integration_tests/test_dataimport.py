@@ -18,10 +18,10 @@ import os
 import copy
 
 
-
 @pytest.fixture(scope='module')
 def render():
     return renderapi.connect(**render_params)
+
 
 def test_generate_EM_metadata(render):
     assert isinstance(render, renderapi.render.RenderClient)
@@ -91,23 +91,27 @@ def outfile_test_and_remove(f, output_fn):
     assert not os.path.isfile(output_fn)
     return val
 
-def apply_generated_mipmaps(r, output_stack, generate_params,z=None):
+
+def apply_generated_mipmaps(r, output_stack, generate_params, z=None):
     ex = copy.deepcopy(apply_mipmaps_to_render.example)
     ex['render'] = r.make_kwargs()
     ex['input_stack'] = generate_params['input_stack']
     ex['output_stack'] = output_stack
     ex['mipmap_prefix'] = generate_params['output_prefix']
     ex['overwrite_zlayer'] = True
-    zvalues = renderapi.stack.get_z_values_for_stack(ex['input_stack'],render=r)
+    zvalues = renderapi.stack.get_z_values_for_stack(
+        ex['input_stack'], render=r)
     if z is not None:
-        ex['z']=z
-        ex.pop('zstart',None)
-        ex.pop('zend',None)
+        ex['z'] = z
+        ex.pop('zstart', None)
+        ex.pop('zend', None)
         zapplied = [z]
     else:
         ex['zstart'] = generate_params['zstart']
         ex['zend'] = generate_params['zend']
-        zapplied = [z for z in zvalues if z>=ex['zstart'] and z<=ex['zend']]
+        zapplied = [
+            z for z in zvalues if z >= ex['zstart'] and z <= ex['zend']
+            ]
 
     outfn = 'TEST_applymipmapsoutput.json'
     mod = apply_mipmaps_to_render.AddMipMapsToStack(
@@ -156,7 +160,7 @@ def resolvedtiles_to_mipmap():
 @pytest.fixture(scope='module')
 def input_stack(render, resolvedtiles_to_mipmap):
     # TODO should maybe make this  fixture to separate tests
-    test_input_stack='MIPMAPTEST'
+    test_input_stack = 'MIPMAPTEST'
 
     renderapi.stack.create_stack(test_input_stack, render=render)
     tspecs = resolvedtiles_to_mipmap.tilespecs
@@ -171,34 +175,6 @@ def input_stack(render, resolvedtiles_to_mipmap):
                         test_input_stack, render=render)))) == 0
     yield test_input_stack
     renderapi.stack.delete_stack(test_input_stack, render=render)
-
-"""
-def addMipMapsToRender_test(render,generate_params):
-    input_stack = generate_params['input_stack']
-    imgformat=generate_params['imgformat']
-    levels=generate_params['levels']
-    zvalues = renderapi.stack.get_z_values_for_stack(input_stack,render=render)
-    z = zvalues[0]
-
-    out_tilespecs=apply_mipmaps_to_render.addMipMapsToRender(render,
-                                                        input_stack,
-                                                        generate_params['output_dir'],
-                                                        imgformat,
-                                                        levels,
-                                                        z)
-    in_tileIdtotspecs = {
-        ts.tileId: ts for ts
-        in renderapi.tilespec.get_tile_specs_from_z(
-            input_stack,z, render=render)}
-
-    out_tileIdtotspecs = {
-        ts.tileId: ts for ts
-        in out_tilespecs}
-
-    for tId, out_ts in out_tileIdtotspecs.iteritems():
-        in_ts = in_tileIdtotspecs[tId]
-        validate_mipmap_generated(in_ts,out_ts,levels,imgformat)
-"""
 
 
 @pytest.mark.parametrize("method", ["PIL", "block_reduce"])
@@ -251,29 +227,30 @@ def test_make_mipmaps_single_z(render, input_stack, resolvedtiles_to_mipmap,
     apply_generated_mipmaps(render, output_stack, ex, z=ex['z'])
     renderapi.stack.delete_stack(output_stack, render=render)
 
-    ex['z']=ex['z']-1
+    ex['z'] = ex['z']-1
     with pytest.raises(RenderModuleException):
         outfn = str(tmpdir.join('TESTSINGLE_genmipmaps_fail.json'))
         mod = generate_mipmaps.GenerateMipMaps(
             input_data=ex, args=['--output_json', outfn])
         mod.run()
 
-def test_make_mipmaps_fail_no_z(render,input_stack,tmpdir):
+
+def test_make_mipmaps_fail_no_z(render, input_stack, tmpdir):
     ex = copy.copy(generate_mipmaps.example)
     ex['render'] = render.make_kwargs()
     ex['input_stack'] = input_stack
     ex['output_dir'] = scratch_dir
-    ex.pop('zstart',None)
-    ex.pop('zend',None)
-    ex.pop('z',None)
+    ex.pop('zstart', None)
+    ex.pop('zend', None)
+    ex.pop('z', None)
     outfn = str(tmpdir.join('TESTFAIL_genmipmaps.json'))
     with pytest.raises(mm.ValidationError):
         mod = generate_mipmaps.GenerateMipMaps(
-        input_data=ex, args=['--output_json', outfn])
+            input_data=ex, args=['--output_json', outfn])
 
 
 def test_create_mipmap_from_tuple(resolvedtiles_to_mipmap, tmpdir):
     ts = resolvedtiles_to_mipmap.tilespecs[0]
-    filename=generate_mipmaps.get_filepath_from_tilespec(ts)
-    mytuple = (filename,str(tmpdir))
+    filename = generate_mipmaps.get_filepath_from_tilespec(ts)
+    mytuple = (filename, str(tmpdir))
     generate_mipmaps.create_mipmap_from_tuple(mytuple)

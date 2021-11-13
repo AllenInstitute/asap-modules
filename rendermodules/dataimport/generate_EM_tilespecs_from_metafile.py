@@ -5,13 +5,14 @@ create tilespecs from TEMCA metadata file
 
 import json
 import os
+
 import numpy
 import renderapi
+
 from rendermodules.module.render_module import (
     StackOutputModule, RenderModuleException)
 from rendermodules.dataimport.schemas import (GenerateEMTileSpecsOutput,
                                               GenerateEMTileSpecsParameters)
-
 from rendermodules.utilities import uri_utils
 
 
@@ -67,12 +68,6 @@ class GenerateEMTileSpecsModule(StackOutputModule):
 
         imageUrl = uri_utils.uri_join(imgprefix, imgdata['img_path'])
 
-        # imageUrl = pathlib.Path(
-        #     os.path.abspath(os.path.join(
-        #         imgdir, imgdata['img_path']))).as_uri()
-        # if maskUrl is not None:
-        #         maskUrl = pathlib.Path(maskUrl).as_uri()
-
         ip = renderapi.image_pyramid.ImagePyramid()
         ip[0] = renderapi.image_pyramid.MipMap(imageUrl=imageUrl,
                                                maskUrl=maskUrl)
@@ -90,8 +85,6 @@ class GenerateEMTileSpecsModule(StackOutputModule):
             rotation=imgdata['img_meta']['angle'], pixelsize=pixelsize)
 
     def run(self):
-        # with open(self.args['metafile'], 'r') as f:
-        #     meta = json.load(f)
         meta = json.loads(uri_utils.uri_readbytes(self.args['metafile_uri']))
         roidata = meta[0]['metadata']
         imgdata = meta[1]['data']
@@ -138,5 +131,5 @@ class GenerateEMTileSpecsModule(StackOutputModule):
 
 
 if __name__ == "__main__":
-    mod = GenerateEMTileSpecsModule(input_data=example_input)
+    mod = GenerateEMTileSpecsModule()
     mod.run()

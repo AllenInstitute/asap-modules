@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 import os
+import shutil
 import subprocess
 import tempfile
-import shutil
+
 from argschema import ArgSchemaParser
+
 from rendermodules.deprecated.lens_correction.schemas import (
     LensCorrectionOutput, LensCorrectionParameters)
 from rendermodules.module.render_module import RenderModuleException

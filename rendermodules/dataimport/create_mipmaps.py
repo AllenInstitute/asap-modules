@@ -50,21 +50,6 @@ def writeImage(img, outpath, force_redo):
     imgio = io.BytesIO()
     img.save(imgio, format=imgfmt)
     uri_utils.uri_writebytes(outpath, imgio.getvalue())
-    # try:
-    #     os.makedirs(os.path.dirname(outpath), 0o775)
-    # except OSError as e:
-    #     pass  # TODO better validation
-
-    # makeImage = force_redo or not os.path.isfile(outpath)
-    # if makeImage:
-    #     try:
-    #         img.save(outpath)
-    #     except KeyError as e:
-    #         # unknown output format
-    #         raise(CreateMipMapException('KeyError - "%s"' % str(e)))
-    #     except IOError as e:
-    #         # file cannot be written to disk
-    #         raise(CreateMipMapException('IOError - "%s"' % str(e)))
 
 
 def mipmap_block_reduce(im, levels_file_map, block_func="mean",
@@ -152,7 +137,6 @@ def create_mipmaps_uri(inputImage, outputDirectory=None, method="block_reduce",
     # TODO this is for uri implementation
     inputImagepath = urllib.parse.urlparse(inputImage).path
     im = Image.open(io.BytesIO(uri_utils.uri_readbytes(inputImage)))
-    # im = Image.open(inputImage)
     if convertTo8bit:
         table = [i//256 for i in range(65536)]
         im = im.convert('I')
@@ -162,11 +146,6 @@ def create_mipmaps_uri(inputImage, outputDirectory=None, method="block_reduce",
         outputDirectory, str(level), '{basename}.{fmt}'.format(
             basename=inputImagepath.lstrip("/"), fmt=outputformat))
                        for level in mipmaplevels}
-    # levels_file_map = {int(level): os.path.join(
-    #     outputDirectory, str(level), '{basename}.{fmt}'.format(
-    #         basename=inputImage.lstrip(os.sep), fmt=outputformat))
-    #                    for level in mipmaplevels}
-    # levels_uri_map = levels_file_map
 
     try:
         method_funcs[method](
@@ -186,8 +165,8 @@ def create_mipmaps_legacy(inputImage, outputDirectory='.', *args, **kwargs):
         inputImage_uri, outputDirectory_uri, *args, **kwargs)
 
     levels_file_map = {
-        l: urllib.parse.unquote(urllib.parse.urlparse(u).path)
-        for l, u in levels_uri_map.items()}
+        lvl: urllib.parse.unquote(urllib.parse.urlparse(u).path)
+        for lvl, u in levels_uri_map.items()}
     return levels_file_map
 
 

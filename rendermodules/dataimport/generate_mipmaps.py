@@ -1,9 +1,12 @@
+from functools import partial
+
 import renderapi
 from six.moves import urllib
+
 from rendermodules.dataimport.create_mipmaps import (
     create_mipmaps, create_mipmaps_uri)
-from functools import partial
-from ..module.render_module import StackInputModule, RenderModuleException
+from rendermodules.module.render_module import (
+    StackInputModule, RenderModuleException)
 from rendermodules.dataimport.schemas import (
     GenerateMipMapsParameters, GenerateMipMapsOutput)
 
@@ -70,8 +73,6 @@ def make_tilespecs_and_cmds(render, inputStack, output_prefix, zvalues, levels,
                                inputStack, z)
 
         for ts in tilespecs:
-            # filepath_in = get_filepath_from_tilespec(ts)
-            # mipmap_args.append((filepath_in, output_dir))
             mipmap_args.append((ts.ip[0].imageUrl, output_prefix))
 
     mypartial = partial(
@@ -84,17 +85,6 @@ def make_tilespecs_and_cmds(render, inputStack, output_prefix, zvalues, levels,
         results = pool.map(mypartial, mipmap_args)
 
     return mipmap_args
-
-
-'''
-def verify_mipmap_generation(mipmap_args):
-    missing_files = []
-    for (m1,m2) in mipmap_args:
-        if not os.path.exists(m2):
-            missing_files.append((m1,m2))
-
-    return missing_files
-'''
 
 
 class GenerateMipMaps(StackInputModule):
@@ -112,8 +102,9 @@ class GenerateMipMaps(StackInputModule):
         """
         zvalues = self.get_overlapping_inputstack_zvalues()
         if not zvalues:
-            raise RenderModuleException("No sections found for stack {} for specified zs".format(
-                self.args['input_stack']))
+            raise RenderModuleException(
+                "No sections found for stack {} for specified zs".format(
+                    self.args['input_stack']))
 
         self.logger.debug("Creating mipmaps...")
 
@@ -133,6 +124,5 @@ class GenerateMipMaps(StackInputModule):
 
 
 if __name__ == "__main__":
-    # mod = GenerateMipMaps(input_data=example)
-    mod = GenerateMipMaps(schema_type=GenerateMipMapsParameters)
+    mod = GenerateMipMaps()
     mod.run()
