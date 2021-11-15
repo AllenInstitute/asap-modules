@@ -9,8 +9,9 @@ import renderapi
 from six import viewkeys, iteritems
 
 from rendermodules.module.render_module import RenderModule
-from .schemas import (RegisterSubvolumeParameters,
-                      RegisterSubvolumeOutputParameters)
+from rendermodules.fusion.schemas import (
+    RegisterSubvolumeParameters,
+    RegisterSubvolumeOutputParameters)
 
 example_parameters = {
     "render": {
@@ -94,5 +95,5 @@ class RegisterSubvolumeModule(RenderModule):
 
 
 if __name__ == "__main__":
-    mod = RegisterSubvolumeModule(input_data=example_parameters)
+    mod = RegisterSubvolumeModule()
     mod.run()

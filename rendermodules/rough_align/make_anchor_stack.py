@@ -1,11 +1,14 @@
-import renderapi
+#!/usr/bin/env python
 import json
+import re
+
+from lxml import etree
+import renderapi
+
 from rendermodules.module.render_module import (
         StackTransitionModule, RenderModuleException)
 from rendermodules.rough_align.schemas import (
         MakeAnchorStackSchema)
-from lxml import etree
-import re
 
 
 example = {
@@ -79,5 +82,5 @@ class MakeAnchorStack(StackTransitionModule):
 
 
 if __name__ == "__main__":
-    mmod = MakeAnchorStack(input_data=example, args=[])
+    mmod = MakeAnchorStack()
     mmod.run()

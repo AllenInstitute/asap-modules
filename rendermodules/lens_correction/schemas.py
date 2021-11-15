@@ -1,5 +1,4 @@
-from argschema import ArgSchema
-from argschema.fields import Bool, Float, Int, Nested, Str, InputFile, List, Dict
+from argschema.fields import Int, Nested, Str, InputFile, List, Dict
 from argschema.schemas import DefaultSchema
 from marshmallow.validate import OneOf
 import marshmallow
@@ -60,7 +59,8 @@ class ApplyLensCorrectionOutput(DefaultSchema):
                 description='stack to which transformed tiles were written')
     refId = Str(required=True,
                 description='unique identifier string used as reference ID')
-    missing_ts_zs = List(Int,
+    missing_ts_zs = List(
+        Int,
         required=False,
         default=[],
         missing=[],

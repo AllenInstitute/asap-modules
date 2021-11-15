@@ -1,16 +1,19 @@
+#!/usr/bin/env python
+
+from functools import partial
+import os
+
+import numpy as np
+import renderapi
+from six.moves import urllib
+import tifffile
+
+from rendermodules.module.render_module import StackTransitionModule
+from rendermodules.module.render_module import RenderModuleException
+from rendermodules.intensity_correction.schemas import MultIntensityCorrParams
+
 if __name__ == "__main__" and __package__ is None:
     __package__ = "rendermodules.intensity_correction.apply_muliplicative_correction"
-import os
-import renderapi
-from functools import partial
-import numpy as np
-import tifffile
-from ..module.render_module import RenderModule
-from ..module.render_module import StackTransitionModule
-from ..module.render_module import RenderModuleException
-from rendermodules.intensity_correction.schemas import MultIntensityCorrParams
-from six.moves import urllib
-
 
 example_input = {
     "render": {
@@ -29,7 +32,7 @@ example_input = {
 }
 
 
-def intensity_corr(img, ff,clip,scale_factor,clip_min,clip_max):
+def intensity_corr(img, ff, clip, scale_factor, clip_min, clip_max):
     """utility function to correct an image with a flatfield correction
     will take img and return
     img_out = img * max(ff) / (ff + .0001)
@@ -71,9 +74,11 @@ def getImage(ts, channel=None):
     ==========
     ts: renderapi.tilespec.TileSpec
         tilespec to get images from
-        (presently assumes this is a tiff image whose URL can be read with tifffile)
+        (presently assumes this is a tiff image whose URL can be
+        read with tifffile)
     channel: str
-        channel name to get image of, default=None which will default to the non channel image pyramid
+        channel name to get image of, default=None which will
+        default to the non channel image pyramid
     Returns
     =======
     numpy.array
@@ -83,19 +88,24 @@ def getImage(ts, channel=None):
         mml = ts.ip[0]
     else:
         if ts.channels is None:
-            raise RenderModuleException('No channels exist for this tilespec (ts.tileId={}'.format(ts.tileId))
+            raise RenderModuleException(
+                'No channels exist for this tilespec (ts.tileId={}'.format(
+                    ts.tileId))
         else:
             try:
-                chan = next(ch for ch in ts.channels if ch.name==channel)
+                chan = next(ch for ch in ts.channels if ch.name == channel)
                 mml = chan.ip[0]
-            except StopIteration as e:
-                raise RenderModuleException('Tilespec {} does not contain channel {}'.format(ts.tileId,channel))
+            except StopIteration:
+                raise RenderModuleException(
+                    'Tilespec {} does not contain channel {}'.format(
+                        ts.tileId, channel))
 
     url = urllib.parse.unquote(urllib.parse.urlparse(
         str(mml.imageUrl)).path)
     img0 = tifffile.imread(url)
     (N, M) = img0.shape
     return N, M, img0
+
 
 def write_image(dirout, orig_imageurl, Res, stackname, z):
     [head, tail] = os.path.split(orig_imageurl)
@@ -104,16 +114,20 @@ def write_image(dirout, orig_imageurl, Res, stackname, z):
     tifffile.imsave(outImage, Res)
     return outImage
 
-def process_tile(C, dirout, stackname, clip, scale_factor, clip_min, clip_max, input_ts, corr_dict=None):
+
+def process_tile(C, dirout, stackname, clip, scale_factor, clip_min, clip_max,
+                 input_ts, corr_dict=None):
     """function to correct each tile in the input_ts with the matrix C,
     and potentially move the original tiles to a new location.abs
 
     Parameters
     ==========
     C: numpy.array
-        a 2d numpy array of uint16 or uint8 that represents the correction to apply
+        a 2d numpy array of uint16 or uint8 that represents the
+        correction to apply
     corr_dict: dict or None
-        a dictionary with keys of strings of channel names and values of corrections (as with C).
+        a dictionary with keys of strings of channel names and values
+        of corrections (as with C).
         If None, C will be applied to each channel, if they exist.
     dirout: str
         the path to the directory to save all corrected images
@@ -122,8 +136,9 @@ def process_tile(C, dirout, stackname, clip, scale_factor, clip_min, clip_max, i
     """
     [N1, M1, I] = getImage(input_ts)
     Res = intensity_corr(I, C, clip, scale_factor, clip_min, clip_max)
-    outImage = write_image(dirout, input_ts.ip[0].imageUrl, Res, stackname, input_ts.z)
-    
+    outImage = write_image(
+        dirout, input_ts.ip[0].imageUrl, Res, stackname, input_ts.z)
+
     output_ts = input_ts
     mm = renderapi.image_pyramid.MipMap(imageUrl=outImage)
     output_ts.ip = renderapi.image_pyramid.ImagePyramid()
@@ -136,13 +151,16 @@ def process_tile(C, dirout, stackname, clip, scale_factor, clip_min, clip_max, i
                 CC = corr_dict[chan.name]
             else:
                 CC = C
-            CRes = intensity_corr(I, CC, clip, scale_factor, clip_min, clip_max)
-            chan_outImage = write_image(dirout, chan.ip[0].imageUrl, CRes, stackname, input_ts.z)
-            mm = renderapi.image_pyramid.MipMap(imageUrl = chan_outImage)
+            CRes = intensity_corr(
+                I, CC, clip, scale_factor, clip_min, clip_max)
+            chan_outImage = write_image(
+                dirout, chan.ip[0].imageUrl, CRes, stackname, input_ts.z)
+            mm = renderapi.image_pyramid.MipMap(imageUrl=chan_outImage)
             chan.ip = renderapi.image_pyramid.ImagePyramid()
-            chan.ip[0]=mm
+            chan.ip[0] = mm
 
     return output_ts
+
 
 class MultIntensityCorr(StackTransitionModule):
     default_schema = MultIntensityCorrParams
@@ -166,8 +184,6 @@ class MultIntensityCorr(StackTransitionModule):
             for chan in corr_ts.channels:
                 Nc, Mc, CC = getImage(corr_ts, chan.name)
                 corr_dict[chan.name] = CC
-        
-        outdir = self.args['output_directory']
 
         mypartial = partial(
             process_tile,
@@ -190,16 +206,17 @@ class MultIntensityCorr(StackTransitionModule):
         if self.args['overwrite_zlayer']:
             try:
                 renderapi.stack.delete_section(
-                    self.args['output_stack'], self.zValues[0],  # self.args['z_index'],
+                    self.args['output_stack'], self.zValues[0],
                     render=self.render)
             except renderapi.errors.RenderError as e:
                 self.logger.error(e)
 
         renderapi.client.import_tilespecs_parallel(
             self.args['output_stack'], output_tilespecs,
-            poolsize = self.args['pool_size'],render=self.render,close_stack=self.args['close_stack'])
+            poolsize=self.args['pool_size'],
+            render=self.render, close_stack=self.args['close_stack'])
 
 
 if __name__ == "__main__":
-    mod = MultIntensityCorr(input_data=example_input)
+    mod = MultIntensityCorr()
     mod.run()

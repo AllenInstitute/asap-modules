@@ -2,7 +2,6 @@
 import os
 
 import renderapi
-from six.moves import urllib
 
 from rendermodules.module.render_module import StackTransitionModule
 from rendermodules.lens_correction.schemas import \
@@ -91,22 +90,18 @@ class ApplyLensCorrection(StackTransitionModule):
 
         tspecs = renderapi.tilespec.get_tile_specs_from_z(
             self.input_stack, self.zValues[0], render=r)
-        levels = [int(l) for l in tspecs[0].ip.levels]
+        levels = [int(lvl) for lvl in tspecs[0].ip.levels]
         # make mask mipmaps
         mask_mm_list = {}
         if self.args['maskUrl_uri'] is not None:
-            # root, ext = os.path.splitext(
-            #     urllib.parse.unquote(urllib.parse.urlparse(
-            #         self.args['maskUrl']).path))
             fmt = os.path.splitext(
                 uri_utils.uri_basename(
                     self.args["maskUrl_uri"]))[-1].lstrip(".")
             mask_mm_list = create_mipmaps_uri(
                 self.args['maskUrl_uri'],
-                outputDirectory=uri_utils.uri_prefix(self.args['maskUrl_uri']),  # os.path.dirname(self.args['maskUrl']),
+                outputDirectory=uri_utils.uri_prefix(self.args['maskUrl_uri']),
                 mipmaplevels=levels,
                 outputformat=fmt,
-                # outputformat=ext.split('.')[-1],
                 convertTo8bit=False,
                 force_redo=True,
                 block_func="min")
@@ -120,7 +115,7 @@ class ApplyLensCorrection(StackTransitionModule):
             for ts in tspecs:
                 ts.tforms = [ref_lc] + ts.tforms
                 for lvl, maskUrl in mask_mm_list.items():
-                    ts.ip[lvl].maskUrl = maskUrl  # pathlib.Path(maskUrl).as_uri()
+                    ts.ip[lvl].maskUrl = maskUrl
                 new_tspecs.append(ts)
 
         renderapi.stack.create_stack(outputStack, render=r)
@@ -130,9 +125,10 @@ class ApplyLensCorrection(StackTransitionModule):
 
         missing_ts_zs = []
         for z in self.zValues:
-            job_success = self.validate_tilespecs(self.input_stack, outputStack, z)
+            job_success = self.validate_tilespecs(
+                self.input_stack, outputStack, z)
             if not job_success:
-               missing_ts_zs.append(z)
+                missing_ts_zs.append(z)
 
         # output dict
         output = {}
@@ -147,5 +143,5 @@ class ApplyLensCorrection(StackTransitionModule):
 
 
 if __name__ == '__main__':
-    module = ApplyLensCorrection(input_data=example_input)
+    module = ApplyLensCorrection()
     module.run()

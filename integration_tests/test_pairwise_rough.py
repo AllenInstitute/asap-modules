@@ -123,9 +123,9 @@ def calc_residuals(tspecs, matches):
         p = np.array(m['matches']['p']).transpose()
         q = np.array(m['matches']['q']).transpose()
         for tf in tspecs[pind].tforms:
-                p = tf.tform(p)
+            p = tf.tform(p)
         for tf in tspecs[qind].tforms:
-                q = tf.tform(q)
+            q = tf.tform(q)
         res += np.linalg.norm(p - q, axis=1).tolist()
     return res
 

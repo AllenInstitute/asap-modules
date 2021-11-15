@@ -1,21 +1,23 @@
-import os
+#!/usr/bin/env python
+import logging
+
 import numpy as np
 import renderapi
-import logging
-from functools import partial
 from renderapi.transform import AffineModel, RigidModel, SimilarityModel
-from ..module.render_module import RenderModule
-from .schemas import RegisterSectionSchema, RegisterSectionOutputSchema
+
+from rendermodules.module.render_module import RenderModule
+from rendermodules.registration.schemas import (
+    RegisterSectionSchema, RegisterSectionOutputSchema)
 from rendermodules.stack.consolidate_transforms import consolidate_transforms
 
 example = {
     "render": {
-        'host':'em-131db',
-        'port':8080,
-        'owner':"TEM",
-        'project':"247488_8R",
-        'client_scripts':"/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts",
-        'memGB':'2G'
+        'host': 'em-131db',
+        'port': 8080,
+        'owner': "TEM",
+        'project': "247488_8R",
+        'client_scripts': "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts",
+        'memGB': '2G'
     },
     "reference_stack": "combined_133_pre_fix",
     "moving_stack": "combined_133_pre_fix",
@@ -30,15 +32,20 @@ example = {
 
 logger = logging.getLogger(__name__)
 
-def fit_model_to_points(render, ref_stack, moving_stack, match_collection, match_owner, Transform, ref_z, moving_z, consolidate):
+
+def fit_model_to_points(render, ref_stack, moving_stack, match_collection,
+                        match_owner, Transform, ref_z, moving_z, consolidate):
     # tilespecs for both sections
-    ref_tspecs = renderapi.tilespec.get_tile_specs_from_z(ref_stack, ref_z, render=render)
-    moving_tspecs = renderapi.tilespec.get_tile_specs_from_z(moving_stack, moving_z, render=render)
+    ref_tspecs = renderapi.tilespec.get_tile_specs_from_z(
+        ref_stack, ref_z, render=render)
+    moving_tspecs = renderapi.tilespec.get_tile_specs_from_z(
+        moving_stack, moving_z, render=render)
 
     for i, tspec in enumerate(ref_tspecs):
         pid = tspec.tileId
         pgroup = tspec.layout.sectionId
-        match = renderapi.pointmatch.get_matches_involving_tile(match_collection, pgroup, pid, owner=match_owner, render=render)[0]
+        match = renderapi.pointmatch.get_matches_involving_tile(
+            match_collection, pgroup, pid, owner=match_owner, render=render)[0]
         p_pts = []
         q_pts = []
         if match['pId'] == pid:
@@ -53,18 +60,19 @@ def fit_model_to_points(render, ref_stack, moving_stack, match_collection, match
 
         tspecq = next(ts for ts in moving_tspecs if ts.tileId == qid)
 
-        B = renderapi.transform.estimate_dstpts(tspecq.tforms, q_pts) # source points (moving points)
-        A = renderapi.transform.estimate_dstpts(tspec.tforms, p_pts) # dest points (ref points)
+        B = renderapi.transform.estimate_dstpts(
+            tspecq.tforms, q_pts)  # source points (moving points)
+        A = renderapi.transform.estimate_dstpts(
+            tspec.tforms, p_pts)  # dest points (ref points)
 
         final_transform = Transform()
-        final_transform.estimate(B,A)
+        final_transform.estimate(B, A)
 
         tspecq.tforms.append(final_transform)
         if consolidate:
             newt = consolidate_transforms(tspecq.tforms, keep_ref_tforms=True)
             tspecq.tforms = newt
     return moving_tspecs
-
 
 
 class RegisterSectionByPointMatch(RenderModule):
@@ -90,20 +98,30 @@ class RegisterSectionByPointMatch(RenderModule):
                                         self.args['moving_z'],
                                         self.args['consolidate_transforms'])
 
-        stacks = self.render.run(renderapi.render.get_stacks_by_owner_project, owner=self.render.DEFAULT_OWNER, project=self.render.DEFAULT_PROJECT)
+        stacks = self.render.run(
+            renderapi.render.get_stacks_by_owner_project,
+            owner=self.render.DEFAULT_OWNER,
+            project=self.render.DEFAULT_PROJECT)
         if not(self.args['output_stack'] in stacks):
-            self.render.run(renderapi.stack.create_stack, self.args['output_stack'])
+            self.render.run(
+                renderapi.stack.create_stack, self.args['output_stack'])
         elif self.args['overwrite_output']:
-            self.render.run(renderapi.stack.set_stack_state, self.args['output_stack'], 'LOADING')
-            self.render.run(renderapi.stack.delete_section, self.args['output_stack'], self.args['moving_z'])
+            self.render.run(
+                renderapi.stack.set_stack_state, self.args['output_stack'],
+                'LOADING')
+            self.render.run(
+                renderapi.stack.delete_section, self.args['output_stack'],
+                self.args['moving_z'])
 
         renderapi.client.import_tilespecs_parallel(self.args['output_stack'],
                                                    tilespecs,
                                                    render=self.render,
                                                    close_stack=True)
-        self.output({'out_stack': self.args['output_stack'], 'registered_z': self.args['moving_z']})
+        self.output({
+            'out_stack': self.args['output_stack'],
+            'registered_z': self.args['moving_z']})
 
 
-if __name__=="__main__":
-    mod = RegisterSectionByPointMatch(input_data=example)
+if __name__ == "__main__":
+    mod = RegisterSectionByPointMatch()
     mod.run()

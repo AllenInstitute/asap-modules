@@ -11,8 +11,9 @@ import pytest
 import renderapi
 from rendermodules.utilities.pillow_utils import Image
 from rendermodules.materialize import materialize_sections
-from test_data import (render_params, 
+from test_data import (render_params,
                        MATERIALIZE_BOX_JSON)
+
 
 @pytest.fixture(scope='module')
 def render():
@@ -41,10 +42,12 @@ def input_materializeboxes_stack(render, tspecs_to_materialize):
     yield test_stack
     renderapi.stack.delete_stack(test_stack, render=render)
 
+
 format_ext_mapping = {
     'PNG': 'png',
     'TIF': 'tif',
     'JPEG': 'jpg'}
+
 
 def test_materialize_boxes(render, input_materializeboxes_stack, tmpdir):
     # TODO model this after pm test w/ spark
@@ -108,7 +111,6 @@ def test_materialize_boxes(render, input_materializeboxes_stack, tmpdir):
             rowdirs = {os.path.join(d, '') for d in os.listdir(zdir)
                        if os.path.isdir(os.path.join(zdir, d))}
             rows = [int(os.path.split(d)[0]) for d in rowdirs]
-
 
             cols = set()
             for rowdir in rowdirs:

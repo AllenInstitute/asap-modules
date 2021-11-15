@@ -1,6 +1,5 @@
 import os
 import pytest
-import logging
 import renderapi
 import json
 import copy
@@ -11,10 +10,10 @@ from test_data import (PRESTITCHED_STACK_INPUT_JSON,
                        render_params,
                        montage_qc_project)
 
-from rendermodules.em_montage_qc.detect_montage_defects import DetectMontageDefectsModule, detect_seams, detect_disconnected_tiles, detect_stitching_gaps
+from rendermodules.em_montage_qc.detect_montage_defects import (
+    DetectMontageDefectsModule)
 from rendermodules.module.render_module import RenderModuleException
 from rendermodules.em_montage_qc import detect_montage_defects
-from rendermodules.em_montage_qc import plots
 
 
 @pytest.fixture(scope='module')
@@ -23,27 +22,26 @@ def render():
     render = renderapi.connect(**render_params)
     return render
 
-#@pytest.fixture(scope='module')
-#def get_z():
-#    z = 1028
-#    return z
 
 @pytest.fixture(scope='module')
 def prestitched_stack_from_json():
     tilespecs = [renderapi.tilespec.TileSpec(json=d)
-                    for d in PRESTITCHED_STACK_INPUT_JSON]
+                 for d in PRESTITCHED_STACK_INPUT_JSON]
     return tilespecs
+
 
 @pytest.fixture(scope='module')
 def poststitched_stack_from_json():
     tilespecs = [renderapi.tilespec.TileSpec(json=d)
-                    for d in POSTSTITCHED_STACK_INPUT_JSON]
+                 for d in POSTSTITCHED_STACK_INPUT_JSON]
     return tilespecs
+
 
 @pytest.fixture(scope='module')
 def point_matches_from_json():
     point_matches = [d for d in MONTAGE_QC_POINT_MATCH_JSON]
     return point_matches
+
 
 @pytest.fixture(scope='module')
 def prestitched_stack(render, prestitched_stack_from_json):
@@ -71,6 +69,7 @@ def prestitched_stack(render, prestitched_stack_from_json):
                         test_prestitched_stack,
                         render=render)
 
+
 @pytest.fixture(scope='module')
 def poststitched_stack(render, poststitched_stack_from_json):
     test_poststitched_stack = 'poststitched_stack'
@@ -93,9 +92,10 @@ def poststitched_stack(render, poststitched_stack_from_json):
                         test_poststitched_stack, render=render)))) == 0
 
     yield test_poststitched_stack
-    #renderapi.stack.delete_stack(
-    #                    test_poststitched_stack,
-    #                    render=render)
+    # renderapi.stack.delete_stack(
+    #                     test_poststitched_stack,
+    #                     render=render)
+
 
 @pytest.fixture(scope='module')
 def point_match_collection(render, point_matches_from_json):
@@ -137,7 +137,9 @@ def test_detect_montage_defects(render,
     mod.run()
 
     # check if the output json exists and out_html exists
-    assert(os.path.exists(ex['output_json']) and os.path.isfile(ex['output_json']))
+    assert(
+        os.path.exists(ex['output_json']) and
+        os.path.isfile(ex['output_json']))
 
     # read the output json
     with open(ex['output_json'], 'r') as f:
@@ -145,9 +147,6 @@ def test_detect_montage_defects(render,
     f.close()
 
     assert(len(data['output_html']) > 0)
-    
-    #for op in data['output_html']:
-    #    assert(os.path.exists(op) and os.path.isfile(op))
 
     assert(len(data['seam_sections']) > 0)
     assert(len(data['hole_sections']) == 1)
@@ -163,16 +162,14 @@ def test_detect_montage_defects(render,
     ex['out_html_dir'] = None
     mod = DetectMontageDefectsModule(input_data=ex, args=[])
     mod.run()
-    
-   
 
 
-
-def test_detect_montage_defects_fail(render,
-                                prestitched_stack,
-                                poststitched_stack,
-                                point_match_collection,
-                                tmpdir_factory):
+def test_detect_montage_defects_fail(
+        render,
+        prestitched_stack,
+        poststitched_stack,
+        point_match_collection,
+        tmpdir_factory):
     output_directory = str(tmpdir_factory.mktemp('montage_qc_output'))
 
     ex = copy.copy(detect_montage_defects.example)
@@ -199,7 +196,8 @@ def test_stack_in_loading_state(render,
                                 poststitched_stack,
                                 point_match_collection,
                                 tmpdir_factory):
-    # also set pre and poststitched_stack to LOADING state to run the clone stack function
+    # also set pre and poststitched_stack to
+    #   LOADING state to run the clone stack function
     render.run(renderapi.stack.set_stack_state, poststitched_stack, 'LOADING')
     render.run(renderapi.stack.set_stack_state, prestitched_stack, 'LOADING')
 
@@ -217,8 +215,6 @@ def test_stack_in_loading_state(render,
     ex['neighbors_distance'] = 80
     ex['min_cluster_size'] = 12
     ex['output_json'] = os.path.join(output_directory, 'output.json')
-
-    #status, new_stack = detect_montage_defects.check_status_of_stack(render, poststitched_stack, [1028, 1029])
 
     mod = DetectMontageDefectsModule(input_data=ex, args=[])
     mod.run()

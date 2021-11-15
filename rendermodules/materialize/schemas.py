@@ -1,12 +1,14 @@
 import warnings
+
 import argschema
+from argschema.fields import (Str, OutputDir, Int, Boolean, Float,
+                              List, InputDir, Nested)
+import marshmallow
+from marshmallow import post_load
+
 from rendermodules.module.schemas import (
     RenderParameters, SparkParameters, MaterializedBoxParameters,
     ZRangeParameters, RenderParametersRenderWebServiceParameters)
-from argschema.fields import (Str, OutputDir, Int, Boolean, Float,
-                              List, InputDir, Nested)
-from marshmallow import post_load
-import marshmallow
 
 
 class Bounds(argschema.schemas.DefaultSchema):
@@ -74,7 +76,8 @@ class RenderSectionAtScaleParameters(RenderParameters):
         required=False,
         default=False,
         missing=False,
-        description='Do you want to use stack bounds while downsampling?. Default=False')
+        description=('Do you want to use stack bounds '
+                     'while downsampling?. Default=False'))
     pool_size = Int(
         required=False,
         default=20,
@@ -93,10 +96,12 @@ class RenderSectionAtScaleParameters(RenderParameters):
 class RenderSectionAtScaleOutput(argschema.schemas.DefaultSchema):
     image_directory = InputDir(
         required=True,
-        description='Directory in which the downsampled section images are saved')
+        description=('Directory in which the downsampled '
+                     'section images are saved'))
     temp_stack = Str(
         required=True,
-        description='The temp stack that was used to generate the downsampled sections')
+        description=('The temp stack that was used to '
+                     'generate the downsampled sections'))
 
 
 class MaterializeSectionsParameters(

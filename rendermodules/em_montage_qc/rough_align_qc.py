@@ -1,36 +1,35 @@
-
-import renderapi
-import numpy as np
-from math import pi
-from shapely.geometry import Polygon
-from shapely.ops import cascaded_union
-import multiprocessing as mp
-import json
-import requests
+#!/usr/bin/env python
 from functools import partial
-
 import tempfile
 
+import numpy as np
+import renderapi
+import requests
+import seaborn as sns
+from shapely.geometry import Polygon
+from shapely.ops import cascaded_union
+
+
 from bokeh.layouts import gridplot
-from bokeh.io import show, save
+from bokeh.io import save
 from bokeh.plotting import figure, output_file
-from bokeh.models import ColumnDataSource, Plot, LinearColorMapper, ColorBar, LinearAxis
+from bokeh.models import (
+    ColumnDataSource, LinearColorMapper, ColorBar)
 from bokeh.models.annotations import Title
-from bokeh.models.glyphs import Patches, Patch, Rect
+from bokeh.models.glyphs import Patches, Rect
 from bokeh.models.widgets import Tabs, Panel
-from bokeh.palettes import Plasma256, Viridis256
+from bokeh.palettes import Plasma256
 
 from rendermodules.utilities.matplotlib_utils import (
-    plt, mpl, PdfPages, PolygonPatch)
-
-import seaborn as sns
-
-from ..module.render_module import RenderModule, RenderModuleException
-from rendermodules.em_montage_qc.schemas import RoughQCSchema, RoughQCOutputSchema
+    plt, PdfPages, PolygonPatch)
+from rendermodules.module.render_module import (
+    RenderModule, RenderModuleException)
+from rendermodules.em_montage_qc.schemas import (
+    RoughQCSchema, RoughQCOutputSchema)
 
 
 example = {
-    "render":{
+    "render": {
         "host": "http://em-131db2",
         "port": 8080,
         "owner": "TEM",
@@ -47,15 +46,16 @@ example = {
 }
 
 
-
 def get_poly(stack, render, z):
     s = requests.Session()
     s.mount('http://', requests.adapters.HTTPAdapter(max_retries=5))
     z = float(z) / 1.0
-    rts = renderapi.resolvedtiles.get_resolved_tiles_from_z(stack, z, render=render, session=s)
+    rts = renderapi.resolvedtiles.get_resolved_tiles_from_z(
+        stack, z, render=render, session=s)
     outpolys = []
     for tile in rts.tilespecs:
-        bbox = tile.bbox_transformed(ndiv_inner=2, reference_tforms=rts.transforms)
+        bbox = tile.bbox_transformed(
+            ndiv_inner=2, reference_tforms=rts.transforms)
         outpolys.append(Polygon(bbox))
     return cascaded_union(outpolys)
 
@@ -68,7 +68,8 @@ def plot_poly(axis, p, face, edge, alpha):
         p = [p]
 
     for ip in p:
-        axis.add_patch(PolygonPatch(ip, facecolor=face, edgecolor=edge, alpha=alpha))
+        axis.add_patch(PolygonPatch(
+            ip, facecolor=face, edgecolor=edge, alpha=alpha))
         bounds = ip.bounds
 
         x1 = bounds[0] if bounds[0] < x1 else x1
@@ -82,6 +83,7 @@ def plot_poly(axis, p, face, edge, alpha):
     axis.set_ylim(y1-0.02*yr, yh+0.02*yr)
     axis.set_aspect('equal')
 
+
 def plot_bokeh_poly(p):
     if isinstance(p, Polygon):
         p = [p]
@@ -89,7 +91,6 @@ def plot_bokeh_poly(p):
     xs = []
     ys = []
 
-    #colors = ["#085494", "#f7fbff", "#9ecae1"]
     colors = ["red", "firebrick", "blue", "green"]
     nc = []
 
@@ -105,8 +106,11 @@ def plot_bokeh_poly(p):
 
     return source, nc
 
-def plot_distortion_pdf(pre_poly, post_poly, dio, doi, distortion, zvalues, out_dir):
-    out_pdf = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False, mode='w', dir=out_dir)
+
+def plot_distortion_pdf(
+        pre_poly, post_poly, dio, doi, distortion, zvalues, out_dir):
+    out_pdf = tempfile.NamedTemporaryFile(
+        suffix=".pdf", delete=False, mode='w', dir=out_dir)
     out_pdf.close()
 
     pdf = PdfPages(out_pdf.name)
@@ -175,7 +179,8 @@ def plot_distortion_bokeh(pre_poly, post_poly, dio, doi, distortion, zvalues):
         glyph = Patches(xs="xs", ys="ys", fill_color="gray", fill_alpha=1.0)
         plot1.add_glyph(source1, glyph=glyph)
 
-        glyph = Patches(xs="xs", ys="ys", fill_color="lightgray", fill_alpha=1.0)
+        glyph = Patches(xs="xs", ys="ys",
+                        fill_color="lightgray", fill_alpha=1.0)
         plot1.add_glyph(source2, glyph=glyph)
         plot1.title.text = "Alignment before and After for z={}".format(z)
 
@@ -187,15 +192,18 @@ def plot_distortion_bokeh(pre_poly, post_poly, dio, doi, distortion, zvalues):
 
         glyph = Patches(xs="xs", ys="ys", fill_color="white", fill_alpha=1.0)
         plot2.add_glyph(source4, glyph)
-        plot2.title.text = "Distortion value for z={} is {}".format(z, distortion[i])
+        plot2.title.text = "Distortion value for z={} is {}".format(
+            z, distortion[i])
 
         grid.append([plot1, plot2])
 
     grids = gridplot(grid)
     return grids
 
+
 def plot_ious_pdf(ious, zvalues, out_dir):
-    out_pdf = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False, mode='w', dir=out_dir)
+    out_pdf = tempfile.NamedTemporaryFile(
+        suffix=".pdf", delete=False, mode='w', dir=out_dir)
     out_pdf.close()
     pdf = PdfPages(out_pdf.name)
 
@@ -203,19 +211,18 @@ def plot_ious_pdf(ious, zvalues, out_dir):
     dz = (ious.shape[1]-1)//2
     ylabels = [str(z) for z in range(-dz, dz+1)]
 
-    tabs = []
     # one figure for every 200 sections
     newz = []
     newiou = []
     for i in range(0, len(zvalues), 200):
         if i+199 > len(zvalues):
             newz = zvalues[i:]
-            newiou = ious[i:,:]
+            newiou = ious[i:, :]
         else:
             newz = zvalues[i:i+199]
-            newiou = ious[i:i+199,:]
+            newiou = ious[i:i+199, :]
 
-        if len(newz)%per_row == 0:
+        if (len(newz) % per_row) == 0:
             rows = len(newz) // per_row
         else:
             rows = (len(newz) // per_row) + 1
@@ -224,8 +231,12 @@ def plot_ious_pdf(ious, zvalues, out_dir):
         if rows > 1:
             for r in range(rows):
                 start = r * per_row
-                sns.heatmap(newiou[start:start+per_row].T, ax=ax[r], linewidth=0.5, vmin=0.7, vmax=1.0)
-                ax[r].set_xticklabels([str(z) for z in newz[start:start+per_row]], rotation=90)
+                sns.heatmap(
+                    newiou[start:start+per_row].T, ax=ax[r],
+                    linewidth=0.5, vmin=0.7, vmax=1.0)
+                ax[r].set_xticklabels(
+                    [str(z) for z in newz[start:start+per_row]],
+                    rotation=90)
                 ax[r].set_yticklabels(ylabels)
         else:
             sns.heatmap(newiou.T, ax=ax, linewidth=0.5, vmin=0.7, vmax=1.0)
@@ -239,13 +250,16 @@ def plot_ious_pdf(ious, zvalues, out_dir):
 
     return out_pdf.name
 
+
 def plot_ious_bokeh(ious, zvalues):
     per_row = 50
     dz = (ious.shape[1]-1)//2
     ylabels = [z for z in range(-dz, dz+1)]
 
     mapper = LinearColorMapper(palette=Plasma256, low=0.0, high=1.0)
-    colorbar = ColorBar(color_mapper=mapper, major_label_text_font_size="5pt", label_standoff=12, location=(0,0))
+    colorbar = ColorBar(
+        color_mapper=mapper, major_label_text_font_size="5pt",
+        label_standoff=12, location=(0, 0))
     tabs = []
     # one figure for every 200 sections
     newz = []
@@ -253,18 +267,16 @@ def plot_ious_bokeh(ious, zvalues):
 
     t = Title()
     t.text = "IOU Plot"
-    xaxis = LinearAxis()
-    yaxis = LinearAxis()
 
     for i in range(0, len(zvalues), 200):
         if i+199 > len(zvalues):
             newz = zvalues[i:]
-            newiou = ious[i:,:]
+            newiou = ious[i:, :]
         else:
             newz = zvalues[i:i+199]
-            newiou = ious[i:i+199,:]
+            newiou = ious[i:i+199, :]
 
-        if len(newz)%per_row == 0:
+        if len(newz) % per_row == 0:
             rows = len(newz) // per_row
         else:
             rows = (len(newz) // per_row) + 1
@@ -272,37 +284,28 @@ def plot_ious_bokeh(ious, zvalues):
         plots = []
 
         if rows > 1:
-            #p.add_layout(xaxis, 'below')
-            #p.add_layout(yaxis, 'left')
 
             for r in range(rows):
                 start = r * per_row
                 xvalues = np.ndarray.flatten(newiou[start:start+per_row])
-                x_range1 = newz[start:start+per_row] #range(start, start+per_row+1)
+                x_range1 = newz[start:start+per_row]
                 x_range = np.repeat(x_range1, len(ylabels))
                 y_range = np.tile(ylabels, len(x_range1))
 
-                source = ColumnDataSource(dict(x=x_range, y=y_range, iou=xvalues))
+                source = ColumnDataSource(
+                    dict(x=x_range, y=y_range, iou=xvalues))
                 p = figure(title=t, plot_width=400*rows, plot_height=100*rows)
                 p.axis.axis_line_color = None
                 p.axis.major_tick_line_color = None
                 p.axis.major_label_text_font_size = "10pt"
                 p.axis.major_label_standoff = 0
-                #p.axis.major_label_orientation = 1.0
-                '''
-                glyph = Rect(x="x", y="y",
-                        width=1, height=1,
-                        fill_color={'field': 'iou', 'transform': mapper},
-                        line_color=None)
-                p.add_glyph(source, glyph)
-                '''
+
                 p.rect(x="x", y="y",
-                        width=1, height=1,
-                        source=source,
-                        fill_color={'field':'iou', 'transform': mapper},
-                        line_color=None)
+                       width=1, height=1,
+                       source=source,
+                       fill_color={'field': 'iou', 'transform': mapper},
+                       line_color=None)
                 plots.append(p)
-        #        tabs.append([p])
         else:
             xvalues = np.ndarray.flatten(newiou)
             x_range = np.repeat(zvalues, len(ylabels))
@@ -312,32 +315,22 @@ def plot_ious_bokeh(ious, zvalues):
             p = figure(title=t)
             source = ColumnDataSource(dict(x=x_range, y=y_range, iou=xvalues))
             glyph = Rect(x="x", y="y",
-                        width=1, height=1,
-                        fill_color={'field': 'iou', 'transform': mapper},
-                        line_color=None)
+                         width=1, height=1,
+                         fill_color={'field': 'iou', 'transform': mapper},
+                         line_color=None)
             p.add_glyph(source, glyph)
-            '''
-            p = figure(title=t)
-            source = ColumnDataSource(dict(x=x_range, y=y_range, iou=xvalues))
-            p.rect(x="x", y="y",
-                    width=1, height=1,
-                    source=source,
-                    fill_color={'field': 'iou', 'transform': mapper},
-                    line_color=None)
-            '''
             p.add_layout(colorbar, 'right')
-            #show(p)
-            #tabs.append([p])
             plots.append(p)
         tabs = [[p] for p in plots]
 
     grid = gridplot(tabs)
     return grid
 
-def compute_ious(polys, zvalues):
-    adjlist = [(x,y) for x,y in zip(zvalues, zvalues[1:]) if abs(x-y) == 1]
 
-    #account for any missing zvalues
+def compute_ious(polys, zvalues):
+    adjlist = [(x, y) for x, y in zip(zvalues, zvalues[1:]) if abs(x-y) == 1]
+
+    # account for any missing zvalues
     diff = [(y+x)//2 for x, y in zip(zvalues, zvalues[1:]) if abs(x-y) > 1]
     # compute IoU
     ious = np.zeros((len(zvalues)+len(diff), 3))
@@ -358,6 +351,7 @@ def compute_ious(polys, zvalues):
 
     return ious
 
+
 def compute_distortion(inpoly, outpoly, z):
     dio = inpoly.difference(outpoly)
     doi = outpoly.difference(inpoly)
@@ -365,13 +359,17 @@ def compute_distortion(inpoly, outpoly, z):
 
     return dio, doi, distortion
 
-def generate_bokeh_plots(ious, zrange, out_dir, pre_polys, post_polys, dio, doi, distortion, zvalues):
-    out_html = tempfile.NamedTemporaryFile(suffix=".html", delete=False, mode='w', dir=out_dir)
+
+def generate_bokeh_plots(ious, zrange, out_dir, pre_polys, post_polys,
+                         dio, doi, distortion, zvalues):
+    out_html = tempfile.NamedTemporaryFile(
+        suffix=".html", delete=False, mode='w', dir=out_dir)
     out_html.close()
 
     output_file(out_html.name)
 
-    grids = plot_distortion_bokeh(pre_polys, post_polys, dio, doi, distortion, zvalues)
+    grids = plot_distortion_bokeh(
+        pre_polys, post_polys, dio, doi, distortion, zvalues)
     iou_grids = plot_ious_bokeh(ious, zvalues)
 
     tabs = []
@@ -382,8 +380,11 @@ def generate_bokeh_plots(ious, zrange, out_dir, pre_polys, post_polys, dio, doi,
     save(plot_tabs)
     return out_html.name
 
-def generate_pdf_plots(ious, zrange, out_dir, pre_polys, post_polys, dio, doi, distortion, zvalues):
-    distortion_pdf = plot_distortion_pdf(pre_polys, post_polys, dio, doi, distortion, zvalues, out_dir)
+
+def generate_pdf_plots(ious, zrange, out_dir, pre_polys, post_polys,
+                       dio, doi, distortion, zvalues):
+    distortion_pdf = plot_distortion_pdf(
+        pre_polys, post_polys, dio, doi, distortion, zvalues, out_dir)
     iou_pdf = plot_ious_pdf(ious, zvalues, out_dir)
 
     return distortion_pdf, iou_pdf
@@ -395,15 +396,19 @@ class RoughAlignmentQC(RenderModule):
 
     def run(self):
         zvalues1 = self.render.run(renderapi.stack.get_z_values_for_stack,
-                                self.args['output_downsampled_stack'])
+                                   self.args['output_downsampled_stack'])
         zrange = range(self.args['minZ'], self.args['maxZ']+1)
         zvalues = list(set(zvalues1).intersection(set(zrange)))
         zvalues.sort()
         if len(zvalues) == 0:
-            raise RenderModuleException('No valid zvalues found in stack for given range {} - {}'.format(self.args['minZ'], self.args['maxZ']))
+            raise RenderModuleException(
+                ('No valid zvalues found in stack '
+                 'for given range {} - {}').format(
+                     self.args['minZ'], self.args['maxZ']))
 
         # get the boundary polygon for each section
-        mypartial1 = partial(get_poly, self.args['output_downsampled_stack'], self.render)
+        mypartial1 = partial(
+            get_poly, self.args['output_downsampled_stack'], self.render)
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
             boundary_polygons = pool.map(mypartial1, zvalues)
 
@@ -411,7 +416,8 @@ class RoughAlignmentQC(RenderModule):
         for poly, z in zip(boundary_polygons, zvalues):
             post_polys[z] = poly
 
-        mypartial2 = partial(get_poly, self.args['input_downsampled_stack'], self.render)
+        mypartial2 = partial(
+            get_poly, self.args['input_downsampled_stack'], self.render)
         with renderapi.client.WithPool(self.args['pool_size']) as pool:
             pre_boundary_polygons = pool.map(mypartial2, zvalues)
 
@@ -424,7 +430,6 @@ class RoughAlignmentQC(RenderModule):
 
         # compute ious
         ious = compute_ious(post_polys, zvalues)
-        #iou_plot = plot_ious(ious, zrange, self.args['output_dir'])
 
         # compute distortion
         distortion = []
@@ -432,26 +437,31 @@ class RoughAlignmentQC(RenderModule):
         doi = []
 
         for i, z in enumerate(zvalues):
-            di, do, dist = compute_distortion(pre_boundary_polygons[i], boundary_polygons[i], z)
+            di, do, dist = compute_distortion(
+                pre_boundary_polygons[i], boundary_polygons[i], z)
             dio.append(di)
             doi.append(do)
             distortion.append(dist)
 
         dist_plt_name = None
         iou_plt_name = None
-        if self.args['out_file_format'] == 'pdf': # pdf plots
-            dist_plt_name, iou_plt_name = generate_pdf_plots(ious, zrange, self.args['output_dir'], pre_boundary_polygons,
-                                                    boundary_polygons, dio, doi, distortion, zvalues)
+        if self.args['out_file_format'] == 'pdf':  # pdf plots
+            dist_plt_name, iou_plt_name = generate_pdf_plots(
+                ious, zrange, self.args['output_dir'], pre_boundary_polygons,
+                boundary_polygons, dio, doi, distortion, zvalues)
         else:
-            plot_name = generate_bokeh_plots(ious, zrange, self.args['output_dir'], pre_boundary_polygons,
-                                boundary_polygons, dio, doi, distortion, zvalues)
+            plot_name = generate_bokeh_plots(
+                ious, zrange, self.args['output_dir'], pre_boundary_polygons,
+                boundary_polygons, dio, doi, distortion, zvalues)
             dist_plt_name = plot_name
             iou_plt_name = plot_name
 
-        self.output({"iou_plot": iou_plt_name, "distortion_plot": dist_plt_name})
-
+        self.output({
+            "iou_plot": iou_plt_name,
+            "distortion_plot": dist_plt_name
+            })
 
 
 if __name__ == "__main__":
-    mod = RoughAlignmentQC(input_data=example)
+    mod = RoughAlignmentQC()
     mod.run()

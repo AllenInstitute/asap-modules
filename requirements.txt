@@ -8,10 +8,10 @@ pathlib2
 scipy
 rtree
 networkx
-bokeh
-bigfeta==1.0.3
+bokeh<=1.4.0
+bigfeta
 opencv-contrib-python<3.4.3.0
-em_stitch==0.2.4
+em_stitch
 matplotlib
 jinja2
 six

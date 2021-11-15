@@ -1,10 +1,16 @@
-import numpy as np
-from renderapi.transform import AffineModel, ReferenceTransform, Polynomial2DTransform, TransformList
+#!/usr/bin/env python
 from functools import partial
-import renderapi
-from rendermodules.stack.schemas import ConsolidateTransformsOutputParameters, ConsolidateTransformsParameters
-from rendermodules.module.render_module import RenderModule, RenderModuleException
 import logging
+
+import numpy as np
+import renderapi
+from renderapi.transform import (
+    AffineModel, ReferenceTransform, Polynomial2DTransform, TransformList)
+
+from rendermodules.stack.schemas import (
+    ConsolidateTransformsOutputParameters, ConsolidateTransformsParameters)
+from rendermodules.module.render_module import (
+    RenderModule, RenderModuleException)
 
 example_json = {
     "render": {
@@ -40,11 +46,10 @@ def dereference_tforms(tforms, ref_tforms):
                 mtf = next(
                     mt for mt in ref_tforms if mt.transformId == tf.refId)
                 deref_tforms.append(mtf)
-            except StopIteration as e:
+            except StopIteration:
                 raise RenderModuleException(
-                    ("reference transform: {} not found in provided refererence transforms {}".format(
-                                                                                                tf.refId,
-                                                                                                ref_tforms)))
+                    ("reference transform: {} not found in provided "
+                     "reference transforms {}".format(tf.refId, ref_tforms)))
         else:
             deref_tforms.append(tf)
     return deref_tforms
@@ -63,7 +68,6 @@ def consolidate_transforms(tforms, ref_tforms=[], logger=logging.getLogger(),
     tforms = (flatten_and_dereference_tforms(tforms, ref_tforms)
               if not keep_ref_tforms else flatten_tforms(tforms))
     tform_total = AffineModel()
-    start_index = 0
     total_affines = 0
     new_tform_list = []
 
@@ -75,7 +79,6 @@ def consolidate_transforms(tforms, ref_tforms=[], logger=logging.getLogger(),
         if isaffine:
             total_affines += 1
             tform_total = tform.concatenate(tform_total)
-            # tform_total.M=tform.M.dot(tform_total.M)
         else:
             logger.debug('consolidate_transforms: non affine {}'.format(tform))
             if total_affines > 0:
@@ -103,16 +106,11 @@ def process_z(render, stack, outstack, transform_slice, z):
         stack, z, render=render)
 
     for ts in resolved_tiles.tilespecs:
-        #logger.debug('process_z_make_json: tileId {}'.format(ts.tileId))
         ts.tforms[transform_slice] = consolidate_transforms(
             ts.tforms[transform_slice], resolved_tiles.transforms)
-        #logger.debug('consolatedate tformlist {}'.format(ts.tforms[0]))
 
-    #logger.debug("tileid:{} transforms:{}".format(
-    #    resolved_tiles.tilespecs[0].tileId, resolved_tiles.tilespecs[0].tforms))
     renderapi.client.import_tilespecs(outstack, resolved_tiles.tilespecs,
                                       resolved_tiles.transforms, render=render)
-    #json_filepath = renderapi.utils.renderdump_temp(resolved_tiles.tilespecs)
     return resolved_tiles
 
 
@@ -127,7 +125,7 @@ class ConsolidateTransforms(RenderModule):
             outstack = stack + self.args['postfix']
 
         # get z values in z value range specified or dynamically
-        # choose
+        #   choose
         zvalues = np.array(self.render.run(
             renderapi.stack.get_z_values_for_stack, stack))
         minZ = self.args.get('minZ', np.min(zvalues))
@@ -153,9 +151,6 @@ class ConsolidateTransforms(RenderModule):
                 self.args['transforms_slice'])
             resolved_tiles_list = pool.map(mypartial, zvalues)
 
-        # self.render.run(
-        #     renderapi.client.import_jsonfiles_parallel, outstack, json_files)
-
         if self.args['close_stack']:
             renderapi.stack.set_stack_state(
                 outstack,
@@ -168,6 +163,7 @@ class ConsolidateTransforms(RenderModule):
         }
         self.output(output_d)
 
+
 if __name__ == "__main__":
-    mod = ConsolidateTransforms(input_data=example_json)
+    mod = ConsolidateTransforms()
     mod.run()

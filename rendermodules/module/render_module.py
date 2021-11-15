@@ -92,7 +92,6 @@ class StackOutputModule(RenderModule):
         overwrite_zlayer = (self.overwrite_zlayer if overwrite_zlayer is None
                             else overwrite_zlayer)
 
-        renderapi.stack.create_stack(output_stack, render=render)
         if output_stack not in render.run(
                 renderapi.render.get_stacks_by_owner_project):
             # stack does not exist
@@ -110,19 +109,18 @@ class StackOutputModule(RenderModule):
             pool_size=pool_size, close_stack=close_stack, render=render)
 
     def validate_tilespecs(self, input_stack, output_stack, z, render=None):
-        missing_ts = []
-
         render = self.render if render is None else render
 
-        input_rs = renderapi.resolvedtiles.get_resolved_tiles_from_z(input_stack, z, render=render)
-        output_rs = renderapi.resolvedtiles.get_resolved_tiles_from_z(output_stack, z, render=render)
-        in_ids = set([t.tileId for t in input_rs.tilespecs])                                                                               
-        out_ids = set([t.tileId for t in output_rs.tilespecs])                                                                             
-        if in_ids != out_ids: # pragma no cover
+        input_rs = renderapi.resolvedtiles.get_resolved_tiles_from_z(
+            input_stack, z, render=render)
+        output_rs = renderapi.resolvedtiles.get_resolved_tiles_from_z(
+            output_stack, z, render=render)
+        in_ids = set([t.tileId for t in input_rs.tilespecs])
+        out_ids = set([t.tileId for t in output_rs.tilespecs])
+        if in_ids != out_ids:  # pragma: no cover
             return False
         else:
             return True
-        
 
 
 class StackTransitionModule(StackOutputModule, StackInputModule):

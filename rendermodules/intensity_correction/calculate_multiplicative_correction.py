@@ -1,14 +1,20 @@
-if __name__ == "__main__" and __package__ is None:
-    __package__ = "rendermodules.intensity_correction.calculate_multiplicative_correction"
-import os
-import renderapi
+#!/usr/bin/env python
+
 from functools import partial
+import os
+
 import numpy as np
-import tifffile
+import renderapi
 from scipy.ndimage.filters import gaussian_filter
+import tifffile
+
 from rendermodules.intensity_correction.apply_multiplicative_correction import getImage
 from rendermodules.intensity_correction.schemas import MakeMedianParams
-from rendermodules.module.render_module import RenderModule
+from rendermodules.module.render_module import (
+    RenderModule, RenderModuleException)
+
+if __name__ == "__main__" and __package__ is None:
+    __package__ = "rendermodules.intensity_correction.calculate_multiplicative_correction"
 
 example_input = {
     "render": {
@@ -49,11 +55,12 @@ def randomly_subsample_tilespecs(alltilespecs, numtiles):
     # make a tilespec for each z with median image as default image pyramid
 
 
-def make_median_image(alltilespecs, numtiles, outImage, pool_size, chan=None, gauss_size=10):
+def make_median_image(alltilespecs, numtiles, outImage, pool_size,
+                      chan=None, gauss_size=10):
     # read images and create stack
     N, M, img0 = getImage(alltilespecs[0], channel=chan)
     stack = np.zeros((N, M, numtiles), dtype=img0.dtype)
-    mypartial = partial(getImageFromTilespecs, alltilespecs, channel = chan)
+    mypartial = partial(getImageFromTilespecs, alltilespecs, channel=chan)
     indexes = range(0, numtiles)
     with renderapi.client.WithPool(pool_size) as pool:
         images = pool.map(mypartial, indexes)
@@ -83,7 +90,6 @@ class MakeMedian(RenderModule):
         alltilespecs = []
         numtiles = 0
         firstts = []
-        render = self.render
         outtilespecs = []
         ind = 0
 
@@ -91,7 +97,8 @@ class MakeMedian(RenderModule):
 
         for z in range(self.args['minZ'], self.args['maxZ'] + 1):
             tilespecs = self.render.run(
-                renderapi.tilespec.get_tile_specs_from_z, self.args['input_stack'], z)
+                renderapi.tilespec.get_tile_specs_from_z,
+                self.args['input_stack'], z)
             alltilespecs.extend(tilespecs)
             # used for easy creation of tilespecs for output stack
             firstts.append(tilespecs[0])
@@ -101,19 +108,22 @@ class MakeMedian(RenderModule):
             alltilespecs = randomly_subsample_tilespecs(
                 alltilespecs, self.args['num_images'])
 
-        stackInfo = renderapi.stack.get_full_stack_metadata(self.args['input_stack'],
-                                                            render=self.render)
+        stackInfo = renderapi.stack.get_full_stack_metadata(
+            self.args['input_stack'], render=self.render)
         channel_names = stackInfo['stats'].get('channelNames', [])
         # Quick fix to have the empty channel logic work when channelNames=[]
-        if len(channel_names) == 0:     
+        if len(channel_names) == 0:
             channel_names = [None]
 
-        #figure out which of our channels is the default channel
+        # figure out which of our channels is the default channel
         if channel_names[0] is not None:
             try:
-                default_chan = next(ch.name for ch in firstts[0].channels if ch.ip[0].imageUrl == firstts[0].ip[0].imageUrl )
+                default_chan = next((
+                    ch.name for ch in firstts[0].channels
+                    if ch.ip[0].imageUrl == firstts[0].ip[0].imageUrl))
             except StopIteration:
-                raise RenderModuleException("default channel doesn't match any channel")
+                raise RenderModuleException(
+                    "default channel doesn't match any channel")
 
         outdir = self.args['output_directory']
         if not os.path.exists(outdir):
@@ -123,10 +133,10 @@ class MakeMedian(RenderModule):
             chan_str = chan_name if chan_name is not None else ""
             outImage = outdir + \
                 "/%s_%s_%s_%d-%d.tif" % (self.args['file_prefix'],
-                                        self.args['output_stack'],
-                                        chan_str,
-                                        self.args['minZ'],
-                                        self.args['maxZ'])
+                                         self.args['output_stack'],
+                                         chan_str,
+                                         self.args['minZ'],
+                                         self.args['maxZ'])
             make_median_image(alltilespecs,
                               numtiles,
                               outImage,
@@ -134,9 +144,11 @@ class MakeMedian(RenderModule):
                               chan=chan_name)
             out_images.append(outImage)
 
-        for ind, z in enumerate(range(self.args['minZ'], self.args['maxZ'] + 1)):
-            # want many variations on this tilespec so making a copy by serializing/deserializing
-            ts = renderapi.tilespec.TileSpec(json = firstts[ind].to_dict())
+        for ind, z in enumerate(range(
+                self.args['minZ'], self.args['maxZ'] + 1)):
+            # want many variations on this tilespec so making a
+            #   copy by serializing/deserializing
+            ts = renderapi.tilespec.TileSpec(json=firstts[ind].to_dict())
             # want a different z for each one
             ts.z = z
             if channel_names[0] is None:
@@ -148,30 +160,34 @@ class MakeMedian(RenderModule):
             else:
                 channels = []
                 for chan_name, out_image in zip(channel_names, out_images):
-                    chan_orig = next(ch for ch in ts.channels if ch.name == chan_name)
+                    chan_orig = next((
+                        ch for ch in ts.channels if ch.name == chan_name))
                     mml = renderapi.image_pyramid.MipMap(
                         imageUrl=out_image)
                     ip = renderapi.image_pyramid.ImagePyramid()
-                    ip[0]=mml
+                    ip[0] = mml
                     chan_orig.ip = ip
                     channels.append(chan_orig)
-                # we want the default_chan median to be the default image pyramid 
-                ts.ip = next(med_ch.ip for med_ch in channels if med_ch.name == default_chan)
+                # we want the default_chan median to be the
+                #   default image pyramid
+                ts.ip = next((
+                    med_ch.ip for med_ch in channels
+                    if med_ch.name == default_chan))
                 ts.channels = channels
             outtilespecs.append(ts)
 
         # upload to render
         renderapi.stack.create_stack(
-            self.args['output_stack'], cycleNumber=2, cycleStepNumber=1, render=self.render)
+            self.args['output_stack'], cycleNumber=2, cycleStepNumber=1,
+            render=self.render)
         renderapi.stack.set_stack_state(
             self.args['output_stack'], "LOADING", render=self.render)
         renderapi.client.import_tilespecs_parallel(
             self.args['output_stack'], outtilespecs,
-            poolsize=self.args['pool_size'], render=self.render, close_stack=self.args['close_stack'])
-        # renderapi.stack.set_stack_state(
-        #    self.args['output_stack'], "COMPLETE", render=self.render)
+            poolsize=self.args['pool_size'], render=self.render,
+            close_stack=self.args['close_stack'])
 
 
 if __name__ == "__main__":
-    mod = MakeMedian(input_data=example_input)
+    mod = MakeMedian()
     mod.run()

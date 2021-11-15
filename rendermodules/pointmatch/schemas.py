@@ -246,6 +246,7 @@ class SwapPointMatches(RenderParameters):
         missing=5,
         description="Pool size")
 
+
 class SwapPointMatchesOutput(DefaultSchema):
     source_collection = Str(
         required=True,
