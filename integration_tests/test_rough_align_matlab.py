@@ -16,20 +16,20 @@ from test_data import (
         apply_rough_alignment_example as ex1,
         pool_size,
         test_legacy_rough)
-from rendermodules.module.render_module import RenderModuleException
-from rendermodules.materialize.render_downsample_sections import (
+from asap.module.render_module import RenderModuleException
+from asap.materialize.render_downsample_sections import (
     RenderSectionAtScale)
-from rendermodules.dataimport.make_montage_scapes_stack import (
+from asap.dataimport.make_montage_scapes_stack import (
     MakeMontageScapeSectionStack)
-from rendermodules.deprecated.rough_align.do_rough_alignment import (
+from asap.deprecated.rough_align.do_rough_alignment import (
     SolveRoughAlignmentModule)
-from rendermodules.rough_align.apply_rough_alignment_to_montages import (
+from asap.rough_align.apply_rough_alignment_to_montages import (
     ApplyRoughAlignmentTransform)
 
 # skip these tests if not explicitly asked for
 pytestmark = pytest.mark.skipif(not test_legacy_rough, reason=(
     "legacy code not being tested -- to test, "
-    "set environment variable RENDERMODULES_TEST_LEGACY_ROUGH"))
+    "set environment variable ASAP_TEST_LEGACY_ROUGH"))
 
 
 @pytest.fixture(scope='module')

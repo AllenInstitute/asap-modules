@@ -2,7 +2,7 @@ import pytest
 import renderapi
 import json
 import os
-from rendermodules.solver.solve import Solve_stack
+from asap.solver.solve import Solve_stack
 import numpy as np
 from test_data import (render_params,
                        example_dir,

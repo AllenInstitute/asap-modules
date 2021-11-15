@@ -24,13 +24,13 @@ from test_data import (
         apply_rough_alignment_example as ex1,
         rough_solver_example as solver_input,
         pool_size)
-from rendermodules.module.render_module import RenderModuleException
-from rendermodules.materialize.render_downsample_sections import (
+from asap.module.render_module import RenderModuleException
+from asap.materialize.render_downsample_sections import (
     RenderSectionAtScale, create_tilespecs_without_mipmaps)
-from rendermodules.dataimport.make_montage_scapes_stack import (
+from asap.dataimport.make_montage_scapes_stack import (
     MakeMontageScapeSectionStack, create_montage_scape_tile_specs)
-from rendermodules.solver.solve import Solve_stack
-from rendermodules.rough_align.apply_rough_alignment_to_montages import (
+from asap.solver.solve import Solve_stack
+from asap.rough_align.apply_rough_alignment_to_montages import (
     ApplyRoughAlignmentTransform)
 import shutil
 import numpy as np

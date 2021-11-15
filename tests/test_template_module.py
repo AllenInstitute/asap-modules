@@ -1,4 +1,4 @@
-from rendermodules.module.template_module import TemplateModule
+from asap.module.template_module import TemplateModule
 import json
 
 

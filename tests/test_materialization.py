@@ -16,9 +16,9 @@ import numpy
 from PIL import Image
 import pytest
 
-from rendermodules.materialize.validate_materialized_tilesource import (
+from asap.materialize.validate_materialized_tilesource import (
     ValidateMaterialization)
-from rendermodules.materialize.delete_materialized_tilesource import (
+from asap.materialize.delete_materialized_tilesource import (
     DeleteMaterializedSectionsModule)
 
 from tests_test_data import (TEST_MATERIALIZATION_JSON, pool_size)

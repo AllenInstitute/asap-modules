@@ -13,8 +13,8 @@ from six import viewkeys, iteritems
 
 from test_data import (FUSION_TILESPEC_JSON, FUSION_TRANSFORM_JSON,
                        render_params, pool_size)
-import rendermodules.fusion.register_adjacent_stack
-import rendermodules.fusion.fuse_stacks
+import asap.fusion.register_adjacent_stack
+import asap.fusion.fuse_stacks
 
 try:
     xrange
@@ -147,9 +147,9 @@ def get_random_rigid_tform(max_translation_tuple=(10, 10)):
 
 def test_register_first_stack(render, stack_DAG, tmpdir):
     RegisterSubvolumeModule = (
-        rendermodules.fusion.register_adjacent_stack.RegisterSubvolumeModule)
+        asap.fusion.register_adjacent_stack.RegisterSubvolumeModule)
     example_parameters = (
-        rendermodules.fusion.register_adjacent_stack.example_parameters)
+        asap.fusion.register_adjacent_stack.example_parameters)
 
     parentstack = stack_DAG['stack']
     child = stack_DAG['children'][0]
@@ -181,9 +181,9 @@ def test_register_first_stack(render, stack_DAG, tmpdir):
 
 def test_register_all_stacks(render, stack_DAG):
     RegisterSubvolumeModule = (
-        rendermodules.fusion.register_adjacent_stack.RegisterSubvolumeModule)
+        asap.fusion.register_adjacent_stack.RegisterSubvolumeModule)
     example_parameters = (
-        rendermodules.fusion.register_adjacent_stack.example_parameters)
+        asap.fusion.register_adjacent_stack.example_parameters)
 
     def registerchildrentest(node):
         for child in node['children']:
@@ -276,8 +276,8 @@ def compare_stacks_tilecenters(render, stack_hyp, stack_true,
 
 
 def test_fuse_stacks(render, stack_DAG, validstack, tmpdir):
-    FuseStacksModule = rendermodules.fusion.fuse_stacks.FuseStacksModule
-    example_parameters = rendermodules.fusion.fuse_stacks.example_parameters
+    FuseStacksModule = asap.fusion.fuse_stacks.FuseStacksModule
+    example_parameters = asap.fusion.fuse_stacks.example_parameters
 
     distance_thres = 1.  # central distance threshold in pixels
 
@@ -305,7 +305,7 @@ def test_skip_fusion(render, stack_DAG, validstack, tmpdir):
     # stack_DAG uses render-python objects
     input_DAG = json.loads(renderapi.utils.renderdumps(stack_DAG))
 
-    test_input = dict(rendermodules.fusion.fuse_stacks.example_parameters, **{
+    test_input = dict(asap.fusion.fuse_stacks.example_parameters, **{
         'render': render.make_kwargs(),
         'stacks': input_DAG,
         'output_stack': 'fuse_stacks_skipping_test'})
@@ -326,7 +326,7 @@ def test_skip_fusion(render, stack_DAG, validstack, tmpdir):
         validstack, render=render))
 
     outputfn = os.path.join(str(tmpdir), "fuse_stack_skipout.json")
-    fs = rendermodules.fusion.fuse_stacks.FuseStacksModule(
+    fs = asap.fusion.fuse_stacks.FuseStacksModule(
         input_data=test_input, args=['--output_json', outputfn])
     fs.run()
 

@@ -6,7 +6,7 @@ import json
 from test_data import (
     render_params, example_env,
     render_json_template, TEST_DATA_ROOT)
-from rendermodules.point_match_optimization.pt_match_optimization import (
+from asap.point_match_optimization.pt_match_optimization import (
     PtMatchOptimization
     )
 

@@ -9,8 +9,8 @@ from test_data import (
     MULTIPLICATIVE_INPUT_JSON,
     multiplicative_correction_example_dir,
     render_params)
-from rendermodules.intensity_correction.calculate_multiplicative_correction import MakeMedian
-from rendermodules.intensity_correction.apply_multiplicative_correction import (
+from asap.intensity_correction.calculate_multiplicative_correction import MakeMedian
+from asap.intensity_correction.apply_multiplicative_correction import (
     MultIntensityCorr, getImage, process_tile)
 
 
