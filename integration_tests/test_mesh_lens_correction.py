@@ -8,7 +8,7 @@ import numpy as np
 from bigfeta import jsongz
 from em_stitch.lens_correction.mesh_and_solve_transform import \
         MeshLensCorrectionException
-from rendermodules.mesh_lens_correction.do_mesh_lens_correction import \
+from asap.mesh_lens_correction.do_mesh_lens_correction import \
         MeshLensCorrection, make_mask
 from test_data import render_params, TEST_DATA_ROOT
 import copy
