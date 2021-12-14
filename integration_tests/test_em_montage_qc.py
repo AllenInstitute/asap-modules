@@ -14,6 +14,7 @@ from asap.em_montage_qc.detect_montage_defects import (
     DetectMontageDefectsModule)
 from asap.module.render_module import RenderModuleException
 from asap.em_montage_qc import detect_montage_defects
+from asap.em_montage_qc.distorted_montages import DetectDistortedMontagesModule
 
 
 @pytest.fixture(scope='module')
@@ -133,6 +134,9 @@ def test_detect_montage_defects(render,
     ex['min_cluster_size'] = 12
     ex['output_json'] = os.path.join(output_directory, 'output.json')
 
+    ex['threshold_cutoff'] = [0.005, 0.005]
+    
+
     mod = DetectMontageDefectsModule(input_data=ex, args=[])
     mod.run()
 
@@ -151,6 +155,7 @@ def test_detect_montage_defects(render,
     assert(len(data['seam_sections']) > 0)
     assert(len(data['hole_sections']) == 1)
     assert(len(data['seam_centroids']) > 0)
+    assert(len(data['distorted_sections']) == 0)
     assert(len(data['qc_passed_sections']) == 0)
 
     for s in data['seam_centroids']:
@@ -186,6 +191,8 @@ def test_detect_montage_defects_fail(
     ex['min_cluster_size'] = 12
     ex['output_json'] = os.path.join(output_directory, 'output.json')
 
+    ex['threshold_cutoff'] = [0.005, 0.005]
+
     mod = DetectMontageDefectsModule(input_data=ex, args=[])
     with pytest.raises(RenderModuleException):
         mod.run()
@@ -216,5 +223,30 @@ def test_stack_in_loading_state(render,
     ex['min_cluster_size'] = 12
     ex['output_json'] = os.path.join(output_directory, 'output.json')
 
+    ex['threshold_cutoff'] = [0.005, 0.005]
+
     mod = DetectMontageDefectsModule(input_data=ex, args=[])
     mod.run()
+
+
+def test_detect_distortion(render, poststitched_stack, tmpdir_factory):
+    
+    output_directory = str(tmpdir_factory.mktemp('montage_qc_output'))
+
+    ex = {}
+    ex['render'] = render_params
+    ex['input_stacks'] = [poststitched_stack]
+    ex['minZ'] = 1028
+    ex['maxZ'] = 1029
+    ex['output_json'] = os.path.join(output_directory, 'output.json')
+    ex['threshold_cutoff'] = [0.005, 0.005]
+
+    mod = DetectDistortedMontagesModule(input_data=ex, args=[])
+    mod.run()
+
+    # read the output json
+    with open(ex['output_json'], 'r') as f:
+        data = json.load(f)
+    f.close()
+
+    assert(len(data['distorted_sections']) == 0)
