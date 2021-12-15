@@ -1,3 +1,6 @@
+# Distortion metric logic borrowed from Russel Torres
+
+
 import concurrent.futures
 import matplotlib.pyplot as plt
 import seaborn as sns
