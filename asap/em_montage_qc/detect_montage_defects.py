@@ -58,23 +58,26 @@ def detect_seams(
     new_pts = pt_match_positions[
         np.where(tile_residuals >= residual_threshold), :][0]
 
-    # construct a KD Tree using these points
-    tree = cKDTree(new_pts)
-    # construct a networkx graph
-    G = nx.Graph()
-    # find the pairs of points within a distance to each other
-    pairs = tree.query_pairs(r=distance)
-    G.add_edges_from(pairs)
-    # get the connected subraphs from G
-    Gc = nx.connected_components(G)
-    # get the list of nodes in each component
-    nodes = sorted(Gc, key=len, reverse=True)
-    # filter nodes list with min_cluster_size
-    fnodes = [list(nn) for nn in nodes if len(nn) > min_cluster_size]
-    # get pts list for each filtered node list
-    points_list = [new_pts[mm, :] for mm in fnodes]
-    centroids = [[np.sum(pt[:, 0])/len(pt), np.sum(pt[:, 1])/len(pt)]
-                 for pt in points_list]
+    if len(new_pts) > 0:
+        # construct a KD Tree using these points
+        tree = cKDTree(new_pts)
+        # construct a networkx graph
+        G = nx.Graph()
+        # find the pairs of points within a distance to each other
+        pairs = tree.query_pairs(r=distance)
+        G.add_edges_from(pairs)
+        # get the connected subraphs from G
+        Gc = nx.connected_components(G)
+        # get the list of nodes in each component
+        nodes = sorted(Gc, key=len, reverse=True)
+        # filter nodes list with min_cluster_size
+        fnodes = [list(nn) for nn in nodes if len(nn) > min_cluster_size]
+        # get pts list for each filtered node list
+        points_list = [new_pts[mm, :] for mm in fnodes]
+        centroids = [[np.sum(pt[:, 0])/len(pt), np.sum(pt[:, 1])/len(pt)]
+                     for pt in points_list]
+    else:
+        centroids = []
     return centroids, allmatches, stats
 
 
