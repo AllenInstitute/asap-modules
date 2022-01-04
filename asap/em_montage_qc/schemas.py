@@ -31,11 +31,12 @@ class DetectDistortionParameters(
         required=False,
         default=[0.005, 0.005], 
         description='Threshold for MAD cutoff in x and y')
+    '''
     num_threads = argschema.fields.Int(
         required=False,
         default=20,
         description='Number of parallel threads')
-    '''
+    
     @post_load
     def add_match_collection_owner(self, data):
         if data['match_collection_owners'] is None:

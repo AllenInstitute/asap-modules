@@ -23,7 +23,7 @@ example = {
     "input_stacks": ["montage_stack"],
     "match_collections": ["render_test_pm_collection"],
     "zValues": [1028, 1029],
-    "num_threads": 40,
+    "pool_size": 40,
     "threshold_cutoff": (0.005, 0.005)
 }
 
@@ -144,7 +144,7 @@ class DetectDistortedMontagesModule(RenderModule):
         final_zs = list(set(zs).intersection(set(self.args['zValues'])))
 
         # get scale factor for each section
-        with concurrent.futures.ProcessPoolExecutor(max_workers=self.args['num_threads']) as e:
+        with concurrent.futures.ProcessPoolExecutor(max_workers=self.args['pool_size']) as e:
             fut_to_z = {
                 e.submit(
                     do_get_z_scales_nopm,
@@ -172,14 +172,14 @@ if __name__ == '__main__':
     mod.run()
 
 '''
-def detect_distortions(input_stacks, pm_collections, z_indices, render, cut_off=(0.005, 0.005), num_threads=20):
+def detect_distortions(input_stacks, pm_collections, z_indices, render, cut_off=(0.005, 0.005), pool_size=20):
     zs = sorted(list({
         i for l in (renderapi.stack.get_z_values_for_stack(s, render=render) for s in input_stacks) for i in l
     }))
     final_zs = list(set(zs).intersection(set(z_indices)))
 
     # get scale factor for each section
-    with concurrent.futures.ProcessPoolExecutor(max_workers=num_threads) as e:
+    with concurrent.futures.ProcessPoolExecutor(max_workers=pool_size) as e:
         fut_to_z = {
             e.submit(
                 do_get_z_scales_nopm,

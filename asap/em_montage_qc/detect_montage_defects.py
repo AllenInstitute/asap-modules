@@ -170,12 +170,18 @@ def detect_stitching_gaps(render, prestitched_stack, poststitched_stack,
     return gap_tiles
 
 def detect_distortion(render, poststitched_stack, zvalue, threshold_cutoff=[0.005, 0.005], pool_size=20):
-    z_to_scales = {zvalue: do_get_z_scales_nopm(zvalue, [poststitched_stack], render)}
+    #z_to_scales = {zvalue: do_get_z_scales_nopm(zvalue, [poststitched_stack], render)}
+    z_to_scales = {}
     
     # check if any scale is None
-    zs = [z for z, scales in z_to_scales.items() if scales is None]
-    for z in zs:
-        z_to_scales[z] = get_z_scales_nopm(z, [poststitched_stack], render)
+    #zs = [z for z, scales in z_to_scales.items() if scales is None]
+    #for z in zs:
+    #    z_to_scales[z] = get_z_scales_nopm(z, [poststitched_stack], render)
+    
+    try:
+        z_to_scales[zvalue] = get_z_scales_nopm(zvalue, [poststitched_stack], render)
+    except Exception:
+        z_to_scales[zvalue] = None
     
     # get the mad statistics
     z_to_scalestats = {z: get_scale_statistics_mad(scales) for z, scales in z_to_scales.items() if scales is not None}
