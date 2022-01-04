@@ -172,7 +172,7 @@ def detect_stitching_gaps(render, prestitched_stack, poststitched_stack,
     session.close()
     return gap_tiles
 
-def detect_distortion(render, poststitched_stack, zvalue, threshold_cutoff=[0.005, 0.005], pool_size=20):
+def detect_distortion(render, poststitched_stack, zvalue, threshold_cutoff=(0.005, 0.005)):
     z_to_scales = {zvalue: do_get_z_scales_nopm(zvalue, [poststitched_stack], render)}
     
     # check if any scale is None
