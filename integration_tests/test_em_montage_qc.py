@@ -247,6 +247,5 @@ def test_detect_distortion(render, poststitched_stack, tmpdir_factory):
     # read the output json
     with open(ex['output_json'], 'r') as f:
         data = json.load(f)
-    f.close()
 
     assert(len(data['distorted_sections']) == 0)
