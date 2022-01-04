@@ -175,24 +175,24 @@ def detect_stitching_gaps(render, prestitched_stack, poststitched_stack,
 def detect_distortion(render, poststitched_stack, zvalue, threshold_cutoff=[0.005, 0.005], pool_size=20):
     #z_to_scales = {zvalue: do_get_z_scales_nopm(zvalue, [poststitched_stack], render)}
     z_to_scales = {}
-    
+
     # check if any scale is None
     #zs = [z for z, scales in z_to_scales.items() if scales is None]
     #for z in zs:
     #    z_to_scales[z] = get_z_scales_nopm(z, [poststitched_stack], render)
-    
+
     try:
         z_to_scales[zvalue] = get_z_scales_nopm(zvalue, [poststitched_stack], render)
     except Exception:
         z_to_scales[zvalue] = None
-    
+
     # get the mad statistics
     z_to_scalestats = {z: get_scale_statistics_mad(scales) for z, scales in z_to_scales.items() if scales is not None}
 
     # find zs that fall outside cutoff
     badzs_cutoff = [z for z, s in z_to_scalestats.items() if s[0] > threshold_cutoff[0] or s[1] > threshold_cutoff[1]]
     return badzs_cutoff
-    
+
 
 def get_pre_post_tspecs(render, prestitched_stack, poststitched_stack, z):
     session = requests.session()
@@ -321,7 +321,7 @@ class DetectMontageDefectsModule(RenderModule):
         gaps = [zvalues[i] for i in gaps_indices]
         seams = [zvalues[i] for i in seams_indices]
         distorted_zs = [z[0] for z in distorted_zs if len(z) > 0]
-        
+
         combinedz = list(set(holes + gaps + seams + distorted_zs))
         qc_passed_sections = set(zvalues) - set(combinedz)
         centroids = [seam_centroids[i] for i in seams_indices]
