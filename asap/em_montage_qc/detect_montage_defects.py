@@ -16,7 +16,11 @@ from asap.module.render_module import (
     RenderModule, RenderModuleException)
 from asap.em_montage_qc.plots import plot_section_maps
 
-from asap.em_montage_qc.distorted_montages import *
+from asap.em_montage_qc.distorted_montages import (
+    do_get_z_scales_nopm,
+    get_z_scales_nopm,
+    get_scale_statistics_mad
+    )
 
 example = {
     "render": {
