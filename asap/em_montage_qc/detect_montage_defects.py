@@ -1,6 +1,5 @@
 from functools import partial
 import time
-import concurrent.futures
 
 import networkx as nx
 import numpy as np
