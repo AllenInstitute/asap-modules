@@ -1,0 +1,36 @@
+{
+    "manifest_path": "/allen/programs/celltypes/production/wijem/incoming_data/17797_1R_Tape149_TEMCA4_07_20180627140300_reference_0/_trackem_20180627140300_17797_1R_Tape149_TEMCA4_07_20180627140300_reference_0_.txt",
+    "project_path": "/allen/programs/celltypes/production/wijem/incoming_data/17797_1R_Tape149_TEMCA4_07_20180627140300_reference_0/",
+    "fiji_path": "/allen/programs/celltypes/workgroups/em-connectomics/samk/Fiji.app/ImageJ-linux64",
+    "grid_size": 3,
+    "heap_size": 20,
+    "outfile": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/pipeline/render-modules/test_LC_120515.json",
+    "processing_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch",
+    "SIFT_params": {
+        "initialSigma": 1.6,
+        "steps": 3,
+        "minOctaveSize": 800,
+        "maxOctaveSize": 1200,
+        "fdSize": 4,
+        "fdBins": 8
+    },
+    "align_params": {
+        "rod": 0.92,
+        "maxEpsilon": 5.0,
+        "minInlierRatio": 0.0,
+        "minNumInliers": 5,
+        "expectedModelIndex": 1,
+        "multipleHypotheses": "True",
+        "rejectIdentity": "True",
+        "identityTolerance": 5.0,
+        "tilesAreInPlace": "True",
+        "desiredModelIndex": 0,
+        "regularize": "False",
+        "maxIterationsOptimize": 2000,
+        "maxPlateauWidthOptimize": 200,
+        "dimension": 5,
+        "lambdaVal": 0.01,
+        "clearTransform": "True",
+        "visualize": "False"
+    }
+}

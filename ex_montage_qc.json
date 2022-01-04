@@ -1,0 +1,21 @@
+{
+    "render":{
+        "host": "http://em-131db2",
+        "port": 8080,
+        "owner": "TEM",
+        "project": "21617_R1",
+        "client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts"
+    },
+    "prestitched_stack": "em_2d_montage_lc",
+    "poststitched_stack": "em_2d_montage_solved_py",
+    "match_collection_owner": "TEM",
+    "match_collection": "default_point_matches",
+    "out_html_dir":"/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/inhibitory_stitching",
+    "plot_sections":"True",
+    "minZ": 34882,
+    "maxZ": 34882,
+    "neighbors_distance": 80,
+    "min_cluster_size": 25,
+    "residual_threshold": 10,
+    "pool_size": 40
+}

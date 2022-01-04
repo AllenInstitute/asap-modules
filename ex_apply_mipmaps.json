@@ -1,0 +1,31 @@
+{
+    "mipmap_dir": "/allen/programs/celltypes/production/wijem/workflow_data/production/mipmap/TEM_17797_1R_reimage_with_onscope_lens",
+    "overwrite_zlayer": true,
+    "render": {
+      "owner": "TEM",
+      "port": 8080,
+      "project": "17797_1R",
+      "memGB": "5G",
+      "client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts",
+      "host": "em-131db2.corp.alleninstitute.org"
+    },
+    "pool_size": 10,
+    "zValues": [
+        131363,
+        131364,
+        131365,
+        131688,
+        131789,
+        131790,
+        131791,
+        131797,
+        131798,
+        132292
+    ],
+    "output_stack": "reimaged_with_onscope_lens_mipmaps",
+    "levels": 6,
+    "imgformat": "tif",
+    "input_stack": "reimaged_with_onscope_lens",
+    "close_stack": true,
+    "log_level": "ERROR"
+  }

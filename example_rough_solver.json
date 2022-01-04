@@ -1,0 +1,77 @@
+{
+	"render": {
+			"host": "http://em-131db",
+			"port": 8080,
+			"owner": "TEM",
+			"project": "17797_1R",
+			"client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts/"
+	},
+	"first_section": 130117,
+	"last_section": 130160,
+	"solver_options": {
+		"degree": 1,
+		"solver": "backslash",
+		"transfac": 1e-15,
+		"lambda_value": 1000.0,
+		"edge_lambda": 1000.0,
+		"nbrs": 5,
+		"nbrs_step": 1,
+		"xs_weight": 1,
+		"min_points": 3,
+		"max_points": 800,
+		"filter_point_matches": 1,
+		"outlier_lambda": 1000,
+		"min_tiles": 2,
+		"Width":3840,
+		"Height":3840,
+		"outside_group":0,
+		"close_stack":"True",
+		"pastix": {
+			"ncpus": 8,
+			"parms_fn": "/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/allen_templates/params_file.txt",
+			"split": 1
+		},
+		"matrix_only": 0,
+		"distribute_A": 16,
+		"dir_scratch": "/allen/aibs/pipeline/image_processing/volume_assembly/scratch/solver_scratch",
+		"distributed": 0,
+		"disableValidation": 1,
+		"use_peg": 0,
+		"pmopts": {
+			"NumRandomSamplingsMethod": "Desired confidence",
+			"MaximumRandomSamples": 5000,
+			"DesiredConfidence": 99.9,
+			"Transform":"AFFINE",
+			"PixelDistanceThreshold": 0.1
+		},
+		"verbose": 1,
+		"debug": 0,
+		"constrain_by_z": 0,
+		"sandwich": 0,
+		"constraint_fac": 1e+15
+	},
+	"source_collection": {
+		"owner": "TEM",
+		"project": "17797_1R",
+		"stack": "partials_downsampled",
+		"service_host": "em-131db:8080",
+		"baseURL": "http://em-131db:8080/render-ws/v1",
+		"verbose": 0
+	},
+	"target_collection": {
+		"owner": "TEM",
+		"project": "17797_1R",
+		"stack": "partials_downsampled_rough",
+		"service_host": "em-131db:8080",
+		"baseURL": "http://em-131db:8080/render-ws/v1",
+		"verbose": 0
+	},
+	"source_point_match_collection": {
+		"server": "http://em-131db:8080/render-ws/v1",
+		"owner": "TEM",
+		"match_collection": "17797_1R_rough_align_partials",
+		"verbose": 0
+	},
+	"verbose": 0,
+		"solver_executable": "/allen/aibs/pipeline/image_processing/volume_assembly/EMAligner/staging/allen_templates/run_em_solver.sh"
+}

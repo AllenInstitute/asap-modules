@@ -1,0 +1,20 @@
+{
+    "render": {
+        "host": "http://em-131db",
+        "port": 8080,
+        "owner": "TEM",
+        "project": "247488_8R",
+        "client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts"
+    },
+    "montage_stack": "em_2d_montage_fix_133_134",
+    "prealigned_stack": "em_2d_montage_fix_133_134",
+    "lowres_stack": "rough_aligned_downsample_stack_affine",
+    "output_stack": "em_2d_rough_fix_133_134_affine",
+    "tilespec_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/scratch/rough/jsonFiles",
+    "set_new_z": "False",
+    "consolidate_trasnforms": "True",
+    "minZ": 133,
+    "maxZ": 134,
+    "scale": 0.01,
+    "pool_size": 20
+}

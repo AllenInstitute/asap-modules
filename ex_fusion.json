@@ -1,0 +1,36 @@
+{
+    "render": {
+        "host": "em-131db2",
+        "port": 8080,
+        "owner": "TEM",
+        "project": "17797_1R",
+        "client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts"
+    },
+    "stacks": {
+        "stack": "em_rough_align_solved_downsample_zs19865_ze22058",
+        "fuse_stack": true,
+        "children": [
+          {
+            "stack": "em_rough_align_solved_downsample_zs21984_ze22370",
+            "fuse_stack": true,
+            "children": [],
+            "transform": {
+              "type": "leaf",
+              "className": "mpicbg.trakem2.transform.AffineModel2D",
+              "dataString": "0.9847280448 -0.0051305449 0.0039534223 0.9861162883 26469.8539445099 -9062.8009106753"
+            }
+          }
+        ],
+        "transform": {
+          "type": "leaf",
+          "className": "mpicbg.trakem2.transform.AffineModel2D",
+          "dataString": "0.9999999996 -0.0000265635 0.0000265635 0.9999999996 3196.7575717654 -1734.5600029978"
+        }
+    },
+    "pool_size": 12,
+    "interpolate_transforms": "True",  
+    "output_stack": "FUSEDOUTSTACK_solved_downsample_chunk_31_33",
+    "create_nonoverlapping_zs": "True",
+    "close_stack": "False",
+    "max_tilespecs_per_import_process": 5000
+}

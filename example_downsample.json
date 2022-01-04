@@ -1,0 +1,23 @@
+{
+    "render": {
+        "host": "http://em-131db",
+        "port": 8080,
+        "owner": "TEM",
+        "project": "17797_1R",
+        "client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts"
+    },
+    "input_stack": "em_rough_align_solved_downsample_zs19713_ze20389",
+    "image_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch",
+    "imgformat":"png",
+    "scale": 1.0,
+    "minZ": 19713,
+    "maxZ": 20389,
+    "fillWithNoise":"False",
+    "doFilter":"True",
+    "bounds":{
+        "minX": -154,
+        "minY": -287,
+        "maxX": 3487,
+        "maxY": 2701
+    }
+}

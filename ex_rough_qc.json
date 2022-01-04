@@ -1,0 +1,15 @@
+{
+    "render":{
+        "host": "http://em-131db2",
+        "port": 8080,
+        "owner": "TEM",
+        "project": "17797_1R",
+        "client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts"
+    },
+    "input_downsampled_stack": "temca4_poly2d_downsample",
+    "rough_aligned_stack": "temca4_poly2d_rough_affine",
+    "minZ": 120218,
+    "maxZ": 120250,
+    "pool_size": 10,
+    "output_dir": "/home/gayathrim/Dropbox/render-modules"
+}

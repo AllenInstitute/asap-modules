@@ -1,0 +1,20 @@
+{
+    "render": {
+        "host": "http://em-131db",
+        "port": 8080,
+        "owner": "TEM",
+        "project": "17797_1R",
+        "client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts"
+    },
+    "montage_stack": "partials",
+    "prealigned_stack": "partials",
+    "lowres_stack": "partials_downsampled_rough",
+    "output_stack": "partials_rough_aligned",
+    "tilespec_directory": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/scratch",
+    "map_z": "False",
+    "new_z": [117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160],
+    "consolidate_transforms": "True",
+    "old_z": [130117, 130118, 130119, 130120, 130121, 130122, 130123, 130124, 130125, 130126, 130127, 130128, 130129, 130130, 130131, 130132, 130133, 130134, 130135, 130136, 130137, 130138, 130139, 130140, 130141, 130142, 130143, 130144, 130145, 130146, 130147, 130148, 130149, 130150, 130151, 130152, 130153, 130154, 130155, 130156, 130157, 130158, 130159, 130160],
+    "scale": 0.01,
+    "pool_size": 20
+}

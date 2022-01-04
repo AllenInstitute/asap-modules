@@ -1,0 +1,81 @@
+{
+  "source_collection": {
+    "owner": "TEM",
+    "stack": "temca3_lc_stack",
+    "project": "17797_1R",
+    "baseURL": "http://em-131db:8080/render-ws/v1",
+    "service_host": "em-131db:8080",
+    "verbose": 0,
+    "renderbinPath": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts"
+  },
+  "log_level": "ERROR",
+  "source_point_match_collection": {
+    "match_collection": "default_point_matches",
+    "owner": "TEM",
+    "server": "http://em-131db:8080/render-ws/v1",
+    "verbose": 0
+  },
+  "solver_options": {
+    "outside_group": 0,
+    "min_points": 5,
+    "debug": 0,
+    "use_peg": 0,
+    "distributed": 0,
+    "close_stack": false,
+    "distribute_A": 16,
+    "max_points": 200,
+    "min_tiles": 3,
+    "verbose": 1,
+    "constraint_fac": 1000000000000000,
+    "dir_scratch": "/allen/aibs/pipeline/image_processing/volume_assembly/scratch/solver_scratch",
+    "nbrs_step": 1,
+    "degree": 2,
+    "solver": "backslash",
+    "xs_weight": 0.0,
+    "matrix_only": 0,
+    "Width": 6000,
+    "outlier_lambda": 1000,
+    "nbrs": 2,
+    "edge_lambda": 5.0,
+    "filter_point_matches": 0,
+    "Height": 6000,
+    "pmopts": {
+      "DesiredConfidence": 99.9,
+      "Transform": "Affine",
+      "PixelDistanceThreshold": 0.1,
+      "MaximumRandomSamples": 5000,
+      "NumRandomSamplingsMethod": "Desired confidence"
+    },
+    "pastix": {
+      "split": 1,
+      "ncpus": 8,
+      "parms_fn": "/nrs/flyTEM/khairy/FAFB00v13/matlab_production_scripts/params_file.txt"
+    },
+    "lambda_value": 5.0,
+    "sandwich": 0,
+    "transfac": 1e-05,
+    "constrain_by_z": 0
+  },
+  "first_section": 141215,
+  "clone_section_stack": true,
+  "last_section": 141215,
+  "target_collection": {
+    "owner": "TEM",
+    "stack": "matlab_solved_temca3_deg_3",
+    "project": "17797_1R",
+    "baseURL": "http://em-131db:8080/render-ws/v1",
+    "service_host": "em-131db:8080",
+    "verbose": 0,
+    "renderbinPath": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts"
+  },
+  "render": {
+    "owner": "TEM",
+    "memGB": "5G",
+    "project": "17797_1R",
+    "client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts",
+    "port": 8080,
+    "host": "em-131db"
+  },
+  "solver_executable": "/allen/aibs/pipeline/image_processing/volume_assembly/EM_aligner/allen_templates/run_em_solver.sh",
+  "verbose": 0
+}

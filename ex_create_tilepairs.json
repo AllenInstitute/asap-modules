@@ -1,0 +1,18 @@
+{
+    "render": {
+        "host": "http://em-131db2",
+        "port": 8080,
+        "owner": "TEM",
+        "project": "H19_06_356_2_2_1",
+        "client_scripts": "/allen/aibs/pipeline/image_processing/volume_assembly/render-jars/production/scripts"
+    },
+    "minZ": 51199,
+    "maxZ": 51199,
+    "zNeighborDistance":0,
+    "stack":"20200930_onscope_lcorrected",
+    "xyNeighborFactor": 0.9,
+    "excludeCornerNeighbors":"false",
+    "excludeSameLayerNeighbors":"false",
+    "excludeCompletelyObscuredTiles":"true",
+    "output_dir":"/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/human/misalignment_fixes/"
+}

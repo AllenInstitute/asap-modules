@@ -1,0 +1,19 @@
+{
+    "render": {
+        "host": "http://em-131fs",
+        "port": 8080,
+        "owner": "danielk",
+        "project": "MM2",
+        "client_scripts": "/allen/programs/celltypes/workgroups/em-connectomics/gayathrim/nc-em2/Janelia_Pipeline/render_latest/render-ws-java-client/src/main/scripts"
+    },
+    "montage_stack": "12_section_montage",
+    "output_stack": "12_section_montage_downsample",
+    "image_directory": "/allen/programs/celltypes/workgroups/em-connectomics/danielk/rough_align/dsimages",
+    "set_new_z":"False",
+    "new_z_start": 1020,
+    "imgformat":"png",
+    "scale": 0.01,
+    "zstart": 1023,
+    "zend": 1034,
+    "pool_size": 20
+}
