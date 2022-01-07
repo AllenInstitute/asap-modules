@@ -24,10 +24,10 @@ ASAP can be installed using the following commands.
 
 1. Clone this repository
 
-```bash
+``
 # git clone this repository
 git clone https://github.com/AllenInstitute/asap-modules .
-```
+``
 
 2. CD to the cloned directory and run setup.py
 ```python
