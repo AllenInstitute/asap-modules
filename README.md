@@ -98,7 +98,7 @@ python -m asap.solver.solve --help
 # How to run
 
 The order of processing is as follows;
-1. [Lens distortion correction](https://github.com/AllenInstitute/asap-modules/docs/readme/lens_correction.md)
+1. [Lens distortion correction](https://github.com/AllenInstitute/asap-modules/blob/docs/docs/readme/lens_correction.md)
 2. Mipmap generation
 3. Montaging
 4. Montage QC
