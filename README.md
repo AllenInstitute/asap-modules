@@ -29,11 +29,26 @@ ASAP can be installed using the following commands.
 git clone https://github.com/AllenInstitute/asap-modules .
 ```
 
+### Pip installation
+
 2. CD to the cloned directory and run setup.py
 
 ```
 python setup.py install 
 ```
+
+### Docker setup
+
+```
+docker build -t asap-modules:latest --target asap-modules .
+```
+
+### Running docker
+
+```
+docker run --rm asap-modules:latest
+```
+
 
 3. Once ASAP is installed using the above command, you can use all of its functionalities as follows;
 
@@ -83,7 +98,7 @@ python -m asap.solver.solve --help
 # How to run
 
 The order of processing is as follows;
-1. Lens distortion correction
+1. [Lens distortion correction](https://github.com/AllenInstitute/asap-modules/docs/readme/lens_correction.md)
 2. Mipmap generation
 3. Montaging
 4. Montage QC
