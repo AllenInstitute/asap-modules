@@ -8,16 +8,16 @@
 
 Shared repo for EM connectomics and Array Tomography render based image processing modules 
 
-## Installation
+# Installation
 
 
-### Prerequisites
+## Prerequisites
 
 
 ASAP requires Render web service (https://github.com/saalfeldlab/render) to be installed for storing and processing the data. 
 Please refer to [Render](https://github.com/saalfeldlab/render) for details on its installation.
 
-### Installing ASAP-modules
+## Installing ASAP-modules
 
 
 ASAP can be installed using the following commands.
@@ -72,8 +72,7 @@ and here is an example input json file for the detect_montage_defects module
     "pool_size": <pool_size_for_parallel_processing>
 }
 ```
-
-# the list of parameters required for each module can be found out using the --help option. 
+The list of parameters required for each module can be found out using the --help option. 
 
 ```python
 # find the list of parameters for the solver module using its help option
@@ -81,7 +80,7 @@ python -m asap.solver.solve --help
 ```
 
 
-## How to run
+# How to run
 
 The order of processing is as follows;
 1. Lens distortion correction
@@ -90,11 +89,11 @@ The order of processing is as follows;
 4. Montage QC
 
 
-## support
+# Support
 
 We are not currently supporting this code, but simply releasing it to the community AS IS but are not able to provide any guarantees of support, as it is under active development. The community is welcome to submit issues, but you should not expect an active response.
 
-## acknowledgments
+# Acknowledgments
 
 This project is supported by the Intelligence Advanced Research Projects Activity (IARPA) via Department of Interior / Interior Business Center (DoI/IBC) contract number D16PC00004. The U.S. Government is authorized to reproduce and distribute reprints for Governmental purposes notwithstanding any copyright annotation theron.
 
