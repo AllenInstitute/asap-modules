@@ -99,9 +99,20 @@ python -m asap.solver.solve --help
 
 The order of processing is as follows;
 1. [Lens distortion correction](https://github.com/AllenInstitute/asap-modules/blob/docs/docs/readme/lens_correction.md)
-2. Mipmap generation
-3. Montaging
-4. Montage QC
+2. [Mipmap generation](https://github.com/AllenInstitute/asap-modules/blob/docs/docs/readme/mipmaps.md)
+3. [Montaging and Montage QC](https://github.com/AllenInstitute/asap-modules/blob/docs/docs/readme/montaging.md)
+4. [Global 3D non-linear alignment](https://github.com/AllenInstitute/asap-modules/blob/docs/docs/readme/rough_alignment.md)
+
+
+# Other Modules 
+
+A few other modules are included in ASAP to do the following.
+
+1. Materialization - render intermediate/final aligned volume to disk for further processing
+2. Fusion - Fuse global 3D non-linear aligned chunks together to make a complete volume
+3. Point match filter - A module that performs point match filtering of an existing point match collection
+4. Point match optimization - Performs a parameter sweep from a given set of ranges on a random sample of tilepairs to identify the optimal set of parameters
+5. Registration - Register individual sections in an already aligned volume (useful in cases of aligning missing/reimaged sections)
 
 
 # Support
