@@ -22,14 +22,14 @@ ASAP can be installed using the following commands.
 
 1. Clone this repository
 
-```bash
+::
     git clone https://github.com/AllenInstitute/asap-modules .
-```
+
 
 Python source installation
 ~~~~~~~~~~~~~~~~
 
-.. code-block:: python
+::
     python setup.py install
 
 Docker setup
