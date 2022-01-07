@@ -30,7 +30,7 @@ modules documentation.
    :maxdepth: 5
    
    includeme
-   rendermodules/modules
+   asapmodules/modules
 
 Indices and tables
 ==================
