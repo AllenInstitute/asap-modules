@@ -13,7 +13,7 @@ Prerequisites
 
 
 ASAP requires Render web service (https://github.com/saalfeldlab/render) to be installed for storing and processing the data. 
-Please refer to .. _Render: https://github.com/saalfeldlab/render for details on its installation.
+Please refer to `Render <https://github.com/saalfeldlab/render>`_ for details on its installation.
 
 Installing ASAP-modules
 -----------------------
