@@ -4,21 +4,21 @@
 .. image:: https://codecov.io/gh/AllenInstitute/asap-modules/branch/master/graph/badge.svg?token=nCNsugRDky
   :target: https://codecov.io/gh/AllenInstitute/asap-modules
 
-ASAP-modules
-##############
+# ASAP-modules
+
 Shared repo for EM connectomics and Array Tomography render based image processing modules 
 
-Installation
-############
+## Installation
 
-Prerequisites
-=============
+
+### Prerequisites
+
 
 ASAP requires Render web service (https://github.com/saalfeldlab/render) to be installed for storing and processing the data. 
 Please refer to [Render](https://github.com/saalfeldlab/render) for details on its installation.
 
-Installing ASAP-modules
-=======================
+### Installing ASAP-modules
+
 
 ASAP can be installed using the following commands.
 
@@ -81,8 +81,8 @@ python -m asap.solver.solve --help
 ```
 
 
-How to run
-##########
+## How to run
+
 The order of processing is as follows;
 1. Lens distortion correction
 2. Mipmap generation
@@ -90,12 +90,12 @@ The order of processing is as follows;
 4. Montage QC
 
 
-support
-#######
+## support
+
 We are not currently supporting this code, but simply releasing it to the community AS IS but are not able to provide any guarantees of support, as it is under active development. The community is welcome to submit issues, but you should not expect an active response.
 
-acknowledgments
-###############
+## acknowledgments
+
 This project is supported by the Intelligence Advanced Research Projects Activity (IARPA) via Department of Interior / Interior Business Center (DoI/IBC) contract number D16PC00004. The U.S. Government is authorized to reproduce and distribute reprints for Governmental purposes notwithstanding any copyright annotation theron.
 
 Disclaimer: The views and conclusions contained herein are those of the authors and should not be interpreted as necessarily representing the official policies or endorsements, either expressed or implied, of IARPA, DoI/IBC, or the U.S. Government.
