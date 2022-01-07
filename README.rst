@@ -22,7 +22,7 @@ ASAP can be installed using the following commands.
 
 1. Clone this repository
 
-::
+.. ::
     git clone https://github.com/AllenInstitute/asap-modules .
 
 
