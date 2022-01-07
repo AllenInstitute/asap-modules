@@ -35,7 +35,8 @@ extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
-    'sphinx.ext.githubpages']
+    'sphinx.ext.githubpages',
+    'myst_parser']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -43,16 +44,16 @@ templates_path = ['_templates']
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-# source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = ['.rst', '.md']
+# source_suffix = '.rst'
 
 # The master toctree document.
 master_doc = 'index'
 
 # General information about the project.
-project = u'render-modules'
-copyright = u'2017, Russel Torres, Sharmi Seshamani, Gayathri Mahalingam, Sam Kiln, Forrest Collman'
-author = u'Russel Torres, Sharmi Seshamani, Gayathri Mahalingam, Sam Kiln, Forrest Collman'
+project = u'asap-modules'
+copyright = u'2017, Gayathri Mahalingam, Russel Torres, Daniel Kapner, Sharmishtaa Seshamani, Eric Perlman, Forrest Collman, Sam Kinn'
+author = u'Gayathri Mahalingam, Russel Torres, Sharmi Seshamani, Eric Perlman, Forrest Collman, Sam Kinn'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -154,8 +155,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'render-modules.tex', u'render-modules Documentation',
-     u'Russel Torres, Sharmi Seshamani, Gayathri Mahalingam, Sam Kiln, Forrest Collman', 'manual'),
+    (master_doc, 'render-modules.tex', u'asap-modules Documentation',
+     u'Gayathri Mahalingam, Russel Torres, Daniel Kapner, Sharmi Seshamani, Eric Perlman, Forrest Collman, Sam Kinn', 'manual'),
 ]
 
 
@@ -164,7 +165,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'render-modules', u'render-modules Documentation',
+    (master_doc, 'asap-modules', u'asap-modules Documentation',
      [author], 1)
 ]
 
@@ -175,8 +176,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'render-modules', u'render-modules Documentation',
-     author, 'render-modules', 'One line description of project.',
+    (master_doc, 'asap-modules', u'asap-modules Documentation',
+     author, 'asap-modules', 'One line description of project.',
      'Miscellaneous'),
 ]
 

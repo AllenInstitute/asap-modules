@@ -1,3 +1,3 @@
-#README
-#------
-#.. include:: ../README.md
+README
+------
+.. mdinclude:: ../README.md
