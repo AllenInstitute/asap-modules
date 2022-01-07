@@ -1,4 +1,4 @@
-[![](https://readthedocs.org/projects/asap-modules/badge/)]
+[![Docs](https://readthedocs.org/projects/render-modules/badge/)](https://readthedocs.org/projects/asap-modules)
 [![Documentation Status](https://readthedocs.org/projects/icon-set-python/badge/?version=latest)](https://icon-set-python.readthedocs.io/en/latest/?badge=latest)
 [![Code cov](https://codecov.io/gh/AllenInstitute/asap-modules/branch/master/graph/badge.svg?token=nCNsugRDky)](https://codecov.io/gh/AllenInstitute/asap-modules)
 
