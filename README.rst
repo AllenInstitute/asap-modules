@@ -22,8 +22,9 @@ ASAP can be installed using the following commands.
 
 1. Clone this repository
 
-.. code-block:: bash
+```bash
     git clone https://github.com/AllenInstitute/asap-modules .
+```
 
 Python source installation
 ~~~~~~~~~~~~~~~~
