@@ -30,24 +30,24 @@ git clone https://github.com/AllenInstitute/asap-modules .
 ```
 
 2. CD to the cloned directory and run setup.py
-```bash
+```python
 python setup.py install 
 ```
 
 3. Once ASAP is installed using the above command, you can use all of its functionalities as follows;
 
-```bash
+```python
 python -m asap.<submodule>.<function_to_run> --input_json <input_json_file.json> --output_json <output_json_file.json>
 ```
 
 For example, the montage qc module can be run using the following command.
 
-```bash
+```python
 python -m asap.em_montage_qc.detect_montage_defects --input_json <your_input_json_file_with_required_parameters> --output_json <output_json_file_with_full_path>
 ```
 
 and here is an example input json file for the detect_montage_defects module
-```bash
+```json
 {
     "render":{
         "host": <render_host>,
@@ -72,7 +72,7 @@ and here is an example input json file for the detect_montage_defects module
 ```
 
 # the list of parameters required for each module can be found out using the --help option. 
-```bash
+```python
 # find the list of parameters for the solver module using its help option
 python -m asap.solver.solve --help
 ```
