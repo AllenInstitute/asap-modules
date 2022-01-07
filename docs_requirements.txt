@@ -14,3 +14,4 @@ matplotlib
 opencv-python
 jinja2
 scikit-image
+myst_parser

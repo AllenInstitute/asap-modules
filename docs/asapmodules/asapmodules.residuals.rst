@@ -1,13 +1,13 @@
-rendermodules\.residuals package
+asapmodules\.residuals package
 ================================
 
 Submodules
 ----------
 
-rendermodules\.residuals\.compute\_residuals module
+asapmodules\.residuals\.compute\_residuals module
 ---------------------------------------------------
 
-.. automodule:: rendermodules.residuals.compute_residuals
+.. automodule:: asapmodules.residuals.compute_residuals
     :members:
     :undoc-members:
     :show-inheritance:
@@ -16,7 +16,7 @@ rendermodules\.residuals\.compute\_residuals module
 Module contents
 ---------------
 
-.. automodule:: rendermodules.residuals
+.. automodule:: asapmodules.residuals
     :members:
     :undoc-members:
     :show-inheritance:

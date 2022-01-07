@@ -1,21 +1,21 @@
-rendermodules\.montage package
+asapmodules\.montage package
 ==============================
 
 Submodules
 ----------
 
-rendermodules\.montage\.run\_montage\_job\_for\_section module
+asapmodules\.montage\.run\_montage\_job\_for\_section module
 --------------------------------------------------------------
 
-.. automodule:: rendermodules.montage.run_montage_job_for_section
+.. automodule:: asapmodules.montage.run_montage_job_for_section
     :members:
     :undoc-members:
     :show-inheritance:
 
-rendermodules\.montage\.schemas module
+asapmodules\.montage\.schemas module
 --------------------------------------
 
-.. automodule:: rendermodules.montage.schemas
+.. automodule:: asapmodules.montage.schemas
     :members:
     :undoc-members:
     :show-inheritance:
@@ -24,7 +24,7 @@ rendermodules\.montage\.schemas module
 Module contents
 ---------------
 
-.. automodule:: rendermodules.montage
+.. automodule:: asapmodules.montage
     :members:
     :undoc-members:
     :show-inheritance:

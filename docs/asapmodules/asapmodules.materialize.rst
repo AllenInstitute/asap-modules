@@ -1,29 +1,29 @@
-rendermodules\.materialize package
+asapmodules\.materialize package
 ==================================
 
 Submodules
 ----------
 
-rendermodules\.materialize\.materialize\_sections module
+asapmodules\.materialize\.materialize\_sections module
 --------------------------------------------------------
 
-.. automodule:: rendermodules.materialize.materialize_sections
+.. automodule:: asapmodules.materialize.materialize_sections
     :members:
     :undoc-members:
     :show-inheritance:
 
-rendermodules\.materialize\.render\_downsample\_sections module
+asapmodules\.materialize\.render\_downsample\_sections module
 ---------------------------------------------------------------
 
-.. automodule:: rendermodules.materialize.render_downsample_sections
+.. automodule:: asapmodules.materialize.render_downsample_sections
     :members:
     :undoc-members:
     :show-inheritance:
 
-rendermodules\.materialize\.schemas module
+asapmodules\.materialize\.schemas module
 ------------------------------------------
 
-.. automodule:: rendermodules.materialize.schemas
+.. automodule:: asapmodules.materialize.schemas
     :members:
     :undoc-members:
     :show-inheritance:
@@ -32,7 +32,7 @@ rendermodules\.materialize\.schemas module
 Module contents
 ---------------
 
-.. automodule:: rendermodules.materialize
+.. automodule:: asapmodules.materialize
     :members:
     :undoc-members:
     :show-inheritance:

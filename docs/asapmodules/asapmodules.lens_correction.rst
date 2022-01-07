@@ -1,29 +1,29 @@
-rendermodules\.lens\_correction package
+asapmodules\.lens\_correction package
 =======================================
 
 Submodules
 ----------
 
-rendermodules\.lens\_correction\.apply\_lens\_correction module
+asapmodules\.lens\_correction\.apply\_lens\_correction module
 ---------------------------------------------------------------
 
-.. automodule:: rendermodules.lens_correction.apply_lens_correction
+.. automodule:: asapmodules.lens_correction.apply_lens_correction
     :members:
     :undoc-members:
     :show-inheritance:
 
-rendermodules\.lens\_correction\.lens\_correction module
+asapmodules\.lens\_correction\.lens\_correction module
 --------------------------------------------------------
 
-.. automodule:: rendermodules.lens_correction.lens_correction
+.. automodule:: asapmodules.lens_correction.lens_correction
     :members:
     :undoc-members:
     :show-inheritance:
 
-rendermodules\.lens\_correction\.schemas module
+asapmodules\.lens\_correction\.schemas module
 -----------------------------------------------
 
-.. automodule:: rendermodules.lens_correction.schemas
+.. automodule:: asapmodules.lens_correction.schemas
     :members:
     :undoc-members:
     :show-inheritance:
@@ -32,7 +32,7 @@ rendermodules\.lens\_correction\.schemas module
 Module contents
 ---------------
 
-.. automodule:: rendermodules.lens_correction
+.. automodule:: asapmodules.lens_correction
     :members:
     :undoc-members:
     :show-inheritance:

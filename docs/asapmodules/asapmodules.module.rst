@@ -1,4 +1,4 @@
-rendermodules\.module package
+asapmodules\.module package
 =============================
 
 Subpackages
@@ -6,23 +6,23 @@ Subpackages
 
 .. toctree::
 
-    rendermodules.module.schemas
+    asapmodules.module.schemas
 
 Submodules
 ----------
 
-rendermodules\.module\.render\_module module
+asapmodules\.module\.render\_module module
 --------------------------------------------
 
-.. automodule:: rendermodules.module.render_module
+.. automodule:: asapmodules.module.render_module
     :members:
     :undoc-members:
     :show-inheritance:
 
-rendermodules\.module\.template\_module module
+asapmodules\.module\.template\_module module
 ----------------------------------------------
 
-.. automodule:: rendermodules.module.template_module
+.. automodule:: asapmodules.module.template_module
     :members:
     :undoc-members:
     :show-inheritance:
@@ -31,7 +31,7 @@ rendermodules\.module\.template\_module module
 Module contents
 ---------------
 
-.. automodule:: rendermodules.module
+.. automodule:: asapmodules.module
     :members:
     :undoc-members:
     :show-inheritance:
