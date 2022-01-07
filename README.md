@@ -1,8 +1,6 @@
-.. image:: https://readthedocs.org/projects/asap-modules/badge/
-   :target: http://asap-modules.readthedocs.io/en/latest/
-   :alt: Documentation Status 
-.. image:: https://codecov.io/gh/AllenInstitute/asap-modules/branch/master/graph/badge.svg?token=nCNsugRDky
-  :target: https://codecov.io/gh/AllenInstitute/asap-modules
+[![](https://readthedocs.org/projects/asap-modules/badge/)]
+[![Documentation Status](https://readthedocs.org/projects/icon-set-python/badge/?version=latest)](https://icon-set-python.readthedocs.io/en/latest/?badge=latest)
+[![Code cov](https://codecov.io/gh/AllenInstitute/asap-modules/branch/master/graph/badge.svg?token=nCNsugRDky)](https://codecov.io/gh/AllenInstitute/asap-modules)
 
 # ASAP-modules
 
