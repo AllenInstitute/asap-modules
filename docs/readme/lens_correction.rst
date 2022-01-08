@@ -1,11 +1,13 @@
+.. _lens_correction:
+
 Lens distortion correction
---------------------------
+##########################
 
 The lens distortion correction transforms can be computed using the
 following modules
 
-Step 1
-------
+Step 1 - Compute lens distortion correction
+============================================
 
 Compute lens distortion correction transformation
 
@@ -19,8 +21,8 @@ Compute lens distortion correction transformation
 An example input json file is provided in the do_mesh_lens_correcton.py
 file
 
-Step 2
-------
+Step 2 - Apply lens correction
+================================
 
 Apply lens correction transformations to the input render stack (update
 the raw tilespecs)

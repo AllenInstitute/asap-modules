@@ -11,7 +11,12 @@ Welcome to asap-modules's documentation!
    :caption: Contents:
 
    includeme
-   asapmodules/modules
+   readme/installation
+   readme/lens_correction
+   readme/mipmaps
+   readme/montaging
+   readme/rough_alignment
+   asap/modules
 
 Indices and tables
 ==================

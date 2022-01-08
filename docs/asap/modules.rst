@@ -1,7 +1,7 @@
-asapmodules
+asap-modules
 =============
 
 .. toctree::
    :maxdepth: 4
 
-   asapmodules
+   asap

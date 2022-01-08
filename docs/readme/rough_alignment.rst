@@ -1,5 +1,7 @@
+.. _rough_alignment:
+
 Global 3D non-linear alignment
-==============================
+###############################
 
 Global 3D non-linear alignment can be performed on a stack in chunks as
 well as the entire dataset (if all the serial sections are montaged and
@@ -7,9 +9,9 @@ available). The following steps illustrate the global 3D non-linear
 alignment process.
 
 Step 1 - Montage scapes generation
-----------------------------------
+===================================
 
-Montage scapes are downsampled versions of the serial sections that are
+Montage scapes are downsampled versions of the serial sections and are
 used in the global 3D alignment process. Montage scapes can be generated
 as follows.
 
@@ -24,7 +26,7 @@ as follows.
    python -m asapmodules.dataimport.make_montage_scapes_stack --input_json <input_parameter_json_file> --output_json <output_json_file>
 
 Step 2 - Generate tilepairs
----------------------------
+============================
 
 3D tilepairs for the downsampled stack can be generated using the
 following command.
@@ -34,7 +36,7 @@ following command.
    python -m asapmodules.pointmatch.create_tilepairs --input_json <input_parameter_json_file> --output_json <output_json_file>
 
 Step 3 - Generate point matches
--------------------------------
+================================
 
 3D point matches can be generated using the generated tile pairs. The
 following command can be used to generate point matches using a Spark
@@ -45,7 +47,7 @@ cluster
    python -m asapmodules.pointmatch.generate_point_matches_using_spark --input_json <input_parameter_json_file> --output_json <output_json_file>
 
 Step 4 - Solve for 3D non-linear transformations
-------------------------------------------------
+=================================================
 
 This step in practice is done as a multi-step 3D alignment process,
 where a series of transformations (rigid, affine, non-linear) are

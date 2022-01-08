@@ -1,29 +1,29 @@
-asapmodules\.stack package
+asap\.stack package
 ============================
 
 Submodules
 ----------
 
-asapmodules\.stack\.consolidate\_transforms module
+asap\.stack\.consolidate\_transforms module
 ----------------------------------------------------
 
-.. automodule:: asapmodules.stack.consolidate_transforms
+.. automodule:: asap.stack.consolidate_transforms
     :members:
     :undoc-members:
     :show-inheritance:
 
-asapmodules\.stack\.redirect\_mipmaps module
+asap\.stack\.redirect\_mipmaps module
 ----------------------------------------------
 
-.. automodule:: asapmodules.stack.redirect_mipmaps
+.. automodule:: asap.stack.redirect_mipmaps
     :members:
     :undoc-members:
     :show-inheritance:
 
-asapmodules\.stack\.schemas module
+asap\.stack\.schemas module
 ------------------------------------
 
-.. automodule:: asapmodules.stack.schemas
+.. automodule:: asap.stack.schemas
     :members:
     :undoc-members:
     :show-inheritance:
@@ -32,7 +32,7 @@ asapmodules\.stack\.schemas module
 Module contents
 ---------------
 
-.. automodule:: asapmodules.stack
+.. automodule:: asap.stack
     :members:
     :undoc-members:
     :show-inheritance:

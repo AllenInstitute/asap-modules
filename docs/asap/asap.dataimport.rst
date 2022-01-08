@@ -1,53 +1,53 @@
-asapmodules\.dataimport package
+asap\.dataimport package
 =================================
 
 Submodules
 ----------
 
-asapmodules\.dataimport\.apply\_mipmaps\_to\_render module
+asap\.dataimport\.apply\_mipmaps\_to\_render module
 ------------------------------------------------------------
 
-.. automodule:: asapmodules.dataimport.apply_mipmaps_to_render
+.. automodule:: asap.dataimport.apply_mipmaps_to_render
     :members:
     :undoc-members:
     :show-inheritance:
 
-asapmodules\.dataimport\.create\_mipmaps module
+asap\.dataimport\.create\_mipmaps module
 -------------------------------------------------
 
-.. automodule:: asapmodules.dataimport.create_mipmaps
+.. automodule:: asap.dataimport.create_mipmaps
     :members:
     :undoc-members:
     :show-inheritance:
 
-asapmodules\.dataimport\.generate\_EM\_tilespecs\_from\_metafile module
+asap\.dataimport\.generate\_EM\_tilespecs\_from\_metafile module
 -------------------------------------------------------------------------
 
-.. automodule:: asapmodules.dataimport.generate_EM_tilespecs_from_metafile
+.. automodule:: asap.dataimport.generate_EM_tilespecs_from_metafile
     :members:
     :undoc-members:
     :show-inheritance:
 
-asapmodules\.dataimport\.generate\_mipmaps module
+asap\.dataimport\.generate\_mipmaps module
 ---------------------------------------------------
 
-.. automodule:: asapmodules.dataimport.generate_mipmaps
+.. automodule:: asap.dataimport.generate_mipmaps
     :members:
     :undoc-members:
     :show-inheritance:
 
-asapmodules\.dataimport\.make\_montage\_scapes\_stack module
+asap\.dataimport\.make\_montage\_scapes\_stack module
 --------------------------------------------------------------
 
-.. automodule:: asapmodules.dataimport.make_montage_scapes_stack
+.. automodule:: asap.dataimport.make_montage_scapes_stack
     :members:
     :undoc-members:
     :show-inheritance:
 
-asapmodules\.dataimport\.schemas module
+asap\.dataimport\.schemas module
 -----------------------------------------
 
-.. automodule:: asapmodules.dataimport.schemas
+.. automodule:: asap.dataimport.schemas
     :members:
     :undoc-members:
     :show-inheritance:
@@ -56,7 +56,7 @@ asapmodules\.dataimport\.schemas module
 Module contents
 ---------------
 
-.. automodule:: asapmodules.dataimport
+.. automodule:: asap.dataimport
     :members:
     :undoc-members:
     :show-inheritance:
