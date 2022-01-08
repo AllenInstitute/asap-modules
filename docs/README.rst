@@ -17,13 +17,13 @@ How to run
 
 The order of processing is as follows; 
 
-1. :ref:`Lens distortion correction <lens_correction>`
+1. :ref:`Lens distortion correction <lens-correction>`
 
 2. :ref:`Mipmap generation <mipmaps>`
 
 3. :ref:`Montaging and Montage QC <montaging>`
 
-4. :ref:`Global 3D non-linear alignment <rough_alignment>`
+4. :ref:`Global 3D non-linear alignment <rough-alignment>`
 
 Other Modules
 #############

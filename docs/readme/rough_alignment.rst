@@ -1,4 +1,4 @@
-.. _rough_alignment:
+.. _rough-alignment:
 
 Global 3D non-linear alignment
 ###############################

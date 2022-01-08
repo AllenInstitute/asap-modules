@@ -1,4 +1,4 @@
-.. _lens_correction:
+.. _lens-correction:
 
 Lens distortion correction
 ##########################
