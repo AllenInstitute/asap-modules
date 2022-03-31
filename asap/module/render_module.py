@@ -32,7 +32,7 @@ class RenderModule(argschema.ArgSchemaParser):
 class StackInputModule(RenderModule):
     default_schema = InputStackParameters
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, default_schema=None, *args, **kwargs):
         super(StackInputModule, self).__init__(*args, **kwargs)
         self.input_stack = self.args['input_stack']
         self.zValues = self.args['zValues']
@@ -58,7 +58,7 @@ class StackInputModule(RenderModule):
 class StackOutputModule(RenderModule):
     default_schema = OutputStackParameters
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, default_schema=None, *args, **kwargs):
         super(StackOutputModule, self).__init__(*args, **kwargs)
         self.output_stack = self.args['output_stack']
         self.zValues = self.args['zValues']
