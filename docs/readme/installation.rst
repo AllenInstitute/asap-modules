@@ -54,8 +54,8 @@ The built docker image can then be run using the following command
 Running modules of ASAP
 ========================
 
-Once ASAP is installed using the above command, you can use all of
-   its functionalities as follows;
+Once ASAP is installed using the above command, you can use all of 
+its functionalities as follows;
 
 .. code:: python
 
