@@ -128,7 +128,7 @@ html_sidebars = {
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'render-modulesdoc'
+htmlhelp_basename = 'asap-modulesdoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
