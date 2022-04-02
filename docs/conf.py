@@ -1,7 +1,7 @@
 from argschema.autodoc import process_schemas
 # -*- coding: utf-8 -*-
 #
-# render-modules documentation build configuration file, created by
+# asap-modules documentation build configuration file, created by
 # sphinx-quickstart on Thu Sep  7 12:25:36 2017.
 #
 # This file is execfile()d with the current directory set to its
