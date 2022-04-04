@@ -10,20 +10,20 @@ It is suitable for processing large-scale datasets and supports multiple computa
 Installation
 ############
 
-Please refer the documentation :ref:`here<installation>`. on how to install and use ASAP modules 
+Please refer the documentation `here <readme/installation>`_ on how to install and use ASAP modules 
 
 How to run
 ##########
 
 The order of processing is as follows; 
 
-1. :ref:`Lens distortion correction <lens-correction>`
+1. `Lens distortion correction <readme/lens-correction>`_
 
-2. :ref:`Mipmap generation <mipmaps>`
+2. `Mipmap generation <readme/mipmaps>`_
 
-3. :ref:`Montaging and Montage QC <montaging>`
+3. `Montaging and Montage QC <readme/montaging>`_
 
-4. :ref:`Global 3D non-linear alignment <rough-alignment>`
+4. `Global 3D non-linear alignment <readme/rough-alignment>`_
 
 Other Modules
 #############
