@@ -17,7 +17,7 @@ class RenderModuleException(Exception):
 class RenderModule(argschema.ArgSchemaParser):
     default_schema = RenderParameters
 
-    def __init__(self, schema_type=None, *args, **kwargs):
+    def __init__(self, default_schema=None, schema_type=None, *args, **kwargs):
         if (schema_type is not None and not issubclass(
                 schema_type, RenderParameters)):
             raise RenderModuleException(
@@ -124,7 +124,7 @@ class StackOutputModule(RenderModule):
 
 
 class StackTransitionModule(StackOutputModule, StackInputModule):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, default_schema=None, *args, **kwargs):
         super(StackTransitionModule, self).__init__(*args, **kwargs)
 
 
