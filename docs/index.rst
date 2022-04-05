@@ -25,6 +25,6 @@ Indices and tables
 
    genindex
 
-* `genindex`_
-* `modindex`_
-* `search`_
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
