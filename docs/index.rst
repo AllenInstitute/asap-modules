@@ -21,6 +21,6 @@ Welcome to asap-modules's documentation!
 Indices and tables
 ==================
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+* _`genindex`_
+* _`modindex`_
+* _`search`_

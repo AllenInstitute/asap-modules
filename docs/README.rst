@@ -10,20 +10,20 @@ It is suitable for processing large-scale datasets and supports multiple computa
 Installation
 ############
 
-Please refer the documentation :ref:`here<installation>`. on how to install and use ASAP modules 
+Please refer the documentation _`here <readme/installation.rst>`_. on how to install and use ASAP modules 
 
 How to run
 ##########
 
 The order of processing is as follows; 
 
-1. :ref:`Lens distortion correction <lens-correction>`
+1. _`Lens distortion correction <lens-correction>`_
 
-2. :ref:`Mipmap generation <mipmaps>`
+2. _`Mipmap generation <mipmaps>`_
 
-3. :ref:`Montaging and Montage QC <montaging>`
+3. _`Montaging and Montage QC <montaging>`_
 
-4. :ref:`Global 3D non-linear alignment <rough-alignment>`
+4. _`Global 3D non-linear alignment <rough-alignment>`_
 
 Other Modules
 #############
@@ -64,7 +64,7 @@ authors and should not be interpreted as necessarily representing the
 official policies or endorsements, either expressed or implied, of
 IARPA, DoI/IBC, or the U.S. Government.
 
-.. |Docs| image:: https://readthedocs.org/projects/render-modules/badge/
+.. |Docs| image:: https://readthedocs.org/projects/asap-modules/badge/
    :target: https://readthedocs.org/projects/asap-modules
 .. |Code cov| image:: https://codecov.io/gh/AllenInstitute/asap-modules/branch/master/graph/badge.svg?token=nCNsugRDky
    :target: https://codecov.io/gh/AllenInstitute/asap-modules
