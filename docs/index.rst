@@ -20,10 +20,6 @@ Welcome to asap-modules's documentation!
 
 Indices and tables
 ==================
-.. toctree::
-   :caption: Appendix
-
-   genindex
 
 * :ref:`genindex`
 * :ref:`modindex`
