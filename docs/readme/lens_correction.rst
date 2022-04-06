@@ -16,7 +16,7 @@ Compute lens distortion correction transformation
 
 ::
 
-   python -m asapmodules.mesh_lens_correction.do_mesh_lens_correction --input_json <input_parameter_json_file> --output_json <output_json_file>
+   python -m asap.mesh_lens_correction.do_mesh_lens_correction --input_json <input_parameter_json_file> --output_json <output_json_file>
 
 An example input json file is provided in the do_mesh_lens_correcton.py
 file
@@ -29,7 +29,7 @@ the raw tilespecs)
 
 ::
 
-   python -m asapmodules.lens_correction.apply_lens_correction --input_json <input_parameter_json_file> --output_json <output_json_file>
+   python -m asap.lens_correction.apply_lens_correction --input_json <input_parameter_json_file> --output_json <output_json_file>
 
 An example input json file is provided in the apply_lens_correction.py
 file

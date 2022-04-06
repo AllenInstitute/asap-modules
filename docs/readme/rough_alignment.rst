@@ -18,12 +18,12 @@ as follows.
 ::
 
    # Generate downsampled versions of montaged serial sections
-   python -m asapmodules.materialize.render_downsample_sections --input_json <input_parameter_json_file> --output_json <output_json_file>
+   python -m asap.materialize.render_downsample_sections --input_json <input_parameter_json_file> --output_json <output_json_file>
 
 ::
 
    # Create a downsampled montage stack
-   python -m asapmodules.dataimport.make_montage_scapes_stack --input_json <input_parameter_json_file> --output_json <output_json_file>
+   python -m asap.dataimport.make_montage_scapes_stack --input_json <input_parameter_json_file> --output_json <output_json_file>
 
 Step 2 - Generate tilepairs
 ============================
@@ -33,7 +33,7 @@ following command.
 
 ::
 
-   python -m asapmodules.pointmatch.create_tilepairs --input_json <input_parameter_json_file> --output_json <output_json_file>
+   python -m asap.pointmatch.create_tilepairs --input_json <input_parameter_json_file> --output_json <output_json_file>
 
 Step 3 - Generate point matches
 ================================
@@ -44,7 +44,7 @@ cluster
 
 ::
 
-   python -m asapmodules.pointmatch.generate_point_matches_using_spark --input_json <input_parameter_json_file> --output_json <output_json_file>
+   python -m asap.pointmatch.generate_point_matches_using_spark --input_json <input_parameter_json_file> --output_json <output_json_file>
 
 Step 4 - Solve for 3D non-linear transformations
 =================================================
@@ -61,7 +61,7 @@ The command to run the solver is shown below.
 
 ::
 
-   python -m asapmodules.solver.solve --input_json <input_parameter_json_file> --output_json <output_json_file>
+   python -m asap.solver.solve --input_json <input_parameter_json_file> --output_json <output_json_file>
 
 NOTE: Each of the modules’ script include an example input json file for
 reference and the list of input and output parameters can also be listed
