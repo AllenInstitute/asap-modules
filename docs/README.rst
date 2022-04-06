@@ -42,6 +42,7 @@ A few other modules are included in ASAP to do the following.
 5. Registration - Register individual sections in an already aligned
    volume (useful in cases of aligning missing/reimaged sections)
 
+.. _support:
 Support
 ########
 
@@ -50,6 +51,7 @@ the community AS IS but are not able to provide any guarantees of
 support, as it is under active development. The community is welcome to
 submit issues, but you should not expect an active response.
 
+.. _acknowledgements:
 Acknowledgments
 ###############
 

@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to asap-modules's documentation!
+Welcome to ASAP's documentation!
 ========================================
 
 .. toctree::
@@ -17,6 +17,9 @@ Welcome to asap-modules's documentation!
    readme/montaging
    readme/rough_alignment
    asap/modules
+
+   :ref:`support`_ 
+   :ref:`acknowledgements`_
 
 Indices and tables
 ==================
