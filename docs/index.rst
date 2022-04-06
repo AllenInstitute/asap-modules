@@ -10,7 +10,8 @@ Welcome to asap-modules's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   :ref:`readme/installation`
+   includeme
+   readme/installation
    :ref:`readme/lens_correction`
    :ref:`readme/mipmaps`
    :ref:`readme/montaging`
