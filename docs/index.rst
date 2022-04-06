@@ -12,11 +12,11 @@ Welcome to asap-modules's documentation!
 
    includeme
    readme/installation
-   :ref:`readme/lens_correction`
-   :ref:`readme/mipmaps`
-   :ref:`readme/montaging`
-   :ref:`readme/rough_alignment`
-   :ref:`asap/modules`
+   readme/lens_correction
+   readme/mipmaps
+   readme/montaging
+   readme/rough_alignment
+   asap/modules
 
 Indices and tables
 ==================
