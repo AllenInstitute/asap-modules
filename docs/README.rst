@@ -10,7 +10,7 @@ It is suitable for processing large-scale datasets and supports multiple computa
 Installation
 ############
 
-Please refer the documentation :ref:`here <readme/installation>`_ on how to install and use ASAP modules 
+Please refer the documentation :ref:`readme/installation`_ on how to install and use ASAP modules 
 
 How to run
 ##########
