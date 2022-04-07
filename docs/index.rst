@@ -18,8 +18,8 @@ Welcome to ASAP's documentation!
    readme/rough_alignment
    asap/modules
 
-   :ref:`support` 
-   :ref:`acknowledgements`
+   :ref:`_support` 
+   :ref:`_acknowledgements`
 
 Indices and tables
 ==================
