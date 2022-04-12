@@ -10,7 +10,7 @@ rtree
 networkx
 bokeh<=1.4.0
 bigfeta
-opencv-contrib-python<3.4.3.0
+opencv-contrib-python
 em_stitch
 matplotlib
 jinja2

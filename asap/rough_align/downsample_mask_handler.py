@@ -9,6 +9,7 @@ import renderapi
 from renderapi.errors import RenderError
 from shapely.geometry import Polygon, Point
 from six.moves import urllib
+from packaging import version
 
 from asap.rough_align.schemas import (
         DownsampleMaskHandlerSchema)
@@ -48,12 +49,14 @@ def polygon_list_from_mask(mask, transforms=None):
         shapely polygons which outline regions where mask is non-zero
         Render retains parts of image where mask==255
     """
-    # openCV >= 4.0:
-    # contours, _ = cv2.findContours(
-    #         mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    # openCV < 4.0:
-    _, contours, _ = cv2.findContours(
-            mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    if version.parse(cv2.__version__) >= version.parse("4.0"):
+        # openCV >= 4.0:
+        contours, _ = cv2.findContours(
+                mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    else:
+        # openCV < 4.0:
+        _, contours, _ = cv2.findContours(
+                mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     contours = [c.squeeze().astype('float') for c in contours]
     if transforms:
         for i in range(len(contours)):
