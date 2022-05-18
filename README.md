@@ -15,13 +15,13 @@ Please refer the documentation [Installation](docs/readme/installation.rst). on 
 
 The order of processing is as follows; 
 
-1. :ref:`lens-correction`.
+1. [Lens correction](docs/readme/lens_correction.rst)
 
-2. :ref:`mipmaps`.
+2. [Mipmap generation](docs/readme/mipmaps.rst)
 
-3. :ref:`montaging`.
+3. [Montaging](docs/readme/montaging.rst)
 
-4. :ref:`rough-alignment`.
+4. [Global 3D alignment](docs/readme/rough_alignment.rst)
 
 # Other Modules
 
