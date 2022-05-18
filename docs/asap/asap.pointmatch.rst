@@ -1,37 +1,37 @@
-rendermodules\.pointmatch package
+asap\.pointmatch package
 =================================
 
 Submodules
 ----------
 
-rendermodules\.pointmatch\.create\_tilepairs module
+asap\.pointmatch\.create\_tilepairs module
 ---------------------------------------------------
 
-.. automodule:: rendermodules.pointmatch.create_tilepairs
+.. automodule:: asap.pointmatch.create_tilepairs
     :members:
     :undoc-members:
     :show-inheritance:
 
-rendermodules\.pointmatch\.generate\_point\_matches\_qsub module
+asap\.pointmatch\.generate\_point\_matches\_qsub module
 ----------------------------------------------------------------
 
-.. automodule:: rendermodules.pointmatch.generate_point_matches_qsub
+.. automodule:: asap.pointmatch.generate_point_matches_qsub
     :members:
     :undoc-members:
     :show-inheritance:
 
-rendermodules\.pointmatch\.generate\_point\_matches\_spark module
+asap\.pointmatch\.generate\_point\_matches\_spark module
 -----------------------------------------------------------------
 
-.. automodule:: rendermodules.pointmatch.generate_point_matches_spark
+.. automodule:: asap.pointmatch.generate_point_matches_spark
     :members:
     :undoc-members:
     :show-inheritance:
 
-rendermodules\.pointmatch\.schemas module
+asap\.pointmatch\.schemas module
 -----------------------------------------
 
-.. automodule:: rendermodules.pointmatch.schemas
+.. automodule:: asap.pointmatch.schemas
     :members:
     :undoc-members:
     :show-inheritance:
@@ -40,7 +40,7 @@ rendermodules\.pointmatch\.schemas module
 Module contents
 ---------------
 
-.. automodule:: rendermodules.pointmatch
+.. automodule:: asap.pointmatch
     :members:
     :undoc-members:
     :show-inheritance:

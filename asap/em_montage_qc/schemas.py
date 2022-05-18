@@ -1,11 +1,54 @@
 import marshmallow as mm
 from marshmallow import post_load
+from numpy import arccosh
 import argschema
-from argschema.fields import Bool, Int, Str, InputDir, OutputFile, OutputDir
+from argschema.fields import Bool, Int, Str, InputDir, OutputFile, OutputDir, List
 
 from asap.module.schemas import (
     RenderParameters, ZValueParameters, ProcessPoolParameters)
 
+class DetectDistortionParameters(
+        RenderParameters, ZValueParameters, ProcessPoolParameters):
+    input_stacks = argschema.fields.List(
+        argschema.fields.Str,
+        required=True,
+        default=None,
+        description='List of input stacks')
+    '''
+    match_collections = argschema.fields.List(
+        argschema.fields.Str,
+        required=True,
+        description='List of montage point match collections')
+    match_collection_owners = argschema.fields.List(
+        argschema.fields.Str,
+        required=False,
+        default=None,
+        missing=None,
+        description='List of the match collection owners')
+    '''
+    threshold_cutoff = argschema.fields.List(
+        argschema.fields.Float,
+        required=False,
+        default=[0.005, 0.005], 
+        description='Threshold for MAD cutoff in x and y')
+    '''
+    num_threads = argschema.fields.Int(
+        required=False,
+        default=20,
+        description='Number of parallel threads')
+    
+    @post_load
+    def add_match_collection_owner(self, data):
+        if data['match_collection_owners'] is None:
+            data['match_collection_owners'] = [data['render']['owner']] * len(data['match_collections'])
+    '''
+
+class DetectDistortionParametersOutput(argschema.schemas.DefaultSchema):
+    distorted_sections = argschema.fields.List(
+        argschema.fields.Int,
+        required=True,
+        description='List of sections that are distorted'
+    )
 
 class DetectMontageDefectsParameters(
         RenderParameters, ZValueParameters, ProcessPoolParameters):
@@ -44,6 +87,11 @@ class DetectMontageDefectsParameters(
         description=(
             'minimum number of point matches required in each cluster '
             'for taking it into account for seam detection (default = 7)'))
+    threshold_cutoff = argschema.fields.List(
+        argschema.fields.Float,
+        required=False,
+        default=[0.005, 0.005], 
+        description='Threshold for MAD cutoff in x and y')
     plot_sections = Bool(
         required=False,
         default=True,
@@ -93,6 +141,11 @@ class DetectMontageDefectsParametersOutput(argschema.schemas.DefaultSchema):
         description=(
             'An array of (x,y) positions of '
             'seams for each section with seams'))
+    distorted_sections = argschema.fields.List(
+        argschema.fields.Int,
+        required=True,
+        description='List of sections that are distorted'
+    )
 
 
 class RoughQCSchema(RenderParameters):

@@ -16,6 +16,12 @@ from asap.module.render_module import (
     RenderModule, RenderModuleException)
 from asap.em_montage_qc.plots import plot_section_maps
 
+from asap.em_montage_qc.distorted_montages import (
+    do_get_z_scales_nopm,
+    get_z_scales_nopm,
+    get_scale_statistics_mad
+    )
+
 example = {
     "render": {
         "host": "http://em-131fs",
@@ -55,23 +61,26 @@ def detect_seams(
     new_pts = pt_match_positions[
         np.where(tile_residuals >= residual_threshold), :][0]
 
-    # construct a KD Tree using these points
-    tree = cKDTree(new_pts)
-    # construct a networkx graph
-    G = nx.Graph()
-    # find the pairs of points within a distance to each other
-    pairs = tree.query_pairs(r=distance)
-    G.add_edges_from(pairs)
-    # get the connected subraphs from G
-    Gc = nx.connected_components(G)
-    # get the list of nodes in each component
-    nodes = sorted(Gc, key=len, reverse=True)
-    # filter nodes list with min_cluster_size
-    fnodes = [list(nn) for nn in nodes if len(nn) > min_cluster_size]
-    # get pts list for each filtered node list
-    points_list = [new_pts[mm, :] for mm in fnodes]
-    centroids = [[np.sum(pt[:, 0])/len(pt), np.sum(pt[:, 1])/len(pt)]
-                 for pt in points_list]
+    if len(new_pts) > 0:
+        # construct a KD Tree using these points
+        tree = cKDTree(new_pts)
+        # construct a networkx graph
+        G = nx.Graph()
+        # find the pairs of points within a distance to each other
+        pairs = tree.query_pairs(r=distance)
+        G.add_edges_from(pairs)
+        # get the connected subraphs from G
+        Gc = nx.connected_components(G)
+        # get the list of nodes in each component
+        nodes = sorted(Gc, key=len, reverse=True)
+        # filter nodes list with min_cluster_size
+        fnodes = [list(nn) for nn in nodes if len(nn) > min_cluster_size]
+        # get pts list for each filtered node list
+        points_list = [new_pts[mm, :] for mm in fnodes]
+        centroids = [[np.sum(pt[:, 0])/len(pt), np.sum(pt[:, 1])/len(pt)]
+                     for pt in points_list]
+    else:
+        centroids = []
     return centroids, allmatches, stats
 
 
@@ -163,6 +172,27 @@ def detect_stitching_gaps(render, prestitched_stack, poststitched_stack,
     session.close()
     return gap_tiles
 
+def detect_distortion(render, poststitched_stack, zvalue, threshold_cutoff=[0.005, 0.005], pool_size=20):
+    #z_to_scales = {zvalue: do_get_z_scales_nopm(zvalue, [poststitched_stack], render)}
+    z_to_scales = {}
+
+    # check if any scale is None
+    #zs = [z for z, scales in z_to_scales.items() if scales is None]
+    #for z in zs:
+    #    z_to_scales[z] = get_z_scales_nopm(z, [poststitched_stack], render)
+
+    try:
+        z_to_scales[zvalue] = get_z_scales_nopm(zvalue, [poststitched_stack], render)
+    except Exception:
+        z_to_scales[zvalue] = None
+
+    # get the mad statistics
+    z_to_scalestats = {z: get_scale_statistics_mad(scales) for z, scales in z_to_scales.items() if scales is not None}
+
+    # find zs that fall outside cutoff
+    badzs_cutoff = [z for z, s in z_to_scalestats.items() if s[0] > threshold_cutoff[0] or s[1] > threshold_cutoff[1]]
+    return badzs_cutoff
+
 
 def get_pre_post_tspecs(render, prestitched_stack, poststitched_stack, z):
     session = requests.session()
@@ -183,7 +213,7 @@ def get_pre_post_tspecs(render, prestitched_stack, poststitched_stack, z):
 def run_analysis(
         render, prestitched_stack, poststitched_stack, match_collection,
         match_collection_owner, residual_threshold, neighbor_distance,
-        min_cluster_size, z):
+        min_cluster_size, threshold_cutoff, z):
     pre_tspecs, post_tspecs = get_pre_post_tspecs(
         render, prestitched_stack, poststitched_stack, z)
     disconnected_tiles = detect_disconnected_tiles(
@@ -196,27 +226,29 @@ def run_analysis(
         render, poststitched_stack,  match_collection, match_collection_owner,
         z, residual_threshold=residual_threshold, distance=neighbor_distance,
         min_cluster_size=min_cluster_size, tspecs=post_tspecs)
+    distorted_zs = detect_distortion(
+        render, poststitched_stack, z, threshold_cutoff=threshold_cutoff)
 
     return (disconnected_tiles, gap_tiles, seam_centroids,
-            post_tspecs, matches, stats)
+            distorted_zs, post_tspecs, matches, stats)
 
 
 def detect_stitching_mistakes(
         render, prestitched_stack, poststitched_stack, match_collection,
-        match_collection_owner, residual_threshold, neighbor_distance,
+        match_collection_owner, threshold_cutoff, residual_threshold, neighbor_distance,
         min_cluster_size, zvalues, pool_size=20):
     mypartial0 = partial(
         run_analysis, render, prestitched_stack, poststitched_stack,
         match_collection, match_collection_owner, residual_threshold,
-        neighbor_distance, min_cluster_size)
+        neighbor_distance, min_cluster_size, threshold_cutoff)
 
     with renderapi.client.WithPool(pool_size) as pool:
         (disconnected_tiles, gap_tiles, seam_centroids,
-         post_tspecs, matches, stats) = zip(*pool.map(
+         distorted_zs, post_tspecs, matches, stats) = zip(*pool.map(
             mypartial0, zvalues))
 
     return (disconnected_tiles, gap_tiles, seam_centroids,
-            post_tspecs, matches, stats)
+            distorted_zs, post_tspecs, matches, stats)
 
 
 def check_status_of_stack(render, stack, zvalues):
@@ -266,12 +298,13 @@ class DetectMontageDefectsModule(RenderModule):
             self.args['poststitched_stack'],
             zvalues)
         (disconnected_tiles, gap_tiles, seam_centroids,
-         post_tspecs, matches, stats) = detect_stitching_mistakes(
+         distorted_zs, post_tspecs, matches, stats) = detect_stitching_mistakes(
             self.render,
             new_prestitched,
             new_poststitched,
             self.args['match_collection'],
             self.args['match_collection_owner'],
+            self.args['threshold_cutoff'],
             self.args['residual_threshold'],
             self.args['neighbors_distance'],
             self.args['min_cluster_size'],
@@ -287,10 +320,12 @@ class DetectMontageDefectsModule(RenderModule):
         holes = [zvalues[i] for i in hole_indices]
         gaps = [zvalues[i] for i in gaps_indices]
         seams = [zvalues[i] for i in seams_indices]
-        combinedz = list(set(holes + gaps + seams))
+        distorted_zs = [z[0] for z in distorted_zs if len(z) > 0]
+
+        combinedz = list(set(holes + gaps + seams + distorted_zs))
         qc_passed_sections = set(zvalues) - set(combinedz)
         centroids = [seam_centroids[i] for i in seams_indices]
-
+        print(distorted_zs)
         self.args['output_html'] = []
         if self.args['plot_sections']:
             self.args['output_html'] = plot_section_maps(
@@ -310,8 +345,9 @@ class DetectMontageDefectsModule(RenderModule):
                      'hole_sections': holes,
                      'gap_sections': gaps,
                      'seam_sections': seams,
-                     'seam_centroids': np.array(centroids)})
-
+                     'distorted_sections': distorted_zs,
+                     'seam_centroids': np.array(centroids, dtype=object)})
+        print(self.output)
         # delete the stacks that were cloned
         if status1 == 'LOADING':
             self.render.run(renderapi.stack.delete_stack, new_prestitched)

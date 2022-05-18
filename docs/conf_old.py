@@ -1,7 +1,7 @@
 from argschema.autodoc import process_schemas
 # -*- coding: utf-8 -*-
 #
-# asap-modules documentation build configuration file, created by
+# render-modules documentation build configuration file, created by
 # sphinx-quickstart on Thu Sep  7 12:25:36 2017.
 #
 # This file is execfile()d with the current directory set to its
@@ -17,9 +17,9 @@ from argschema.autodoc import process_schemas
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import os
-import sys
-sys.path.insert(0, os.path.abspath('..'))
+# import os
+# import sys
+# sys.path.insert(0, os.path.abspath('.'))
 
 
 # -- General configuration ------------------------------------------------
@@ -36,8 +36,7 @@ extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
-    'sphinx.ext.napoleon',
-    'sphinx.ext.autosectionlabel']
+    'myst_parser']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -45,8 +44,8 @@ templates_path = ['_templates']
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-# source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = ['.rst', '.md']
+# source_suffix = '.rst'
 
 # The master toctree document.
 master_doc = 'index'
@@ -129,7 +128,7 @@ html_sidebars = {
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'asap-modulesdoc'
+htmlhelp_basename = 'render-modulesdoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -156,7 +155,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'asap-modules.tex', u'asap-modules Documentation',
+    (master_doc, 'render-modules.tex', u'asap-modules Documentation',
      u'Gayathri Mahalingam, Russel Torres, Daniel Kapner, Sharmi Seshamani, Eric Perlman, Forrest Collman, Sam Kinn', 'manual'),
 ]
 

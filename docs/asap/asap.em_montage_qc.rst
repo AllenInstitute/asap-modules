@@ -1,29 +1,29 @@
-rendermodules\.em\_montage\_qc package
+asap\.em\_montage\_qc package
 ======================================
 
 Submodules
 ----------
 
-rendermodules\.em\_montage\_qc\.detect\_montage\_defects module
+asap\.em\_montage\_qc\.detect\_montage\_defects module
 ---------------------------------------------------------------
 
-.. automodule:: rendermodules.em_montage_qc.detect_montage_defects
+.. automodule:: asap.em_montage_qc.detect_montage_defects
     :members:
     :undoc-members:
     :show-inheritance:
 
-rendermodules\.em\_montage\_qc\.plots module
+asap\.em\_montage\_qc\.plots module
 --------------------------------------------
 
-.. automodule:: rendermodules.em_montage_qc.plots
+.. automodule:: asap.em_montage_qc.plots
     :members:
     :undoc-members:
     :show-inheritance:
 
-rendermodules\.em\_montage\_qc\.schemas module
+asap\.em\_montage\_qc\.schemas module
 ----------------------------------------------
 
-.. automodule:: rendermodules.em_montage_qc.schemas
+.. automodule:: asap.em_montage_qc.schemas
     :members:
     :undoc-members:
     :show-inheritance:
@@ -32,7 +32,7 @@ rendermodules\.em\_montage\_qc\.schemas module
 Module contents
 ---------------
 
-.. automodule:: rendermodules.em_montage_qc
+.. automodule:: asap.em_montage_qc
     :members:
     :undoc-members:
     :show-inheritance:

@@ -1,37 +1,37 @@
-rendermodules\.module\.schemas package
+asap\.module\.schemas package
 ======================================
 
 Submodules
 ----------
 
-rendermodules\.module\.schemas\.renderclient\_schemas module
+asap\.module\.schemas\.renderclient\_schemas module
 ------------------------------------------------------------
 
-.. automodule:: rendermodules.module.schemas.renderclient_schemas
+.. automodule:: asap.module.schemas.renderclient_schemas
     :members:
     :undoc-members:
     :show-inheritance:
 
-rendermodules\.module\.schemas\.schemas module
+asap\.module\.schemas\.schemas module
 ----------------------------------------------
 
-.. automodule:: rendermodules.module.schemas.schemas
+.. automodule:: asap.module.schemas.schemas
     :members:
     :undoc-members:
     :show-inheritance:
 
-rendermodules\.module\.schemas\.spark\_schemas module
+asap\.module\.schemas\.spark\_schemas module
 -----------------------------------------------------
 
-.. automodule:: rendermodules.module.schemas.spark_schemas
+.. automodule:: asap.module.schemas.spark_schemas
     :members:
     :undoc-members:
     :show-inheritance:
 
-rendermodules\.module\.schemas\.stack\_schemas module
+asap\.module\.schemas\.stack\_schemas module
 -----------------------------------------------------
 
-.. automodule:: rendermodules.module.schemas.stack_schemas
+.. automodule:: asap.module.schemas.stack_schemas
     :members:
     :undoc-members:
     :show-inheritance:
@@ -40,7 +40,7 @@ rendermodules\.module\.schemas\.stack\_schemas module
 Module contents
 ---------------
 
-.. automodule:: rendermodules.module.schemas
+.. automodule:: asap.module.schemas
     :members:
     :undoc-members:
     :show-inheritance:
