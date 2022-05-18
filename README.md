@@ -8,7 +8,7 @@ It is suitable for processing large-scale datasets and supports multiple computa
 
 # Documentation
 
-The complete documentation is available [here](https://readthedocs.io)
+The complete documentation is available [here](https://asap-modules.readthedocs.io)
 
 
 # Installation
