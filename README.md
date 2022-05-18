@@ -6,6 +6,10 @@
 ASAP is a set of modules to perform stitching and alignment of EM and Array tomography data.
 It is suitable for processing large-scale datasets and supports multiple computational environments.
 
+# Documentation
+
+The complete documentation is available [here](https://readthedocs.io)
+
 
 # Installation
 
