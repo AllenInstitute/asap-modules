@@ -62,7 +62,4 @@ authors and should not be interpreted as necessarily representing the
 official policies or endorsements, either expressed or implied, of
 IARPA, DoI/IBC, or the U.S. Government.
 
-.. |Docs| image:: https://readthedocs.org/projects/asap-modules/badge/
-   :target: https://readthedocs.org/projects/asap-modules
-.. |Code cov| image:: https://codecov.io/gh/AllenInstitute/asap-modules/branch/master/graph/badge.svg?token=nCNsugRDky
-   :target: https://codecov.io/gh/AllenInstitute/asap-modules
+[![Docs](https://readthedocs.org/projects/asap-modules/badge/)](https://asap-modules.readthedocs.io)
