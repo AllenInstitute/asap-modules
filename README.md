@@ -1,32 +1,33 @@
-|Docs| |Code cov|
+[![Docs](https://readthedocs.org/projects/asap-modules/badge/)](https://readthedocs.org/projects/asap-modules)
+[![Code cov](https://codecov.io/gh/AllenInstitute/asap-modules/branch/master/graph/badge.svg?token=nCNsugRDky)](https://codecov.io/gh/AllenInstitute/asap-modules)
 
-
-ASAP-modules
-############
+# ASAP-modules
 
 ASAP is a set of modules to perform stitching and alignment of EM and Array tomography data.
 It is suitable for processing large-scale datasets and supports multiple computational environments.
 
-Installation
-############
+# Documentation
 
-Please refer the documentation :ref:`Installation:Installation`. on how to install and use ASAP modules 
+The complete documentation is available [here](https://asap-modules.readthedocs.io)
 
-How to run
-##########
+
+# Installation
+
+Please refer the documentation [Installation](docs/readme/installation.rst). on how to install and use ASAP modules
+
+# How to run
 
 The order of processing is as follows; 
 
-1. :doc:`Lens distortion correction </readme/lens_correction>`
+1. [Lens correction](docs/readme/lens_correction.rst)
 
-2. :doc:`Mipmap generation </readme/mipmaps>`
+2. [Mipmap generation](docs/readme/mipmaps.rst)
 
-3. :doc:`Montaging and Montage QC </readme/montaging>`
+3. [Montaging](docs/readme/montaging.rst)
 
-4. :doc:`Global 3D non-linear alignment </readme/rough_alignment>`
+4. [Global 3D alignment](docs/readme/rough_alignment.rst)
 
-Other Modules
-#############
+# Other Modules
 
 A few other modules are included in ASAP to do the following.
 
@@ -43,8 +44,8 @@ A few other modules are included in ASAP to do the following.
    volume (useful in cases of aligning missing/reimaged sections)
 
 .. _support:
-Support
-########
+# Support
+
 
 We are planning on occasional updating this tool with no fixed schedule. 
 Community involvement is encouraged through both issues and pull requests. 
@@ -52,8 +53,7 @@ Please make pull requests against the dev branch, as we will test changes
 there before merging into master.
 
 .. _acknowledgements:
-Acknowledgments
-###############
+# Acknowledgments
 
 This project is supported by the Intelligence Advanced Research Projects
 Activity (IARPA) via Department of Interior / Interior Business Center
@@ -66,7 +66,4 @@ authors and should not be interpreted as necessarily representing the
 official policies or endorsements, either expressed or implied, of
 IARPA, DoI/IBC, or the U.S. Government.
 
-.. |Docs| image:: https://readthedocs.org/projects/asap-modules/badge/
-   :target: https://readthedocs.org/projects/asap-modules
-.. |Code cov| image:: https://codecov.io/gh/AllenInstitute/asap-modules/branch/master/graph/badge.svg?token=nCNsugRDky
-   :target: https://codecov.io/gh/AllenInstitute/asap-modules
+[![Docs](https://readthedocs.org/projects/asap-modules/badge/)](https://asap-modules.readthedocs.io)
