@@ -1,6 +1,6 @@
 render-python>=2.2.2
-marshmallow<3.0
-argschema<2.0
+marshmallow
+argschema
 numpy
 pillow
 tifffile
