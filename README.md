@@ -1,4 +1,4 @@
-[![Docs](https://readthedocs.org/projects/asap-modules/badge/)](https://readthedocs.org/projects/asap-modules)
+[![Docs](https://readthedocs.org/projects/asap-modules/badge/)](https://asap-modules.readthedocs.io/en/latest/)
 [![Code cov](https://codecov.io/gh/AllenInstitute/asap-modules/branch/master/graph/badge.svg?token=nCNsugRDky)](https://codecov.io/gh/AllenInstitute/asap-modules)
 
 # ASAP-modules
@@ -43,7 +43,6 @@ A few other modules are included in ASAP to do the following.
 5. Registration - Register individual sections in an already aligned
    volume (useful in cases of aligning missing/reimaged sections)
 
-.. _support:
 # Support
 
 
@@ -52,7 +51,6 @@ Community involvement is encouraged through both issues and pull requests.
 Please make pull requests against the dev branch, as we will test changes 
 there before merging into master.
 
-.. _acknowledgements:
 # Acknowledgments
 
 This project is supported by the Intelligence Advanced Research Projects

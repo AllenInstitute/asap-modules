@@ -65,6 +65,12 @@ class TilePairClientParameters(RenderParameters):
         missing=True,
         description="Exclude tiles that are completely "
         "obscured by reacquired tiles")
+    useRowColPositions = Bool(
+        required=False,
+        default=False,
+        missing=False,
+        description="For montage pairs (zNeighborDistance == 0) "
+        "use layout imageRow and imageCol values instead of tile bounds to identify neighbor tiles")
     output_dir = OutputDir(
         required=True,
         description="Output directory path to save the tilepair json file")

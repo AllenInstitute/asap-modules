@@ -74,7 +74,8 @@ class TilePairClientModule(RenderModule):
             excludeCornerNeighbors=self.args['excludeCornerNeighbors'],
             excludeSameLayerNeighbors=self.args['excludeSameLayerNeighbors'],
             excludeCompletelyObscuredTiles=self.args[
-                'excludeCompletelyObscuredTiles'])
+                'excludeCompletelyObscuredTiles'],
+            useRowColPositions=self.args['useRowColPositions'])
 
         self.output({'tile_pair_file': tilepairJsonFile})
 
