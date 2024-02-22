@@ -18,7 +18,7 @@ class MaterializedBoxParameters(argschema.schemas.DefaultSchema):
         "height of flat rectangular tiles to generate"))
     maxLevel = Int(required=False, default=0, description=(
         "maximum mipMapLevel to generate."))
-    fmt = Str(required=False, validator=validate.OneOf(['PNG', 'TIF', 'JPG']),
+    fmt = Str(required=False, validate=validate.OneOf(['PNG', 'TIF', 'JPG']),
               description=("image format to generate mipmaps -- "
                            "PNG if not specified"))
     maxOverviewWidthAndHeight = Int(required=False, description=(
@@ -148,7 +148,7 @@ class MatchDerivationParameters(argschema.schemas.DefaultSchema):
     matchRod = Float(required=False, description=(
         "Ratio of first to second nearest neighbors used as a cutoff in "
         "matching features. 0.92 if excluded or None"))
-    matchModelType = Str(required=False, validator=validate.OneOf([
+    matchModelType = Str(required=False, validate=validate.OneOf([
         "AFFINE", "RIGID", "SIMILARITY", "TRANSLATION"]), description=(
         "Model to match for RANSAC filtering. 'AFFINE' if excluded or None"))
     matchIterations = Int(required=False, description=(
@@ -170,7 +170,7 @@ class MatchDerivationParameters(argschema.schemas.DefaultSchema):
         "3.0 if excluded or None"))
     matchFilter = Str(
             required=False,
-            validator=validate.OneOf(
+            validate=validate.OneOf(
                 ['SINGLE_SET', 'CONSENSUS_SETS', 'AGGREGATED_CONSENSUS_SETS']),
             description=(
                 "whether to match one set of matches, or multiple "
