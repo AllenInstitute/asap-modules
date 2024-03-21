@@ -1,3 +1,3 @@
 #!/bin/bash
-source activate render-modules
+source activate asap
 exec "$@"
