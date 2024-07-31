@@ -15,12 +15,12 @@ import bigfeta.solve
 import uri_handler.uri_functions
 import collections
 from asap.module.render_module import (RenderModule, RenderModuleException)
-from asap.rough_align.schemas import (ApplyRoughAlignmentTransformParameters, ApplyRoughAlignmentOutputParameters)
+from asap.rough_align.schemas import (ApplyRoughAlignmentTransformParameters, ApplyRoughAlignmentOutputParameters) #correct schema to use
 
 if __name__ == "__main__" and __package__ is None:
-    __package__ = "asap.rough_align.apply_multiple_solves"
+    __package__ = "asap.rough_align.fit_multiple_solves"
 
-#in the following example, just the keywords are important. everything else is most liokely customizable unless stated otherwise.
+#in the following example, just the keywords are important. everything else is most likely customizable unless stated otherwise.
 example = {
     "render": {
         "host": "http://em-131db2.corp.alleninstitute.org", #use your own render server
@@ -245,12 +245,12 @@ def thin_plate_spine_solve(aff_result_rts,new_matches):
     return tps_create_CRS_A_input,tps_regularization_dict
 
 
-class ApplyMultipleSolves(RenderModule):
+class FitMultipleSolves(RenderModule):
     default_schema = ApplyRoughAlignmentTransformParameters
     default_output_schema = ApplyRoughAlignmentOutputParameters
     
     def run(self):
-        r = self.render
+        r = self.render #probably incorrect or unnecessary? need Russel's input.
         allzvalues = np.array(self.render.run(renderapi.stack.get_z_values_for_stack,self.args['prealigned_stack']))
         Z = [{'o':a,'n':b} for a,b in zip(self.args['old_z'],self.args['new_z']) if a in allzvalues]
         sol_range = (Z[0]['n'],Z[-1]['n'])
@@ -318,5 +318,5 @@ class ApplyMultipleSolves(RenderModule):
 
 
 if __name__ == "__main__":
-        mod = ApplyMultipleSolves()
+        mod = FitMultipleSolves()
         mod.run()
