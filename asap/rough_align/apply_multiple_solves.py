@@ -250,7 +250,7 @@ class ApplyMultipleSolves(RenderModule):
     default_output_schema = ApplyRoughAlignmentOutputParameters
     
     def run(self):
-        r = self.render.run(renderapi.connect(**self.render)) #probably incorrect or unnecessary? need Russel's input.
+        r = self.render
         allzvalues = np.array(self.render.run(renderapi.stack.get_z_values_for_stack,self.args['prealigned_stack']))
         Z = [{'o':a,'n':b} for a,b in zip(self.args['old_z'],self.args['new_z']) if a in allzvalues]
         sol_range = (Z[0]['n'],Z[-1]['n'])
