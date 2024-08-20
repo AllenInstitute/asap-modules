@@ -6,7 +6,7 @@ from marshmallow import post_load, ValidationError
 from argschema.fields import (
         Bool, Float, Int, NumpyArray,
         Str, InputFile, List, Dict, Nested)
-from argschema.schemas import DefaultSchema
+from argschema.schemas import DefaultSchema, ArgSchema
 
 from asap.module.schemas import (
         RenderParameters,
@@ -343,7 +343,7 @@ class DownsampleMaskHandlerSchema(RenderParameters):
         default=['png', 'tif'],
         description="what kind of mask files to recognize")
 
-class FitMultipleSolvesSchema(RenderParameters):
+class FitMultipleSolvesSchema(ArgSchema):
     input_stack = Nested(
         input_stack,
         required=True,
@@ -388,7 +388,7 @@ class FitMultipleSolvesSchema(RenderParameters):
         missing=True,
         description='if True, then updates stack status to COMPLETE')
 
-class FitMultipleSolvesOutputSchema(RenderParameters):
+class FitMultipleSolvesOutputSchema(DefaultSchema):
     zs = NumpyArray(
             required=True,
             description="list of z values that were applied to")

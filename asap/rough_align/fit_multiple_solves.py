@@ -14,7 +14,8 @@ import bigfeta.utils
 import bigfeta.solve
 import uri_handler.uri_functions
 import collections
-from asap.module.render_module import (RenderModule, RenderModuleException)
+import argschema
+from asap.module.render_module import RenderModuleException
 from asap.rough_align.schemas import (FitMultipleSolvesSchema, FitMultipleSolvesOutputSchema) #correct schema to use
 
 if __name__ == "__main__" and __package__ is None:
@@ -59,6 +60,7 @@ example = {
     "minZ":0, #first remapped Z value as an integer
     "maxZ": 801, #last remapped Z value as an integer
     "pool_size": 20, #customizable. 20 is probably overkill
+    "close_stack": False,
     "output_json":"/path/to/output/json/files" #required for proper functioning of the module.
 }
 
@@ -95,27 +97,13 @@ def multiz_unmatchz_counter(z_to_rts,combined_rts,tIds_nomatch):
     multiz_count = {k: v for k, v in collections.Counter([ts.z for ts in combined_rts.tilespecs]).items() if v > 1}#should be nothing in it if everything works well
     if len(multiz_count) > 0:
         mz = 'multi Z error'
-        raise TileException(f'multiple sections in {z}, tileIds: {rts.tilespecs[0].tileId}')
-    else:
-        mz=[]
-    #for z, rts in z_to_rts.items():
-    #    if len(rts.tilespecs) > 1:
-    #        print('fixing multiple section issues')
-    #        rts.tilespecs = [sorted(rts.tilespecs, key=lambda x: x.ip[0].imageUrl)[-1]]
-    #multiz_count = {k: v for k, v in collections.Counter([ts.z for ts in combined_rts.tilespecs]).items() if v > 1}#should be nothing in it if everything works well
-    #if len(multiz_count) > 0:
-    #    raise TileException(f'multiple sections in {z}, tileIds: {rts.tilespecs[0].tileId}')
+        raise TileException(f'multiple sections in {list(multiz_count.keys())}')
 
     nomatchz_count = collections.Counter([tId_to_tilespecs[tId].z for tId in tIds_nomatch]) #should be nothing in it if everything works well
     if len(nomatchz_count) > 0:
         nz = 'no match Z error'
-        print(list(map(int, sorted({tId_to_tilespecs[tId].z for tId in tIds_nomatch}))))
-    #    for z in sorted({tId_to_tilespecs[tId].z for tId in tIds_nomatch}):
-    #        print(int(z))
-        raise TileException('Unmatched TileIds Exist')
-    else:
-        nz=[]
-    return (mz,nz)
+        raise TileException(f'Unmatched TileIds Exist: {list(map(int, sorted({tId_to_tilespecs[tId].z for tId in tIds_nomatch})))}')
+    return None
 
 def get_ts_timestamp(ts):
     imgurl = ts.ip[0].imageUrl
@@ -140,10 +128,7 @@ def create_input_defaults(render,pm_render,input_stack: str,pm_collection: str,s
             new_matches.append(swap_matchpair(m))
     combined_rts.tilespecs = [tId_to_tilespecs[tId] for tId in tId_to_tilespecs.keys() & res_tiles['matched_tiles']]
     copy_matches = renderapi.pointmatch.copy_matches_explicit
-    mz,nz = multiz_unmatchz_counter(res_tiles['resolved_tiles'],combined_rts,res_tiles['Unmatched_tiles'])
-    if (mz != []) or (nz !=[]):
-        return ('Errors found')
-    else:
+    multiz_unmatchz_counter(res_tiles['resolved_tiles'],combined_rts,res_tiles['Unmatched_tiles'])
         return {'combined_tilespecs': combined_rts,'new_matches': new_matches,'copied_matches': copy_matches}
 
 def rigid_solve(combined_rts,new_matches):
@@ -171,7 +156,7 @@ def rigid_solve(combined_rts,new_matches):
     rigid_transform_apply, rigid_regularization_dict, rigid_matrix_assembly_dict, rigid_order, rigid_fullsize)
     return rigid_create_CSR_A_input,rigid_regularization_dict
 
-def translate(rigid_result_rts,new_matches):
+def translation_solve(rigid_result_rts,new_matches):
     translation_transform_name = "TranslationModel"
     translation_order = 2
     translation_pair_depth = [1, 2, 3, 4]
@@ -259,7 +244,7 @@ def append_tps_tform(tspec, npts=5, ext=0.05):
     tform = tps_from_vertices(vert)
     tspec.tforms.append(tform)
 
-def thin_plate_spine_solve(aff_result_rts,new_matches):
+def thin_plate_spline_solve(aff_result_rts,new_matches):
     
     tpsadded_aff_result_rts = copy.deepcopy(aff_result_rts)
     for tspec in tpsadded_aff_result_rts.tilespecs:
@@ -294,14 +279,16 @@ def thin_plate_spine_solve(aff_result_rts,new_matches):
     return tps_create_CRS_A_input,tps_regularization_dict
 
 
-class FitMultipleSolves(RenderModule):
+class FitMultipleSolves(argschema.ArgSchemaParser):
     default_schema = FitMultipleSolvesSchema
     default_output_schema = FitMultipleSolvesOutputSchema
-    def apply_transform(self,in_default,rts,app):
-        if app == 'rigid':
-            app_input,app_reg_dict = rigid_solve(in_default['combined_tilespecs'],in_default['new_matches'])
-        else:
-            app_input,app_reg_dict = rigid_solve(rts,in_default['new_matches'])
+
+    def apply_transform(self,new_matches,rts,app):
+        app_solver = {'rigid': rigid_solve,
+            'translate': translation_solve,
+            'affine': affine_solve,
+            'tps': thin_plate_spline_solve}
+        app_input,app_reg_dict = app_solver[app](rts,new_matches)
         app_fr, app_draft_resolvedtiles = bigfeta.bigfeta.create_CSR_A_fromobjects(*app_input, return_draft_resolvedtiles=True)
         app_result_rts = copy.deepcopy(app_draft_resolvedtiles)
         app_reg = scipy.sparse.diags(
@@ -312,16 +299,13 @@ class FitMultipleSolves(RenderModule):
         return app_result_rts
 
     def save_transform(self,render,rts,app):
-        outstacks = {'rigid':self.args['rigid_ouput_stack'],
-                    'translate': self.args['translation_output_stack'],
-                    'affine': self.args['affine_ouput_stack'],
-                    'tps': self.args['thin_plate_output_stack']}
+        outstacks = {'rigid':self.args['rigid_output_stack']['name'],
+                    'translate': self.args['translation_output_stack']['name'],
+                    'affine': self.args['affine_output_stack']['name'],
+                    'tps': self.args['thin_plate_output_stack']['name']}
         app_outstack=outstacks[app]
-        if app_outstack not in renderapi.render.get_stacks_by_owner_project(render=render):
-            renderapi.stack.create_stack(app_outstack,render=render)
-            renderapi.resolvedtiles.put_tilespecs(app_outstack, rts,render=render))
-        else:
-            renderapi.stack.set_stack_state(app_outstack,'LOADING',render=render)
+        renderapi.stack.create_stack(app_outstack,render=render)
+        renderapi.resolvedtiles.put_tilespecs(app_outstack, rts,render=render))
         return None
         
     def run(self):
@@ -335,50 +319,49 @@ class FitMultipleSolves(RenderModule):
             do_translate=True
         else:
             do_translate = False
-
-        if (self.args['minZ'] is None) or (self.args['maxZ'] is None):
-            allZ = [int(z) for z in renderapi.stack.get_z_values_for_stack(self.args['input_stack']['name'], render=r_in)]
-            sol_range = (allZ[0],allZ[-1])
+        allZ = [int(z) for z in renderapi.stack.get_z_values_for_stack(self.args['input_stack']['name'], render=r_in)]
+        if self.args['minZ'] is None:
+            minZ = allZ[0]
         else:
-            sol_range = (self.args['minZ'],self.args['maxZ'])
+            minZ = self.args['minZ']
+        if self.args['maxZ'] is None:
+            maxZ = allZ[-1]
+        else:
+            maxZ = self.args['maxZ']
+
+        sol_range = (minZ,maxZ)
+
         in_default = create_input_defaults(render=r_in,pm_render=r_pm,input_stack=self.args['input_stack']['name'],pm_collection=self.args['pointmatch_collection']['name'],solve_range=sol_range)
-        if in_default == 'Errors found':
-            return None
-        else:
-            
-            '''---------------------Rigid solve-------------------------'''
-            rigid_result_rts=apply_transform(in_default,rts=None,app='rigid')
-            save_transform(render=r_rot,rts=rigid_result_rts,app='rigid')
-            if do_translate == True:
-                '''---------------Translation solve -------'''
-                trans_result_rts=apply_transform(in_default,rts=rigid_result_rts,app='translate')
-                save_transform(render=r_trans,rts=trans_result_rts,app='translate')
-                '''---------------Affine solve ------------'''
-                aff_result_rts = apply_transform(in_default,rts=trans_result_rts,app='affine')
-            else:
-                '''---------------Affine solve ------------'''
-                aff_result_rts = apply_transform(in_default,rts=rigid_result_rts,app='affine')
-            save_transform(render=r_aff,rts=aff_result_rts,app='affine')
-            
-            '''---------------Thin_plate_spline solve--------------------'''
-            tps_result_rts = apply_transform(in_default,rts=aff_result_rts,app='tps')
-            save_transform(render=r_tps,rts=tps_result_rts,app='tps')
-            
-            if do_translate==True:
-                self.output({
-                'zs': np.array([i for i in range(self.args['maxZ'])]),
-                'rigid_output_stack': rig_outstack,
-                'translation_output_stack': trans_outstack,
-                'affine_output_stack': aff_outstack,
-                'thin_plate_output_stack':tps_outstack})
-            else:
-                self.output({
-                'zs': np.array([i for i in range(self.args['maxZ'])]),
-                'rigid_output_stack': rig_outstack,
-                'affine_output_stack': aff_outstack,
-                'thin_plate_output_stack':tps_outstack})
 
+        '''---------------------Rigid solve-------------------------'''
+        rigid_result_rts=apply_transform(in_default,rts=None,app='rigid')
+        save_transform(render=r_rot,rts=rigid_result_rts,app='rigid')
+        if do_translate:
+            '''---------------Translation solve -------'''
+            trans_result_rts=apply_transform(in_default,rts=rigid_result_rts,app='translate')
+            save_transform(render=r_trans,rts=trans_result_rts,app='translate')
+            '''---------------Affine solve ------------'''
+            aff_result_rts = apply_transform(in_default,rts=trans_result_rts,app='affine')
+        else:
+            '''---------------Affine solve ------------'''
+            aff_result_rts = apply_transform(in_default,rts=rigid_result_rts,app='affine')
+        save_transform(render=r_aff,rts=aff_result_rts,app='affine')
+            
+        '''---------------Thin_plate_spline solve--------------------'''
+        tps_result_rts = apply_transform(in_default,rts=aff_result_rts,app='tps')
+        save_transform(render=r_tps,rts=tps_result_rts,app='tps')
+            
+        out_dict = {
+                'zs': [i for i in range(minZ,maxZ+1)],
+                'rigid_output_stack': self.args['rigid_output_stack']['name'],
+                'affine_output_stack': self.args['affine_output_stack']['name'],
+                'thin_plate_output_stack':self.args['thin_plate_output_stack']['name']}
+
+        if do_translate:
+            out_dict['translation_output_stack']=self.args['translation_output_stack']['name']
+        
+        self.output(out_dict)
 
 if __name__ == "__main__":
-        mod = FitMultipleSolves()
+        mod = FitMultipleSolves() # Use input_data = example as an argument here for test runs.
         mod.run()
