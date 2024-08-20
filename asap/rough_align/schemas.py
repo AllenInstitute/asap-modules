@@ -372,21 +372,38 @@ class FitMultipleSolvesSchema(RenderParameters):
         required=True,
         description = 'output stack name of thin plate spline transformed montages')
     minZ = Int(
-        required=False,
-        default=None,
-        missing=None,
+        required=True,
         description='first remapped Z value')
     maxZ = Int(
-        required=False,
-        default=None,
-        missing=None,
+        required=True,
         description='last remapped Z value')
     pool_size = Int(
         required=False,
+        default=10,
+        missing=10,
         description='pool size for concurrency')
     close_stack=Bool(
         required=False,
         default=True,
         missing=True,
         description='if True, then updates stack status to COMPLETE')
+
+class FitMultipleSolvesOutputSchema(RenderParameters):
+    zs = NumpyArray(
+            required=True,
+            description="list of z values that were applied to")
+    rigid_output_stack = Str(
+            required=True,
+            description="stack where rigid transforms were set")
+    translation_output_stack = Str(
+            required=False,
+            default=None,
+            missing=None,
+            description="stack where rigid translation transforms were set")
+    affine_output_stack = Str(
+            required=True,
+            description="stack where rigid transforms were set")
+    thin_plate_output_stack = Str(
+            required=True,
+            description="stack where rigid transforms were set")
 

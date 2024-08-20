@@ -15,7 +15,7 @@ import bigfeta.solve
 import uri_handler.uri_functions
 import collections
 from asap.module.render_module import (RenderModule, RenderModuleException)
-from asap.rough_align.schemas import FitMultipleSolvesSchema #correct schema to use
+from asap.rough_align.schemas import (FitMultipleSolvesSchema, FitMultipleSolvesOutputSchema) #correct schema to use
 
 if __name__ == "__main__" and __package__ is None:
     __package__ = "asap.rough_align.fit_multiple_solves"
@@ -58,7 +58,8 @@ example = {
             }),# output of thin plate spline transform
     "minZ":0, #first remapped Z value as an integer
     "maxZ": 801, #last remapped Z value as an integer
-    "pool_size": 20 #customizable. 20 is probably overkill.
+    "pool_size": 20, #customizable. 20 is probably overkill
+    "output_json":"/path/to/output/json/files" #required for proper functioning of the module.
 }
 
 logger = logging.getLogger()
@@ -295,7 +296,7 @@ def thin_plate_spine_solve(aff_result_rts,new_matches):
 
 class FitMultipleSolves(RenderModule):
     default_schema = FitMultipleSolvesSchema
-    default_output_schema = FitMultipleSolvesSchema
+    default_output_schema = FitMultipleSolvesOutputSchema
     def apply_transform(self,in_default,rts,app):
         if app == 'rigid':
             app_input,app_reg_dict = rigid_solve(in_default['combined_tilespecs'],in_default['new_matches'])
