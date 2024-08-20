@@ -1,10 +1,11 @@
 import argschema
 from argschema import InputDir
 import marshmallow as mm
+from bigfeta.schemas import input_stack, output_stack, pointmatch
 from marshmallow import post_load, ValidationError
 from argschema.fields import (
-        Bool, Float, Int,
-        Str, InputFile, List, Dict)
+        Bool, Float, Int, NumpyArray,
+        Str, InputFile, List, Dict, Nested)
 from argschema.schemas import DefaultSchema
 
 from asap.module.schemas import (
@@ -341,3 +342,51 @@ class DownsampleMaskHandlerSchema(RenderParameters):
         required=False,
         default=['png', 'tif'],
         description="what kind of mask files to recognize")
+
+class FitMultipleSolvesSchema(RenderParameters):
+    input_stack = Nested(
+        input_stack,
+        required=True,
+        description='downsampled sections for rough alignment')
+    pointmatch_collection = Nested(
+        pointmatch,
+        required=True,
+        description='pointmatch collection parameters')
+    rigid_output_stack = Nested(
+        output_stack,
+        required=True,
+        description='output stack name of rigid rotation transformed montages')
+    translation_output_stack = Nested(
+        output_stack,
+        allow_none=True,
+        required=False,
+        default=None,
+        missing=None,
+        description='output stack name of rigid translated montages')
+    affine_output_stack = Nested(
+        output_stack,
+        required=True,
+        description='output stack name of affine transformed montages')
+    thin_plate_output_stack=Nested(
+        output_stack,
+        required=True,
+        description = 'output stack name of thin plate spline transformed montages')
+    minZ = Int(
+        required=False,
+        default=None,
+        missing=None,
+        description='first remapped Z value')
+    maxZ = Int(
+        required=False,
+        default=None,
+        missing=None,
+        description='last remapped Z value')
+    pool_size = Int(
+        required=False,
+        description='pool size for concurrency')
+    close_stack=Bool(
+        required=False,
+        default=True,
+        missing=True,
+        description='if True, then updates stack status to COMPLETE')
+
