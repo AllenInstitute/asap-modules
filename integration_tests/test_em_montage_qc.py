@@ -10,11 +10,15 @@ from test_data import (PRESTITCHED_STACK_INPUT_JSON,
                        render_params,
                        montage_qc_project)
 
-from asap.em_montage_qc.detect_montage_defects import (
-    DetectMontageDefectsModule)
-from asap.module.render_module import RenderModuleException
-from asap.em_montage_qc import detect_montage_defects
-from asap.em_montage_qc.distorted_montages import DetectDistortedMontagesModule
+IMPORTS_ERRORED = False
+try:
+    from asap.em_montage_qc.detect_montage_defects import (
+        DetectMontageDefectsModule)
+    from asap.module.render_module import RenderModuleException
+    from asap.em_montage_qc import detect_montage_defects
+    from asap.em_montage_qc.distorted_montages import DetectDistortedMontagesModule
+except:
+    IMPORTS_ERRORED = True
 
 
 @pytest.fixture(scope='module')
