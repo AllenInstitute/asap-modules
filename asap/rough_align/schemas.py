@@ -388,22 +388,26 @@ class FitMultipleSolvesSchema(ArgSchema):
         missing=True,
         description='if True, then updates stack status to COMPLETE')
 
-class FitMultipleSolvesOutputSchema(DefaultSchema):
-    zs = NumpyArray(
+class FitMultipleSolvesOutputSchema(ArgSchema):
+    zs = List(
             required=True,
             description="list of z values that were applied to")
-    rigid_output_stack = Str(
+    rigid_output_stack = Nested(
+            output_stack,
             required=True,
             description="stack where rigid transforms were set")
-    translation_output_stack = Str(
+    translation_output_stack = Nested(
+            output_stack,
             required=False,
             default=None,
             missing=None,
             description="stack where rigid translation transforms were set")
-    affine_output_stack = Str(
+    affine_output_stack = Nested(
+            output_stack
             required=True,
             description="stack where rigid transforms were set")
-    thin_plate_output_stack = Str(
+    thin_plate_output_stack = Nested(
+            output_stack
             required=True,
             description="stack where rigid transforms were set")
 
