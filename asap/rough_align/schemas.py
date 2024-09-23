@@ -4,13 +4,13 @@ import marshmallow as mm
 from bigfeta.schemas import input_stack, output_stack, pointmatch
 from marshmallow import post_load, ValidationError
 from argschema.fields import (
-        Bool, Float, Int, NumpyArray,
-        Str, InputFile, List, Dict, Nested)
+    Bool, Float, Int, NumpyArray,
+    Str, InputFile, List, Dict, Nested)
 from argschema.schemas import DefaultSchema, ArgSchema
 
 from asap.module.schemas import (
-        RenderParameters,
-        StackTransitionParameters)
+    RenderParameters,
+    StackTransitionParameters)
 
 
 class MakeAnchorStackSchema(StackTransitionParameters):
@@ -30,11 +30,11 @@ class MakeAnchorStackSchema(StackTransitionParameters):
                      "AffineModel transform jsons"
                      "will override xml input."))
     zValues = List(
-            Int,
-            required=False,
-            missing=[1000],
-            default=[1000],
-            description="not used in this module, keeps parents happy")
+        Int,
+        required=False,
+        missing=[1000],
+        default=[1000],
+        description="not used in this module, keeps parents happy")
 
 
 class PairwiseRigidSchema(StackTransitionParameters):
@@ -299,9 +299,9 @@ class PointMatchCollectionParameters(DefaultSchema):
 
 class ApplyRoughAlignmentOutputParameters(DefaultSchema):
     zs = argschema.fields.NumpyArray(
-            description="list of z values that were applied to")
+        description="list of z values that were applied to")
     output_stack = argschema.fields.Str(
-            description="stack where applied transforms were set")
+        description="stack where applied transforms were set")
 
 
 class DownsampleMaskHandlerSchema(RenderParameters):
@@ -343,6 +343,7 @@ class DownsampleMaskHandlerSchema(RenderParameters):
         default=['png', 'tif'],
         description="what kind of mask files to recognize")
 
+
 class FitMultipleSolvesSchema(ArgSchema):
     input_stack = Nested(
         input_stack,
@@ -367,10 +368,12 @@ class FitMultipleSolvesSchema(ArgSchema):
         output_stack,
         required=True,
         description='output stack name of affine transformed montages')
-    thin_plate_output_stack=Nested(
+    thin_plate_output_stack = Nested(
         output_stack,
         required=True,
-        description = 'output stack name of thin plate spline transformed montages')
+        description=('output stack name of'
+                     'thin plate spline transformed montages')
+    )
     minZ = Int(
         required=True,
         description='first remapped Z value')
@@ -382,32 +385,32 @@ class FitMultipleSolvesSchema(ArgSchema):
         default=10,
         missing=10,
         description='pool size for concurrency')
-    close_stack=Bool(
+    close_stack = Bool(
         required=False,
         default=True,
         missing=True,
         description='if True, then updates stack status to COMPLETE')
 
+
 class FitMultipleSolvesOutputSchema(ArgSchema):
     zs = List(
-            required=True,
-            description="list of z values that were applied to")
+        required=True,
+        description="list of z values that were applied to")
     rigid_output_stack = Nested(
-            output_stack,
-            required=True,
-            description="stack where rigid transforms were set")
+        output_stack,
+        required=True,
+        description="stack where rigid transforms were set")
     translation_output_stack = Nested(
-            output_stack,
-            required=False,
-            default=None,
-            missing=None,
-            description="stack where rigid translation transforms were set")
+        output_stack,
+        required=False,
+        default=None,
+        missing=None,
+        description="stack where rigid translation transforms were set")
     affine_output_stack = Nested(
-            output_stack
-            required=True,
-            description="stack where rigid transforms were set")
+        output_stack,
+        required=True,
+        description="stack where rigid transforms were set")
     thin_plate_output_stack = Nested(
-            output_stack
-            required=True,
-            description="stack where rigid transforms were set")
-
+        output_stack,
+        required=True,
+        description="stack where rigid transforms were set")
