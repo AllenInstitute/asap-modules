@@ -394,6 +394,7 @@ class FitMultipleSolvesSchema(ArgSchema):
 
 class FitMultipleSolvesOutputSchema(ArgSchema):
     zs = List(
+        Int,
         required=True,
         description="list of z values that were applied to")
     rigid_output_stack = Nested(
@@ -403,8 +404,6 @@ class FitMultipleSolvesOutputSchema(ArgSchema):
     translation_output_stack = Nested(
         output_stack,
         required=False,
-        default=None,
-        missing=None,
         description="stack where rigid translation transforms were set")
     affine_output_stack = Nested(
         output_stack,
