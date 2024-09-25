@@ -32,6 +32,7 @@ from asap.dataimport.make_montage_scapes_stack import (
 from asap.solver.solve import Solve_stack
 from asap.rough_align.apply_rough_alignment_to_montages import (
     ApplyRoughAlignmentTransform)
+from asap.rough_align.fit_multiple_solves import FitMultipleSolves
 import shutil
 import numpy as np
 
@@ -1238,3 +1239,67 @@ def test_multiple_transform_apply_rough(
             assert np.linalg.norm(
                 np.array(a_lpt['local'][:2]) -
                 np.array(r_lpt['local'][:2])) < 1
+
+
+@pytest.mark.parametrize("do_translate", [True, False])
+def test_fit_multiple_solves(
+        render, montage_scape_stack,
+        rough_point_match_collection,
+        tmpdir_factory, do_translate):
+
+    output_json = tmpdir_factory.mktemp('output').join(
+        f'fit_multiple_t{int(do_translate)}_output.json')
+    
+    output_stack_base = f'{montage_scape_stack}_fit_multiple_t{int(do_translate)}_DS_Rough'
+    rotation_stack_name = '{}_Rotation'.format(output_stack_base)
+    translation_stack_name = '{}_Translation'.format(output_stack_base)
+    affine_stack_name = '{}_Affine'.format(output_stack_base)
+    tps_stack_name = '{}_TPS'.format(output_stack_base)
+
+    input_dict = {
+        "input_stack": dict(render.make_kwargs(), **{
+            "name": montage_scape_stack,
+            "collection_type": "stack"
+        }),
+        "pointmatch_collection": dict(render.make_kwargs(), **{
+            "name": rough_point_match_collection,
+            "collection_type": "pointmatch"
+        }),
+        "rigid_output_stack": dict(render.make_kwargs(), **{
+            "name": rotation_stack_name,
+            "collection_type": "stack",
+        }),
+        "translation_output_stack": (
+            None if not do_translate else dict(render.make_kwargs(), **{
+                "name": translation_stack_name,
+                "collection_type": "stack"
+            })),
+        "affine_output_stack": dict(render.make_kwargs(), **{
+            "name": affine_stack_name,
+            "collection_type": "stack",
+        }),
+        "thin_plate_output_stack": dict(render.make_kwargs(), **{
+            "name": tps_stack_name,
+            "collection_type": "stack",
+        }),
+        "minZ": 1020,
+        "maxZ": 1022,
+        "pool_size": pool_size,
+        "close_stack": False,
+        "output_json": str(output_json),
+    }
+
+    mod = FitMultipleSolves(input_data=input_dict, args=[])
+    mod.run()
+
+    with open(output_json, 'r') as f:
+        output_data = json.load(f)
+
+    # test output stacks for expected zs
+    stackresults = [v for k, v in output_data.items() if k.endswith('_stack')]
+
+    expected_zvalues = [1020, 1021, 1022]
+    for stackresult in stackresults:
+        zvalues = renderapi.connect(**stackresult).run(
+            renderapi.stack.get_z_values_for_stack, stackresult['name'][0])
+        assert(set(zvalues) == set(expected_zvalues))
