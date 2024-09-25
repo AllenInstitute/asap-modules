@@ -313,7 +313,7 @@ def append_tps_tform(tspec, npts=5, ext=0.05):
     bb = tspec.bbox_transformed()
     xmin, ymin = bb.min(axis=0)
     xmax, ymax = bb.max(axis=0)
-    w, h = bb.ptp(axis=0)
+    w, h = np.ptp(bb, axis=0)
     vert = baseline_vertices(
         xmin - ext * w,
         xmax + ext * w,
