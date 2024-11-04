@@ -31,7 +31,7 @@ dependencies = [
     "opencv-contrib-python-headless",
     "em_stitch",
     "matplotlib",
-    "jinja2<3.1",
+    # "jinja2<3.1",
     "six",
     "scikit-image",
     "shapely",
@@ -42,6 +42,7 @@ dependencies = [
     "mpld3",
     "descartes",
     "lxml",
+    "pymongo==3.11.1"
 ]
 
 [project.optional-dependencies]
@@ -56,7 +57,7 @@ test = [
     "flake8>=3.0.4",
     "pylint>=1.5.4",
     "codecov",
-    "jinja2",
+    # "jinja2",
 ]
 
 [build-system]
@@ -98,6 +99,9 @@ python = "3.10.*"
 [tool.pixi.feature.py311.dependencies]
 python = "3.11.*"
 
+[tool.pixi.feature.jupyterlab.dependencies]
+jupyterlab = "*"
+
 [tool.pixi.environments]
 py310 = ["py310"]
 py310-test = ["py310", "test"]
@@ -107,6 +111,7 @@ py310-conda = ["py310", "pixi-base"]
 py310-conda-test = ["py310", "pixi-base", "test"]
 py311-conda = ["py311", "pixi-base"]
 py311-conda-test = ["py311", "pixi-base", "test"]
+py311-jupyter = ["py311", "pixi-base", "jupyterlab"]
 
 [tool.coverage.run]
 omit = ["integration_tests/*", "tests/*"]
