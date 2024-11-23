@@ -1,0 +1,107 @@
+[project]
+name = "asap"
+requires-python = ">3.8,<3.12"
+dynamic = ["version"] 
+dependencies = [
+    "render-python>=2.3.1",
+    "marshmallow",
+    "argschema",
+    "numpy",
+    "pillow",
+    "tifffile",
+    "pathlib2",
+    "scipy",
+    "rtree",
+    "networkx",
+    "bokeh",
+    "bigfeta",
+    "opencv-contrib-python-headless",
+    "em_stitch",
+    "matplotlib",
+    # "jinja2<3.1",
+    "six",
+    "scikit-image",
+    "shapely",
+    "triangle",
+    "uri_handler",
+    "imageio",
+    "seaborn",
+    "mpld3",
+    "descartes",
+    "lxml",
+    "pymongo==3.11.1"
+]
+
+[project.optional-dependencies]
+test = [
+    "coverage>=4.1",
+    "mock>=2.0.0",
+    "pep8>=1.7.0",
+    "pytest>=3.0.5",
+    "pytest-cov>=2.2.1",
+    "pytest-pep8>=1.0.6",
+    "pytest-xdist>=1.14",
+    "flake8>=3.0.4",
+    "pylint>=1.5.4",
+    "codecov",
+    # "jinja2",
+]
+
+[build-system]
+requires = ["setuptools>=64", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = [
+    "asap"
+]
+
+[tool.setuptools_scm]
+version_file = "asap/_version.py"
+
+# some downgrades from pixi's expectations
+[tool.pixi.system-requirements]
+linux = "5.0.0"
+libc = "2.27"
+
+[tool.pixi.project]
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+[tool.pixi.pypi-dependencies]
+asap = { path = ".", editable = true }
+
+# conda-enabled features
+[tool.pixi.feature.pixi-base.dependencies]
+numpy = "*"
+pandas = "*"
+scipy = "*"
+imageio = "*"
+matplotlib = "*"
+petsc4py = "*"
+
+# version-specific python features
+[tool.pixi.feature.py310.dependencies]
+python = "3.10.*"
+[tool.pixi.feature.py311.dependencies]
+python = "3.11.*"
+
+[tool.pixi.feature.jupyterlab.dependencies]
+jupyterlab = "*"
+
+[tool.pixi.environments]
+py310 = ["py310"]
+py310-test = ["py310", "test"]
+py311 = ["py311"]
+py311-test = ["py311", "test"]
+py310-conda = ["py310", "pixi-base"]
+py310-conda-test = ["py310", "pixi-base", "test"]
+py311-conda = ["py311", "pixi-base"]
+py311-conda-test = ["py311", "pixi-base", "test"]
+py311-jupyter = ["py311", "pixi-base", "jupyterlab"]
+
+[tool.coverage.run]
+omit = ["integration_tests/*", "tests/*"]
+
+[tool.pixi.feature.test.tasks]
+test = "pytest  --cov --cov-report=xml --junitxml=test-reports/test.xml"
