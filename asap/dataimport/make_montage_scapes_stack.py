@@ -237,7 +237,7 @@ class MakeMontageScapeSectionStack(StackOutputModule):
         # import tilespecs to render
         self.render.run(renderapi.client.import_jsonfiles_parallel,
                         self.output_stack,
-                        jsonfiles)
+                        jsonfiles, close_stack=False)
 
         if self.close_stack:
             # set stack state to complete
