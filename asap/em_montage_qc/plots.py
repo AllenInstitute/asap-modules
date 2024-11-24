@@ -9,11 +9,11 @@ import renderapi
 from bokeh.palettes import Plasma256, Viridis256
 from bokeh.plotting import figure, output_file, save
 from bokeh.layouts import row
-from bokeh.models.widgets import Tabs, Panel
 from bokeh.models import (HoverTool, ColumnDataSource,
                           CustomJS, CategoricalColorMapper,
                           LinearColorMapper,
-                          TapTool, OpenURL, Div, ColorBar)
+                          TapTool, OpenURL, Div, ColorBar,
+                          Tabs, TabPanel)
 
 from asap.residuals import compute_residuals as cr
 
@@ -78,7 +78,7 @@ def point_match_plot(tilespecsA, matches, tilespecsB=None):
         TOOLS = "pan,box_zoom,reset,hover,save"
 
         plot = figure(
-            plot_width=800, plot_height=700,
+            width=800, height=700,
             background_fill_color='gray', tools=TOOLS)
         plot.multi_line(
             xs="xs", ys="ys", source=source,
@@ -88,8 +88,9 @@ def point_match_plot(tilespecsA, matches, tilespecsB=None):
         plot.ygrid.visible = False
 
     else:
-        plot = figure(plot_width=800, plot_height=700,
-                      background_fill_color='gray')
+        plot = figure(
+            width=800, height=700,
+            background_fill_color='gray')
 
     return plot
 
@@ -199,8 +200,8 @@ def plot_defects(render, stack, out_html_dir, args):
     pp = p.patches(
         'x', 'y', source=source,
         alpha='alpha', line_width=2,
-        color={'field': 'labels', 'transform': color_mapper}, legend='labels')
-    cp = p.circle('x', 'y', source=seam_source, legend='lbl', size=11)
+        color={'field': 'labels', 'transform': color_mapper}, legend_group='labels')
+    cp = p.circle('x', 'y', source=seam_source, legend_group='lbl', size=11)
 
     jscode = """
         var inds = cb_obj.selected['1d'].indices;
@@ -225,7 +226,7 @@ def plot_defects(render, stack, out_html_dir, args):
     hover.point_policy = "follow_mouse"
     hover.tooltips = [("tileId", "@names"), ("x", "$x{int}"), ("y", "$y{int}")]
 
-    source.callback = CustomJS(args=dict(div=div), code=jscode % ('names'))
+    source.js_event_callbacks['identify'] = [CustomJS(args=dict(div=div), code=jscode % ('names'))]
 
     # add point match plot in another tab
     plot = point_match_plot(tspecs, matches)
@@ -235,9 +236,9 @@ def plot_defects(render, stack, out_html_dir, args):
     stat_layout = plot_residual(xs, ys, residual)
 
     tabs = []
-    tabs.append(Panel(child=layout, title="Defects"))
-    tabs.append(Panel(child=plot, title="Point match plot"))
-    tabs.append(Panel(child=stat_layout, title="Mean tile residual"))
+    tabs.append(TabPanel(child=layout, title="Defects"))
+    tabs.append(TabPanel(child=plot, title="Point match plot"))
+    tabs.append(TabPanel(child=stat_layout, title="Mean tile residual"))
 
     plot_tabs = Tabs(tabs=tabs)
 

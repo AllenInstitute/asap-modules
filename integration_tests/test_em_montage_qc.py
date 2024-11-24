@@ -19,6 +19,7 @@ try:
     from asap.em_montage_qc.distorted_montages import DetectDistortedMontagesModule
 except:
     IMPORTS_ERRORED = True
+    raise
 
 
 @pytest.fixture(scope='module')
