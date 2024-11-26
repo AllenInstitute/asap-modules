@@ -77,9 +77,24 @@ def point_match_plot(tilespecsA, matches, tilespecsB=None):
 
         TOOLS = "pan,box_zoom,reset,hover,save"
 
+        w = np.ptp(xs)
+        h = np.ptp(ys)
+        base_dim = 1000
+        if w > h:
+            h = int(np.round(base_dim * (h / w)))
+            w = base_dim
+        else:
+            h = base_dim
+            w = int(np.round(base_dim * w / h))
+
         plot = figure(
-            width=800, height=700,
-            background_fill_color='gray', tools=TOOLS)
+            # plot_width=800, plot_height=700,
+            width=w, height=h,
+            background_fill_color='gray', tools=TOOLS,
+            # sizing_mode="stretch_both",
+            match_aspect=True
+        )
+        plot.tools[1].match_aspect = True
         plot.multi_line(
             xs="xs", ys="ys", source=source,
             color={'field': 'colors', 'transform': mapper}, line_width=2)
@@ -89,14 +104,23 @@ def point_match_plot(tilespecsA, matches, tilespecsB=None):
 
     else:
         plot = figure(
-            width=800, height=700,
+            # width=800, height=700,
             background_fill_color='gray')
 
     return plot
 
 
 def plot_residual(xs, ys, residual):
-    p = figure(width=1000, height=1000)
+    w = np.ptp(xs)
+    h = np.ptp(ys)
+    base_dim = 1000
+    if w > h:
+        h = int(np.round(base_dim * (h / w)))
+        w = base_dim
+    else:
+        h = base_dim
+        w = int(np.round(base_dim * w / h))
+    p = figure(width=w, height=h)
     color_mapper = LinearColorMapper(
         palette=Viridis256, low=min(residual), high=max(residual))
 
@@ -108,7 +132,7 @@ def plot_residual(xs, ys, residual):
         fill_alpha=1.0, line_color="black", line_width=0.05)
 
     color_bar = ColorBar(color_mapper=color_mapper, label_standoff=12,
-                         border_line_color=None, location=(0,0))
+                         border_line_color=None, location=(0, 0))
 
     p.add_layout(color_bar, 'right')
 
@@ -195,12 +219,28 @@ def plot_defects(render, stack, out_html_dir, args):
 
     TOOLS = "pan,box_zoom,reset,hover,tap,save"
 
-    p = figure(title=str(z), width=1000, height=1000,
-               tools=TOOLS, match_aspect=True)
+    w = np.ptp(xs)
+    h = np.ptp(ys)
+    base_dim = 1000
+    if w > h:
+        h = int(np.round(base_dim * (h / w)))
+        w = base_dim
+    else:
+        h = base_dim
+        w = int(np.round(base_dim * w / h))
+
+    p = figure(title=str(z),
+               # width=1000, height=1000,
+               width=w, height=h,
+               tools=TOOLS,
+               match_aspect=True)
+    p.tools[1].match_aspect = True
     pp = p.patches(
         'x', 'y', source=source,
         alpha='alpha', line_width=2,
-        color={'field': 'labels', 'transform': color_mapper}, legend_group='labels')
+        color={'field': 'labels', 'transform': color_mapper},
+        legend_group='labels')
+
     cp = p.circle('x', 'y', source=seam_source, legend_group='lbl', size=11)
 
     jscode = """
@@ -212,7 +252,7 @@ def plot_defects(render, stack, out_html_dir, args):
         if ( lines.length > 35 ) { lines.shift(); }
         div.text = lines.join("\\n");
     """
-    div = Div(width=1000)
+    div = Div(width=w)
     layout = row(p, div)
 
     urls = "%s:%d/render-ws/v1/owner/%s/project/%s/stack/%s/tile/@names/withNeighbors/jpeg-image?scale=0.1" % (render.DEFAULT_HOST, render.DEFAULT_PORT, render.DEFAULT_OWNER, render.DEFAULT_PROJECT, stack)
