@@ -33,6 +33,18 @@ except NameError:
     xrange = range
 
 
+def bbox_tup_to_xs_ys(bbox_tup):
+    min_x, min_y, max_x, max_y = bbox_tup
+    return (
+        [min_x, max_x, max_x, min_x, min_x],
+        [min_y, min_y, max_y, max_y, min_y]
+    )
+
+
+def tilespecs_to_xs_ys(tilespecs):
+    return zip(*(bbox_tup_to_xs_ys(ts.bbox) for ts in tilespecs))
+
+
 def point_match_plot(tilespecsA, matches, tilespecsB=None):
     if tilespecsB is None:
         tilespecsB = tilespecsA
@@ -149,6 +161,19 @@ def plot_residual(xs, ys, residual):
     p.ygrid.visible = False
 
     return p
+
+
+def plot_residual_tilespecs(
+        tspecs, tileId_to_point_residuals, default_residual=50):
+    tile_residual_mean = cr.compute_mean_tile_residuals(
+        tileId_to_point_residuals)
+    xs, ys = tilespecs_to_xs_ys(tspecs)
+    residual = [
+        tile_residual_mean.get(ts.tileId, default_residual)
+        for ts in tspecs
+    ]
+
+    return plot_residual(xs, ys, residual)
 
 
 def plot_defects(render, stack, out_html_dir, args):
