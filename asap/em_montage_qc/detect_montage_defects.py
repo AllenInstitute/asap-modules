@@ -4,6 +4,7 @@ import time
 import networkx as nx
 import numpy as np
 import renderapi
+import renderapi.utils
 import requests
 from rtree import index as rindex
 from six import viewkeys
@@ -104,47 +105,70 @@ def strtree_query_geometries(tree, q):
     return tree.geometries[res]
 
 
-def detect_seams(
-        render, stack, match_collection, match_owner, z,
-        residual_threshold=8, distance=60, min_cluster_size=15, tspecs=None):
-    # seams will always be computed for montages using montage point matches
-    #   but the input stack can be either montage, rough, or fine
-    # Compute residuals and other stats for this z
-    stats, allmatches = cr.compute_residuals_within_group(
-        render, stack, match_owner, match_collection, z, tilespecs=tspecs)
+def detect_seams(tilespecs, matches, residual_threshold=10,
+                 distance=80, min_cluster_size=25):
+    stats, allmatches = cr.compute_residuals(tilespecs, matches)
 
     # get mean positions of the point matches as numpy array
     pt_match_positions = np.concatenate(
-        list(stats['pt_match_positions'].values()),
-        0)
+        list(stats['pt_match_positions'].values()), 0
+    )
     # get the tile residuals
-    tile_residuals = np.concatenate(list(stats['tile_residuals'].values()))
+    tile_residuals = np.concatenate(
+        list(stats['tile_residuals'].values())
+    )
 
     # threshold the points based on residuals
     new_pts = pt_match_positions[
-        np.where(tile_residuals >= residual_threshold), :][0]
+        np.where(tile_residuals >= residual_threshold), :
+    ][0]
 
-    if len(new_pts) > 0:
-        # construct a KD Tree using these points
-        tree = cKDTree(new_pts)
-        # construct a networkx graph
-        G = nx.Graph()
-        # find the pairs of points within a distance to each other
-        pairs = tree.query_pairs(r=distance)
-        G.add_edges_from(pairs)
-        # get the connected subraphs from G
-        Gc = nx.connected_components(G)
-        # get the list of nodes in each component
-        nodes = sorted(Gc, key=len, reverse=True)
-        # filter nodes list with min_cluster_size
-        fnodes = [list(nn) for nn in nodes if len(nn) > min_cluster_size]
-        # get pts list for each filtered node list
-        points_list = [new_pts[mm, :] for mm in fnodes]
-        centroids = [[np.sum(pt[:, 0])/len(pt), np.sum(pt[:, 1])/len(pt)]
-                     for pt in points_list]
-    else:
-        centroids = []
+    # construct a KD Tree using these points
+    tree = cKDTree(new_pts)
+    # construct a networkx graph
+
+    G = nx.Graph()
+    # find the pairs of points within a distance to each other
+    pairs = tree.query_pairs(r=distance)
+    G.add_edges_from(pairs)
+
+    # get the connected subraphs from G
+    Gc = nx.connected_components(G)
+    # get the list of nodes in each component
+    fnodes = sorted((list(n) for n in Gc if len(n) > min_cluster_size),
+                    key=len, reverse=True)
+    
+    # get pts list for each filtered node list
+    points_list = [new_pts[mm, :] for mm in fnodes]
+    centroids = np.array([(np.sum(pt, axis=0) / len(pt)).tolist()
+                          for pt in points_list])
     return centroids, allmatches, stats
+
+
+def detect_seams_from_collections(
+        render, stack, match_collection, match_owner, z,
+        residual_threshold=8, distance=60, min_cluster_size=15, tspecs=None):
+    session = requests.session()
+
+    groupId = render.run(
+        renderapi.stack.get_sectionId_for_z, stack, z, session=session)
+    allmatches = render.run(
+        renderapi.pointmatch.get_matches_within_group,
+        match_collection,
+        groupId,
+        owner=match_owner,
+        session=session)
+    if tspecs is None:
+        tspecs = render.run(
+            renderapi.tilespec.get_tile_specs_from_z,
+            stack, z, session=session)
+    session.close()
+
+    return detect_seams(
+        tspecs, allmatches,
+        residual_threshold=residual_threshold,
+        distance=distance,
+        min_cluster_size=min_cluster_size)
 
 
 def detect_disconnected_tiles(render, prestitched_stack, poststitched_stack,
@@ -300,8 +324,8 @@ def run_analysis(
     gap_tiles = detect_stitching_gaps_legacy(
         render, prestitched_stack, poststitched_stack, z,
         pre_tspecs, post_tspecs)
-    seam_centroids, matches, stats = detect_seams(
-        render, poststitched_stack,  match_collection, match_collection_owner,
+    seam_centroids, matches, stats = detect_seams_from_collections(
+        render, poststitched_stack, match_collection, match_collection_owner,
         z, residual_threshold=residual_threshold, distance=neighbor_distance,
         min_cluster_size=min_cluster_size, tspecs=post_tspecs)
     distorted_zs = detect_distortion(
@@ -424,8 +448,8 @@ class DetectMontageDefectsModule(RenderModule):
                      'gap_sections': gaps,
                      'seam_sections': seams,
                      'distorted_sections': distorted_zs,
-                     'seam_centroids': np.array(centroids, dtype=object)})
-        print(self.output)
+                     'seam_centroids': np.array(centroids, dtype=object)},
+                    cls=renderapi.utils.RenderEncoder)
         # delete the stacks that were cloned
         if status1 == 'LOADING':
             self.render.run(renderapi.stack.delete_stack, new_prestitched)
