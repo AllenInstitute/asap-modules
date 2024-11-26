@@ -171,32 +171,33 @@ def detect_seams_from_collections(
         min_cluster_size=min_cluster_size)
 
 
-def detect_disconnected_tiles(render, prestitched_stack, poststitched_stack,
-                              z, pre_tilespecs=None, post_tilespecs=None):
+def detect_disconnected_tiles(pre_tilespecs, post_tilespecs):
+    pre_tileIds = {ts.tileId for ts in pre_tilespecs}
+    post_tileIds = {ts.tileId for ts in post_tilespecs}
+    missing_tileIds = list(pre_tileIds - post_tileIds)
+    return missing_tileIds
+
+
+def detect_disconnected_tiles_from_collections(
+        render, prestitched_stack, poststitched_stack,
+        z, pre_tilespecs=None, post_tilespecs=None):
     session = requests.session()
     # get the tilespecs for both prestitched_stack and poststitched_stack
 
     if pre_tilespecs is None:
         pre_tilespecs = render.run(
-                            renderapi.tilespec.get_tile_specs_from_z,
-                            prestitched_stack,
-                            z,
-                            session=session)
+            renderapi.tilespec.get_tile_specs_from_z,
+            prestitched_stack,
+            z,
+            session=session)
     if post_tilespecs is None:
         post_tilespecs = render.run(
-                            renderapi.tilespec.get_tile_specs_from_z,
-                            poststitched_stack,
-                            z,
-                            session=session)
-    # pre tile_ids
-    pre_tileIds = []
-    pre_tileIds = [ts.tileId for ts in pre_tilespecs]
-    # post tile_ids
-    post_tileIds = []
-    post_tileIds = [ts.tileId for ts in post_tilespecs]
-    missing_tileIds = list(set(pre_tileIds) - set(post_tileIds))
+            renderapi.tilespec.get_tile_specs_from_z,
+            poststitched_stack,
+            z,
+            session=session)
     session.close()
-    return missing_tileIds
+    return detect_disconnected_tiles(pre_tilespecs, post_tilespecs)
 
 
 def detect_stitching_gaps(pre_rts, post_rts, polygon_kwargs={}, use_bbox=False):
@@ -318,7 +319,7 @@ def run_analysis(
         min_cluster_size, threshold_cutoff, z):
     pre_tspecs, post_tspecs = get_pre_post_tspecs(
         render, prestitched_stack, poststitched_stack, z)
-    disconnected_tiles = detect_disconnected_tiles(
+    disconnected_tiles = detect_disconnected_tiles_from_collections(
         render, prestitched_stack, poststitched_stack, z, pre_tspecs,
         post_tspecs)
     gap_tiles = detect_stitching_gaps_legacy(
