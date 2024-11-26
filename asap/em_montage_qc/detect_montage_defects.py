@@ -8,6 +8,8 @@ import requests
 from rtree import index as rindex
 from six import viewkeys
 from scipy.spatial import cKDTree
+import shapely
+import shapely.strtree
 
 from asap.residuals import compute_residuals as cr
 from asap.em_montage_qc.schemas import (
@@ -39,6 +41,67 @@ example = {
     "maxZ": 1029,
     "pool_size": 20
 }
+
+
+# TODO methods for tile borders/boundary points should go in render-python
+def determine_numX_numY_rectangle(width, height, meshcellsize=32):
+    numX = max([2, np.around(width / meshcellsize)])
+    numY = max([2, np.around(height / meshcellsize)])
+    return int(numX), int(numY)
+
+
+def determine_numX_numY_triangle(width, height, meshcellsize=32):
+    # TODO do we always want width to define the geometry?
+    numX = max([2, np.around(width / meshcellsize)])
+    numY = max([
+        2,
+        np.around(
+            height /
+            (
+                2 * np.sqrt(3. / 4. * (width / (numX - 1)) ** 2)
+            ) + 1)
+    ])
+    return int(numX), int(numY)
+
+
+def generate_border_mesh_pts(
+        width, height, meshcellsize=64, mesh_type="square", **kwargs):
+    numfunc = {
+        "square": determine_numX_numY_rectangle,
+        "triangle": determine_numX_numY_triangle
+    }[mesh_type]
+    numX, numY = numfunc(width, height, meshcellsize)
+
+    xs = np.linspace(0, width - 1, numX).reshape(-1, 1)
+    ys = np.linspace(0, height - 1, numY).reshape(-1, 1)
+    
+    perim = np.vstack([
+        np.hstack([xs, np.zeros(xs.shape)]),
+        np.hstack([np.ones(ys.shape) * float(height - 1), ys])[1:-1],
+        np.hstack([xs, np.ones(xs.shape) * float(width - 1)])[::-1],
+        np.hstack([np.zeros(ys.shape), ys])[1:-1][::-1],
+
+    ])
+    return perim
+
+
+def polygon_from_ts(ts, ref_tforms, **kwargs):
+    tsarr = generate_border_mesh_pts(ts.width, ts.height, **kwargs)
+    return shapely.geometry.Polygon(
+        renderapi.transform.estimate_dstpts(
+            ts.tforms, src=tsarr, reference_tforms=ref_tforms))
+
+
+def polygons_from_rts(rts, **kwargs):
+    return [
+        polygon_from_ts(ts, rts.transforms, **kwargs)
+        for ts in rts.tilespecs
+    ]
+
+
+def strtree_query_geometries(tree, q):
+    res = tree.query(q)
+    return tree.geometries[res]
 
 
 def detect_seams(
@@ -112,65 +175,80 @@ def detect_disconnected_tiles(render, prestitched_stack, poststitched_stack,
     return missing_tileIds
 
 
-def detect_stitching_gaps(render, prestitched_stack, poststitched_stack,
-                          z, pre_tilespecs=None, tilespecs=None):
+def detect_stitching_gaps(pre_rts, post_rts, polygon_kwargs={}, use_bbox=False):
+    tId_to_pre_polys = {
+        ts.tileId: (
+            polygon_from_ts(
+                ts, pre_rts.transforms, **polygon_kwargs)
+            if not use_bbox else shapely.geometry.box(*ts.bbox)
+        )
+        for ts in pre_rts.tilespecs
+    }
+
+    tId_to_post_polys = {
+        ts.tileId: (
+            polygon_from_ts(
+                ts, post_rts.transforms, **polygon_kwargs)
+            if not use_bbox else shapely.geometry.box(*ts.bbox)
+        )
+        for ts in post_rts.tilespecs
+    }
+
+    poly_id_to_tId = {
+        id(p): tId for tId, p in
+        (i for l in (
+            tId_to_pre_polys.items(), tId_to_post_polys.items())
+         for i in l)
+    }
+
+    pre_polys = [*tId_to_pre_polys.values()]
+    post_polys = [*tId_to_post_polys.values()]    
+
+    pre_tree = shapely.strtree.STRtree(pre_polys)
+    post_tree = shapely.strtree.STRtree(post_polys)
+
+    pre_graph = nx.Graph({
+        poly_id_to_tId[id(p)]: [
+            poly_id_to_tId[id(r)]
+            for r in strtree_query_geometries(pre_tree, p)
+        ]
+        for p in pre_polys})
+    post_graph = nx.Graph({
+        poly_id_to_tId[id(p)]: [
+            poly_id_to_tId[id(r)]
+            for r in strtree_query_geometries(post_tree, p)
+        ]
+        for p in post_polys})
+
+    diff_g = nx.Graph(pre_graph.edges - post_graph.edges)
+    gap_tiles = [n for n in diff_g.nodes() if diff_g.degree(n) > 0]
+    return gap_tiles
+
+
+def detect_stitching_gaps_legacy(render, prestitched_stack, poststitched_stack,
+                                 z, pre_tilespecs=None, tilespecs=None):
     session = requests.session()
-    # setup an rtree to find overlapping tiles
-    pre_ridx = rindex.Index()
-    # setup a graph to store overlapping tiles
-    G1 = nx.Graph()
-    # get the tilespecs for both prestitched_stack and poststitched_stack
+
     if pre_tilespecs is None:
         pre_tilespecs = render.run(
-                            renderapi.tilespec.get_tile_specs_from_z,
-                            prestitched_stack,
-                            z,
-                            session=session)
+            renderapi.tilespec.get_tile_specs_from_z,
+            prestitched_stack,
+            z,
+            session=session)
     if tilespecs is None:
         tilespecs = render.run(
-                            renderapi.tilespec.get_tile_specs_from_z,
-                            poststitched_stack,
-                            z,
-                            session=session)
-    # insert the prestitched_tilespecs into rtree
-    #   with their bounding boxes to find overlaps
-    for i, ts in enumerate(pre_tilespecs):
-        pre_ridx.insert(i, ts.bbox)
+            renderapi.tilespec.get_tile_specs_from_z,
+            poststitched_stack,
+            z,
+            session=session)
 
-    pre_tileIds = {}
-    for i, ts in enumerate(pre_tilespecs):
-        pre_tileIds[ts.tileId] = i
-        nodes = list(pre_ridx.intersection(ts.bbox))
-        nodes.remove(i)
-        [G1.add_edge(i, node) for node in nodes]
-    # G1 contains the prestitched_stack tile)s and the degree
-    #   of each node representing the number of tiles that overlap.
-    #   This overlap count has to match in the poststitched_stack
-    G2 = nx.Graph()
-    post_ridx = rindex.Index()
-    tileId_to_ts = {ts.tileId: ts for ts in tilespecs}
-    shared_tileIds = viewkeys(tileId_to_ts) & viewkeys(pre_tileIds)
-    [post_ridx.insert(pre_tileIds[tId], tileId_to_ts[tId].bbox)
-     for tId in shared_tileIds]
-    for ts in tilespecs:
-        try:
-            i = pre_tileIds[ts.tileId]
-        except KeyError:
-            continue
-        nodes = list(post_ridx.intersection(ts.bbox))
-        nodes.remove(i)
-        [G2.add_edge(i, node) for node in nodes]
-    # Now G1 and G2 have the same index for the same tileId
-    # comparing the degree of each node pre and post
-    #   stitching should reveal stitching gaps
-    gap_tiles = []
-    for n in G2.nodes():
-        if G1.degree(n) > G2.degree(n):
-            tileId = list(pre_tileIds.keys())[
-                list(pre_tileIds.values()).index(n)]
-            gap_tiles.append(tileId)
+    gap_tiles = detect_stitching_gaps(
+        renderapi.resolvedtiles.ResolvedTiles(tilespecs=pre_tilespecs),
+        renderapi.resolvedtiles.ResolvedTiles(tilespecs=tilespecs),
+        use_bbox=True)
     session.close()
     return gap_tiles
+
 
 def detect_distortion(render, poststitched_stack, zvalue, threshold_cutoff=[0.005, 0.005], pool_size=20):
     #z_to_scales = {zvalue: do_get_z_scales_nopm(zvalue, [poststitched_stack], render)}
@@ -219,7 +297,7 @@ def run_analysis(
     disconnected_tiles = detect_disconnected_tiles(
         render, prestitched_stack, poststitched_stack, z, pre_tspecs,
         post_tspecs)
-    gap_tiles = detect_stitching_gaps(
+    gap_tiles = detect_stitching_gaps_legacy(
         render, prestitched_stack, poststitched_stack, z,
         pre_tspecs, post_tspecs)
     seam_centroids, matches, stats = detect_seams(
