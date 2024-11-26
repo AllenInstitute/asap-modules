@@ -29,7 +29,8 @@ dependencies = [
     "mpld3",
     "descartes",
     "lxml",
-    "pymongo==3.11.1"
+    "pymongo==3.11.1",
+    "igraph"
 ]
 
 [project.optional-dependencies]
@@ -79,6 +80,7 @@ scipy = "*"
 imageio = "*"
 matplotlib = "*"
 petsc4py = "*"
+python-igraph = "*"
 
 # version-specific python features
 [tool.pixi.feature.py310.dependencies]

@@ -1,6 +1,7 @@
 from functools import partial
 import time
 
+import igraph
 import networkx as nx
 import numpy as np
 import renderapi
@@ -105,8 +106,31 @@ def strtree_query_geometries(tree, q):
     return tree.geometries[res]
 
 
+def pair_clusters_networkx(pairs, min_cluster_size=25):
+    G = nx.Graph()
+    G.add_edges_from(pairs)
+
+    # get the connected subraphs from G
+    Gc = nx.connected_components(G)
+    # get the list of nodes in each component
+    fnodes = sorted((list(n) for n in Gc if len(n) > min_cluster_size),
+                    key=len, reverse=True)
+    return fnodes
+
+
+def pair_clusters_igraph(pairs, min_cluster_size=25):
+    G_ig = igraph.Graph(edges=pairs, directed=False)
+
+    # get the connected subraphs from G
+    cc_ig = G_ig.connected_components(mode='strong')
+    # filter nodes list with min_cluster_size
+    fnodes = sorted((c for c in cc_ig if len(c) > min_cluster_size),
+                    key=len, reverse=True)
+    return fnodes
+
+
 def detect_seams(tilespecs, matches, residual_threshold=10,
-                 distance=80, min_cluster_size=25):
+                 distance=80, min_cluster_size=25, cluster_method="igraph"):
     stats, allmatches = cr.compute_residuals(tilespecs, matches)
 
     # get mean positions of the point matches as numpy array
@@ -127,17 +151,14 @@ def detect_seams(tilespecs, matches, residual_threshold=10,
     tree = cKDTree(new_pts)
     # construct a networkx graph
 
-    G = nx.Graph()
     # find the pairs of points within a distance to each other
     pairs = tree.query_pairs(r=distance)
-    G.add_edges_from(pairs)
 
-    # get the connected subraphs from G
-    Gc = nx.connected_components(G)
-    # get the list of nodes in each component
-    fnodes = sorted((list(n) for n in Gc if len(n) > min_cluster_size),
-                    key=len, reverse=True)
-    
+    fnodes = {
+        "igraph": pair_clusters_igraph,
+        "networkx": pair_clusters_networkx
+    }[cluster_method](pairs, min_cluster_size=min_cluster_size)
+
     # get pts list for each filtered node list
     points_list = [new_pts[mm, :] for mm in fnodes]
     centroids = np.array([(np.sum(pt, axis=0) / len(pt)).tolist()
