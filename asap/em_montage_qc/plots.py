@@ -176,68 +176,24 @@ def plot_residual_tilespecs(
     return plot_residual(xs, ys, residual)
 
 
-def plot_defects(render, stack, out_html_dir, args):
-    tspecs = args[0]
-    matches = args[1]
-    dis_tiles = args[2]
-    gap_tiles = args[3]
-    seam_centroids = np.array(args[4])
-    stats = args[5]
-    z = args[6]
-
-    # Tile residual mean
-    tile_residual_mean = cr.compute_mean_tile_residuals(
-        stats['tile_residuals'])
-
-    tile_positions = []
-    tile_ids = []
-    residual = []
-    for ts in tspecs:
-        tile_ids.append(ts.tileId)
-        pts = []
-        pts.append([ts.minX, ts.minY])
-        pts.append([ts.maxX, ts.minY])
-        pts.append([ts.maxX, ts.maxY])
-        pts.append([ts.minX, ts.maxY])
-        pts.append([ts.minX, ts.minY])
-        tile_positions.append(pts)
-
-        try:
-            residual.append(tile_residual_mean[ts.tileId])
-        except KeyError:
-            residual.append(50)  # a high value for residual for that tile
-
-    out_html = os.path.join(
-            out_html_dir,
-            "%s_%d_%s.html" % (
-                stack,
-                z,
-                datetime.datetime.now().strftime('%Y%m%d%H%S%M%f')))
-
-    output_file(out_html)
-    xs = []
-    ys = []
-    alphas = []
-    for tp in tile_positions:
-        sp = np.array(tp)
-        x = list(sp[:, 0])
-        y = list(sp[:, 1])
-        xs.append(x)
-        ys.append(y)
-        alphas.append(0.5)
+def montage_defect_plot(
+        tspecs, matches, disconnected_tiles, gap_tiles,
+        seam_centroids, stats, z, tile_url_format=None):
+    xs, ys = tilespecs_to_xs_ys(tspecs)
+    alphas = [0.5] * len(xs)
 
     fill_color = []
     label = []
-    for t in tile_ids:
-        if t in gap_tiles:
-            label.append("Gap tiles")
-            fill_color.append("red")
-        elif t in dis_tiles:
-            label.append("Disconnected tiles")
-            fill_color.append("yellow")
-        else:
-            label.append("Stitched tiles")
-            fill_color.append("blue")
+    gap_tiles = set(gap_tiles)
+    disconnected_tiles = set(disconnected_tiles)
+
+    tile_ids = [ts.tileId for ts in tspecs]
+
+    label, fill_color = zip(*(
+        (("Gap tiles", "red") if tileId in gap_tiles
+         else ("Disconnected tiles", "yellow") if tileId in disconnected_tiles
+         else ("Stitched tiles", "blue"))
+        for tileId in tile_ids))
 
     color_mapper = CategoricalColorMapper(
         factors=['Gap tiles', 'Disconnected tiles', 'Stitched tiles'],
@@ -274,8 +230,7 @@ def plot_defects(render, stack, out_html_dir, args):
         alpha='alpha', line_width=2,
         color={'field': 'labels', 'transform': color_mapper},
         legend_group='labels')
-
-    cp = p.circle('x', 'y', source=seam_source, legend_group='lbl', size=11)
+    cp = p.scatter('x', 'y', source=seam_source, legend_group='lbl', size=11)
 
     jscode = """
         var inds = cb_obj.selected['1d'].indices;
@@ -289,25 +244,35 @@ def plot_defects(render, stack, out_html_dir, args):
     div = Div(width=w)
     layout = row(p, div)
 
-    urls = "%s:%d/render-ws/v1/owner/%s/project/%s/stack/%s/tile/@names/withNeighbors/jpeg-image?scale=0.1" % (render.DEFAULT_HOST, render.DEFAULT_PORT, render.DEFAULT_OWNER, render.DEFAULT_PROJECT, stack)
-
-    taptool = p.select(type=TapTool)
-    taptool.renderers = [pp]
-    taptool.callback = OpenURL(url=urls)
+    if tile_url_format:
+        taptool = p.select(type=TapTool)
+        taptool.renderers = [pp]
+        taptool.callback = OpenURL(url=tile_url_format)
 
     hover = p.select(dict(type=HoverTool))
     hover.renderers = [pp]
     hover.point_policy = "follow_mouse"
     hover.tooltips = [("tileId", "@names"), ("x", "$x{int}"), ("y", "$y{int}")]
 
-    source.js_event_callbacks['identify'] = [CustomJS(args=dict(div=div), code=jscode % ('names'))]
+    source.js_event_callbacks['identify'] = [
+        CustomJS(args=dict(div=div), code=jscode % ('names'))
+    ]
+    return layout
+
+
+def create_montage_qc_plots(
+        tspecs, matches, disconnected_tiles, gap_tiles,
+        seam_centroids, stats, z, tile_url_format=None):
+    # montage qc
+    layout = montage_defect_plot(
+        tspecs, matches, disconnected_tiles, gap_tiles,
+        seam_centroids, stats, z, tile_url_format=None)
 
     # add point match plot in another tab
     plot = point_match_plot(tspecs, matches)
 
     # montage statistics plots in other tabs
-
-    stat_layout = plot_residual(xs, ys, residual)
+    stat_layout = plot_residual_tilespecs(tspecs, stats["tile_residuals"])
 
     tabs = []
     tabs.append(TabPanel(child=layout, title="Defects"))
@@ -316,8 +281,34 @@ def plot_defects(render, stack, out_html_dir, args):
 
     plot_tabs = Tabs(tabs=tabs)
 
-    save(plot_tabs)
+    return plot_tabs
 
+
+def write_montage_qc_plots(out_fn, plt):
+    return save(plt, "my_html.html")
+
+
+def run_montage_qc_plots_legacy(render, stack, out_html_dir, args):
+    tspecs = args[0]
+    matches = args[1]
+    disconnected_tiles = args[2]
+    gap_tiles = args[3]
+    seam_centroids = np.array(args[4])
+    stats = args[5]
+    z = args[6]
+
+    out_html = os.path.join(
+        out_html_dir,
+        "%s_%d_%s.html" % (
+            stack,
+            z,
+            datetime.datetime.now().strftime('%Y%m%d%H%S%M%f')))
+    tile_url_format = f"{render.DEFAULT_HOST}:{render.DEFAULT_PORT}/render-ws/v1/owner/{render.DEFAULT_OWNER}/project/{render.DEFAULT_PROJECT}/stack/{stack}/tile/@names/withNeighbors/jpeg-image?scale=0.1"
+
+    qc_plot = create_montage_qc_plots(
+        tspecs, matches, disconnected_tiles, gap_tiles,
+        seam_centroids, stats, z, tile_url_format=tile_url_format)
+    write_montage_qc_plots(out_html, qc_plot)
     return out_html
 
 
@@ -328,7 +319,9 @@ def plot_section_maps(
     if out_html_dir is None:
         out_html_dir = tempfile.mkdtemp()
 
-    mypartial = partial(plot_defects, render, stack, out_html_dir)
+    mypartial = partial(
+        run_montage_qc_plots_legacy, render, stack, out_html_dir
+    )
 
     args = zip(post_tspecs, matches, disconnected_tiles, gap_tiles,
                seam_centroids, stats, zvalues)
