@@ -38,8 +38,12 @@ def point_match_plot(tilespecsA, matches, tilespecsB=None):
         tilespecsB = tilespecsA
 
     if len(matches) > 0:
-        x1, y1, id1 = cr.get_tile_centers(tilespecsA)
-        x2, y2, id2 = cr.get_tile_centers(tilespecsB)
+        tId_to_ctr_a = {
+            idx: (x, y)
+            for x, y, idx in zip(*cr.get_tile_centers(tilespecsA))}
+        tId_to_ctr_b = {
+            idx: (x, y)
+            for x, y, idx in zip(*cr.get_tile_centers(tilespecsB))}
 
         xs = []
         ys = []
@@ -54,20 +58,25 @@ def point_match_plot(tilespecsA, matches, tilespecsB=None):
         xs.append([0.1, 0])
         ys.append([0.1, 0.1])
 
-        if (set(x1) != set(x2)):
+        if (set(tId_to_ctr_a.keys()) != set(tId_to_ctr_b.keys())):
             clist.append(500)
         else:
             clist.append(200)
 
-        for k in np.arange(len(matches)):
-            t1 = np.argwhere(id1 == matches[k]['qId']).flatten()
-            t2 = np.argwhere(id2 == matches[k]['pId']).flatten()
-            if (t1.size != 0) & (t2.size != 0):
-                t1 = t1[0]
-                t2 = t2[0]
-                xs.append([x1[t1], x2[t2]])
-                ys.append([y1[t1], y2[t2]])
-                clist.append(len(matches[k]['matches']['q'][0]))
+        for m in matches:
+            match_qId = m['qId']
+            match_pId = m['pId']
+            num_pts = len(m['matches']['q'][0])
+
+            try:
+                a_ctr = tId_to_ctr_a[match_qId]
+                b_ctr = tId_to_ctr_b[match_pId]
+            except KeyError:
+                continue
+
+            xs.append([a_ctr[0], b_ctr[0]])
+            ys.append([a_ctr[1], b_ctr[1]])
+            clist.append(num_pts)
 
         mapper = LinearColorMapper(
             palette=Plasma256, low=min(clist), high=max(clist))
