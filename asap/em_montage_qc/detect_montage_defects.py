@@ -19,8 +19,8 @@ from asap.module.render_module import (
 from asap.em_montage_qc.plots import plot_section_maps
 
 from asap.em_montage_qc.distorted_montages import (
-    do_get_z_scales_nopm,
-    get_z_scales_nopm,
+    get_scales_from_tilespecs,
+    get_rts_fallthrough,
     get_scale_statistics_mad
 )
 
@@ -294,26 +294,26 @@ def detect_stitching_gaps_legacy(render, prestitched_stack, poststitched_stack,
     return gap_tiles
 
 
-def detect_distortion(render, poststitched_stack, zvalue, threshold_cutoff=[0.005, 0.005], pool_size=20):
-    #z_to_scales = {zvalue: do_get_z_scales_nopm(zvalue, [poststitched_stack], render)}
-    z_to_scales = {}
-
-    # check if any scale is None
-    #zs = [z for z, scales in z_to_scales.items() if scales is None]
-    #for z in zs:
-    #    z_to_scales[z] = get_z_scales_nopm(z, [poststitched_stack], render)
-
-    try:
-        z_to_scales[zvalue] = get_z_scales_nopm(zvalue, [poststitched_stack], render)
-    except Exception:
-        z_to_scales[zvalue] = None
-
-    # get the mad statistics
-    z_to_scalestats = {z: get_scale_statistics_mad(scales) for z, scales in z_to_scales.items() if scales is not None}
-
-    # find zs that fall outside cutoff
-    badzs_cutoff = [z for z, s in z_to_scalestats.items() if s[0] > threshold_cutoff[0] or s[1] > threshold_cutoff[1]]
+def detect_distortion_tilespecs(tilespecs, zvalue, threshold_cutoff=[0.005, 0.005]):
+    scales = get_scales_from_tilespecs(tilespecs)
+    mad_stats = get_scale_statistics_mad(scales)
+    badzs_cutoff = (
+        [zvalue] if (
+            mad_stats[0] > threshold_cutoff[0] or
+            mad_stats[1] > threshold_cutoff[1]
+        )
+        else [])
     return badzs_cutoff
+
+
+def detect_distortion(
+        render, poststitched_stack, zvalue,
+        threshold_cutoff=[0.005, 0.005], pool_size=20, tilespecs=None):
+    if tilespecs is None:
+        rts = get_rts_fallthrough([poststitched_stack], zvalue, render=render)
+        tilespecs = rts.tilespecs
+
+    return detect_distortion_tilespecs(tilespecs, zvalue, threshold_cutoff)
 
 
 def get_pre_post_tspecs(render, prestitched_stack, poststitched_stack, z):
@@ -349,7 +349,8 @@ def run_analysis(
         z, residual_threshold=residual_threshold, distance=neighbor_distance,
         min_cluster_size=min_cluster_size, tspecs=post_tspecs)
     distorted_zs = detect_distortion(
-        render, poststitched_stack, z, threshold_cutoff=threshold_cutoff)
+        render, poststitched_stack, z, threshold_cutoff=threshold_cutoff,
+        tilespecs=post_tspecs)
 
     return (disconnected_tiles, gap_tiles, seam_centroids,
             distorted_zs, post_tspecs, matches, stats)

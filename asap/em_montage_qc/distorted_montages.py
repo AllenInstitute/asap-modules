@@ -90,6 +90,11 @@ def groupId_from_tilespec(ts):
 def sections_from_resolvedtiles(rts):
     return list({groupId_from_tilespec(ts) for ts in rts.tilespecs})
 
+
+def get_scales_from_tilespecs(tilespecs):
+    return np.array([ts.tforms[-1].scale for ts in tilespecs])
+
+
 def get_z_scales_nopm(z, input_stacks, render):
     rts = get_rts_fallthrough(input_stacks, z, render=render)
     scales = np.array([ts.tforms[-1].scale for ts in rts.tilespecs])
