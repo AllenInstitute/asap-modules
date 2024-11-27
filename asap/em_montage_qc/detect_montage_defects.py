@@ -7,8 +7,6 @@ import numpy as np
 import renderapi
 import renderapi.utils
 import requests
-from rtree import index as rindex
-from six import viewkeys
 from scipy.spatial import cKDTree
 import shapely
 import shapely.strtree
@@ -24,7 +22,7 @@ from asap.em_montage_qc.distorted_montages import (
     do_get_z_scales_nopm,
     get_z_scales_nopm,
     get_scale_statistics_mad
-    )
+)
 
 example = {
     "render": {

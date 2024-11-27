@@ -153,15 +153,17 @@ def test_detect_montage_defects(render,
     # read the output json
     with open(ex['output_json'], 'r') as f:
         data = json.load(f)
-    f.close()
 
     assert(len(data['output_html']) > 0)
+    assert all([os.path.isfile(html_file) for html_file in data['output_html']])
+
 
     assert(len(data['seam_sections']) > 0)
     assert(len(data['hole_sections']) == 1)
     assert(len(data['seam_centroids']) > 0)
     assert(len(data['distorted_sections']) == 0)
     assert(len(data['qc_passed_sections']) == 0)
+
 
     for s in data['seam_centroids']:
         assert(len(s) > 0)
