@@ -7,7 +7,7 @@ import numpy as np
 import renderapi
 
 from bokeh.palettes import Plasma256, Viridis256
-from bokeh.plotting import figure, output_file, save
+from bokeh.plotting import figure, save
 from bokeh.layouts import row
 from bokeh.models import (HoverTool, ColumnDataSource,
                           CustomJS, CategoricalColorMapper,
@@ -285,7 +285,7 @@ def create_montage_qc_plots(
 
 
 def write_montage_qc_plots(out_fn, plt):
-    return save(plt, "my_html.html")
+    return save(plt, out_fn)
 
 
 def run_montage_qc_plots_legacy(render, stack, out_html_dir, args):
