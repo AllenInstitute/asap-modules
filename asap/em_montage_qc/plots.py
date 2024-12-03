@@ -7,13 +7,13 @@ import numpy as np
 import renderapi
 
 from bokeh.palettes import Plasma256, Viridis256
-from bokeh.plotting import figure, output_file, save
+from bokeh.plotting import figure, save
 from bokeh.layouts import row
-from bokeh.models.widgets import Tabs, Panel
 from bokeh.models import (HoverTool, ColumnDataSource,
                           CustomJS, CategoricalColorMapper,
                           LinearColorMapper,
-                          TapTool, OpenURL, Div, ColorBar)
+                          TapTool, OpenURL, Div, ColorBar,
+                          Tabs, TabPanel)
 
 from asap.residuals import compute_residuals as cr
 
@@ -33,13 +33,29 @@ except NameError:
     xrange = range
 
 
+def bbox_tup_to_xs_ys(bbox_tup):
+    min_x, min_y, max_x, max_y = bbox_tup
+    return (
+        [min_x, max_x, max_x, min_x, min_x],
+        [min_y, min_y, max_y, max_y, min_y]
+    )
+
+
+def tilespecs_to_xs_ys(tilespecs):
+    return zip(*(bbox_tup_to_xs_ys(ts.bbox) for ts in tilespecs))
+
+
 def point_match_plot(tilespecsA, matches, tilespecsB=None):
     if tilespecsB is None:
         tilespecsB = tilespecsA
 
     if len(matches) > 0:
-        x1, y1, id1 = cr.get_tile_centers(tilespecsA)
-        x2, y2, id2 = cr.get_tile_centers(tilespecsB)
+        tId_to_ctr_a = {
+            idx: (x, y)
+            for x, y, idx in zip(*cr.get_tile_centers(tilespecsA))}
+        tId_to_ctr_b = {
+            idx: (x, y)
+            for x, y, idx in zip(*cr.get_tile_centers(tilespecsB))}
 
         xs = []
         ys = []
@@ -54,20 +70,25 @@ def point_match_plot(tilespecsA, matches, tilespecsB=None):
         xs.append([0.1, 0])
         ys.append([0.1, 0.1])
 
-        if (set(x1) != set(x2)):
+        if (set(tId_to_ctr_a.keys()) != set(tId_to_ctr_b.keys())):
             clist.append(500)
         else:
             clist.append(200)
 
-        for k in np.arange(len(matches)):
-            t1 = np.argwhere(id1 == matches[k]['qId']).flatten()
-            t2 = np.argwhere(id2 == matches[k]['pId']).flatten()
-            if (t1.size != 0) & (t2.size != 0):
-                t1 = t1[0]
-                t2 = t2[0]
-                xs.append([x1[t1], x2[t2]])
-                ys.append([y1[t1], y2[t2]])
-                clist.append(len(matches[k]['matches']['q'][0]))
+        for m in matches:
+            match_qId = m['qId']
+            match_pId = m['pId']
+            num_pts = len(m['matches']['q'][0])
+
+            try:
+                a_ctr = tId_to_ctr_a[match_qId]
+                b_ctr = tId_to_ctr_b[match_pId]
+            except KeyError:
+                continue
+
+            xs.append([a_ctr[0], b_ctr[0]])
+            ys.append([a_ctr[1], b_ctr[1]])
+            clist.append(num_pts)
 
         mapper = LinearColorMapper(
             palette=Plasma256, low=min(clist), high=max(clist))
@@ -77,9 +98,24 @@ def point_match_plot(tilespecsA, matches, tilespecsB=None):
 
         TOOLS = "pan,box_zoom,reset,hover,save"
 
+        w = np.ptp(xs)
+        h = np.ptp(ys)
+        base_dim = 1000
+        if w > h:
+            h = int(np.round(base_dim * (h / w)))
+            w = base_dim
+        else:
+            h = base_dim
+            w = int(np.round(base_dim * w / h))
+
         plot = figure(
-            plot_width=800, plot_height=700,
-            background_fill_color='gray', tools=TOOLS)
+            # plot_width=800, plot_height=700,
+            width=w, height=h,
+            background_fill_color='gray', tools=TOOLS,
+            # sizing_mode="stretch_both",
+            match_aspect=True
+        )
+        plot.tools[1].match_aspect = True
         plot.multi_line(
             xs="xs", ys="ys", source=source,
             color={'field': 'colors', 'transform': mapper}, line_width=2)
@@ -88,14 +124,24 @@ def point_match_plot(tilespecsA, matches, tilespecsB=None):
         plot.ygrid.visible = False
 
     else:
-        plot = figure(plot_width=800, plot_height=700,
-                      background_fill_color='gray')
+        plot = figure(
+            # width=800, height=700,
+            background_fill_color='gray')
 
     return plot
 
 
 def plot_residual(xs, ys, residual):
-    p = figure(width=1000, height=1000)
+    w = np.ptp(xs)
+    h = np.ptp(ys)
+    base_dim = 1000
+    if w > h:
+        h = int(np.round(base_dim * (h / w)))
+        w = base_dim
+    else:
+        h = base_dim
+        w = int(np.round(base_dim * w / h))
+    p = figure(width=w, height=h)
     color_mapper = LinearColorMapper(
         palette=Viridis256, low=min(residual), high=max(residual))
 
@@ -107,7 +153,7 @@ def plot_residual(xs, ys, residual):
         fill_alpha=1.0, line_color="black", line_width=0.05)
 
     color_bar = ColorBar(color_mapper=color_mapper, label_standoff=12,
-                         border_line_color=None, location=(0,0))
+                         border_line_color=None, location=(0, 0))
 
     p.add_layout(color_bar, 'right')
 
@@ -117,68 +163,37 @@ def plot_residual(xs, ys, residual):
     return p
 
 
-def plot_defects(render, stack, out_html_dir, args):
-    tspecs = args[0]
-    matches = args[1]
-    dis_tiles = args[2]
-    gap_tiles = args[3]
-    seam_centroids = np.array(args[4])
-    stats = args[5]
-    z = args[6]
-
-    # Tile residual mean
+def plot_residual_tilespecs(
+        tspecs, tileId_to_point_residuals, default_residual=50):
     tile_residual_mean = cr.compute_mean_tile_residuals(
-        stats['tile_residuals'])
+        tileId_to_point_residuals)
+    xs, ys = tilespecs_to_xs_ys(tspecs)
+    residual = [
+        tile_residual_mean.get(ts.tileId, default_residual)
+        for ts in tspecs
+    ]
 
-    tile_positions = []
-    tile_ids = []
-    residual = []
-    for ts in tspecs:
-        tile_ids.append(ts.tileId)
-        pts = []
-        pts.append([ts.minX, ts.minY])
-        pts.append([ts.maxX, ts.minY])
-        pts.append([ts.maxX, ts.maxY])
-        pts.append([ts.minX, ts.maxY])
-        pts.append([ts.minX, ts.minY])
-        tile_positions.append(pts)
+    return plot_residual(xs, ys, residual)
 
-        try:
-            residual.append(tile_residual_mean[ts.tileId])
-        except KeyError:
-            residual.append(50)  # a high value for residual for that tile
 
-    out_html = os.path.join(
-            out_html_dir,
-            "%s_%d_%s.html" % (
-                stack,
-                z,
-                datetime.datetime.now().strftime('%Y%m%d%H%S%M%f')))
-
-    output_file(out_html)
-    xs = []
-    ys = []
-    alphas = []
-    for tp in tile_positions:
-        sp = np.array(tp)
-        x = list(sp[:, 0])
-        y = list(sp[:, 1])
-        xs.append(x)
-        ys.append(y)
-        alphas.append(0.5)
+def montage_defect_plot(
+        tspecs, matches, disconnected_tiles, gap_tiles,
+        seam_centroids, stats, z, tile_url_format=None):
+    xs, ys = tilespecs_to_xs_ys(tspecs)
+    alphas = [0.5] * len(xs)
 
     fill_color = []
     label = []
-    for t in tile_ids:
-        if t in gap_tiles:
-            label.append("Gap tiles")
-            fill_color.append("red")
-        elif t in dis_tiles:
-            label.append("Disconnected tiles")
-            fill_color.append("yellow")
-        else:
-            label.append("Stitched tiles")
-            fill_color.append("blue")
+    gap_tiles = set(gap_tiles)
+    disconnected_tiles = set(disconnected_tiles)
+
+    tile_ids = [ts.tileId for ts in tspecs]
+
+    label, fill_color = zip(*(
+        (("Gap tiles", "red") if tileId in gap_tiles
+         else ("Disconnected tiles", "yellow") if tileId in disconnected_tiles
+         else ("Stitched tiles", "blue"))
+        for tileId in tile_ids))
 
     color_mapper = CategoricalColorMapper(
         factors=['Gap tiles', 'Disconnected tiles', 'Stitched tiles'],
@@ -194,13 +209,28 @@ def plot_defects(render, stack, out_html_dir, args):
 
     TOOLS = "pan,box_zoom,reset,hover,tap,save"
 
-    p = figure(title=str(z), width=1000, height=1000,
-               tools=TOOLS, match_aspect=True)
+    w = np.ptp(xs)
+    h = np.ptp(ys)
+    base_dim = 1000
+    if w > h:
+        h = int(np.round(base_dim * (h / w)))
+        w = base_dim
+    else:
+        h = base_dim
+        w = int(np.round(base_dim * w / h))
+
+    p = figure(title=str(z),
+               # width=1000, height=1000,
+               width=w, height=h,
+               tools=TOOLS,
+               match_aspect=True)
+    p.tools[1].match_aspect = True
     pp = p.patches(
         'x', 'y', source=source,
         alpha='alpha', line_width=2,
-        color={'field': 'labels', 'transform': color_mapper}, legend='labels')
-    cp = p.circle('x', 'y', source=seam_source, legend='lbl', size=11)
+        color={'field': 'labels', 'transform': color_mapper},
+        legend_group='labels')
+    cp = p.scatter('x', 'y', source=seam_source, legend_group='lbl', size=11)
 
     jscode = """
         var inds = cb_obj.selected['1d'].indices;
@@ -211,38 +241,74 @@ def plot_defects(render, stack, out_html_dir, args):
         if ( lines.length > 35 ) { lines.shift(); }
         div.text = lines.join("\\n");
     """
-    div = Div(width=1000)
+    div = Div(width=w)
     layout = row(p, div)
 
-    urls = "%s:%d/render-ws/v1/owner/%s/project/%s/stack/%s/tile/@names/withNeighbors/jpeg-image?scale=0.1" % (render.DEFAULT_HOST, render.DEFAULT_PORT, render.DEFAULT_OWNER, render.DEFAULT_PROJECT, stack)
-
-    taptool = p.select(type=TapTool)
-    taptool.renderers = [pp]
-    taptool.callback = OpenURL(url=urls)
+    if tile_url_format:
+        taptool = p.select(type=TapTool)
+        taptool.renderers = [pp]
+        taptool.callback = OpenURL(url=tile_url_format)
 
     hover = p.select(dict(type=HoverTool))
     hover.renderers = [pp]
     hover.point_policy = "follow_mouse"
     hover.tooltips = [("tileId", "@names"), ("x", "$x{int}"), ("y", "$y{int}")]
 
-    source.callback = CustomJS(args=dict(div=div), code=jscode % ('names'))
+    source.js_event_callbacks['identify'] = [
+        CustomJS(args=dict(div=div), code=jscode % ('names'))
+    ]
+    return layout
+
+
+def create_montage_qc_plots(
+        tspecs, matches, disconnected_tiles, gap_tiles,
+        seam_centroids, stats, z, tile_url_format=None):
+    # montage qc
+    layout = montage_defect_plot(
+        tspecs, matches, disconnected_tiles, gap_tiles,
+        seam_centroids, stats, z, tile_url_format=None)
 
     # add point match plot in another tab
     plot = point_match_plot(tspecs, matches)
 
     # montage statistics plots in other tabs
-
-    stat_layout = plot_residual(xs, ys, residual)
+    stat_layout = plot_residual_tilespecs(tspecs, stats["tile_residuals"])
 
     tabs = []
-    tabs.append(Panel(child=layout, title="Defects"))
-    tabs.append(Panel(child=plot, title="Point match plot"))
-    tabs.append(Panel(child=stat_layout, title="Mean tile residual"))
+    tabs.append(TabPanel(child=layout, title="Defects"))
+    tabs.append(TabPanel(child=plot, title="Point match plot"))
+    tabs.append(TabPanel(child=stat_layout, title="Mean tile residual"))
 
     plot_tabs = Tabs(tabs=tabs)
 
-    save(plot_tabs)
+    return plot_tabs
 
+
+def write_montage_qc_plots(out_fn, plt):
+    return save(plt, out_fn)
+
+
+def run_montage_qc_plots_legacy(render, stack, out_html_dir, args):
+    tspecs = args[0]
+    matches = args[1]
+    disconnected_tiles = args[2]
+    gap_tiles = args[3]
+    seam_centroids = np.array(args[4])
+    stats = args[5]
+    z = args[6]
+
+    out_html = os.path.join(
+        out_html_dir,
+        "%s_%d_%s.html" % (
+            stack,
+            z,
+            datetime.datetime.now().strftime('%Y%m%d%H%S%M%f')))
+    tile_url_format = f"{render.DEFAULT_HOST}:{render.DEFAULT_PORT}/render-ws/v1/owner/{render.DEFAULT_OWNER}/project/{render.DEFAULT_PROJECT}/stack/{stack}/tile/@names/withNeighbors/jpeg-image?scale=0.1"
+
+    qc_plot = create_montage_qc_plots(
+        tspecs, matches, disconnected_tiles, gap_tiles,
+        seam_centroids, stats, z, tile_url_format=tile_url_format)
+    write_montage_qc_plots(out_html, qc_plot)
     return out_html
 
 
@@ -253,7 +319,9 @@ def plot_section_maps(
     if out_html_dir is None:
         out_html_dir = tempfile.mkdtemp()
 
-    mypartial = partial(plot_defects, render, stack, out_html_dir)
+    mypartial = partial(
+        run_montage_qc_plots_legacy, render, stack, out_html_dir
+    )
 
     args = zip(post_tspecs, matches, disconnected_tiles, gap_tiles,
                seam_centroids, stats, zvalues)
