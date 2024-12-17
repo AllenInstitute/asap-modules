@@ -45,7 +45,7 @@ def tilespecs_to_xs_ys(tilespecs):
     return zip(*(bbox_tup_to_xs_ys(ts.bbox) for ts in tilespecs))
 
 
-def point_match_plot(tilespecsA, matches, tilespecsB=None):
+def point_match_plot(tilespecsA, matches, tilespecsB=None, match_max=500):
     if tilespecsB is None:
         tilespecsB = tilespecsA
 
@@ -70,10 +70,11 @@ def point_match_plot(tilespecsA, matches, tilespecsB=None):
         xs.append([0.1, 0])
         ys.append([0.1, 0.1])
 
-        if (set(tId_to_ctr_a.keys()) != set(tId_to_ctr_b.keys())):
-            clist.append(500)
-        else:
-            clist.append(200)
+        # if (set(tId_to_ctr_a.keys()) != set(tId_to_ctr_b.keys())):
+        #     clist.append(500)
+        # else:
+        #     clist.append(200)
+        clist.append(match_max)
 
         for m in matches:
             match_qId = m['qId']
@@ -131,7 +132,7 @@ def point_match_plot(tilespecsA, matches, tilespecsB=None):
     return plot
 
 
-def plot_residual(xs, ys, residual):
+def plot_residual(xs, ys, residual, residual_max=None):
     w = np.ptp(xs)
     h = np.ptp(ys)
     base_dim = 1000
@@ -142,8 +143,10 @@ def plot_residual(xs, ys, residual):
         h = base_dim
         w = int(np.round(base_dim * w / h))
     p = figure(width=w, height=h)
+    if residual_max is None:
+        residual_max = max(residual)
     color_mapper = LinearColorMapper(
-        palette=Viridis256, low=min(residual), high=max(residual))
+        palette=Viridis256, low=min(residual), high=residual_max)
 
     source = ColumnDataSource(data=dict(x=xs, y=ys, residual=residual))
 
@@ -164,7 +167,7 @@ def plot_residual(xs, ys, residual):
 
 
 def plot_residual_tilespecs(
-        tspecs, tileId_to_point_residuals, default_residual=50):
+        tspecs, tileId_to_point_residuals, default_residual=50, residual_max=None):
     tile_residual_mean = cr.compute_mean_tile_residuals(
         tileId_to_point_residuals)
     xs, ys = tilespecs_to_xs_ys(tspecs)
@@ -173,7 +176,7 @@ def plot_residual_tilespecs(
         for ts in tspecs
     ]
 
-    return plot_residual(xs, ys, residual)
+    return plot_residual(xs, ys, residual, residual_max=residual_max)
 
 
 def montage_defect_plot(
@@ -262,17 +265,21 @@ def montage_defect_plot(
 
 def create_montage_qc_plots(
         tspecs, matches, disconnected_tiles, gap_tiles,
-        seam_centroids, stats, z, tile_url_format=None):
+        seam_centroids, stats, z, tile_url_format=None,
+        match_max=500, residual_max=None):
     # montage qc
     layout = montage_defect_plot(
         tspecs, matches, disconnected_tiles, gap_tiles,
-        seam_centroids, stats, z, tile_url_format=None)
+        seam_centroids, stats, z, tile_url_format=tile_url_format)
 
     # add point match plot in another tab
-    plot = point_match_plot(tspecs, matches)
+    plot = point_match_plot(tspecs, matches, match_max=match_max)
 
     # montage statistics plots in other tabs
-    stat_layout = plot_residual_tilespecs(tspecs, stats["tile_residuals"])
+    stat_layout = plot_residual_tilespecs(
+        tspecs, stats["tile_residuals"],
+        residual_max=residual_max
+    )
 
     tabs = []
     tabs.append(TabPanel(child=layout, title="Defects"))
