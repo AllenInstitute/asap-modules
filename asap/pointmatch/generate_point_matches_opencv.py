@@ -10,6 +10,8 @@ import numpy as np
 import pathlib2 as pathlib
 import renderapi
 
+import imageio
+
 from asap.pointmatch.schemas import (
     PointMatchOpenCVParameters,
     PointMatchClientOutputSchema)
@@ -46,7 +48,7 @@ example = {
 def ransac_chunk(fargs):
     [k1xy, k2xy, des1, des2, k1ind, args] = fargs
 
-    FLANN_INDEX_KDTREE = 0
+    FLANN_INDEX_KDTREE = 1
     index_params = dict(
             algorithm=FLANN_INDEX_KDTREE,
             trees=args['FLANN_ntree'])
@@ -89,12 +91,26 @@ def ransac_chunk(fargs):
 
     return k1, k2
 
+# FIXME work w/ tile min/max in layout
+def to_8bpp(im, min_val=None, max_val=None):
+    if im.dtype == np.uint16:
+        if max_val is not None or min_val is not None:
+            min_val = min_val or 0
+            max_val = max_val or 65535
+            scale_factor = 255 / (max_val - min_val)
+            im = ((np.clip(im, min_val, max_val) - min_val) * scale_factor)
+        return (im).astype(np.uint8)
+    return im
 
 def read_downsample_equalize_mask_uri(
-        impath, scale, CLAHE_grid=None, CLAHE_clip=None):
-    im = cv2.imdecode(
-        np.fromstring(uri_utils.uri_readbytes(impath[0]), np.uint8),
-        0)
+        impath, scale, CLAHE_grid=None, CLAHE_clip=None, min_val=None, max_val=None):
+    # im = cv2.imdecode(
+    #     np.fromstring(uri_utils.uri_readbytes(impath[0]), np.uint8),
+    #     0)
+    im = imageio.v3.imread(uri_utils.uri_readbytes(impath[0]))
+    # FIXME this should be read from tilespec
+    max_val = max_val or im.max()
+    im = to_8bpp(im, min_val, max_val)
 
     im = cv2.resize(im, (0, 0),
                     fx=scale,
@@ -110,9 +126,10 @@ def read_downsample_equalize_mask_uri(
         im = cv2.equalizeHist(im)
 
     if impath[1] is not None:
-        mask = cv2.imdecode(
-            np.fromstring(uri_utils.uri_readbytes(impath[1]), np.uint8),
-            0)
+        # mask = cv2.imdecode(
+        #     np.fromstring(uri_utils.uri_readbytes(impath[1]), np.uint8),
+        #     0)
+        mask = imageio.v3.imread(uri_utils.uri_readbytes(impath[1]))
 
         mask = cv2.resize(mask, (0, 0),
                           fx=scale,
@@ -121,6 +138,7 @@ def read_downsample_equalize_mask_uri(
         im = cv2.bitwise_and(im, im, mask=mask)
 
     return im
+    # return to_8bpp(im, min_val, max_val)
 
 
 def read_downsample_equalize_mask(
@@ -143,7 +161,7 @@ def find_matches(fargs):
             CLAHE_grid=args['CLAHE_grid'],
             CLAHE_clip=args['CLAHE_clip'])
 
-    sift = cv2.xfeatures2d.SIFT_create(
+    sift = cv2.SIFT_create(
             nfeatures=args['SIFT_nfeature'],
             nOctaveLayers=args['SIFT_noctave'],
             sigma=args['SIFT_sigma'])
