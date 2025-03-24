@@ -196,9 +196,10 @@ def create_input_defaults(render, pm_render, input_stack: str,
     combined_rts.tilespecs = [
         tId_to_tilespecs[tId] for tId in tId_to_tilespecs.keys() & rmt
     ]
-    nomatchz_counter(combined_rts, res_tiles['Unmatched_tiles'])
-    if multiz:
-        multiz_counter(combined_rts)
+    #nomatchz_counter(combined_rts, res_tiles['Unmatched_tiles'])
+    #if multiz:
+    #    multiz_counter(combined_rts)
+    
     return {'combined_tilespecs': combined_rts, 'new_matches': new_matches}
 
 
