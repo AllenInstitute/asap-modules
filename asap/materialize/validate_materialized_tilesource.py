@@ -51,6 +51,8 @@ class ValidateMaterialization(argschema.ArgSchemaParser):
                     return True
                 elif not allow_EACCES and (e.errno == errno.EACCES):
                     raise
+                else:
+                    return
             else:
                 return
         return True

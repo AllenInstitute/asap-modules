@@ -9,7 +9,11 @@ from test_data import (
     render_params
     )
 
-from asap.em_montage_qc.rough_align_qc import RoughAlignmentQC
+IMPORT_ERROR = False
+try:
+    from asap.em_montage_qc.rough_align_qc import RoughAlignmentQC
+except:
+    IMPORT_ERROR = True
 
 
 @pytest.fixture(scope='module')

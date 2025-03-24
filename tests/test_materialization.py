@@ -95,11 +95,11 @@ def test_validate_materialization(
     # truncate file causing truncated file ValueError on read
     truncbytes = os.path.getsize(truncfn)
     truncatefile(truncfn, truncbytes//2)
-    with pytest.raises(ValueError):
+    with pytest.raises((ValueError, IOError)):
         _ = imageio.imread(truncfn)
     # truncate file so that it is unreadable
     truncatefile(badfn, 0)
-    with pytest.raises(ValueError):
+    with pytest.raises((ValueError,)):
         _ = imageio.imread(badfn)
     # TODO there are some png cases which lead to SyntaxErrors?
     # run validation

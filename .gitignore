@@ -45,6 +45,7 @@ nosetests.xml
 coverage.xml
 *.cover
 .hypothesis/
+test-reports/
 
 # Translations
 *.mo
@@ -103,3 +104,6 @@ ENV/
 .vscode
 
 .DS_Store
+
+test-reports/
+

@@ -1,3 +1,3 @@
-conda create --name render-modules --prefix $IMAGE_PROCESSING_DEPLOY_PATH python=2.7
-source activate render-modules 
+conda create --name asap --prefix $IMAGE_PROCESSING_DEPLOY_PATH python=3.11
+source activate asap
 pip install -r ../requirements.txt
