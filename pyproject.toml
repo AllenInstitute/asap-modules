@@ -29,7 +29,7 @@ dependencies = [
     "mpld3",
     "descartes",
     "lxml",
-    "pymongo==3.11.1",
+    "pymongo==4.6.3",
     "igraph"
 ]
 
