@@ -232,8 +232,8 @@ def apply_rough_alignment(render,
             tx = -int(sectionbounds['minX'])
             ty = -int(sectionbounds['minY'])
         else:
-            tx = int(sectionbounds['minX']) - int(presectionbounds['minX'])
-            ty = int(sectionbounds['minY']) - int(presectionbounds['minY'])
+            tx = int(presectionbounds["minX"]) / scale - int(sectionbounds["minX"])
+            ty = int(presectionbounds["minY"]) / scale - int(sectionbounds["minY"])
 
         translation_tform = renderapi.transform.AffineModel(B0=tx, B1=ty)
 
