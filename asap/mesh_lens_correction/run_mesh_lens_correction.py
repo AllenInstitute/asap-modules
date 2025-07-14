@@ -114,7 +114,7 @@ def pair_tiles_rts(rts, query_fraction=0.1):
         for ridx in qresult_idxs:
             if frozenset((qidx, ridx)) not in qresults:
                 rbox = boxes[ridx]
-                is_not_corner = ((qminX < rbox.centroid.x < qmaxX) &
+                is_not_corner = ((qminX < rbox.centroid.x < qmaxX) |
                                  (qminY < rbox.centroid.y < qmaxY))
                 if is_not_corner:
                     rminX, rminY, rmaxX, rmaxY = rbox.bounds
@@ -259,7 +259,7 @@ class CalculateLensCorrectionModule(argschema.ArgSchemaParser):
         apply_resolvedtiles_bboxes(rts)
         tpairs = pair_tiles_rts(rts)
 
-        matches = match_tiles_rts(rts, tpairs)
+        matches = match_tiles_rts(rts, tpairs, concurrency=match_concurrency)
         lc_tform = solve_lc(rts, matches, transformId=transformId)
         return lc_tform
 
