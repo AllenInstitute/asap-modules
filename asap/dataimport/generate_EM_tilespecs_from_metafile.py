@@ -9,10 +9,11 @@ import os
 import numpy
 import renderapi
 
+
 from asap.module.render_module import (
     StackOutputModule, RenderModuleException)
 from asap.dataimport.schemas import (GenerateEMTileSpecsOutput,
-                                              GenerateEMTileSpecsParameters)
+                                     GenerateEMTileSpecsParameters)
 from asap.utilities import uri_utils
 
 
@@ -31,7 +32,8 @@ example_input = {
     "overwrite_zlayer": True,
     "pool_size": 10,
     "close_stack": True,
-    "z_index": 1
+    "z_index": 1,
+    "resume": True
 }
 
 
@@ -84,30 +86,52 @@ class GenerateEMTileSpecsModule(StackOutputModule):
             stageY=imgdata['img_meta']['stage_pos'][1],
             rotation=imgdata['img_meta']['angle'], pixelsize=pixelsize)
 
+    def resume_run(self, tileIds):
+        render = renderapi.connect(**self.args["render"])
+        if self.output_stack in renderapi.render.get_stacks_by_owner_project(
+                owner=self.args["render"]["owner"],
+                project=self.args["render"]["project"],
+                render=render):
+            stack_tiles = {
+                t['tileId'] for t in renderapi.stack.get_tilebounds_for_z(
+                    self.args["output_stack"],
+                    self.args["z_index"],
+                    render=render)}
+            if tileIds ^ stack_tiles:
+                return True
+            else:
+                return False
+        else:
+            return True
+
     def run(self):
         meta = json.loads(uri_utils.uri_readbytes(self.args['metafile_uri']))
-        roidata = meta[0]['metadata']
-        imgdata = meta[1]['data']
-        img_coords = {img['img_path']: self.image_coords_from_stage(
-            img['img_meta']['stage_pos'],
-            img['img_meta']['pixel_size_x_move'],
-            img['img_meta']['pixel_size_y_move'],
-            numpy.radians(img['img_meta']['angle'])) for img in imgdata}
+        tileIds = {self.tileId_from_basename(fname=i["img_path"],
+                   z=self.args["z_index"]) for i in meta[1]['data']}
 
-        if not imgdata:
-            raise RenderModuleException(
-                "No relevant image metadata found for metadata at {}".format(
-                    self.args['metafile_uri']))
+        if self.resume_run(tileIds):
+            roidata = meta[0]['metadata']
+            imgdata = meta[1]['data']
+            img_coords = {img['img_path']: self.image_coords_from_stage(
+                img['img_meta']['stage_pos'],
+                img['img_meta']['pixel_size_x_move'],
+                img['img_meta']['pixel_size_y_move'],
+                numpy.radians(img['img_meta']['angle'])) for img in imgdata}
 
-        minX, minY = numpy.min(numpy.array(list(img_coords.values())), axis=0)
-        # assume isotropic pixels
-        pixelsize = roidata['calibration']['highmag']['x_nm_per_pix']
+            if not imgdata:
+                raise RenderModuleException(
+                    "No relevant image metadata found for metadata at {}".format(
+                        self.args['metafile_uri']))
 
-        imgdir = self.args.get(
-            'image_prefix',
-            uri_utils.uri_prefix(self.args['metafile_uri']))
+            minX, minY = numpy.min(numpy.array(list(img_coords.values())), axis=0)
+            # assume isotropic pixels
+            pixelsize = roidata['calibration']['highmag']['x_nm_per_pix']
 
-        tspecs = [
+            imgdir = self.args.get(
+                'image_prefix',
+                uri_utils.uri_prefix(self.args['metafile_uri']))
+
+            tspecs = [
                 self.ts_from_imgdata(
                     img, imgdir,
                     img_coords[img['img_path']][0] - minX,
@@ -122,12 +146,18 @@ class GenerateEMTileSpecsModule(StackOutputModule):
                     pixelsize=pixelsize,
                     maskUrl=self.args['maskUrl_uri']) for img in imgdata]
 
-        self.output_tilespecs_to_stack(tspecs)
+            self.output_tilespecs_to_stack(tspecs)
 
-        try:
-            self.output({'stack': self.output_stack})
-        except AttributeError as e:
-            self.logger.error(e)
+            try:
+                self.output({'stack': self.output_stack})
+            except AttributeError as e:
+                self.logger.error(e)
+
+        else:
+            try:
+                self.output({'stack': self.output_stack})
+            except AttributeError as e:
+                self.logger.error(e)
 
 
 if __name__ == "__main__":
