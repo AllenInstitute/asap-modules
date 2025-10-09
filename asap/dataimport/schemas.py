@@ -54,6 +54,10 @@ class GenerateMipMapsParameters(InputStackParameters):
                      validator=mm.validate.OneOf(['mean', 'median']),
                      description=("function to represent blocks in "
                                   "area downsampling with block_reduce"))
+    resume = mm.fields.Boolean(
+        required=False, default=True,
+        description="check for existing stacks and zValues,"
+                    "skip if the stack or the zValue does not exist")
 
     @classmethod
     def validationOptions(cls, options):
@@ -95,6 +99,10 @@ class AddMipMapsToStackParameters(StackTransitionParameters):
     imgformat = mm.fields.Str(
         required=False, default="tiff",
         description='mipmap image format, default is tiff')
+    resume = mm.fields.Boolean(
+        required=False, default=True,
+        description="check for existing stacks and zValues,"
+                    "skip if the stack or the zValue does not exist")
 
     @pre_load
     def mipmap_directory_to_prefix(self, data):
@@ -142,6 +150,10 @@ class GenerateEMTileSpecsParameters(OutputStackParameters):
         description=("sectionId to apply to tiles during ingest.  "
                      "If unspecified will default to a string "
                      "representation of the float value of z_index."))
+    resume = mm.fields.Boolean(
+        required=False, default=True,
+        description="check for existing stacks and zValues,"
+                    "skip if the stack or the zValue does not exist")
 
     @pre_load
     def metafile_to_uri(self, data):
@@ -221,6 +233,10 @@ class MakeMontageScapeSectionStackParameters(OutputStackParameters):
             "Prepend uuid to generated tileIds to prevent collisions"))
     uuid_length = Int(required=False, default=10, description=(
         "length of uuid4 string used in uuid prefix"))
+    resume = mm.fields.Boolean(
+        required=False, default=True,
+        description="check for existing stacks and zValues,"
+                    "skip if the stack or the zValue does not exist")
 
     @post_load
     def validate_data(self, data):
